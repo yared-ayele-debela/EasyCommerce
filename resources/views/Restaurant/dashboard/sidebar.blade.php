@@ -84,7 +84,6 @@
                 </ul>
             </li>
             {{-- @endif --}}
-
             <br>
             <li class=" {{ request()->is('admin/restaurant/my-restaurant')?'nav-item active':'' }} " >
                 <a href="{{ url('admin/restaurant/my-restaurant') }}" class="nav-link" > <i class="bi bi-textarea-resize"></i><span>My Restaurant</span></a>
