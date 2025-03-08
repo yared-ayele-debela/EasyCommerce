@@ -1,0 +1,376 @@
+@extends('Restaurant.dashboard.layouts')
+@section('restaurant-dashboard')
+@php
+$user = Auth::guard('admin')->user();
+@endphp
+<nav class="breadcrumb">
+    <a class="breadcrumb-item" href="#">Home</a>
+    <a class="breadcrumb-item active" href="#">Products</a>
+</nav>
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <h4>Products</h4>
+            <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                Add Product
+            </button>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Menu</th>
+                        <th>City</th>
+                        <th>Price</th>
+                        <th>Discount Type</th>
+                        <th>Discount</th>
+                        <th>Cover Image</th>
+                        <th>Other Image</th>
+                        <th>Most Popular</th>
+                        <th>Best Seller</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($products as $product)
+                    <tr>
+                        <td>{{ $product->name }}</td>
+                        <td>{{ $product->category->name }}</td>
+                        <td>{{ $product->menu->name }}</td>
+                        <td>{{ $product->city->name }}</td>
+                        <td>{{ $product->price }} Birr</td>
+                        <td>{{ $product->discount_type }}</td>
+                        <td>{{ $product->discount }} Birr</td>
+                        <td>
+                            <img src="{{ asset('storage/' . $product->image) }}" width="50">
+                        </td>
+                        <td>
+                            @foreach($product->images as $image)
+                                <img src="{{ asset('storage/' . $image->image_path) }}" width="50">
+                            @endforeach
+                        </td>
+                        <td>
+                            <div class="btn btn-sm btn-{{ $product->most_populer ? 'success' : 'secondary' }}">
+                                {{ $product->most_populer ? 'Yes' : 'No' }}
+                            </div>
+
+                        </td>
+                        <td>
+                            <div class="btn btn-sm btn-{{ $product->best_seller ? 'success' : 'secondary' }}">
+                                {{ $product->best_seller ? 'Yes' : 'No' }}
+                            </div>
+                        </td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editProductModal{{ $product->id }}"><i class="bi bi-pencil-fill"></i></button>
+                            <a href="{{ url('admin/restaurant/products/'.$product->id) }}" class="btn btn-primary btn-sm" ><i class="bi bi-eye-fill"></i></a>
+                            {{-- <form action="{{ route('products.destroy', $product->id) }}" method="POST" style="display:inline;">
+                                @csrf @method('DELETE') --}}
+                                <button class="btn btn-danger btn-sm delete-product" data-id="{{ $product->id }}"><i class="bi bi-trash-fill"></i></button>
+                            {{-- </form> --}}
+                        </td>
+                    </tr>
+                    <!-- Edit Product Modal -->
+                    <div class="modal fade" id="editProductModal{{ $product->id }}" tabindex="-1">
+                        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                            <form action="{{ route('products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                @method('PUT')
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5>Edit Product</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <input type="hidden" name="admin_id" value="{{ Auth::guard('admin')->user()->id }}">
+                                                    <label for="name" class="form-label">Product Name</label>
+                                                    <input type="text" class="form-control" id="name" name="name" value="{{ $product->name }}" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="description" class="form-label">Description</label>
+                                                    <textarea class="form-control" id="description" name="description">
+                                                        {{ $product->description }}
+                                                    </textarea>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="category_id" class="form-label">Category</label>
+                                                    <select class="form-control" id="category_id" name="category_id" required>
+                                                        <option value="">Select Category</option>
+                                                        @foreach($categories as $category)
+                                                        <option @if($category->id===$product->category_id) selected @endif value="{{ $category->id }}">{{ $category->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="menu_id" class="form-label">Menu</label>
+                                                    <select class="form-control" id="menu_id" name="menu_id" required>
+                                                        <option value="">Select Menu</option>
+                                                        @foreach($menus as $menu)
+                                                        <option @if($menu->id===$product->menu_id) selected @endif value="{{ $menu->id }}">{{ $menu->name }}</option>
+                                                        @endforeach
+                                                        <!-- Categories dynamically populated here -->
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="city_id" class="form-label">City</label>
+                                                    <select class="form-control" id="city_id" name="city_id" required>
+                                                        <option value="">Select City</option>
+                                                        @foreach($cities as $city)
+                                                        <option @if($city->id===$product->city_id) selected @endif value="{{ $city->id }}">{{ $city->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="price" class="form-label">Price</label>
+                                                    <input type="number" class="form-control" id="price" name="price" value="{{ $product->price }}" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="discount_type" class="form-label">Discount Type</label>
+                                                    <select class="form-control" id="discount_type" name="discount_type">
+                                                        <option @if($product->discount_type==="none") selected @endif value="none">None</option>
+                                                        <option @if($product->discount_type==="fixed") selected @endif value="fixed">Fixed</option>
+                                                        <option @if($product->discount_type==="percentage") selected @endif value="percentage">Percentage</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="discount" class="form-label">Discount</label>
+                                                    <input type="number" class="form-control" id="discount" value="{{ $product->discount }}" name="discount">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="cover_image" class="form-label">Cover Images</label>
+                                                    <input type="file" class="form-control" id="cover_image" name="cover_image">
+                                                    @if($product->image)
+                                                    <img src="{{ asset('storage/' . $product->image) }}" width="50">
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="images" class="form-label">Product Images</label>
+                                                    <input type="file" class="form-control" id="images" name="images[]" multiple>
+                                                    @foreach($product->images as $image)
+                                                    <img src="{{ asset('storage/' . $image->image_path) }}" width="50">
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <label class="form-check-label">
+                                                      <input type="checkbox" class="form-check-input" name="most_populer" id="most_populer" value="1" @if($product->most_populer) checked @endif>
+                                                      most popular
+                                                    </label>
+                                                  </div>
+                                                  <div class="form-check">
+                                                    <label class="form-check-label">
+                                                      <input type="checkbox" class="form-check-input" name="best_seller" id="best_seller" value="1" @if($product->best_seller) checked @endif>
+                                                      Best Seller
+                                                    </label>
+                                                  </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-success">Update Product</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Add Product Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProductModalLabel">Add Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addProductForm" enctype="multipart/form-data">
+                    @csrf
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <input type="hidden" name="admin_id" value="{{ Auth::guard('admin')->user()->id }}">
+                                <label for="name" class="form-label">Product Name</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" name="description"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="category_id" class="form-label">Category</label>
+                                <select class="form-control" id="category_id" name="category_id" required>
+                                    <option value="">Select Category</option>
+                                    @foreach($categories as $category)
+                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="menu_id" class="form-label">Menu</label>
+                                <select class="form-control" id="menu_id" name="menu_id" required>
+                                    <option value="">Select Menu</option>
+                                    @foreach($menus as $menu)
+                                    <option value="{{ $menu->id }}">{{ $menu->name }}</option>
+                                    @endforeach
+                                    <!-- Categories dynamically populated here -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="city_id" class="form-label">City</label>
+                                <select class="form-control" id="city_id" name="city_id" required>
+                                    <option value="">Select City</option>
+                                    @foreach($cities as $city)
+                                    <option value="{{ $city->id }}">{{ $city->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="price" class="form-label">Price</label>
+                                <input type="number" class="form-control" id="price" name="price" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="discount_type" class="form-label">Discount Type</label>
+                                <select class="form-control" id="discount_type" name="discount_type">
+                                    <option value="">None</option>
+                                    <option value="fixed">Fixed</option>
+                                    <option value="percentage">Percentage</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="discount" class="form-label">Discount</label>
+                                <input type="number" class="form-control" id="discount" name="discount">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="cover_image" class="form-label">Cover Images</label>
+                                <input type="file" class="form-control" id="cover_image" name="cover_image">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="images" class="form-label">Product Images</label>
+                                <input type="file" class="form-control" id="images" name="images[]" multiple>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                  <input type="checkbox" class="form-check-input" name="most_populer" id="most_populer" value="1">
+                                  most popular
+                                </label>
+                              </div>
+                              <div class="form-check">
+                                <label class="form-check-label">
+                                  <input type="checkbox" class="form-check-input" name="best_seller" id="best_seller" value="1">
+                                  Best Seller
+                                </label>
+                              </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Product</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+        $(document).on('click', '.delete-product', function() {
+            let productId = $(this).data('id');
+            let row = $('#row-' + productId);
+
+            Swal.fire({
+                title: "Are you sure to delete this product?",
+                text: "This action cannot be undone!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ route('products.destroy', '') }}/" + productId,
+                        type: "DELETE",
+                        data: {
+                            _token: "{{ csrf_token() }}"
+                        },
+                        success: function(response) {
+                            Swal.fire("Deleted!", response.success, "success");
+                            row.remove();
+                            location.reload();
+                        },
+                        error: function() {
+                            Swal.fire("Error!", "Something went wrong.", "error");
+                        }
+                    });
+                }
+            });
+        });
+    $(document).ready(function() {
+        $('#addProductForm').submit(function(e) {
+            e.preventDefault();
+            let formData = new FormData(this);
+            $.ajax({
+                url: "{{ route('products.store') }}",
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    $('#addProductModal').modal('hide');
+                    location.reload();
+                },
+                error: function(error) {
+                    alert('Error adding product!');
+                }
+            });
+        });
+    });
+</script>
+
+
+@endsection
