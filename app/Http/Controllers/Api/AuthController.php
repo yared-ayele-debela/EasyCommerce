@@ -29,7 +29,7 @@ class AuthController extends Controller
      *         description="Successful login",
      *         @OA\JsonContent(
      *             @OA\Property(property="token", type="string"),
-     *             @OA\Property(property="user", ref="#/components/schemas/User")
+     *             @OA\Property(property="user")
      *         )
      *     ),
      *     @OA\Response(response=401, description="Invalid credentials"),
@@ -78,7 +78,7 @@ class AuthController extends Controller
      *         description="Successful registration",
      *         @OA\JsonContent(
      *             @OA\Property(property="token", type="string"),
-     *             @OA\Property(property="user", ref="#/components/schemas/User")
+     *             @OA\Property(property="user")
      *         )
      *     ),
      *     @OA\Response(response=500, description="Server error")

@@ -13,7 +13,14 @@ use App\Http\Controllers\Api\WishlistController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\AddressController;
 use App\Http\Controllers\Api\UserProfileController;
-
+// ================================
+use App\Http\Controllers\Api\FoodController;
+use App\Http\Controllers\Api\RestaurantCategoryController;
+use App\Http\Controllers\Api\RestaurantOrderController;
+use App\Http\Controllers\Api\RestaurantController;
+use App\Http\Controllers\Api\DeliveryAddressController;
+use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\DashboardController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -115,4 +122,38 @@ Route::prefix('addresses')->middleware('auth:sanctum')->group(function () {
 Route::prefix('user')->middleware('auth:sanctum')->group(function () {
     Route::get('profile', [UserProfileController::class, 'profile']);
     Route::post('update', [UserProfileController::class, 'update']);
+});
+
+// ================================Restaurant========
+
+// Guest Routes (Accessible without authentication)
+Route::get('/foods', [FoodController::class, 'index']);
+Route::get('/foods/special-offers', [FoodController::class, 'specialOffers']);
+Route::get('/categories', [CategoryController::class, 'index']);
+Route::get('/restaurants/nearby', [RestaurantController::class, 'nearbyRestaurants']);
+
+// Authentication
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+
+// Protected Routes (Require Authentication)
+Route::middleware('auth:sanctum')->group(function () {
+
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index']);
+
+    // Orders
+    Route::get('/orders/running', [RestaurantOrderController::class, 'runningOrders']);
+    Route::get('/orders/requests', [RestaurantOrderController::class, 'orderRequests']);
+    Route::post('/orders', [RestaurantOrderController::class, 'store']);
+
+    // Notifications
+    Route::get('/notifications', [NotificationController::class, 'index']);
+
+    // Delivery Addresses
+    Route::get('/delivery-addresses', [DeliveryAddressController::class, 'index']);
+    Route::post('/delivery-addresses', [DeliveryAddressController::class, 'store']);
+
+    // Logout
+    Route::post('/logout', [AuthController::class, 'logout']);
 });
