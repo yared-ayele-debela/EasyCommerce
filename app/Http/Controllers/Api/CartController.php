@@ -6,8 +6,16 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
+
+/**
+ * @OA\Tag(
+ *     name="Products",
+ *     description="API Endpoints for managing products"
+ * )
+ */
 class CartController extends Controller
 {
+    
     /**
      * @OA\Get(
      *     path="/api/cart",
@@ -26,6 +34,8 @@ class CartController extends Controller
             return response()->json(['success' => false, 'message' => 'Failed to fetch cart items'], 500);
         }
     }
+
+    
 
     /**
      * @OA\Post(
@@ -61,6 +71,8 @@ class CartController extends Controller
         }
     }
 
+   
+
     /**
      * @OA\Post(
      *     path="/api/cart/remove",
@@ -93,6 +105,7 @@ class CartController extends Controller
         }
     }
 
+    
     /**
      * @OA\Post(
      *     path="/api/cart/update",
@@ -126,4 +139,6 @@ class CartController extends Controller
             return response()->json(['success' => false, 'message' => 'Failed to update cart item'], 500);
         }
     }
+
+  
 }

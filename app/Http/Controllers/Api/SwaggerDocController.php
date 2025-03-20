@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+// use App\Http\Controllers\Controller;
 
 
-class SwaggerDocController extends Controller
-{
+// class SwaggerDocController extends Controller
+// {
     /**
      * @OA\Tag(name="Products", description="Product management API")
      * @OA\Tag(name="Categories", description="Product category management")
@@ -196,4 +196,4 @@ class SwaggerDocController extends Controller
      *     @OA\Response(response=200, description="List of restaurants")
      * )
      */
-}
+// }

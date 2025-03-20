@@ -5,9 +5,29 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Tag(
+ *     name="Products",
+ *     description="API Endpoints for managing products"
+ * )
+ */
 class ProductController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/api/products/deal-of-the-day",
+     *     summary="Get deal of the day products",
+     *     tags={"Products"},
+     *     operationId="getDealOfTheDayProducts",
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of deal of the day products retrieved successfully"
+     *     ),
+     *     @OA\Response(response=500, description="Server error")
+     * )
+     */
     public function dealOfTheDay()
     {
         try {
@@ -18,6 +38,19 @@ class ProductController extends Controller
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/products/trending",
+     *     summary="Get trending products",
+     *     tags={"Products"},
+     *     operationId="getTrendingProducts",
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of trending products retrieved successfully"
+     *     ),
+     *     @OA\Response(response=500, description="Server error")
+     * )
+     */
     public function trending()
     {
         try {
@@ -28,6 +61,19 @@ class ProductController extends Controller
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/products/latest",
+     *     summary="Get latest products",
+     *     tags={"Products"},
+     *     operationId="getLatestProducts",
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of latest products retrieved successfully"
+     *     ),
+     *     @OA\Response(response=500, description="Server error")
+     * )
+     */
     public function latest()
     {
         try {
@@ -38,6 +84,19 @@ class ProductController extends Controller
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/products/new-arrivals",
+     *     summary="Get new arrival products",
+     *     tags={"Products"},
+     *     operationId="getNewArrivals",
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of new arrival products retrieved successfully"
+     *     ),
+     *     @OA\Response(response=500, description="Server error")
+     * )
+     */
     public function newArrivals()
     {
         try {
@@ -48,6 +107,19 @@ class ProductController extends Controller
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/products/sponsored",
+     *     summary="Get sponsored products",
+     *     tags={"Products"},
+     *     operationId="getSponsoredProducts",
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of sponsored products retrieved successfully"
+     *     ),
+     *     @OA\Response(response=500, description="Server error")
+     * )
+     */
     public function sponsored()
     {
         try {
@@ -58,6 +130,27 @@ class ProductController extends Controller
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/products/{id}",
+     *     summary="Get product details",
+     *     tags={"Products"},
+     *     operationId="getProductDetail",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Product ID",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Product details retrieved successfully"
+     *     ),
+     *     @OA\Response(response=404, description="Product not found"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
+     */
     public function detail($id)
     {
         try {
@@ -70,3 +163,5 @@ class ProductController extends Controller
         }
     }
 }
+
+
