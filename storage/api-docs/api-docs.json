@@ -382,13 +382,13 @@
                 }
             }
         },
-        "/api/user/register": {
+        "/api/auth/user/register": {
             "post": {
                 "tags": [
                     "Authentication"
                 ],
                 "summary": "User registration",
-                "operationId": "23a5a539168424f6bcf1d0ed3ef41c30",
+                "operationId": "f4ba0a31e8df3ddf8917abd23cc892de",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -448,13 +448,13 @@
                 }
             }
         },
-        "/api/user/login": {
+        "/api/auth/user/login": {
             "post": {
                 "tags": [
                     "Authentication"
                 ],
                 "summary": "User login",
-                "operationId": "85d36953ec9e3353402bc35c8b94df7e",
+                "operationId": "a85164caca71750a04ed8228be0a3087",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -506,13 +506,13 @@
                 }
             }
         },
-        "/api/user/forgot-password": {
+        "/api/auth/user/forgot-password": {
             "post": {
                 "tags": [
                     "Authentication"
                 ],
                 "summary": "Request password reset for user",
-                "operationId": "825209465968b278dbb486c65e85d35a",
+                "operationId": "d9ce8fb7eae3aad24d1bd83c1d0c297f",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -555,13 +555,13 @@
                 }
             }
         },
-        "/api/user/reset-password": {
+        "/api/auth/user/reset-password": {
             "post": {
                 "tags": [
                     "Authentication"
                 ],
                 "summary": "Reset user password",
-                "operationId": "55c53752c2ea29b9edea3170188d7542",
+                "operationId": "1924a7189775e3220134fa8543022d1b",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -610,13 +610,13 @@
                 }
             }
         },
-        "/api/restaurant/register": {
+        "/api/auth/restaurant/register": {
             "post": {
                 "tags": [
                     "Authentication"
                 ],
                 "summary": "Restaurant registration",
-                "operationId": "ecde61d0e499107daa925d0ccc6f2375",
+                "operationId": "758c0d08d1454ba9121f408125a14b8f",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -680,13 +680,13 @@
                 }
             }
         },
-        "/api/restaurant/login": {
+        "/api/auth/restaurant/login": {
             "post": {
                 "tags": [
                     "Authentication"
                 ],
                 "summary": "Restaurant login",
-                "operationId": "dd6339ebb017bdf975d97b6e6e7e2e9c",
+                "operationId": "1638f2acd0206878af9fa50e7349c7b9",
                 "requestBody": {
                     "required": true,
                     "content": {
