@@ -58,7 +58,7 @@ Route::prefix('auth')->group(function () {
 
     // User Routes
     Route::post('user/register', [AuthController::class, 'Register']);
-    Route::post('user/login', [AuthController::class, 'ogin']);
+    Route::post('user/login', [AuthController::class, 'Login']);
     Route::post('user/forget-password', [AuthController::class, 'forgetPassword']);
     Route::post('user/reset-password', [AuthController::class, 'resetPassword']);
     
