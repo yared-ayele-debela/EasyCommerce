@@ -54,17 +54,17 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 // });
 
-Route::prefix('api')->group(function () {
+Route::prefix('auth')->group(function () {
 
     // User Routes
-    Route::post('user/register', [AuthController::class, 'userRegister']);
-    Route::post('user/login', [AuthController::class, 'userLogin']);
+    Route::post('user/register', [AuthController::class, 'Register']);
+    Route::post('user/login', [AuthController::class, 'ogin']);
     Route::post('user/forget-password', [AuthController::class, 'forgetPassword']);
     Route::post('user/reset-password', [AuthController::class, 'resetPassword']);
     
     // Restaurant Routes
-    Route::post('restaurant/register', [AuthController::class, 'restaurantRegister']);
-    Route::post('restaurant/login', [AuthController::class, 'restaurantLogin']);
+    Route::post('restaurant/register', [AuthController::class, 'registerRestaurant']);
+    Route::post('restaurant/login', [AuthController::class, 'loginRestaurant']);
     
     // Logout Route (for both user and restaurant)
     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');

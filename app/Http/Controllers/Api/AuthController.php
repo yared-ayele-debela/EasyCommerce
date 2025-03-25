@@ -13,7 +13,7 @@ class AuthController extends Controller
 {
     /**
      * @OA\Post(
-     *     path="/api/user/register",
+     *     path="/api/auth/user/register",
      *     summary="User registration",
      *     tags={"Authentication"},
      *     @OA\RequestBody(
@@ -64,7 +64,7 @@ class AuthController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/user/login",
+     *     path="/api/auth/user/login",
      *     summary="User login",
      *     tags={"Authentication"},
      *     @OA\RequestBody(
@@ -120,7 +120,7 @@ class AuthController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/user/forgot-password",
+     *     path="/api/auth/user/forgot-password",
      *     summary="Request password reset for user",
      *     tags={"Authentication"},
      *     @OA\RequestBody(
@@ -149,7 +149,7 @@ class AuthController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/user/reset-password",
+     *     path="/api/auth/user/reset-password",
      *     summary="Reset user password",
      *     tags={"Authentication"},
      *     @OA\RequestBody(
@@ -181,7 +181,7 @@ class AuthController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/restaurant/register",
+     *     path="/api/auth/restaurant/register",
      *     summary="Restaurant registration",
      *     tags={"Authentication"},
      *     @OA\RequestBody(
@@ -235,7 +235,7 @@ class AuthController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/restaurant/login",
+     *     path="/api/auth/restaurant/login",
      *     summary="Restaurant login",
      *     tags={"Authentication"},
      *     @OA\RequestBody(
