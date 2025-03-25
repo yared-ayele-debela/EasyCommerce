@@ -395,17 +395,17 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "full_name",
-                                    "phone",
+                                    "name",
+                                    "mobile",
                                     "email",
                                     "password"
                                 ],
                                 "properties": {
-                                    "full_name": {
+                                    "name": {
                                         "type": "string",
                                         "example": "John Doe"
                                     },
-                                    "phone": {
+                                    "mobile": {
                                         "type": "string",
                                         "example": "1234567890"
                                     },

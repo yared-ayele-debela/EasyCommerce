@@ -19,9 +19,9 @@ class AuthController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"full_name", "phone", "email", "password"},
-     *             @OA\Property(property="full_name", type="string", example="John Doe"),
-     *             @OA\Property(property="phone", type="string", example="1234567890"),
+     *             required={"name", "mobile", "email", "password"},
+     *             @OA\Property(property="name", type="string", example="John Doe"),
+     *             @OA\Property(property="mobile", type="string", example="1234567890"),
      *             @OA\Property(property="email", type="string", format="email", example="user@example.com"),
      *             @OA\Property(property="password", type="string", format="password", example="password123")
      *         )
@@ -41,15 +41,15 @@ class AuthController extends Controller
     {
         try {
             $request->validate([
-                'full_name' => 'required|string|max:255',
-                'phone' => 'required|string|unique:users',
+                'name' => 'required|string|max:255',
+                'mobile' => 'required|string|unique:users',
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|min:8',
             ]);
 
             $user = User::create([
-                'full_name' => $request->full_name,
-                'phone' => $request->phone,
+                'name' => $request->name,
+                'mobile' => $request->mobile,
                 'email' => $request->email,
                 'password' => bcrypt($request->password),
             ]);
