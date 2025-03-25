@@ -42,33 +42,89 @@
                         "description": "Failed to fetch addresses"
                     }
                 }
-            },
+            }
+        },
+        "/addresses": {
             "post": {
                 "tags": [
                     "Addresses"
                 ],
                 "summary": "Add a new address",
-                "operationId": "fe773352a98a6fcc33aec1e36ca9a87e",
+                "operationId": "2d2037f5f912e4592c5c6195e4f861eb",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
+                                "required": [
+                                    "street",
+                                    "city",
+                                    "state",
+                                    "zip_code",
+                                    "country",
+                                    "lat",
+                                    "lng",
+                                    "address_name",
+                                    "contact_name",
+                                    "post_code",
+                                    "phone",
+                                    "label"
+                                ],
                                 "properties": {
                                     "street": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "123 Main St"
                                     },
                                     "city": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "Los Angeles"
                                     },
                                     "state": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "CA"
                                     },
                                     "zip_code": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "90001"
                                     },
                                     "country": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "USA"
+                                    },
+                                    "lat": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 34.0522
+                                    },
+                                    "lng": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": -118.2437
+                                    },
+                                    "address_name": {
+                                        "type": "string",
+                                        "example": "My Home"
+                                    },
+                                    "contact_name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "post_code": {
+                                        "type": "string",
+                                        "example": "90001"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "+1234567890"
+                                    },
+                                    "label": {
+                                        "type": "string",
+                                        "enum": [
+                                            "home",
+                                            "work",
+                                            "other"
+                                        ],
+                                        "example": "home"
                                     }
                                 },
                                 "type": "object"
@@ -84,10 +140,12 @@
                                 "schema": {
                                     "properties": {
                                         "success": {
-                                            "type": "boolean"
+                                            "type": "boolean",
+                                            "example": true
                                         },
                                         "message": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "example": "Address added successfully"
                                         },
                                         "data": {
                                             "type": "object"
@@ -99,23 +157,42 @@
                         }
                     },
                     "500": {
-                        "description": "Failed to add address"
+                        "description": "Failed to add address",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to add address"
+                                        },
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
         },
-        "/api/addresses/{id}": {
+        "/addresses/{id}": {
             "put": {
                 "tags": [
                     "Addresses"
                 ],
-                "summary": "Update an existing address",
-                "operationId": "b4967e4140f305290dbde0982a3fc7d0",
+                "summary": "Update an address",
+                "operationId": "cde500c0467604d32ff9cb7f92390ba6",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID of the address to update",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -129,19 +206,59 @@
                             "schema": {
                                 "properties": {
                                     "street": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "123 Main St"
                                     },
                                     "city": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "Los Angeles"
                                     },
                                     "state": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "CA"
                                     },
                                     "zip_code": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "90001"
                                     },
                                     "country": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "USA"
+                                    },
+                                    "lat": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 34.0522
+                                    },
+                                    "lng": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": -118.2437
+                                    },
+                                    "address_name": {
+                                        "type": "string",
+                                        "example": "My Home"
+                                    },
+                                    "contact_name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "post_code": {
+                                        "type": "string",
+                                        "example": "90001"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "+1234567890"
+                                    },
+                                    "label": {
+                                        "type": "string",
+                                        "enum": [
+                                            "home",
+                                            "work",
+                                            "other"
+                                        ],
+                                        "example": "home"
                                     }
                                 },
                                 "type": "object"
@@ -157,10 +274,12 @@
                                 "schema": {
                                     "properties": {
                                         "success": {
-                                            "type": "boolean"
+                                            "type": "boolean",
+                                            "example": true
                                         },
                                         "message": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "example": "Address updated successfully"
                                         },
                                         "data": {
                                             "type": "object"
@@ -172,13 +291,52 @@
                         }
                     },
                     "404": {
-                        "description": "Address not found"
+                        "description": "Address not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Address not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "500": {
-                        "description": "Failed to update address"
+                        "description": "Failed to update address",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to update address"
+                                        },
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
-            },
+            }
+        },
+        "/api/addresses/{id}": {
             "delete": {
                 "tags": [
                     "Addresses"
@@ -224,86 +382,32 @@
                 }
             }
         },
-        "/api/login": {
-            "post": {
-                "tags": [
-                    "Authentication"
-                ],
-                "summary": "User login",
-                "operationId": "222b2625838e3c57e017987f73598fda",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "email",
-                                    "password"
-                                ],
-                                "properties": {
-                                    "email": {
-                                        "type": "string",
-                                        "format": "email",
-                                        "example": "user@example.com"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "format": "password",
-                                        "example": "password123"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful login",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "token": {
-                                            "type": "string"
-                                        },
-                                        "user": {}
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Invalid credentials"
-                    },
-                    "500": {
-                        "description": "Server error"
-                    }
-                }
-            }
-        },
-        "/api/register": {
+        "/api/user/register": {
             "post": {
                 "tags": [
                     "Authentication"
                 ],
                 "summary": "User registration",
-                "operationId": "8e4e3cb7b46126f4696379d3c7eeb4ad",
+                "operationId": "23a5a539168424f6bcf1d0ed3ef41c30",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "name",
+                                    "full_name",
+                                    "phone",
                                     "email",
                                     "password"
                                 ],
                                 "properties": {
-                                    "name": {
+                                    "full_name": {
                                         "type": "string",
                                         "example": "John Doe"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "1234567890"
                                     },
                                     "email": {
                                         "type": "string",
@@ -344,23 +448,100 @@
                 }
             }
         },
-        "/api/logout": {
+        "/api/user/login": {
             "post": {
                 "tags": [
                     "Authentication"
                 ],
-                "summary": "User logout",
-                "operationId": "ad65cbbd4e9f201619eae184a5961a98",
+                "summary": "User login",
+                "operationId": "85d36953ec9e3353402bc35c8b94df7e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "phone_or_email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "phone_or_email": {
+                                        "type": "string",
+                                        "example": "user@example.com or 1234567890"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
-                        "description": "Successful logout",
+                        "description": "Successful login",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string"
+                                        },
+                                        "user": {}
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/api/user/forgot-password": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Request password reset for user",
+                "operationId": "825209465968b278dbb486c65e85d35a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "phone"
+                                ],
+                                "properties": {
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "1234567890"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OTP sent for password reset",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Logged out successfully"
+                                            "example": "OTP sent successfully"
                                         }
                                     },
                                     "type": "object"
@@ -371,12 +552,190 @@
                     "500": {
                         "description": "Server error"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
+                }
+            }
+        },
+        "/api/user/reset-password": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Reset user password",
+                "operationId": "55c53752c2ea29b9edea3170188d7542",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "otp",
+                                    "new_password"
+                                ],
+                                "properties": {
+                                    "otp": {
+                                        "type": "string",
+                                        "example": "123456"
+                                    },
+                                    "new_password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newpassword123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
                     }
-                ]
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password reset successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password reset successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/api/restaurant/register": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Restaurant registration",
+                "operationId": "ecde61d0e499107daa925d0ccc6f2375",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "restaurant_name",
+                                    "phone",
+                                    "password",
+                                    "working_hour",
+                                    "chosen_bank"
+                                ],
+                                "properties": {
+                                    "restaurant_name": {
+                                        "type": "string",
+                                        "example": "Pizza Palace"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "1234567890"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    },
+                                    "working_hour": {
+                                        "type": "string",
+                                        "example": "9 AM - 9 PM"
+                                    },
+                                    "chosen_bank": {
+                                        "type": "string",
+                                        "example": "Bank of XYZ"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful registration",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string"
+                                        },
+                                        "restaurant": {}
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/api/restaurant/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Restaurant login",
+                "operationId": "dd6339ebb017bdf975d97b6e6e7e2e9c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "phone",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "1234567890"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful login",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string"
+                                        },
+                                        "restaurant": {}
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
             }
         },
         "/api/cart": {

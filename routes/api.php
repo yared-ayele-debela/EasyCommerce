@@ -48,12 +48,27 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // Authentication routes
-Route::prefix('auth')->group(function () {
-    Route::post('login', [AuthController::class, 'login']);
-    Route::post('register', [AuthController::class, 'register']);
+// Route::prefix('auth')->group(function () {
+//     Route::post('login', [AuthController::class, 'login']);
+//     Route::post('register', [AuthController::class, 'register']);
+//     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+// });
+
+Route::prefix('api')->group(function () {
+
+    // User Routes
+    Route::post('user/register', [AuthController::class, 'userRegister']);
+    Route::post('user/login', [AuthController::class, 'userLogin']);
+    Route::post('user/forget-password', [AuthController::class, 'forgetPassword']);
+    Route::post('user/reset-password', [AuthController::class, 'resetPassword']);
+    
+    // Restaurant Routes
+    Route::post('restaurant/register', [AuthController::class, 'restaurantRegister']);
+    Route::post('restaurant/login', [AuthController::class, 'restaurantLogin']);
+    
+    // Logout Route (for both user and restaurant)
     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 });
-
 // Category routes
 Route::prefix('categories')->group(function () {
     Route::get('/', [CategoryController::class, 'index']);

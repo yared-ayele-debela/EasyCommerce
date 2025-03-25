@@ -51,32 +51,44 @@ class AddressController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/addresses",
+     *     path="/addresses",
      *     summary="Add a new address",
      *     tags={"Addresses"},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             @OA\Property(property="street", type="string"),
-     *             @OA\Property(property="city", type="string"),
-     *             @OA\Property(property="state", type="string"),
-     *             @OA\Property(property="zip_code", type="string"),
-     *             @OA\Property(property="country", type="string")
+     *             required={"street", "city", "state", "zip_code", "country", "lat", "lng", "address_name", "contact_name", "post_code", "phone", "label"},
+     *             @OA\Property(property="street", type="string", example="123 Main St"),
+     *             @OA\Property(property="city", type="string", example="Los Angeles"),
+     *             @OA\Property(property="state", type="string", example="CA"),
+     *             @OA\Property(property="zip_code", type="string", example="90001"),
+     *             @OA\Property(property="country", type="string", example="USA"),
+     *             @OA\Property(property="lat", type="number", format="float", example=34.0522),
+     *             @OA\Property(property="lng", type="number", format="float", example=-118.2437),
+     *             @OA\Property(property="address_name", type="string", example="My Home"),
+     *             @OA\Property(property="contact_name", type="string", example="John Doe"),
+     *             @OA\Property(property="post_code", type="string", example="90001"),
+     *             @OA\Property(property="phone", type="string", example="+1234567890"),
+     *             @OA\Property(property="label", type="string", enum={"home", "work", "other"}, example="home")
      *         )
      *     ),
      *     @OA\Response(
      *         response=201,
      *         description="Address added successfully",
      *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="success", type="boolean"),
-     *             @OA\Property(property="message", type="string"),
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Address added successfully"),
      *             @OA\Property(property="data", type="object")
      *         )
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Failed to add address"
+     *         description="Failed to add address",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Failed to add address"),
+     *             @OA\Property(property="error", type="string")
+     *         )
      *     )
      * )
      */
@@ -89,55 +101,84 @@ class AddressController extends Controller
                 'state' => 'required|string|max:255',
                 'zip_code' => 'required|string|max:20',
                 'country' => 'required|string|max:255',
+                'lat' => 'required|numeric',
+                'lng' => 'required|numeric',
+                'address_name' => 'required|string|max:255',
+                'contact_name' => 'required|string|max:255',
+                'post_code' => 'required|string|max:20',
+                'phone' => 'required|string|max:20',
+                'label' => 'required|in:home,work,other',
             ]);
 
             $address = Address::create($validatedData);
 
-            return response()->json(['success' => true, 'message' => 'Address added successfully', 'data' => $address], 201);
+            return response()->json([
+                'success' => true, 
+                'message' => 'Address added successfully', 
+                'data' => $address
+            ], 201);
         } catch (Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Failed to add address', 'error' => $e->getMessage()], 500);
+            return response()->json([
+                'success' => false, 
+                'message' => 'Failed to add address', 
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
     /**
      * @OA\Put(
-     *     path="/api/addresses/{id}",
-     *     summary="Update an existing address",
+     *     path="/addresses/{id}",
+     *     summary="Update an address",
      *     tags={"Addresses"},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="ID of the address to update",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             @OA\Property(property="street", type="string"),
-     *             @OA\Property(property="city", type="string"),
-     *             @OA\Property(property="state", type="string"),
-     *             @OA\Property(property="zip_code", type="string"),
-     *             @OA\Property(property="country", type="string")
+     *             @OA\Property(property="street", type="string", example="123 Main St"),
+     *             @OA\Property(property="city", type="string", example="Los Angeles"),
+     *             @OA\Property(property="state", type="string", example="CA"),
+     *             @OA\Property(property="zip_code", type="string", example="90001"),
+     *             @OA\Property(property="country", type="string", example="USA"),
+     *             @OA\Property(property="lat", type="number", format="float", example=34.0522),
+     *             @OA\Property(property="lng", type="number", format="float", example=-118.2437),
+     *             @OA\Property(property="address_name", type="string", example="My Home"),
+     *             @OA\Property(property="contact_name", type="string", example="John Doe"),
+     *             @OA\Property(property="post_code", type="string", example="90001"),
+     *             @OA\Property(property="phone", type="string", example="+1234567890"),
+     *             @OA\Property(property="label", type="string", enum={"home", "work", "other"}, example="home")
      *         )
      *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Address updated successfully",
      *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="success", type="boolean"),
-     *             @OA\Property(property="message", type="string"),
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Address updated successfully"),
      *             @OA\Property(property="data", type="object")
      *         )
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Address not found"
+     *         description="Address not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Address not found")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Failed to update address"
+     *         description="Failed to update address",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Failed to update address"),
+     *             @OA\Property(property="error", type="string")
+     *         )
      *     )
      * )
      */
@@ -156,6 +197,13 @@ class AddressController extends Controller
                 'state' => 'sometimes|string|max:255',
                 'zip_code' => 'sometimes|string|max:20',
                 'country' => 'sometimes|string|max:255',
+                'lat' => 'sometimes|numeric',
+                'lng' => 'sometimes|numeric',
+                'address_name' => 'sometimes|string|max:255',
+                'contact_name' => 'sometimes|string|max:255',
+                'post_code' => 'sometimes|string|max:20',
+                'phone' => 'sometimes|string|max:20',
+                'label' => 'sometimes|in:home,work,other',
             ]);
 
             $address->update($validatedData);
