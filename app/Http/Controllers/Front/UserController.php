@@ -29,7 +29,7 @@ class UserController extends Controller
         try {
             $appsettings = AppSetting::all()->toArray();
             $cms_pages = CmsPage::get()->toArray();
-            return view('NewFrontEndPage.users.login_register', compact('appsettings', 'cms_pages'));
+            return view('auth.login_register', compact('appsettings', 'cms_pages'));
         } catch (\Exception $e) {
             // Log or handle the exception as needed
             Alert::toast('something is wrong!!', 'error');
@@ -50,9 +50,8 @@ class UserController extends Controller
                 'name' => 'required|string',
                 'phone' => 'required|string',
                 'emails' => 'required|',
-                'password' => 'required|min:8',
+                'passwords' => 'required|min:8|confirmed',
             ]);
-            // dd($data);
 
             $email = $request->input('emails');
             $phone = $request->input('phone');
@@ -67,8 +66,6 @@ class UserController extends Controller
             }
 
             if (User::where('email', $email)->exists()) {
-                // Email already exists, display a message or throw an exception
-                // dd($email);die;
                 Alert::toast('Email already exists', 'error');
                 return redirect()->back();
             }
@@ -76,11 +73,11 @@ class UserController extends Controller
             $user->name = $request->input('name');
             $user->mobile = $request->input('mobile');
             $user->email = $request->input('emails');
-            $user->password = bcrypt($request->input('password'));
+            $user->password = bcrypt($request->input('passwords'));
             $user->status = 1;
             $user->save();
-            $email_template = EmailTemplate::first();
 
+            // $email_template = EmailTemplate::first();
             //Acitve the user only when user confirm his email account
             // $email = $data['emails'];
             // $messageData = [
@@ -131,14 +128,14 @@ class UserController extends Controller
 
             $validator = Validator::make($data, [
                 'email' => 'required|email|max:150|exists:users',
-                'password' => 'required|min:6', // Minimum password length is 6 characters (you can adjust this as needed)
+                'passwords' => 'required|min:6', // Minimum password length is 6 characters (you can adjust this as needed)
             ]);
 
             if ($validator->fails()) {
 
                 return redirect()->back()->withErrors($validator)->withInput();
             } else {
-                if (Auth::attempt(['email' => $data['email'], 'password' => $data['password']])) {
+                if (Auth::attempt(['email' => $data['email'], 'password' => $data['passwords']])) {
                     $id=Auth::user()->id;
                     $user=User::where('id',$id)->first();
                     if ($user->status == 0) {
@@ -251,7 +248,7 @@ class UserController extends Controller
                     return response()->json(['type' => 'success', 'message' => 'New Password sent to your registered email.']);
                 }
             } else {
-                return view('NewFrontEndPage.users.forget_password', compact('cms_pages', 'appsettings'));
+                return view('auth.forget_password', compact('cms_pages', 'appsettings'));
             }
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Laravel's built-in validation exception

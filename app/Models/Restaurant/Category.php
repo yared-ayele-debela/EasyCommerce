@@ -25,4 +25,14 @@ class Category extends Model
             $category->slug = Str::slug($category->name);
         });
     }
+
+
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'category_id');
+    }
+
+    public function subcategories(){
+        return $this->hasMany(Subcategory::class, 'category_id');
+    }
 }

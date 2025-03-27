@@ -32,6 +32,16 @@
             </li>
             {{-- @endif --}}
             {{-- @if ($user && $user->hasPermissionByRole('view_coupon')) --}}
+            <li class=" {{ request()->is('admin/restaurant/subcategories')?'nav-item active':'' }}">
+                <a class="nav-link  {{request()->is('admin/restaurant/subcategories')}}" data-bs-target="#subcategories-nav" data-bs-toggle="collapse" href="javascripit:void(0);" aria-expanded="false"> <i class="bi bi-tag-fill"></i><span>Sub Category Managements</span><i class="bi bi-chevron-down  ms-auto"></i> </a>
+                <ul id="subcategories-nav" class="nav-content collapse {{ request()->is('admin/restaurant/subcategories')?'show':'' }} " data-bs-parent="" style="">
+                    {{-- @if ($user && $user->hasPermissionByRole('view_coupon')) --}}
+                    <li> <a href="{{ url('admin/restaurant/subcategories') }}" class=" {{ request()->is('admin/restaurant/subcategories')?' nav-link active':'' }}"> <i class="bi bi-circle"></i><span>List of Sub Categories</span> </a></li>
+                    {{-- @endif --}}
+                </ul>
+            </li>
+            {{-- @endif --}}
+            {{-- @if ($user && $user->hasPermissionByRole('view_coupon')) --}}
             <li class=" {{ request()->is('admin/restaurant/menus')?'nav-item active':'' }}">
                 <a class="nav-link  {{request()->is('admin/restaurant/menus')}}" data-bs-target="#menus-nav" data-bs-toggle="collapse" href="javascripit:void(0);" aria-expanded="false"> <i class="bi bi-list-check"></i><span>Menus Managements</span><i class="bi bi-chevron-down  ms-auto"></i> </a>
                 <ul id="menus-nav" class="nav-content collapse {{ request()->is('admin/restaurant/menus')?'show':'' }} " data-bs-parent="" style="">
@@ -61,7 +71,7 @@
                 </ul>
             </li>
             {{-- @endif --}}
-         
+
 
             {{-- @if ($user && $user->hasPermissionByRole('view_coupon')) --}}
             <li class=" {{ request()->is('admin/restaurant/products')?'nav-item active':'' }}">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
+use App\Models\Country;
 use App\Models\State;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,7 +20,7 @@ class StateController extends Controller
             if (!$user || !$user->hasPermissionByRole('view state')) {
                 return view('admin.errors.unauthorized');
             }
-            $states = State::all();
+            $states = State::with('country')->get();
             $appsettings = AppSetting::all()->toArray();
             return view('admin.state.index', compact('states', 'appsettings'));
         } catch (\Exception $e) {
@@ -36,7 +37,8 @@ class StateController extends Controller
                 return view('admin.errors.unauthorized');
             }
             $appsettings = AppSetting::all()->toArray();
-            return view('admin.state.create', compact('appsettings'));
+            $countries=Country::all();
+            return view('admin.state.create', compact('appsettings','countries'));
         } catch (\Exception $e) {
             Alert::toast('something is wrong!!', 'error');
             return redirect()->back();
@@ -60,6 +62,7 @@ class StateController extends Controller
 
             $state = new State();
             $state->name = $request->input('name');
+            $state->country_id = $request->input('country_id');
             $state->status = 1;
             $state->save();
 
@@ -82,8 +85,9 @@ class StateController extends Controller
                 return view('admin.errors.unauthorized');
             }
             $state = State::find($id);
+            $countries=Country::all();
             $appsettings = AppSetting::all()->toArray();
-            return view('admin.state.edit', compact('state', 'appsettings'));
+            return view('admin.state.edit', compact('state', 'appsettings','countries'));
         } catch (\Exception $e) {
             Alert::toast('something is wrong!!', 'error');
             return redirect()->back();
@@ -102,11 +106,12 @@ class StateController extends Controller
                 return redirect()->back();
             }
             $request->validate([
-                'name' => 'required|unique:states'
+                'name' => 'required'
             ]);
 
             $state = State::find($request->input('id'));
             $state->name = $request->input('name');
+            $state->country_id = $request->input('country_id');
             $state->save();
 
             Alert::toast('State has been updated', 'success');

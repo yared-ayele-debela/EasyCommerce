@@ -445,6 +445,17 @@ $user = Auth::guard('admin')->user();
             updateCoordinates(lat, lng);
         });
 
+        var mapModal = document.getElementById('addRestaurantModal');
+        mapModal.addEventListener('shown.bs.modal', function () {
+            if (!map) {
+                initMap(); // Initialize map only once
+            } else {
+                setTimeout(() => {
+                    map.invalidateSize();
+                }, 200);
+            }
+        });
+      
         // Update coordinates when dragging marker
         marker.on('dragend', function (e) {
             var position = marker.getLatLng();

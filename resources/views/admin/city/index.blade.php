@@ -26,6 +26,7 @@ $user = Auth::guard('admin')->user();
                             <tr>
                                 <th scope="col">ID</th>
                                 <th scope="col">Name</th>
+                                <th scope="col">State</th>
                                 <th scope="col">Status</th>
                                 <th scope="col">Action</th>
                             </tr>
@@ -35,6 +36,7 @@ $user = Auth::guard('admin')->user();
                             <tr>
                                 <td>{{ $city->id }}</td>
                                 <td>{{ $city->name }}</td>
+                                <td>{{ $city->states ? $city->states->name : "" }}</td>
                                 <td>
                                     @if ($user && $user->hasPermissionByRole('edit city'))
                                     @if($city->status==1)
@@ -59,7 +61,7 @@ $user = Auth::guard('admin')->user();
                 </div>
                 {{-- Pagination --}}
                  <div class="pagination-sm">
-                    {!! $cities->links() !!}
+                    {{-- {!! $cities->links() !!} --}}
                 </div>
             </div>
         </div>

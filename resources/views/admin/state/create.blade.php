@@ -34,6 +34,17 @@ $user = Auth::guard('admin')->user();
                     <small class=" text-danger">{{ $message }}</small>
                     @enderror
                 </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="country_id"></label>
+                        <select class="form-control" name="country_id" id="country_id">
+                            @foreach ($countries as $country)
+                            <option value="{{ $country->id }}">{{ $country->country_name }}</option>    
+                            @endforeach              
+                        </select>
+                      </div>
+                </div>
+                
                 <div class="form-group pt-3 ">
                     <input type="submit" class=" btn btn-primary pt-2 pb-2 shadow" value="Save">
                 </div>

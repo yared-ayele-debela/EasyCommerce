@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use App\Models\City;
+use App\Models\State;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -19,7 +20,8 @@ class CityController extends Controller
             if (!$user || !$user->hasPermissionByRole('view city')) {
                 return view('admin.errors.unauthorized');
             }
-            $cities = City::paginate(10);
+            $cities = City::with('states')->get();
+            // dd($cities);
             $appsettings = AppSetting::all()->toArray();
 
             return view('admin.city.index', compact('cities', 'appsettings'));
@@ -37,8 +39,9 @@ class CityController extends Controller
             if (!$user || !$user->hasPermissionByRole('add city')) {
                 return view('admin.errors.unauthorized');
             }
+            $states=State::all();
             $appsettings = AppSetting::all()->toArray();
-            return view('admin.city.create', compact('appsettings'));
+            return view('admin.city.create', compact('appsettings','states'));
         } catch (\Exception $e) {
             // Handle exceptions or errors
             Alert::toast('something is wrong!!', 'error');
@@ -65,6 +68,7 @@ class CityController extends Controller
 
             $city = new City();
             $city->name = $request->input('name');
+            $city->states_id = $request->input('state_id');
             $city->status = 1;
             $city->save();
 
@@ -88,9 +92,10 @@ class CityController extends Controller
                 return view('admin.errors.unauthorized');
             }
             $city = City::find($id);
+            $states=State::all();
             $appsettings = AppSetting::all()->toArray();
 
-            return view('admin.city.edit', compact('city', 'appsettings'));
+            return view('admin.city.edit', compact('city', 'appsettings','states'));
         } catch (\Exception $e) {
             // Handle exceptions or errors
             Alert::toast('something is wrong!!', 'error');
@@ -111,11 +116,12 @@ class CityController extends Controller
                 return redirect()->route('cities'); // You can redirect to an appropriate location
             }
             $request->validate([
-                'name' => 'required|unique:cities'
+                'name' => 'required'
             ]);
 
             $city = City::find($request->input('id'));
             $city->name = $request->input('name');
+            $city->states_id = $request->input('state_id');
             $city->save();
 
             Alert::toast('City has been updated successfully!', 'success');

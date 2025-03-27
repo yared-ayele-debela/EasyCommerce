@@ -8,6 +8,7 @@ use App\Models\Restaurant\City;
 use App\Models\Restaurant\Product;
 use App\Models\Restaurant\ProductImage;
 use App\Models\Restaurant\RestaurantMenu;
+use App\Models\Restaurant\Subcategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -16,11 +17,13 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with('images','city','menu','category')->get();
+        $products = Product::with('images','city','menu','category','subcategory')->get();
+        // dd($products);
         $categories=Category::all();
+        $subcategories=Subcategory::all();
         $menus=RestaurantMenu::all();
         $cities=City::all();
-        return view('restaurant.dashboard.products.index', compact('products','categories','menus','cities'));
+        return view('restaurant.dashboard.products.index', compact('products','categories','menus','cities','subcategories'));
     }
 
     public function show($id){
@@ -36,6 +39,7 @@ class ProductController extends Controller
             'name' => 'required',
             'price' => 'required',
             'category_id' => 'required',
+            'subcategory_id'=>'required',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
@@ -46,6 +50,7 @@ class ProductController extends Controller
             'slug' => Str::slug($request->name),
             'description' => $request->description,
             'category_id' => $request->category_id,
+            'subcategory_id' => $request->subcategory_id,
             'city_id' => $request->city_id,
             'menu_id' => $request->menu_id,
             'code' => $request->code,
@@ -56,6 +61,9 @@ class ProductController extends Controller
             'admin_id' => $request->admin_id,
             'most_populer' => $request->most_populer,
             'best_seller' => $request->best_seller,
+            'is_free' => $request->is_free,
+            'delivery_fee' => $request->delivery_fee,
+            'delivery_time' => $request->delivery_time,
             'is_active' => $request->is_active,
         ]);
 
@@ -88,6 +96,7 @@ class ProductController extends Controller
             'slug' => Str::slug($request->name),
             'description' => $request->description,
             'category_id' => $request->category_id,
+            'subcategory_id' => $request->subcategory_id,
             'city_id' => $request->city_id,
             'menu_id' => $request->menu_id,
             'code' => $request->code,
@@ -97,6 +106,9 @@ class ProductController extends Controller
             'admin_id' => $request->admin_id,
             'most_populer' => $request->most_populer,
             'best_seller' => $request->best_seller,
+            'is_free' => $request->is_free,
+            'delivery_fee' => $request->delivery_fee,
+            'delivery_time' => $request->delivery_time,
             'is_active' => $request->is_active,
         ]);
 

@@ -12,8 +12,11 @@ class Product extends Model
     protected $fillable = [
         'name', 'slug', 'description', 'category_id', 'city_id', 'menu_id', 'code',
         'price', 'discount_type', 'discount', 'image', 'admin_id',
-        'most_populer', 'best_seller', 'is_active'
+        'most_populer', 'best_seller','is_free','delivery_fee','delivery_time', 'is_active'
     ];
+    public function restaurant(){
+        return $this->belongsTo(Restaurant::class);
+    }
 
     public function images()
     {
@@ -22,6 +25,9 @@ class Product extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+    public function subcategory(){
+        return $this->belongsTo(Subcategory::class);
     }
     public function city()
     {
@@ -41,13 +47,13 @@ class Product extends Model
        public function getFinalPrice()
        {
            $finalPrice = $this->price;
-   
+
            if ($this->discount_type == 'percentage') {
                $finalPrice = $this->price - ($this->price * ($this->discount / 100));
            } elseif ($this->discount_type == 'fixed') {
                $finalPrice = $this->price - $this->discount;
            }
-   
+
            return number_format($finalPrice, 2);
        }
 }

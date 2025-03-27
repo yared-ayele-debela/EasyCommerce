@@ -74,6 +74,8 @@ use App\Http\Controllers\Admin\ShippingMethodController;
 use App\Http\Controllers\Admin\ShippingZoneController;
 use App\Http\Controllers\Admin\StateController;
 use App\Http\Controllers\Admin\StockController;
+use App\Http\Controllers\Admin\StreetController;
+use App\Http\Controllers\Admin\SubCityController;
 use App\Http\Controllers\Admin\SubscriptionController;
 use App\Http\Controllers\Admin\TaxController;
 use App\Http\Controllers\Admin\TransactionsController;
@@ -132,6 +134,21 @@ use App\Http\Controllers\Restaurant\Dashboard\ProductSizeController;
 use App\Http\Controllers\Restaurant\Dashboard\RestaurantController;
 use App\Http\Controllers\Restaurant\Dashboard\RestaurantMenuController;
 use App\Http\Controllers\Restaurant\Dashboard\SliderBannerController;
+use App\Http\Controllers\Restaurant\Frontend\CartController;
+use App\Http\Controllers\Restaurant\Frontend\CategoryController as FrontendCategoryController;
+use App\Http\Controllers\Restaurant\Frontend\CheckoutController;
+use App\Http\Controllers\Restaurant\Frontend\FrontendController;
+use App\Http\Controllers\Restaurant\Frontend\ProductController as FrontendProductController;
+use App\Http\Controllers\Restaurant\Frontend\RatingController as FrontendRatingController;
+use App\Http\Controllers\Restaurant\Frontend\RestaurantController as FrontendRestaurantController;
+use App\Http\Controllers\Restaurant\Frontend\SubCategoryController as FrontendSubCategoryController;
+use App\Http\Controllers\Restaurant\Frontend\SuCategoryController;
+use App\Http\Controllers\Restaurant\Frontend\WishController;
+use App\Http\Controllers\UserDeliveryAddressController;
+use App\Models\Restaurant\Product as RestaurantProduct;
+use App\Models\Restaurant\Restaurant;
+use Illuminate\Support\Facades\Auth;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -327,6 +344,10 @@ Route::prefix('admin')->group(function () {
         Route::get('city/delete/{id}', [CityController::class, 'delete'])->name('delete-city');
         Route::get('city/active/{id}', [CityController::class, 'active'])->name('active-city');
         Route::get('city/inactive/{id}', [CityController::class, 'inactive'])->name('inactive-city');
+
+        Route::resource('sub-cities', SubCityController::class);
+        Route::resource('streets', StreetController::class);
+
 
         Route::get('states', [StateController::class, 'index'])->name('states');
         Route::get('state/add', [StateController::class, 'create'])->name('add-state');
@@ -864,7 +885,6 @@ Route::group(['middleware' => 'deliverymen'], function () {
 
 
 // // for frontend user
-Route::get('/', [FontendController::class, 'index'])->name('/');
 
 Route::get('shop', [FontendController::class, 'shop'])->name('shop');
 
@@ -898,12 +918,7 @@ Route::get('cart', [FrontProductController::class, 'cart'])->name('cart');
 Route::post('cart/update', [FrontProductController::class, 'cartUpdate'])->name('update-cart');
 Route::post('cart/delete', [FrontProductController::class, 'cartDelete']);
 
-//user login/Register
-Route::get('user/login-register', [UserController::class, 'loginRegister'])->name('login-register');
-Route::post('user/login', [UserController::class, 'userLogin']);
-//User Register
-Route::post('user/register', [UserController::class, 'userRegister'])->name('register_users');
-Route::put('user/account', [UserController::class, 'userAccount'])->middleware('auth');
+
 //Search Product
 Route::get('search-products', [FrontProductController::class, 'listing']);
 
@@ -980,7 +995,6 @@ Route::match(['GET', 'POST'], '/add-rating', [RatingController::class, 'addRatin
 //for newslettersubscriber
 Route::post('newslettersubscriber', [NewletterSubscriberController::class, 'store'])->name('newslettersubscriber');
 //forget a password for users
-Route::match(['get', 'post'], 'user/forgot-password', [UserController::class, 'forgotPassword']);
 //User Logout
 Route::get('user/logout', [UserController::class, 'userLogout']);
 //Confirm User Account
@@ -1033,7 +1047,6 @@ Route::prefix('sales')->name('sales.')->group(function () {
 
 
 // Restaurant Routes
-
 Route::prefix('admin/restaurant')->middleware(['admin'])->group(function () {
     Route::get('dashboard', [RestaurantDashboardController::class, 'index'])
          ->name('restaurant.dashboard');
@@ -1043,6 +1056,9 @@ Route::prefix('admin/restaurant')->middleware(['admin'])->group(function () {
     Route::delete('/restaurant-images/{id}', [RestaurantController::class, 'deleteImage'])->name('restaurants.deleteImage');
     Route::resource('categories', CategoryController::class);
     Route::resource('menus', RestaurantMenuController::class);
+
+    Route::resource('subcategories',FrontendSubCategoryController::class);
+
 
     Route::get('/coupons', [CouponController::class, 'index'])->name('coupons.index');
     Route::post('/coupons/store', [CouponController::class, 'store'])->name('coupons.store');
@@ -1060,6 +1076,86 @@ Route::prefix('admin/restaurant')->middleware(['admin'])->group(function () {
     Route::post('products/{product}/sizes', [ProductSizeController::class, 'store'])->name('productSizes.store');
     Route::put('product-sizes/{size}', [ProductSizeController::class, 'update'])->name('productSizes.update');
     Route::delete('product-sizes/{product}/{size}', [ProductSizeController::class, 'destroy'])->name('productSizes.destroy');
+});
 
+
+// Restaurant Frontend Routes
+
+// Route::get('/', [Restaurant\FrontendController::class, 'index'])->name('/');
+
+Route::get('/',[FrontendController::class,'index'])->name('restaurant.index.page');
+
+// Authentication Routes
+Route::prefix('auth')->group(function () {
+    Route::get('login', [UserController::class, 'loginRegister'])->name('auth.login');
+    Route::post('login', [UserController::class, 'userLogin'])->name('auth.login.submit');
+    Route::post('register', [UserController::class, 'userRegister'])->name('auth.register');
+    Route::match(['get', 'post'], 'forgot-password', [UserController::class, 'forgotPassword']);
+});
+
+// User Account Routes (Requires Authentication)
+Route::middleware('auth')->group(function () {
+    Route::put('account', [UserController::class, 'userAccount'])->name('account.update');
+});
+
+// Pages
+Route::get('restaurants',[FrontendRestaurantController::class,'index'])->name('restaurants');
+// Route::get('ecommerce',[FrontendRestaurantController::class,'index'])->name('restaurants');
+Route::prefix('/restaurant')->group(function () {
+    Route::get('/{id}/detail',[FrontendRestaurantController::class,'detail'])->name('restaurant.detail');
+
+    Route::post('/restaurant/products/filter', function (Request $request) {
+        $categoryId = $request->category_id;
+        $restaurantId = $request->restaurant_id;
+        $products = RestaurantProduct::where('restaurant_id', $restaurantId)
+            ->when($categoryId, function ($query) use ($categoryId) {
+                return $query->where('category_id', $categoryId);
+            })->get(['id', 'name', 'image', 'price']); // Fetch necessary fields only
+        $products->transform(function ($product) {
+            $product->final_price = $product->getFinalPrice();
+            return $product;
+        });
+        return response()->json(['products' => $products]);
+    })->name('restaurant.products.filter');
+
+    Route::get('/all-products',[FrontendProductController::class,'index'])->name('all-restaurant-products');
+    Route::get('product-detail/{id}',[FrontendProductController::class,'detail'])->name('restaurant-product-detail');
+    Route::get('categories',[FrontendCategoryController::class,'index'])->name('restaurant.categories');
+    Route::get('category/{id}',[FrontendCategoryController::class,'detail'])->name('restaurant.categories.detail');
+
+    Route::post('/cart/add', [CartController::class, 'addToCart'])->name('restaurant.cart.add');
+    Route::get('/cart', [CartController::class, 'viewCart'])->name('restaurant.cart.view');
+    Route::get('/cart/update/{key}/{action}', [CartController::class, 'updateCart'])->name('restaurant.cart.update');;
+    Route::get('/cart/count', [CartController::class, 'getCartCount'])->name('restaurant.cart.count');
+    Route::post('/apply-coupon', [CartController::class, 'applyCoupon'])->name('restaurant.apply.coupon');
+    Route::get('/cart/remove/{key}', [CartController::class, 'removeFromCart']);
+
+    // for wishlist
+    Route::middleware('auth')->group(function () {
+
+    Route::get('/wishlist', [WishController::class, 'index'])->name('restaurant.wishlist.index');
+    Route::post('/wishlist/add', [WishController::class, 'addToWishlist'])->name('restaurant.wishlist.add');
+    Route::post('/wishlist/remove', [WishController::class, 'removeFromWishlist'])->name('restaurant.wishlist.remove');
+    Route::get('/wishlist/count', function () {
+        return response()->json(['count' => Auth::check() ? \App\Models\Restaurant\Wishlist::where('user_id', Auth::id())->count() : 0]);
+    })->name('wishlist.count');
+
+
+
+    Route::post('check-out',[CheckoutController::class,'index'])->name('restaurant.checkout');
+
+
+    });
+    Route::post('/rate-restaurant', [FrontendRatingController::class, 'store'])->name('restaurant.rate');
 
 });
+
+
+    Route::post('/addresses', [UserDeliveryAddressController::class, 'store'])->middleware('auth');
+    Route::get('/addresses', [UserDeliveryAddressController::class, 'index'])->middleware('auth');
+    Route::delete('/addresses/{id}', [UserDeliveryAddressController::class, 'destroy'])->middleware('auth');
+
+    Route::get('/states/{countryId}', [UserDeliveryAddressController::class, 'getRegions']);
+    Route::get('/cities/{stateId}', [UserDeliveryAddressController::class, 'getCities']);
+    Route::get('/sub-cities/{cityId}', [UserDeliveryAddressController::class, 'getSubCities']);
+    Route::get('/streets/{subCityId}', [UserDeliveryAddressController::class, 'getStreets']);

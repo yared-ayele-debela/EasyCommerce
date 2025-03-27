@@ -22,4 +22,12 @@ class Restaurant extends Model
     {
         return $this->hasMany(RestaurantImage::class);
     }
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'restaurant_id');
+    }
+    public function ratings()
+{
+    return $this->hasMany(RestaurantRating::class);
+}
 }

@@ -499,9 +499,9 @@
         @endif
 
         @if ($user && $user->hasPermissionByRole('view country') || $user->hasPermissionByRole('view city')|| $user->hasPermissionByRole('view state'))
-        <li class="{{ request()->is('admin/states')?'nav-item active':'' }} {{ request()->is('admin/countries')?'nav-item active':'' }} {{ request()->is('admin/country*')?'nav-item active':'' }} {{ request()->is('admin/cities')?'nav-item active':'' }} {{ request()->is('admin/city*')?'nav-item active':'' }} {{ request()->is('admin/state*')?'nav-item active':'' }}">
+        <li class="{{ request()->is('admin/sub-cities')?'nav-item active':'' }}{{ request()->is('admin/streets')?'nav-item active':'' }}{{ request()->is('admin/states')?'nav-item active':'' }} {{ request()->is('admin/countries')?'nav-item active':'' }} {{ request()->is('admin/country*')?'nav-item active':'' }} {{ request()->is('admin/cities')?'nav-item active':'' }} {{ request()->is('admin/city*')?'nav-item active':'' }} {{ request()->is('admin/state*')?'nav-item active':'' }}">
             <a class="nav-link" data-bs-target="#location-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class="ri ri-map-2-fill"></i><span>Location</span><i class="bi bi-chevron-down ms-auto"></i> </a>
-            <ul id="location-nav" class="nav-content collapse {{ request()->is('admin/countries')?'show':'' }}  {{ request()->is('admin/country*')?'show':'' }} {{ request()->is('admin/state*')?'show':'' }} {{ request()->is('admin/city*')?'show':'' }} {{ request()->is('admin/cities')?'show':'' }} {{ request()->is('admin/states')?'show':'' }} " data-bs-parent="#sidebar-nav">
+            <ul id="location-nav" class="nav-content collapse {{ request()->is('admin/countries')?'show':'' }}  {{ request()->is('admin/country*')?'show':'' }} {{ request()->is('admin/state*')?'show':'' }} {{ request()->is('admin/city*')?'show':'' }} {{ request()->is('admin/cities')?'show':'' }} {{ request()->is('admin/states')?'show':'' }} {{ request()->is('admin/streets')?'show':'' }} {{ request()->is('admin/sub-cities')?'show':'' }} " data-bs-parent="#sidebar-nav">
                 @if($user->hasPermissionByRole('view country'))
                 <li> <a href="{{ url('admin/countries') }}" class="{{ request()->is('admin/country*')?'nav-link active':'' }} {{ request()->is('admin/countries')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Countries</span></a></li>
                 @endif
@@ -511,6 +511,13 @@
                 @if($user->hasPermissionByRole('view city'))
                 <li> <a href="{{ url('admin/cities') }}" class="{{ request()->is('admin/cities')?'nav-link active':'' }} {{ request()->is('admin/city*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Cities</span></a></li>
                 @endif
+                @if($user->hasPermissionByRole('view city'))
+                <li> <a href="{{ url('admin/sub-cities') }}" class="{{ request()->is('admin/sub-cities')?'nav-link active':'' }} {{ request()->is('admin/sub-cities*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Sub Cities</span></a></li>
+                @endif
+                @if($user->hasPermissionByRole('view city'))
+                <li> <a href="{{ url('admin/streets') }}" class="{{ request()->is('admin/streets')?'nav-link active':'' }} {{ request()->is('admin/streets*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Streets</span></a></li>
+                @endif
+               
             </ul>
         </li>
         @endif

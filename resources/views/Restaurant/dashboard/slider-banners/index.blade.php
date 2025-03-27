@@ -81,6 +81,8 @@
                 <input type="url" name="link" class="form-control">
 
                 <label>Image:</label>
+                <br>
+                <span class="text-danger">Image size must be height: 407px and width: 683px</span>
                 <input type="file" name="image" class="form-control" required>
 
                 <label>Active:</label>
@@ -125,6 +127,8 @@
                 <img id="editBannerImage" src="" width="100"><br>
 
                 <label>New Image:</label>
+                <br>
+                <span class="text-danger">Image size must be height: 407px and width: 683px</span>
                 <input type="file" name="image" class="form-control">
 
                 <label>Active:</label>

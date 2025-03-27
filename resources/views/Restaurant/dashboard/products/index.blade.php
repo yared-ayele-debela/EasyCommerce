@@ -16,11 +16,13 @@ $user = Auth::guard('admin')->user();
             </button>
         </div>
         <div class="card-body">
+           <div class="table-responsiv">
             <table class="table">
                 <thead>
                     <tr>
                         <th>Name</th>
                         <th>Category</th>
+                        <th>Sub Category</th>
                         <th>Menu</th>
                         <th>City</th>
                         <th>Price</th>
@@ -30,6 +32,7 @@ $user = Auth::guard('admin')->user();
                         <th>Other Image</th>
                         <th>Most Popular</th>
                         <th>Best Seller</th>
+                        <th>Is Free Delivery</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -38,6 +41,9 @@ $user = Auth::guard('admin')->user();
                     <tr>
                         <td>{{ $product->name }}</td>
                         <td>{{ $product->category->name }}</td>
+                        <td>
+                            {{ $product->subcategory ? $product->subcategory->name : "" }}
+                        </td>
                         <td>{{ $product->menu->name }}</td>
                         <td>{{ $product->city->name }}</td>
                         <td>{{ $product->price }} Birr</td>
@@ -60,6 +66,11 @@ $user = Auth::guard('admin')->user();
                         <td>
                             <div class="btn btn-sm btn-{{ $product->best_seller ? 'success' : 'secondary' }}">
                                 {{ $product->best_seller ? 'Yes' : 'No' }}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="btn btn-sm btn-{{ $product->is_free ? 'success' : 'secondary' }}">
+                                {{ $product->is_free ? 'Yes' : 'No' }}
                             </div>
                         </td>
                         <td>
@@ -106,6 +117,16 @@ $user = Auth::guard('admin')->user();
                                                         <option value="">Select Category</option>
                                                         @foreach($categories as $category)
                                                         <option @if($category->id===$product->category_id) selected @endif value="{{ $category->id }}">{{ $category->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="subcategory_id" class="form-label">Sub Category</label>
+                                                    <select class="form-control" id="subcategory_id" name="subcategory_id" required>
+                                                        @foreach($subcategories as $subcategory)
+                                                        <option @if($subcategory->id===$product->subcategory_id) selected @endif value="{{ $subcategory->id }}" data-category="{{ $subcategory->category_id }}">{{ $subcategory->name }}</option>
                                                         @endforeach
                                                     </select>
                                                 </div>
@@ -187,6 +208,33 @@ $user = Auth::guard('admin')->user();
                                                     </label>
                                                   </div>
                                             </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <div class="form-group">
+                                                      <label for="is_free" class="form-label">Is Free Delivery</label>
+                                                      <select class="form-control" name="is_free" id="is_free">
+                                                        <option @if($product->is_free=="1") selected @endif value="1">Yes</option>
+                                                        <option @if($product->is_free=="0") selected @endif value="0">No</option>
+                                                      </select>
+                                                    </div>
+                                                </div>         
+                                            </div>
+                                            <div class="col-md-6" id="delivery_fee2">
+                                                <div class="mb-3">
+                                                    <div class="form-group">
+                                                      <label for="delivery_fee" class="form-label">Delivery Fee in 1 KM in (ETB)</label>
+                                                      <input type="number" name="delivery_fee" class="form-control" id="delivery_fee" value="{{ $product->delivery_fee }}">
+                                                    </div>
+                                                </div>    
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <div class="form-group">
+                                                      <label for="delivery_time" class="form-label">Delivered estimated Time in 1 KM</label>
+                                                      <input type="number" name="delivery_time" class="form-control" id="delivery_time" value="{{ $product->delivery_time }}">
+                                                    </div>
+                                                </div>    
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
@@ -199,6 +247,7 @@ $user = Auth::guard('admin')->user();
                     @endforeach
                 </tbody>
             </table>
+           </div>
         </div>
     </div>
 </div>
@@ -230,10 +279,20 @@ $user = Auth::guard('admin')->user();
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="category_id" class="form-label">Category</label>
-                                <select class="form-control" id="category_id" name="category_id" required>
+                                <select class="form-control" id="addcategory_id" name="category_id" required>
                                     <option value="">Select Category</option>
                                     @foreach($categories as $category)
                                     <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="subcategory_id" class="form-label">Sub Category</label>
+                                <select class="form-control" id="addsubcategory_id" name="subcategory_id" required>
+\                                    @foreach($subcategories as $subcategory)
+                                    <option value="{{ $subcategory->id }}" data-category="{{ $subcategory->category_id }}">{{ $subcategory->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -309,6 +368,33 @@ $user = Auth::guard('admin')->user();
                                 </label>
                               </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <div class="form-group">
+                                  <label for="is_free" class="form-label">Is Free Delivery</label>
+                                  <select class="form-control" name="is_free" id="is_freea">
+                                    <option value="1" selected>Yes</option>
+                                    <option value="0">No</option>
+                                  </select>
+                                </div>
+                            </div>    
+                        </div>
+                        <div class="col-md-6" id="delivery_feeId">
+                            <div class="mb-3">
+                                <div class="form-group">
+                                  <label for="delivery_fee" class="form-label">Delivery Fee in 1 KM in (ETB)</label>
+                                  <input type="number" name="delivery_fee" class="form-control" id="delivery_fee">
+                                </div>
+                            </div>    
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <div class="form-group">
+                                  <label for="delivery_time" class="form-label">Delivered estimated Time in 1 KM</label>
+                                  <input type="number" name="delivery_time" class="form-control" id="delivery_time">
+                                </div>
+                            </div>    
+                        </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Save Product</button>
                 </form>
@@ -316,7 +402,61 @@ $user = Auth::guard('admin')->user();
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
 
+        $("#is_freea").change(function() {
+            if ($(this).val() == "0") {
+                $("#delivery_feeId").fadeIn();
+            } else {
+                $("#delivery_feeId").fadeOut();
+            }
+        }).trigger("change"); // Trigger change on page load
+        $("#is_free").change(function() {
+            if ($(this).val() == "0") {
+                $("#delivery_fee2").fadeIn();
+            } else {
+                $("#delivery_fee2").fadeOut();
+            }
+        }).trigger("change"); // Trigger change on page load
+
+        const categorySelect = document.getElementById("category_id");
+        const subcategorySelect = document.getElementById("subcategory_id");
+        const allSubcategories = Array.from(subcategorySelect.options);
+
+        function filterSubcategories() {
+            const selectedCategory = categorySelect.value;
+            subcategorySelect.innerHTML = '<option value="">Select Sub Category</option>';
+
+            allSubcategories.forEach(option => {
+                if (option.dataset.category === selectedCategory || option.value === "") {
+                    subcategorySelect.appendChild(option);
+                }
+            });
+        }
+
+        categorySelect.addEventListener("change", filterSubcategories);
+        filterSubcategories();  // Call on page load in case a category is pre-selected
+
+        const addcategorySelect = document.getElementById("addcategory_id");
+        const addsubcategorySelect = document.getElementById("addsubcategory_id");
+        const addallSubcategories = Array.from(addsubcategorySelect.options);
+
+        function addfilterSubcategories() {
+            const selectedCategory = addcategorySelect.value;
+            addsubcategorySelect.innerHTML = '<option value="">Select Sub Category</option>';
+
+            addallSubcategories.forEach(option => {
+                if (option.dataset.category === selectedCategory || option.value === "") {
+                    addsubcategorySelect.appendChild(option);
+                }
+            });
+        }
+
+        addcategorySelect.addEventListener("change", addfilterSubcategories);
+        addfilterSubcategories();  // Call on page load in case a category is pre-selected
+    });
+</script>
 <script>
         $(document).on('click', '.delete-product', function() {
             let productId = $(this).data('id');
