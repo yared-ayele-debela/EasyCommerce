@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\RestaurantController;
 use App\Http\Controllers\Api\DeliveryAddressController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\BannerController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
