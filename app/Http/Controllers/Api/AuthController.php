@@ -126,27 +126,66 @@ class AuthController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"phone"},
-     *             @OA\Property(property="phone", type="string", example="1234567890")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="OTP sent for password reset",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="OTP sent successfully")
-     *         )
-     *     ),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
-    public function forgotPassword(Request $request)
+    *             required={"email"},
+    *             @OA\Property(property="email", type="string", format="email", example="user@example.com")
+    *         )
+    *     ),
+    *     @OA\Response(
+    *         response=200,
+    *         description="OTP sent for password reset",
+    *         @OA\JsonContent(
+    *             @OA\Property(property="message", type="string", example="OTP sent successfully")
+    *         )
+    *     ),
+    *     @OA\Response(response=404, description="Email not found"),
+    *     @OA\Response(response=500, description="Server error")
+    * )
+    */
+    public function forgetPassword(Request $request)
     {
-        // Handle OTP generation and sending logic here
+        try {
+            $request->validate([
+                'email' => 'required|string|email|max:255',
+            ]);
 
-        return response()->json(['message' => 'OTP sent successfully'], 200);
+            $user = User::where('email', $request->email)->first();
+
+            if (!$user) {
+                return response()->json(['error' => 'Email not found'], 404);
+            }
+
+            // Generate a unique token for password reset
+            $token = bin2hex(random_bytes(16));
+
+            // Save the token to the 'password_token' table
+            \DB::table('password_resets')->updateOrInsert(
+                ['email' => $request->email],
+                ['token' => $token, 'created_at' => now()]
+            );
+
+            // Send the token via email using Laravel's Mail facade
+            $this->sendOtpMail($user->email, $token);
+
+            return response()->json(['message' => 'Password reset token sent successfully'], 200);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'An error occurred while processing the request', 'details' => $e->getMessage()], 500);
+        }
     }
+    private function sendOtpMail($email, $token)
+    {
+        try {
+            $details = [
+                'to' => $email,
+                'from' => 'afroel@gmail.com',
+                'subject' => 'Password Reset OTP',
+                'body' => "Your OTP for password reset is: $token"
+            ];
 
+            // \Mail::to($email)->send($details);
+        } catch (Exception $e) {
+            throw new Exception('Failed to send OTP email: ' . $e->getMessage());
+        }
+    }
     /**
      * @OA\Post(
      *     path="/api/auth/user/reset-password",
@@ -167,14 +206,39 @@ class AuthController extends Controller
      *             @OA\Property(property="message", type="string", example="Password reset successfully")
      *         )
      *     ),
+     *     @OA\Response(response=400, description="Invalid OTP"),
      *     @OA\Response(response=500, description="Server error")
      * )
      */
     public function resetPassword(Request $request)
     {
-        // Handle OTP verification and password reset logic here
+        try {
+            $request->validate([
+                'otp' => 'required|string',
+                'new_password' => 'required|string|min:8',
+            ]);
 
-        return response()->json(['message' => 'Password reset successfully'], 200);
+            $passwordReset = \DB::table('password_resets')->where('token', $request->otp)->first();
+
+            if (!$passwordReset) {
+                return response()->json(['error' => 'Invalid OTP'], 400);
+            }
+
+            $user = User::where('email', $passwordReset->email)->first();
+
+            if (!$user) {
+                return response()->json(['error' => 'User not found'], 404);
+            }
+
+            $user->update(['password' => bcrypt($request->new_password)]);
+
+            // Delete the used token
+            \DB::table('password_resets')->where('token', $request->otp)->delete();
+
+            return response()->json(['message' => 'Password reset successfully'], 200);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'An error occurred while resetting the password', 'details' => $e->getMessage()], 500);
+        }
     }
 
     // Restaurant registration and login methods will be similar to user registration and login
@@ -187,12 +251,20 @@ class AuthController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"restaurant_name", "phone", "password", "working_hour", "chosen_bank"},
-     *             @OA\Property(property="restaurant_name", type="string", example="Pizza Palace"),
-     *             @OA\Property(property="phone", type="string", example="1234567890"),
-     *             @OA\Property(property="password", type="string", format="password", example="password123"),
-     *             @OA\Property(property="working_hour", type="string", example="9 AM - 9 PM"),
-     *             @OA\Property(property="chosen_bank", type="string", example="Bank of XYZ")
+     *             required={"name", "address", "city", "country", "mobile", "email","password", "opening_time", "closing_time"},
+     *             @OA\Property(property="name", type="string", example="Pizza Palace"),
+     *             @OA\Property(property="description", type="string", example="Best pizza in town"),
+     *             @OA\Property(property="address", type="string", example="123 Main Street"),
+     *             @OA\Property(property="city", type="string", example="New York"),
+     *             @OA\Property(property="state", type="string", example="NY"),
+     *             @OA\Property(property="postal_code", type="string", example="10001"),
+     *             @OA\Property(property="country", type="string", example="USA"),
+     *             @OA\Property(property="mobile", type="string", example="1234567890"),
+     *             @OA\Property(property="email", type="string", format="email", example="restaurant@example.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="12345678"),
+     *             @OA\Property(property="website", type="string", example="https://pizzapalace.com"),
+     *             @OA\Property(property="opening_time", type="string", format="time", example="09:00:00"),
+     *             @OA\Property(property="closing_time", type="string", format="time", example="21:00:00")
      *         )
      *     ),
      *     @OA\Response(
@@ -200,7 +272,8 @@ class AuthController extends Controller
      *         description="Successful registration",
      *         @OA\JsonContent(
      *             @OA\Property(property="token", type="string"),
-     *             @OA\Property(property="restaurant")
+     *             @OA\Property(property="restaurant", type="object"),
+     *             @OA\Property(property="user", type="object")
      *         )
      *     ),
      *     @OA\Response(response=500, description="Server error")
@@ -210,24 +283,47 @@ class AuthController extends Controller
     {
         try {
             $request->validate([
-                'restaurant_name' => 'required|string|max:255',
-                'phone' => 'required|string|unique:restaurants',
-                'password' => 'required|string|min:8',
-                'working_hour' => 'required|string|max:255',
-                'chosen_bank' => 'required|string|max:255',
+                'name' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'address' => 'required|string|max:255',
+                'city' => 'required|string|max:100',
+                'state' => 'nullable|string|max:100',
+                'postal_code' => 'nullable|string|max:20',
+                'country' => 'required|string|max:100',
+                'phone' => 'nullable|string|max:20',
+                'email' => 'required|string|email|max:255|unique:restaurants|unique:users',
+                'website' => 'nullable|string|max:255',
+                'opening_time' => 'required|date_format:H:i:s',
+                'closing_time' => 'required|date_format:H:i:s',
             ]);
 
+            // Register as a restaurant
             $restaurant = Restaurant::create([
-                'restaurant_name' => $request->restaurant_name,
+                'name' => $request->name,
+                'description' => $request->description,
+                'address' => $request->address,
+                'city' => $request->city,
+                'state' => $request->state,
+                'postal_code' => $request->postal_code,
+                'country' => $request->country,
                 'phone' => $request->phone,
-                'password' => bcrypt($request->password),
-                'working_hour' => $request->working_hour,
-                'chosen_bank' => $request->chosen_bank,
+                'email' => $request->email,
+                'website' => $request->website,
+                // 'opening_time' => date('H:i:s', strtotime($request->opening_time)),
+                // 'closing_time' => date('H:i:s', strtotime($request->closing_time)),
             ]);
 
-            $token = $restaurant->createToken('auth_token')->plainTextToken;
+            // Register as a user
+            $user = User::create([
+                'name' => $request->name,
+                'mobile' => $request->phone,
+                'email' => $request->email,
+                'password' => bcrypt($request->password),
+            ]);
 
-            return response()->json(['token' => $token, 'restaurant' => $restaurant], 201);
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json(['token' => $token, 'restaurant' => $restaurant, 'user' => $user], 201);
         } catch (Exception $e) {
             return response()->json(['error' => 'An error occurred while registering restaurant', 'details' => $e->getMessage()], 500);
         }
@@ -241,8 +337,8 @@ class AuthController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"phone", "password"},
-     *             @OA\Property(property="phone", type="string", example="1234567890"),
+     *             required={"phone_or_email", "password"},
+     *             @OA\Property(property="phone_or_email", type="string", example="1234567890"),
      *             @OA\Property(property="password", type="string", format="password", example="password123")
      *         )
      *     ),
@@ -262,14 +358,22 @@ class AuthController extends Controller
     {
         try {
             $request->validate([
-                'phone' => 'required|string',
+                'phone_or_email' => 'required|string',
                 'password' => 'required|string|min:8',
             ]);
 
-            $credentials = $request->only('phone', 'password');
+            $credentials = $request->only('phone_or_email', 'password');
 
-            if (Auth::guard('restaurant')->attempt($credentials)) {
-                $restaurant = Auth::guard('restaurant')->user();
+            if (filter_var($credentials['phone_or_email'], FILTER_VALIDATE_EMAIL)) {
+                $credentials['email'] = $credentials['phone_or_email'];
+                unset($credentials['phone_or_email']);
+            } else {
+                $credentials['mobile'] = $credentials['phone_or_email'];
+                unset($credentials['phone_or_email']);
+            }
+
+            if (Auth()->attempt($credentials)) {
+                $restaurant = Auth()->user();
                 $token = $restaurant->createToken('auth_token')->plainTextToken;
 
                 return response()->json(['token' => $token, 'restaurant' => $restaurant], 200);
