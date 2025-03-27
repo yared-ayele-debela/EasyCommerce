@@ -141,7 +141,10 @@ Route::prefix('user')->middleware('auth:sanctum')->group(function () {
 
 Route::get('/restaurant-categories', [RestaurantCategoryController::class, 'index']);
 // ================================Restaurant========
-
+// Banner routes
+Route::prefix('banners')->group(function () {
+    Route::get('active', [BannerController::class, 'fetchActiveBanners']);
+});
 // Guest Routes (Accessible without authentication)
 Route::get('/foods', [FoodController::class, 'index']);
 Route::get('/foods/special-offers', [FoodController::class, 'specialOffers']);
