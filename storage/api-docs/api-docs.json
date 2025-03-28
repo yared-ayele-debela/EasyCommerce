@@ -1112,24 +1112,58 @@
                         "application/json": {
                             "schema": {
                                 "required": [
+                                    "name",
                                     "address",
+                                    "city",
+                                    "state",
+                                    "country",
+                                    "postcode",
+                                    "mobile",
                                     "latitude",
                                     "longitude"
                                 ],
                                 "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
                                     "address": {
                                         "type": "string",
                                         "example": "123 Main St, City"
                                     },
+                                    "city": {
+                                        "type": "string",
+                                        "example": "New York"
+                                    },
+                                    "state": {
+                                        "type": "string",
+                                        "example": "NY"
+                                    },
+                                    "country": {
+                                        "type": "string",
+                                        "example": "USA"
+                                    },
+                                    "label": {
+                                        "type": "string",
+                                        "example": "Home"
+                                    },
+                                    "postcode": {
+                                        "type": "string",
+                                        "example": "10001"
+                                    },
+                                    "mobile": {
+                                        "type": "string",
+                                        "example": "+1234567890"
+                                    },
                                     "latitude": {
                                         "type": "number",
                                         "format": "float",
-                                        "example": 9.027234
+                                        "example": 40.712776
                                     },
                                     "longitude": {
                                         "type": "number",
                                         "format": "float",
-                                        "example": 38.746891
+                                        "example": -74.005974
                                     }
                                 },
                                 "type": "object"
@@ -1139,13 +1173,148 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Delivery address created successfully"
+                        "description": "Delivery address created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Delivery address created successfully."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "address": {
+                                                    "type": "string",
+                                                    "example": "123 Main St, City"
+                                                },
+                                                "city": {
+                                                    "type": "string",
+                                                    "example": "New York"
+                                                },
+                                                "state": {
+                                                    "type": "string",
+                                                    "example": "NY"
+                                                },
+                                                "country": {
+                                                    "type": "string",
+                                                    "example": "USA"
+                                                },
+                                                "label": {
+                                                    "type": "string",
+                                                    "example": "Home"
+                                                },
+                                                "postcode": {
+                                                    "type": "string",
+                                                    "example": "10001"
+                                                },
+                                                "mobile": {
+                                                    "type": "string",
+                                                    "example": "+1234567890"
+                                                },
+                                                "latitude": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 40.712776
+                                                },
+                                                "longitude": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": -74.005974
+                                                },
+                                                "user_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "Unauthorized"
                     },
                     "422": {
                         "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Failed to create delivery address"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/delivery-addresses/{id}": {
+            "delete": {
+                "tags": [
+                    "Delivery Addresses"
+                ],
+                "summary": "Delete a delivery address",
+                "operationId": "deleteDeliveryAddress",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the delivery address to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Delivery address deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Delivery address deleted successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Delivery address not found"
+                    },
+                    "500": {
+                        "description": "Failed to delete delivery address"
                     }
                 },
                 "security": [
@@ -1637,17 +1806,39 @@
                 "tags": [
                     "Restaurants"
                 ],
-                "summary": "Get Nearby Restaurants by City",
-                "description": "Retrieve a list of all nearby restaurants based on the user's city.",
-                "operationId": "getNearbyRestaurantsByCity",
+                "summary": "Get Nearby Restaurants by Latitude and Longitude",
+                "description": "Retrieve a list of all nearby restaurants based on the user's latitude and longitude.",
+                "operationId": "getNearbyRestaurantsByLatLong",
                 "parameters": [
                     {
-                        "name": "city",
+                        "name": "latitude",
                         "in": "query",
-                        "description": "The city to filter nearby restaurants",
+                        "description": "The latitude of the user's location",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "number",
+                            "format": "float"
+                        }
+                    },
+                    {
+                        "name": "longitude",
+                        "in": "query",
+                        "description": "The longitude of the user's location",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    },
+                    {
+                        "name": "radius",
+                        "in": "query",
+                        "description": "The radius (in kilometers) to search for nearby restaurants",
+                        "required": false,
+                        "schema": {
+                            "type": "number",
+                            "format": "float",
+                            "default": 10
                         }
                     }
                 ],
@@ -1657,7 +1848,30 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object"
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "latitude": {
+                                                "type": "number",
+                                                "format": "float"
+                                            },
+                                            "longitude": {
+                                                "type": "number",
+                                                "format": "float"
+                                            },
+                                            "distance": {
+                                                "type": "number",
+                                                "format": "float"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
                                 }
                             }
                         }

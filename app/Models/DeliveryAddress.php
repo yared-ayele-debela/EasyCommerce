@@ -9,7 +9,7 @@ class DeliveryAddress extends Model
 {
     use HasFactory;
     protected $fillable=[
-      'user_id','name','address','city','state','country','pincode','status','mobile','latitude','longitude'  
+      'user_id','name','address','city','state','country','postcode','status','mobile','latitude','longitude','label'  
     ];
     protected $table='delivery_address';
     
