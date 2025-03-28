@@ -107,7 +107,8 @@ class FoodController extends Controller
      */
     public function category()
     {
-        return $this->belongsTo(FoodCategory::class, 'category_id');
+        $categories = FoodCategory::all();
+        return response()->json($categories);
     }
 
     /**
