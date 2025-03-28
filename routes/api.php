@@ -151,7 +151,9 @@ Route::get('/foods', [FoodController::class, 'index']);
 Route::get('/foods/special-offers', [FoodController::class, 'specialOffers']);
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/restaurants/nearby', [RestaurantController::class, 'nearbyRestaurants']);
-
+// Food Category routes
+Route::get('/foods/category', [FoodController::class, 'category']);
+Route::get('/foods/category/{categoryId}', [FoodController::class, 'getFoodsByCategory']);
 // Authentication
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
