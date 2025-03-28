@@ -1233,14 +1233,14 @@
                 }
             }
         },
-        "/api/food/category": {
+        "/api/foods/category": {
             "get": {
                 "tags": [
                     "Foods"
                 ],
                 "summary": "Get the category of a food item",
                 "description": "Returns the category associated with a specific food item.",
-                "operationId": "6406fb0158ae4fc1052f3b7ff4a4d0c7",
+                "operationId": "8b4929d3f457fe386b4b88018abf4a38",
                 "responses": {
                     "200": {
                         "description": "Successful operation",
