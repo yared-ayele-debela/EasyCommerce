@@ -85,7 +85,7 @@ class FoodController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/food/category",
+     *     path="/api/foods/category",
      *     summary="Get the category of a food item",
      *     description="Returns the category associated with a specific food item.",
      *     tags={"Foods"},
