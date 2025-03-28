@@ -151,6 +151,7 @@ Route::get('/foods', [FoodController::class, 'index']);
 Route::get('/foods/special-offers', [FoodController::class, 'specialOffers']);
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/restaurants/nearby', [RestaurantController::class, 'nearbyRestaurants']);
+Route::delete('/delivery-addresses/{id}', [DeliveryAddressController::class, 'destroy'])->middleware('auth:sanctum');
 // Food Category routes
 Route::get('/foods/category', [FoodController::class, 'category']);
 Route::get('/foods/category/{categoryId}', [FoodController::class, 'getFoodsByCategory']);

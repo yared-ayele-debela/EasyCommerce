@@ -41,7 +41,7 @@ class RestaurantController extends Controller
      *         @OA\Schema(
      *             type="number",
      *             format="float",
-     *             default=10
+     *             default=2
      *         )
      *     ),
      *     @OA\Response(
@@ -73,7 +73,7 @@ class RestaurantController extends Controller
     {
         $latitude = request()->query('latitude');
         $longitude = request()->query('longitude');
-        $radius = request()->query('radius', 10); // Default radius is 10 km
+        $radius = request()->query('radius', 2); // Default radius is 10 km
 
         if (!$latitude || !$longitude) {
             return response()->json(['error' => 'Latitude and Longitude parameters are required'], 400);

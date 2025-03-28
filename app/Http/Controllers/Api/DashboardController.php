@@ -52,9 +52,9 @@ class DashboardController extends Controller
     public function index()
     {
         return response()->json([
-            'order_requests' => Order::where('status', 'pending')->count(),
-            'running_orders' => Order::where('status', 'processing')->count(),
-            'total_revenue' => Order::where('status', 'completed')->sum('total_price'),
+            'order_requests' => Order::where('order_status', 'pending')->count(),
+            'running_orders' => Order::where('order_status', 'processing')->count(),
+            'total_revenue' => Order::where('order_status', 'completed')->sum('total_price'),
             'reviews' => Review::count(),
             'popular_items' => Food::withCount('orders')->orderBy('orders_count', 'desc')->take(5)->get(),
         ]);
