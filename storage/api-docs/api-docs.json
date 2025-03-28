@@ -1233,6 +1233,45 @@
                 }
             }
         },
+        "/api/food/category": {
+            "get": {
+                "tags": [
+                    "Food"
+                ],
+                "summary": "Get the category of a food item",
+                "description": "Returns the category associated with a specific food item.",
+                "operationId": "6406fb0158ae4fc1052f3b7ff4a4d0c7",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "description": "Category ID",
+                                            "type": "integer"
+                                        },
+                                        "name": {
+                                            "description": "Category name",
+                                            "type": "string"
+                                        },
+                                        "description": {
+                                            "description": "Category description",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Category not found"
+                    }
+                }
+            }
+        },
         "/api/foods/category/{categoryId}": {
             "get": {
                 "tags": [
@@ -1908,6 +1947,10 @@
         {
             "name": "Checkout",
             "description": "Checkout"
+        },
+        {
+            "name": "Food",
+            "description": "Food"
         },
         {
             "name": "Payment",

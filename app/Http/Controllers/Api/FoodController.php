@@ -23,9 +23,7 @@ class FoodController extends Controller
      *     operationId="getFoods",
      *     @OA\Response(
      *         response=200,
-     *         description="Successful operation"
-     *     )
-     * )
+     *         description="Successful operation"))
      */
     public function index()
     {
@@ -78,12 +76,38 @@ class FoodController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation"
-     *     )
-     * )
+     * ))
      */
     public function specialOffers()
     {
         return response()->json(Food::where('discount', '>', 0)->get());
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/food/category",
+     *     summary="Get the category of a food item",
+     *     description="Returns the category associated with a specific food item.",
+     *     tags={"Food"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="id", type="integer", description="Category ID"),
+     *             @OA\Property(property="name", type="string", description="Category name"),
+     *             @OA\Property(property="description", type="string", description="Category description")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Category not found"
+     *     )
+     * )
+     */
+    public function category()
+    {
+        return $this->belongsTo(FoodCategory::class, 'category_id');
     }
 
     /**
