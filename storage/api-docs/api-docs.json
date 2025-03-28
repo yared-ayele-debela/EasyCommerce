@@ -1233,6 +1233,31 @@
                 }
             }
         },
+        "/api/foods/category/{categoryId}": {
+            "get": {
+                "tags": [
+                    "Foods"
+                ],
+                "summary": "Get all foods by category",
+                "operationId": "getFoodsByCategory",
+                "parameters": [
+                    {
+                        "name": "categoryId",
+                        "in": "path",
+                        "description": "Category ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        },
         "/api/notifications": {
             "get": {
                 "tags": [
@@ -1249,6 +1274,20 @@
                         "schema": {
                             "type": "integer",
                             "example": 1
+                        }
+                    },
+                    {
+                        "name": "is_read",
+                        "in": "query",
+                        "description": "Filter notifications by read status (0 for unread, 1 for read)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "enum": [
+                                0,
+                                1
+                            ],
+                            "example": 0
                         }
                     }
                 ],
@@ -1272,6 +1311,10 @@
                                             "message": {
                                                 "type": "string",
                                                 "example": "You have a new order from John Doe"
+                                            },
+                                            "is_read": {
+                                                "type": "boolean",
+                                                "example": false
                                             },
                                             "created_at": {
                                                 "type": "string",
@@ -1546,23 +1589,6 @@
                     },
                     "500": {
                         "description": "Server error"
-                    }
-                }
-            }
-        },
-        "/api/restaurant-categories": {
-            "get": {
-                "tags": [
-                    "Categories"
-                ],
-                "summary": "Get all restaurant categories",
-                "operationId": "getRestaurantCategories",
-                "responses": {
-                    "200": {
-                        "description": "Successful operation"
-                    },
-                    "500": {
-                        "description": "Failed to fetch categories"
                     }
                 }
             }

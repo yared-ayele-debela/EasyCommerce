@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use OpenApi\Annotations as OA;
+use Carbon\Carbon;
 
 /**
  * @OA\Tag(
@@ -28,14 +29,29 @@ class ProductController extends Controller
      *     @OA\Response(response=500, description="Server error")
      * )
      */
+    // public function dealOfTheDay()
+    // {
+    //     try {
+    //         $products = Product::where('deal_of_the_day', true)->get();
+    //         return response()->json($products, 200);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['error' => 'Failed to fetch deal of the day products'], 500);
+    //     }
+    // }
     public function dealOfTheDay()
     {
-        try {
-            $products = Product::where('deal_of_the_day', true)->get();
-            return response()->json($products, 200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to fetch deal of the day products'], 500);
-        }
+        $today = Carbon::today()->toDateString();
+
+        $deals = Product::whereNotNull('product_discount')
+            ->where('product_discount', '>', 0)
+            ->whereNotNull('discount_start_date')
+            ->whereNotNull('discount_end_date')
+            ->where('discount_start_date', '<=', $today)
+            ->where('discount_end_date', '>=', $today)
+            ->where('status', 1) // Ensure the product is active
+            ->get();
+
+        return response()->json($deals);
     }
 
     /**
@@ -51,14 +67,25 @@ class ProductController extends Controller
      *     @OA\Response(response=500, description="Server error")
      * )
      */
+    // public function trending()
+    // {
+    //     try {
+    //         $products = Product::where('trending', true)->get();
+    //         return response()->json($products, 200);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['error' => 'Failed to fetch trending products'], 500);
+    //     }
+    // }
     public function trending()
     {
-        try {
-            $products = Product::where('trending', true)->get();
-            return response()->json($products, 200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to fetch trending products'], 500);
-        }
+        // Get products that are featured or seasonal
+        $trending = Product::where('is_featured', 'Yes')
+                           ->orWhere('is_seasonal', 1)
+                           ->where('status', 1) // Ensure product is active
+                           ->orderBy('updated_at', 'desc') // You can adjust the order based on preferences
+                           ->get();
+
+        return response()->json($trending);
     }
 
     /**
@@ -97,14 +124,24 @@ class ProductController extends Controller
      *     @OA\Response(response=500, description="Server error")
      * )
      */
+    // public function newArrivals()
+    // {
+    //     try {
+    //         $products = Product::where('new_arrival', true)->get();
+    //         return response()->json($products, 200);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['error' => 'Failed to fetch new arrivals'], 500);
+    //     }
+    // }
     public function newArrivals()
     {
-        try {
-            $products = Product::where('new_arrival', true)->get();
-            return response()->json($products, 200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to fetch new arrivals'], 500);
-        }
+        // Get products created in the last 30 days
+        $newArrivals = Product::where('created_at', '>=', Carbon::now()->subDays(30))
+                              ->where('status', 1) // Ensure product is active
+                              ->orderBy('created_at', 'desc') // Order by most recently added
+                              ->get();
+
+        return response()->json($newArrivals);
     }
 
     /**
@@ -120,16 +157,25 @@ class ProductController extends Controller
      *     @OA\Response(response=500, description="Server error")
      * )
      */
+    // public function sponsored()
+    // {
+    //     try {
+    //         $products = Product::where('sponsored', true)->get();
+    //         return response()->json($products, 200);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['error' => 'Failed to fetch sponsored products'], 500);
+    //     }
+    // }
     public function sponsored()
     {
-        try {
-            $products = Product::where('sponsored', true)->get();
-            return response()->json($products, 200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to fetch sponsored products'], 500);
-        }
-    }
+        // Get sponsored products
+        $sponsored = Product::where('is_sponsored', 'Yes')
+                            ->where('status', 1) // Ensure product is active
+                            ->orderBy('updated_at', 'desc') // Order by most recently updated, you can change this
+                            ->get();
 
+        return response()->json($sponsored);
+    }
     /**
      * @OA\Get(
      *     path="/api/products/{id}",

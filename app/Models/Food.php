@@ -12,7 +12,7 @@ class Food extends Model
     protected $table = 'foods';
     protected $fillable = [
         'restaurant_id', 'name', 'description', 'price', 'discount', 
-        'is_special_offer', 'available'
+        'is_special_offer', 'available','category_id', 'image'
     ];
 
     protected $casts = [
@@ -25,5 +25,10 @@ class Food extends Model
     public function restaurant()
     {
         return $this->belongsTo(Restaurant::class);
+    }
+    
+    public function category()
+    {
+        return $this->belongsTo(FoodCategory::class, 'category_id');
     }
 }

@@ -23,7 +23,9 @@ class FoodController extends Controller
      *     operationId="getFoods",
      *     @OA\Response(
      *         response=200,
-     *         description="Successful operation"))
+     *         description="Successful operation"
+     *     )
+     * )
      */
     public function index()
     {
@@ -76,10 +78,36 @@ class FoodController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation"
-     * ))
+     *     )
+     * )
      */
     public function specialOffers()
     {
         return response()->json(Food::where('discount', '>', 0)->get());
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/foods/category/{categoryId}",
+     *     summary="Get all foods by category",
+     *     tags={"Foods"},
+     *     operationId="getFoodsByCategory",
+     *     @OA\Parameter(
+     *         name="categoryId",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer"),
+     *         description="Category ID"
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation"
+     *     )
+     * )
+     */
+    public function getFoodsByCategory($categoryId)
+    {
+        $foods = Food::where('category_id', $categoryId)->get();
+        return response()->json($foods);
     }
 }

@@ -15,19 +15,7 @@ use OpenApi\Annotations as OA;
  */
 class RestaurantCategoryController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/restaurant-categories",
-     *     summary="Get all restaurant categories",
-     *     tags={"Categories"},
-     *     operationId="getRestaurantCategories",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation"
-     *     ),
-     *     @OA\Response(response=500, description="Failed to fetch categories")
-     * )
-     */
+    
     public function index(): JsonResponse
     {
         try {
