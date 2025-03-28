@@ -73,7 +73,7 @@ class RestaurantController extends Controller
     {
         $latitude = request()->query('latitude');
         $longitude = request()->query('longitude');
-        $radius = request()->query('radius', 2); // Default radius is 10 km
+        $radius = request()->query('radius', 2); // Default radius is 2 km
 
         if (!$latitude || !$longitude) {
             return response()->json(['error' => 'Latitude and Longitude parameters are required'], 400);
@@ -85,7 +85,11 @@ class RestaurantController extends Controller
         )
         ->having('distance', '<=', $radius)
         ->orderBy('distance')
-        ->get();
+        ->get()
+        ->map(function ($restaurant) use ($latitude, $longitude) {
+            $restaurant->distance_in_meters = $restaurant->distance * 1000; // Convert distance to meters
+            return $restaurant;
+        });
 
         return response()->json($restaurants);
     }
