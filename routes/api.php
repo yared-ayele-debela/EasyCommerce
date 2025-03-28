@@ -157,7 +157,7 @@ Route::get('/foods/category/{categoryId}', [FoodController::class, 'getFoodsByCa
 // Authentication
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-
+// Restaurant
 // Protected Routes (Require Authentication)
 Route::middleware('auth:sanctum')->group(function () {
 
