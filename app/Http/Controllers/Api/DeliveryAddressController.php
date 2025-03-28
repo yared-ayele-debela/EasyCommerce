@@ -32,7 +32,13 @@ class DeliveryAddressController extends Controller
      */
     public function index()
     {
-        return response()->json(DeliveryAddress::where('user_id', Auth::id())->get());
+        $addresses = DeliveryAddress::where('user_id', Auth::id())->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Delivery addresses retrieved successfully.',
+            'data' => $addresses,
+        ], 200);
     }
 
     /**
