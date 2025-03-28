@@ -1236,7 +1236,7 @@
         "/api/food/category": {
             "get": {
                 "tags": [
-                    "Food"
+                    "Foods"
                 ],
                 "summary": "Get the category of a food item",
                 "description": "Returns the category associated with a specific food item.",
@@ -1947,10 +1947,6 @@
         {
             "name": "Checkout",
             "description": "Checkout"
-        },
-        {
-            "name": "Food",
-            "description": "Food"
         },
         {
             "name": "Payment",
