@@ -14,11 +14,11 @@ class Restaurant extends Model
         'phone', 'email', 'website', 'opening_time', 'closing_time', 'is_open'
     ];
 
-    protected $casts = [
-        'opening_time' => 'time',
-        'closing_time' => 'time',
-        'is_open' => 'boolean',
-    ];
+    // protected $casts = [
+    //     'opening_time' => 'time',
+    //     'closing_time' => 'time',
+    //     'is_open' => 'boolean',
+    // ];
 
     public function workingHours()
     {
