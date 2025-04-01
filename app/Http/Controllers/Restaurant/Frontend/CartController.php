@@ -104,15 +104,13 @@ class CartController extends Controller
     public function applyCoupon(Request $request)
     {
         $couponCode = $request->coupon_code;
-
-        // Ensure subtotal is retrieved correctly
         $subtotal = session()->get('cart_subtotal', 0);
 
         if ($subtotal <= 0) {
             return response()->json(['success' => false, 'message' => 'Cart is empty.'], 400);
         }
 
-        // Find the coupon
+        // Find active coupon
         $coupon = Coupon::where('code', $couponCode)
                         ->where('is_active', 1)
                         ->whereDate('validated_date', '>=', now())
@@ -122,22 +120,14 @@ class CartController extends Controller
             return response()->json(['success' => false, 'message' => 'Invalid or expired coupon.'], 400);
         }
 
-        // Calculate the discount
-        $discountAmount = 0;
-        if ($coupon->type === 'fixed') {
-            $discountAmount = $coupon->value;
-        } elseif ($coupon->type === 'percentage') {
-            $discountAmount = ($subtotal * $coupon->value) / 100;
-        }
+        // Calculate discount
+        $discountAmount = $coupon->type === 'fixed'
+                          ? $coupon->value
+                          : ($subtotal * $coupon->value) / 100;
 
-        // Ensure discount does not exceed subtotal
-        if ($discountAmount > $subtotal) {
-            $discountAmount = $subtotal;
-        }
+        $discountAmount = min($discountAmount, $subtotal); // Prevent discount from exceeding total
+        $newTotal = max($subtotal - $discountAmount, 0); // Prevent negative total
 
-        $newTotal = $subtotal - $discountAmount;
-
-        // Store discount and total in session
         session(['discount' => $discountAmount, 'cart_total' => $newTotal]);
 
         return response()->json([
@@ -146,6 +136,5 @@ class CartController extends Controller
             'new_total' => $newTotal
         ]);
     }
-
 
 }

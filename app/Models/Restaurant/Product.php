@@ -56,4 +56,9 @@ class Product extends Model
 
            return number_format($finalPrice, 2);
        }
+
+       public function ratings()
+       {
+           return $this->hasMany(ProductRating::class);
+       }
 }

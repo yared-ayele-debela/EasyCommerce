@@ -84,12 +84,24 @@
             </li>
             {{-- @endif --}}
 
+
                {{-- @if ($user && $user->hasPermissionByRole('view_coupon')) --}}
                <li class=" {{ request()->is('admin/restaurant/restaurants')?'nav-item active':'' }}">
                 <a class="nav-link  {{request()->is('admin/restaurant/restaurants')}}" data-bs-target="#restaurantes-nav" data-bs-toggle="collapse" href="javascripit:void(0);" aria-expanded="false"> <i class="bi bi-house-fill"></i><span>Restaurant Managements</span><i class="bi bi-chevron-down  ms-auto"></i> </a>
                 <ul id="restaurantes-nav" class="nav-content collapse {{ request()->is('admin/restaurant/restaurants')?'show':'' }} " data-bs-parent="" style="">
                     {{-- @if ($user && $user->hasPermissionByRole('view_coupon')) --}}
                     <li> <a href="{{ route('restaurants.index') }}" class=" {{ request()->is('admin/restaurant/restaurants')?' nav-link active':'' }}"> <i class="bi bi-circle"></i><span>List of Restaurants</span> </a></li>
+                    {{-- @endif --}}
+                </ul>
+            </li>
+            {{-- @endif --}}
+            
+              {{-- @if ($user && $user->hasPermissionByRole('view_coupon')) --}}
+              <li class=" {{ request()->is('admin/restaurant/order*')?'nav-item active':'' }}">
+                <a class="nav-link  {{request()->is('admin/restaurant/order*')}}" data-bs-target="#order_produts-nav" data-bs-toggle="collapse" href="javascripit:void(0);" aria-expanded="false"> <i class="bi bi-box"></i><span>Orders Managements</span><i class="bi bi-chevron-down ms-auto"></i> </a>
+                <ul id="order_produts-nav" class="nav-content collapse {{ request()->is('admin/restaurant/order*')?'show':'' }} " data-bs-parent="" style="">
+                    {{-- @if ($user && $user->hasPermissionByRole('view_coupon')) --}}
+                    <li> <a href="{{ route('restaurant.orders.index') }}" class=" {{ request()->is('admin/restaurant/order*')?' nav-link active':'' }}"> <i class="bi bi-circle"></i><span>List of Orders</span> </a></li>
                     {{-- @endif --}}
                 </ul>
             </li>

@@ -167,36 +167,8 @@
         <h4 class="mt-5 mb-3">All Restaurants Nearby</h4>
         <h4 class="mt-5 mb-3"><a href="{{ url('restaurants') }}" class="text-dark">All</a></h4>
     </div>
-    <div class="row">
-        @foreach ($restaurants as $restaurant)
-        <div class="col-md-6">
-            <div class="resturant_card card mb-3 p-2">
-                <div class="row g-0">
-                    <div class="col-md-6">
-                        <a href="{{ url('restaurant/'.$restaurant->id.'/detail') }}">
-                        <img src="{{ asset('storage/' . $restaurant->cover) }}" class="img-fluid rounded-start" alt="{{ $restaurant->name }}">
-                        </a>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ $restaurant->name }}</h5>
-                            <p class="mb-1">{{ $restaurant->description }}</p>
+    <div class="row" id="restaurantContainer">
 
-                            <div class="mb-2">
-                                <span class="badge resturant_badge p-2">Around 1.5km</span>
-                                <span class="badge resturant_badge p-2">Around 45 min</span>
-                            </div>
-                            <p class="mb-1"> <i class="bi bi-pin-map-fill text-primary"></i> {{ $restaurant->address }}</p>
-                            <div class="d-flex justify-content-between align-items-center mt-3">
-                                <div class="text-warning me-2">★ 4.7</div>
-                                <div><img src="{{ asset('restaurant_frontend/assets/img/scooter-02.png') }}" style="width: 20%;" alt=""> From 60 ETB</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        @endforeach
     </div>
     <div class="row px-2 py-4 d-flex justify-content-center align-items-center flex-nowrap">
         <div class="col-md-4 col-4 text-center">
@@ -222,5 +194,65 @@
         </div>
     </div>
 </div>
+<script>
+   document.addEventListener("DOMContentLoaded", function () {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                let latitude = position.coords.latitude;
+                let longitude = position.coords.longitude;
+
+                // Fetch nearby restaurants from the Laravel backend
+                fetchNearbyRestaurants(latitude, longitude);
+            }, function (error) {
+                console.error("Geolocation error:", error);
+            });
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    });
+
+    function fetchNearbyRestaurants(lat, lng) {
+        fetch(`/nearby-restaurants?lat=${lat}&lng=${lng}`)
+            .then(response => response.json())
+            .then(data => {
+                let restaurantContainer = document.getElementById("restaurantContainer");
+                restaurantContainer.innerHTML = ""; // Clear previous content
+
+                data.forEach(restaurant => {
+                    let restaurantCard = `
+                        <div class="col-md-6">
+                            <div class="resturant_card card mb-3 p-2">
+                                <div class="row g-0">
+                                    <div class="col-md-6">
+                                        <a href="{{ url('restaurant/${restaurant.id}/detail') }}" class="">
+                                        <img src="/storage/${restaurant.cover}" class="img-fluid rounded-start" alt="Restaurant">
+                                        </a>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card-body">
+                                            <h5 class="card-title">${restaurant.name}</h5>
+                                            <p class="mb-1">${restaurant.description.substring(0, 50)}...</p>
+                                            <div class="mb-2">
+                                                <span class="badge resturant_badge p-2">Around  km</span>
+                                                <span class="badge resturant_badge p-2">Around min</span>
+                                            </div>
+                                            <p class="mb-1"><i class="bi bi-pin-map-fill text-primary"></i> ${restaurant.address}</p>
+                                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                                <div class="text-warning me-2">
+                                                    <span><span class="bi bi-star-fill text-primary"></span> ${restaurant.rating}</span>
+                                                </div>
+                                                <div><img src="/restaurant_frontend/assets/img/scooter-02.png" style="width: 20%;" alt=""> From 60 ETB</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                    restaurantContainer.innerHTML += restaurantCard;
+                });
+            })
+            .catch(error => console.error("Error fetching restaurants:", error));
+    }
+</script>
 @endsection
 

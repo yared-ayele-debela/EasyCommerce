@@ -13,7 +13,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::with('restaurant')->latest()->get();
+        $categories = Category::latest()->get();
         $restaurants = Restaurant::all();
         return view('restaurant.dashboard.categories.index', compact('categories', 'restaurants'));
     }
@@ -21,7 +21,6 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'restaurant_id' => 'required|exists:restaurants,id',
             'name' => 'required|string|max:255|unique:categories,name',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -33,7 +32,6 @@ class CategoryController extends Controller
         $imagePath = $request->file('image') ? $request->file('image')->store('categories', 'public') : null;
 
         Category::create([
-            'restaurant_id' => $request->restaurant_id,
             'name' => $request->name,
             'slug' => Str::slug($request->name),
             'description' => $request->description,
@@ -49,7 +47,6 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
 {
     $request->validate([
-        'restaurant_id' => 'required|exists:restaurants,id',
         'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
         'description' => 'nullable|string',
         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -66,7 +63,6 @@ class CategoryController extends Controller
     }
 
     $category->update([
-        'restaurant_id' => $request->restaurant_id,
         'name' => $request->name,
         'slug' => Str::slug($request->name),
         'description' => $request->description,

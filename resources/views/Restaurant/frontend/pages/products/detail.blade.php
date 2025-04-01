@@ -82,7 +82,7 @@
 
         <!-- Product Details -->
         <div class="col-md-6">
-            <div class="card p-3 shadow-sm">
+            <div class="offer-card p-3 shadow-sm">
                 <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
                     <h2 class="card-title text-dark">{{ $product->name }}</h2>
                     <h1 class="text-primary" id="product-price">
@@ -101,7 +101,12 @@
                             <img src="{{ asset('restaurant_frontend/assets/img/category.png') }}" style="width: 50px; height: auto;" alt="">
                             {{ $product->restaurant->name ?? 'Unknown Restaurant' }}
                         </span>
-                        <span class="text-dark star"><i class="bi bi-star-fill"></i> 4.7</span>
+                        <span class="text-dark star">
+                            @php
+                            $averageRating = \App\Models\Restaurant\ProductRating::where('product_id', $product->id)->avg('rating');
+                            @endphp
+                            <span><span class="bi bi-star-fill text-primary"></span> {{ number_format($averageRating, 1) }}</span>
+                        </span>
                         <span class="text-dark">20min</span>
                     </h4>
 
@@ -116,9 +121,50 @@
                     data-product="{{ $product->id }}">
                      <i class=" bi text-success bi-{{ $isInWishlist ? 'heart-fill' : 'heart' }}"></i>
                    </button>
+
                  </div>
             </div>
+              <div class="my-2 d-flex justify-content-between align-items-center">
+                <p class="mt-3">
+                    <a class="btn btn-outline-primary shadow-sm" data-bs-toggle="collapse" href="#RestaurantRating" role="button" aria-expanded="false" aria-controls="RestaurantRating">
+                        @php
+                      $count= \App\Models\Restaurant\ProductRating::where('product_id', $product->id)->count();
+                        @endphp
+                        Customer Feedback ({{ $count? $count:'0' }})
+                    </a>
+                </p>
+                <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#ratingModal">
+                    Rate this Product
+                </button>
+
+              </div>
+              @include('Restaurant.frontend.pages.products.rate')
+              <div class="collapse mb-2" id="RestaurantRating">
+                <div class="overflow-auto" style="white-space: nowrap;">
+                    <div class="d-flex gap-3" style="overflow-x: auto; scrollbar-width: thin;">
+                        @foreach ($product->ratings as $rating)
+                        <div class="offer-card shadow p-3 text-left " style="min-width: 300px; max-width: 350px;">
+                            <span class="font-italic">Name: {{ $rating->user->name }}</span>
+                                <br>
+                                <span class="fst-italic">Comment: {{ $rating->review }}</span>
+                                <br>
+                                <span>
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if ($i <= $rating->rating)
+                                            <i class="bi bi-star-fill text-primary"></i>
+                                        @else
+                                            <i class="bi bi-star text-primary"></i>
+                                        @endif
+                                    @endfor
+                                </span>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+              </div>
         </div>
+
     </div>
 
     <div class="row g-1">

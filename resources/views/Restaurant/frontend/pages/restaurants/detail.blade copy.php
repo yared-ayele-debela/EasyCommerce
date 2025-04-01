@@ -23,15 +23,29 @@
     <div class="row g-3">
         <div class="col-md-12 col-12">
             <div class="restaurants-card">
-                <img src="{{ asset('storage/' . $restaurant->cover) }}" alt="Restaurant">
+                <div class="owl-carousel owl-theme rest-img mt-4">
+                    @foreach ($restaurant->images as $image)
+                    <div class="item my-2">
+                    <img src="{{ asset('storage/' . $image->cover) }}" alt="Restaurant">
+                    <div>
+                    @endforeach
+                </div>
                 <div class="info">
                     <h4>{{ $restaurant->name }}</h4>
                     <p>{{ $restaurant->address }}</p>
                     <div class="d-flex align-items-center gap-2">
-                        <span>⭐ 4.7</span>
-                        <span>🚴 Free</span>
-                        <span>⏱ 20 min</span>
+                        @php
+                            $averageRating = \App\Models\Restaurant\RestaurantRating::where('restaurant_id', $restaurant->id)->avg('rating');
+                        @endphp
+                        <span><span class="bi bi-star-fill text-primary"></span> {{ number_format($averageRating, 1) }}</span>
+                        <span class="bi bi-bicycle text-primary" style="font-size: 28px;"> </span><span>Free</span>
+                        <span class="bi bi-clock-fill text-primary"> </span><span>20 min</span>
                     </div>
+                     <!-- Add a rating button here -->
+                    <button class="btn btn-outline-primary mt-3" data-bs-toggle="modal" data-bs-target="#ratingModal">
+                        Rate this Restaurant
+                    </button>
+                    @include('Restaurant.frontend.pages.restaurants.rating_modal')
                 </div>
             </div>
         </div>
@@ -46,58 +60,47 @@
             <div class="col-md-3 col-12 col-sm-6">
                 <span><i class="bi bi-telephone-fill text-primary"></i> {{ $restaurant->phone }}</span>
             </div>
-            <div class="col-md-3 col-12 col-sm-6">
-                <!-- Modal trigger button -->
-                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#ratingModal">
-                    Rating
-                </button>
 
-                <!-- Modal Body -->
-                <!-- if you want to close by clicking outside the modal, delete the last endpoint:data-bs-backdrop and data-bs-keyboard -->
-                <!-- Modern Rating Modal -->
-            <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-sm">
-                    <div class="modal-content shadow-lg border-0 rounded-4">
-                        <div class="modal-header bg-primary text-white">
-                            <h5 class="modal-title " id="ratingModalLabel">Rate the Restaurant</h5>
-                            <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close" id="ratingClosed"></button>
-                        </div>
-                        <div class="modal-body text-center p-4">
-                            <p class="fs-5 text-muted">How was your experience?</p>
-                            <div class="rating mb-3 text-center">
-                                <input type="radio" id="star5" name="rating" value="5">
-                                <label for="star5">★</label>
-                                <input type="radio" id="star4" name="rating" value="4">
-                                <label for="star4">★</label>
-                                <input type="radio" id="star3" name="rating" value="3">
-                                <label for="star3">★</label>
-                                <input type="radio" id="star2" name="rating" value="2">
-                                <label for="star2">★</label>
-                                <input type="radio" id="star1" name="rating" value="1">
-                                <label for="star1">★</label>
-                            </div>
-                            <input type="hidden" name="restaurant_id" id="restaurant_id" value="{{ $restaurant->id }}">
-                            <p class="small text-muted">Tap a star to rate.</p>
-                        </div>
-                        <div class="modal-footer d-flex justify-content-center">
-                            <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-primary px-4" id="submitRating">Submit</button>
+        </div>
+    </div>
+    <div class="row d-flex justify-content-center align-items-center">
+        <div class="col-12 ">
+               <p>
+                <a class="btn btn-outline-primary" data-bs-toggle="collapse" href="#RestaurantDescription" role="button" aria-expanded="false" aria-controls="RestaurantDescription">
+                  Restaurant Descriptions
+                </a>
+                <a class="btn btn-outline-primary" data-bs-toggle="collapse" href="#RestaurantRating" role="button" aria-expanded="false" aria-controls="RestaurantRating">
+                  Restaurant Rating Lists
+                </a>
+              </p>
+              <div class="collapse mb-2" id="RestaurantDescription">
+                <div class="offer-card card-body">
+                  {{ $restaurant->description }}
+                </div>
+              </div>
+              <div class="collapse mb-2" id="RestaurantRating">
+                 <div class="row d-flex jsu">
+                    @foreach ($restaurant->ratings as $rating)
+                    <div class="col-md-2 mb-2 text-left">
+                        <div class="offer-card card-body border-1 text-left p-2">
+                            <span class=" font-italic">Name: {{ $rating->user->name }} </span>
+                            <br>
+                            <span class="fst-italic">Comment: {{ $rating->review }} </span>
+                            <br>
+                           <span>
+                            @for ($i=1; $i<=5; $i++)
+                             @if( $i <=$rating->rating)
+                             <i class="bi bi-star-fill text-primary"></i>
+                             @else
+                             <i class="bi bi-star text-primary"></i>
+                             @endif
+                            @endfor
+                           </span>
                         </div>
                     </div>
-                </div>
-            </div>
-
-
-                <!-- Optional: Place to the bottom of scripts -->
-                <script>
-                    const myModal = new bootstrap.Modal(
-                        document.getElementById("modalId")
-                        , options
-                    , );
-
-                </script>
-
-            </div>
+                @endforeach
+                 </div>
+              </div>
         </div>
     </div>
 
@@ -108,16 +111,17 @@
                 <a href="#" class="nav-link text-dark fw-bold category-filter {{ request('category_id') ? 'text-dark' : 'nav-active' }}" data-id="">
                     All
                 </a>
-                @foreach($categories as $category)
+                @forelse($categories as $category)
                 <a href="#" class="nav-link fw-bold category-filter text-dark {{ request('category_id') == $category->id ? 'nav-active text-white' : 'text-white' }}" data-id="{{ $category->id }}">
                     {{ $category->name }}
                 </a>
-                @endforeach
+                @empty
+                @endforelse
             </nav>
         </div>
     </div>
     <div class="row g-3 py-4" id="product-list">
-        @foreach ($products as $product)
+        @forelse ($products as $product)
         <div class="col-md-2 col-6 my-2 product-item">
             <div class="offer-card p-3 h-100">
                 <a href="{{ url('restaurant/product-detail/'.$product->id) }}">
@@ -148,9 +152,17 @@
                 </div>
             </div>
         </div>
-        @endforeach
-    </div>
+        @empty
+        <div class="col-md-12 text-center">
+            <img src="{{ asset('no-product-found..png') }}" alt="No Product Found"
+            class="img-fluid mb-2">
+            <h6 class="text-dark">No Product Found</h6>
+            </div>
+        @endforelse
+      </div>
 </div>
+@forelse ($products as $product)
+
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         document.querySelectorAll(".category-filter").forEach(button => {
@@ -217,5 +229,7 @@
     });
 
 </script>
+@else
+@endforelse
 @endsection
 

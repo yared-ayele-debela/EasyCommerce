@@ -140,8 +140,7 @@ class UserController extends Controller
                     $user=User::where('id',$id)->first();
                     if ($user->status == 0) {
                         Auth::logout();
-                        Alert::toast('Your account is not activated. Please confirm your account to activate it.','info');
-                        return redirect()->back();
+                        return redirect()->back()->with('info', 'Your account is not activated. Please confirm your account to activate it.');
                     }
                     // Update User Cart with user_id
                     if (!empty(Session::get('session_id'))) {
@@ -151,11 +150,10 @@ class UserController extends Controller
                     }
 
                     // Login successful, redirect to the cart or any other desired page
-                    Alert::toast('Welcome to our website!', 'success');
-                    return redirect('cart');
+                    return redirect('cart')->with('success', 'Welcome to our website!');
                 } else {
                     // Login failed, redirect back with an error message
-                    Alert::toast('Incorrect username or password', 'error');
+                    return redirect()->back()->with('error', 'Incorrect username or password');
                     return redirect()->back();
                 }
             }
@@ -266,9 +264,9 @@ class UserController extends Controller
             $cms_pages = CmsPage::get()->toArray();
             $appsettings = AppSetting::all()->toArray();
             $countries = Country::where('status', 1)->get()->toArray();
-            $city = City::all()->where('status', 1);
-            $state = State::all()->where('status', 1);
-            return view('NewFrontEndPage.users.user_account', compact('countries', 'cms_pages', 'state', 'city', 'appsettings'));
+            $cities = City::all()->where('status', 1);
+            $states = State::all()->where('status', 1);
+            return view('auth.update-profile', compact('countries', 'cms_pages', 'states', 'cities', 'appsettings'));
         } catch (\Exception $e) {
             // Log or handle the exception as needed
             Alert::toast('something is wrong!!', 'error');
@@ -346,5 +344,75 @@ class UserController extends Controller
             Alert::toast('something is wrong!!', 'error');
             return redirect()->back();
         }
+    }
+
+    public function updatePassword(Request $request)
+    {
+        // Validate the incoming request
+        $validator = Validator::make($request->all(), [
+            'oldpassword' => 'required|string',
+            'new_password' => ['required|string|min:8','same:new_password_confirmation'],
+        ]);
+
+
+
+        // Check if the old password matches
+        if (!Hash::check($request->oldpassword, Auth::user()->password)) {
+            return redirect()->back()->withErrors(['oldpassword' => 'The current password is incorrect.']);
+        }
+
+        $user=User::findOrFail(Auth::user()->id);
+
+        // Update the password
+        $user->update([
+            'password' => Hash::make($request->new_password),
+        ]);
+
+        return redirect()->back()->with(['successs' => true, 'message' => 'Password updated successfully!']);
+    }
+
+    // Update Account Details
+    public function updateAccountDetails(Request $request)
+    {
+        // Validate the incoming request
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'country' => 'required|string',
+            'mobile' => 'required|numeric',
+            'address' => 'required|string',
+            'state' => 'required|string',
+            'city' => 'required|string',
+            'pincode' => 'required|string',
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $user=User::findOrFail(Auth::user()->id);
+        $user->name = $request->name;
+        $user->country = $request->country;
+        $user->mobile = $request->mobile;
+        $user->address = $request->address;
+        $user->state = $request->state;
+        $user->city = $request->city;
+        $user->pincode = $request->pincode;
+        if ($request->hasFile('profile_image')) {
+        // Get the file from the request
+        $file = $request->file('profile_image');
+
+        // Generate a unique file name
+        $fileName = time() . '.' . $file->getClientOriginalExtension();
+
+        // Store the file in the 'public/profile_images' directory
+        $filePath = $file->storeAs('public/profile_images', $fileName);
+        $user->profile_photo_path= 'profile_images/'.$fileName;
+
+        }
+        $user->save();
+
+        return redirect()->back()->with('success', 'Account details updated successfully!');
     }
 }

@@ -8,6 +8,18 @@
       </div>
       <div class="col-md-5 border rounded p-4">
         <h4 class="text-center mb-4 text-primary">Easy eCommerce, Hotel Booking, and Food Delivery</h4>
+        @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
+        @endif
+
+        @if(session('info'))
+            <div class="alert alert-info">{{ session('info') }}</div>
+        @endif
+
         <ul class="nav nav-pills mb-3 d-flex justify-content-center align-items-center" id="pills-tab" role="tablist">
           <li class="nav-item" role="presentation">
             <a class="nav-link active" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Login</a>

@@ -1,10 +1,8 @@
 <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content shadow-lg border-0 rounded-4">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title " id="ratingModalLabel">Rate the Restaurant</h5>
-                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close" id="ratingClosed"></button>
-            </div>
+            <form id="ratingForm">
+                @csrf
             <div class="modal-body text-left p-4">
                 <p class="fs-5 text-muted mb-1">How was your experience?</p>
                 <div class="rating mb-3 text-left">
@@ -30,8 +28,9 @@
             </div>
             <div class="modal-footer d-flex justify-content-center">
                 <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary px-4" id="submitRating">Submit</button>
+                <button type="submit" class="btn btn-primary px-4" id="submitRating">Submit</button>
             </div>
+          </form>
         </div>
     </div>
 </div>

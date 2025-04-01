@@ -15,7 +15,34 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+#search-results {
+    position: absolute;
+    z-index: 1000;
+    max-height: 250px;
+    overflow-y: auto;
+    width: 100%;
+    background: rgba(132, 254, 123, 0.2) !important; /* Semi-transparent */
+    backdrop-filter: blur(10px) !important; /* Apply blur effect */
+    border-radius: 10px;
+    padding: 5px;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
 
+.list-group-item {
+    transition: 0.3s ease-in-out;
+    background: rgba(132, 254, 123, 0.2) !important; /* Semi-transparent */
+    backdrop-filter: blur(10px) !important; /* Apply blur effect */
+    color:rgb(36, 36, 36);
+}
+
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+</style>
 </head>
 
 <body>
@@ -29,10 +56,12 @@
         </a>
 
         <!-- Search Bar -->
-        <div class="mx-auto search-form border border-1 p-1 rounded w-50">
-            <form class="d-flex">
-                <input class="form-control me-2 search-input border-0" type="search" placeholder="Search for products" aria-label="Search">
-                <button class="btn search-button" type="submit"><i class="bi bi-search"></i></button>
+        <div class="mx-auto search-form border bg-white border-1 p-1 rounded w-50">
+            <form class="d-flex position-relative">
+                <input class="form-control me-2 search-input border-0" id="search-box" type="search" placeholder="Search for products" aria-label="Search">
+                {{-- <button class="btn search-button" type="submit"><i class="bi bi-search"></i></button> --}}
+                <div id="search-results" class="list-group position-absolute w-100 shadow-sm bg-white rounded d-none" style="margin-top: 40px;"></div>
+
             </form>
         </div>
 
@@ -55,7 +84,52 @@
                     {{ count(session('cart', [])) }}
                 </span>
             </a>
-            <a href="{{ route('auth.login') }}" class="btn bg-primary text-white">Sign In</a>
+            <div class="dropdown">
+                <a class="btn btn-primary text-white border border-1 dropdown-toggle d-flex align-items-center gap-1" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    @if(Auth::check())
+                        @if(Auth::user()->profile_photo_path)
+                          <img src="{{ asset('storage/' . auth()->user()->profile_photo_path) }}" width="28" class="rounded-circle" alt="Profile Image">
+                        @endif
+                        {{ strtok(Auth::user()->name,' ') }}
+                    @else
+                        Login/Register
+                    @endif
+                </a>
+
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded" aria-labelledby="accountDropdown">
+                    @if(Auth::check())
+                        <li class="mb-2">
+                            <a class="dropdown-item d-flex align-items-center gap-2" href="{{ url('user/account/update') }}">
+                                <i class="fas fa-cog text-primary"></i> My Profile
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a class="dropdown-item d-flex align-items-center gap-2" href="{{ url('restaurant/my-orders') }}">
+                                <i class="far fa-heart text-primary"></i> My Orders
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2 text-danger" href="{{ url('user/logout') }}">
+                                <i class="far fa-check-circle"></i> Logout
+                            </a>
+                        </li>
+                    @else
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('auth.login') }}">
+                                <i class="fas fa-sign-in-alt text-success"></i> Login / Signup
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2" href="javascript:void(0);">
+                                <i class="fas fa-user-tie text-primary"></i> Become a Vendor
+                            </a>
+                        </li>
+                    @endif
+                </ul>
+            </div>
         </div>
     </div>
 </nav>
@@ -76,7 +150,52 @@
             <a href="cart.html" class="text-decoration-none me-3 text-primary">
                 <i class="bi bi-cart" style="font-size: 18px;"></i>
             </a>
-            <a href="{{ route('auth.login') }}" class="btn btn-sm bg-primary text-white">Sign In</a>
+            <div class="dropdown">
+                <a class="btn border border-1 text-dark dropdown-toggle d-flex align-items-center gap-1" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    @if(Auth::check())
+                        @if(Auth::user()->profile_photo_path)
+                          <img src="{{ asset('storage/' . auth()->user()->profile_photo_path) }}" width="28" class="rounded-circle" alt="Profile Image">
+                        @endif
+                        {{ strtok(Auth::user()->name,' ') }}
+                    @else
+                        Login/Register
+                    @endif
+                </a>
+
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded" aria-labelledby="accountDropdown">
+                    @if(Auth::check())
+                        <li class="mb-2">
+                            <a class="dropdown-item d-flex align-items-center gap-2" href="{{ url('user/account/update') }}">
+                                <i class="fas fa-cog text-primary"></i> My Profile
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a class="dropdown-item d-flex align-items-center gap-2" href="{{ url('restaurant/my-orders') }}">
+                                <i class="far fa-heart text-primary"></i> My Orders
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2 text-danger" href="{{ url('user/logout') }}">
+                                <i class="far fa-check-circle"></i> Logout
+                            </a>
+                        </li>
+                    @else
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('auth.login') }}">
+                                <i class="fas fa-sign-in-alt text-success"></i> Login / Signup
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2" href="javascript:void(0);">
+                                <i class="fas fa-user-tie text-primary"></i> Become a Vendor
+                            </a>
+                        </li>
+                    @endif
+                </ul>
+            </div>
         </div>
     </div>
 
@@ -146,3 +265,42 @@
         </div>
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#search-box').on('keyup', function () {
+            let query = $(this).val();
+
+            if (query.length > 1) {
+                $.ajax({
+                    url: "{{ route('search') }}",
+                    type: "GET",
+                    data: { query: query },
+                    success: function (data) {
+                        let results = '';
+                        if (data.length > 0) {
+                            data.forEach(product => {
+                                results += `<a href="/restaurant/product-detail/${product.id}" class="list-group-item list-group-item-action">
+                                            <strong>${product.name}</strong> - ${product.description.substring(0, 50)}...
+                                        </a>`;
+                            });
+                        } else {
+                            results = `<div class="list-group-item text-muted">No results found</div>`;
+                        }
+                        $('#search-results').html(results).removeClass('d-none');
+                    }
+                });
+            } else {
+                $('#search-results').addClass('d-none');
+            }
+        });
+
+        // Hide search results when clicking outside
+        $(document).on('click', function (e) {
+            if (!$(e.target).closest('#search-box, #search-results').length) {
+                $('#search-results').addClass('d-none');
+            }
+        });
+    });
+</script>

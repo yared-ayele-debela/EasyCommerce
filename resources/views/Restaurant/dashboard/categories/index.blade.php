@@ -18,7 +18,6 @@ $user = Auth::guard('admin')->user();
                 <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Restaurant</th>
                         <th>Description</th>
                         <th>Image</th>
                         <th>Discount</th>
@@ -30,7 +29,6 @@ $user = Auth::guard('admin')->user();
                     @foreach ($categories as $category)
                     <tr>
                         <td>{{ $category->name }}</td>
-                        <td>{{ $category->restaurant->name }}</td>
                         <td>{{ $category->description }}</td>
                         <td><img src="{{ asset('storage/' . $category->image) }}" width="50"></td>
                         <td>{{ $category->discount }} {{ $category->discount_type == 'percentage' ? '%' : 'ETB' }}</td>
@@ -68,18 +66,7 @@ $user = Auth::guard('admin')->user();
                                             <input type="text" name="name" class="form-control" value="{{ $category->name }}" required>
                                         </div>
 
-                                        <!-- Restaurant Selection -->
-                                        <div class="mb-3">
-                                            <label class="form-label">Select Restaurant</label>
-                                            <select name="restaurant_id" class="form-control" required>
-                                                @foreach($restaurants as $restaurant)
-                                                    <option value="{{ $restaurant->id }}"
-                                                        {{ $restaurant->id == $category->restaurant_id ? 'selected' : '' }}>
-                                                        {{ $restaurant->name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
+
 
                                         <!-- Image Upload -->
                                         <div class="mb-3">
@@ -147,14 +134,7 @@ $user = Auth::guard('admin')->user();
                         <label>Category Name:</label>
                         <input type="text" name="name" class="form-control" required>
                         </div>
-                        <div class="mb-3">
-                        <label>Select Restaurant:</label>
-                        <select name="restaurant_id" class="form-control" required>
-                            @foreach($restaurants as $restaurant)
-                                <option value="{{ $restaurant->id }}">{{ $restaurant->name }}</option>
-                            @endforeach
-                        </select>
-                        </div>
+                    
                         <div class="mb-3">
                         <label>Description:</label>
                         <textarea name="description" class="form-control"></textarea>

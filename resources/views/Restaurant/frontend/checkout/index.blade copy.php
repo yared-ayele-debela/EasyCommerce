@@ -3,6 +3,7 @@
 @php
 use App\Models\Restaurant\Product;
 @endphp
+
 <style>
     .card {
         box-shadow: none !important;
@@ -262,6 +263,8 @@ use App\Models\Restaurant\Product;
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
 <script>
     // JavaScript to handle payment method selection
     document.querySelectorAll('.payment-method').forEach(method => {
@@ -315,26 +318,65 @@ use App\Models\Restaurant\Product;
                 cart ', [])) }})');
         });
 
-        var map = L.map('map').setView([9.03, 38.74], 12);
+        var map = L.map('map').setView([9.03, 38.74], 12); // Default view
+
+        // Add OpenStreetMap tiles
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
+
         var marker;
+
+        // Handle manual click to add marker
         map.on('click', function(e) {
             var lat = e.latlng.lat.toFixed(6);
             var lng = e.latlng.lng.toFixed(6);
             updateMarker(lat, lng);
-            
         });
+
+        function updateMarker(lat, lng, address = null) {
+            // Remove existing marker
+            if (marker) {
+                map.removeLayer(marker);
+            }
+            // Add new marker
+            marker = L.marker([lat, lng]).addTo(map)
+                .bindPopup(address ? address : `Latitude: ${lat}<br>Longitude: ${lng}`)
+                .openPopup();
+
+            // Update hidden fields
+            document.getElementById('latitude').value = lat;
+            document.getElementById('longitude').value = lng;
+        }
+
+            // Initialize Leaflet Control Geocoder for address search
+            var geocoder = L.Control.geocoder({
+                defaultMarkGeocode: false
+            }).on('markgeocode', function(e) {
+                var latlng = e.geocode.center;
+                map.setView(latlng, 14);
+                updateMarker(latlng.lat, latlng.lng, e.geocode.name);
+                document.getElementById('searchBox').value = e.geocode.name; // Fill input with searched address
+            }).addTo(map);
+
+            // Handle input search box manually
+            document.getElementById('searchBox').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    geocoder.options.geocoder.geocode(this.value, function(results) {
+                        if (results.length > 0) {
+                            var latlng = results[0].center;
+                            map.setView(latlng, 14);
+                            updateMarker(latlng.lat, latlng.lng, results[0].name);
+                        }
+                    });
+                }
+            });
         var mapModal = document.getElementById('addressModal');
         mapModal.addEventListener('shown.bs.modal', function() {
-            if (!map) {
-                initMap(); // Initialize map only once
-            } else {
-                setTimeout(() => {
-                    map.invalidateSize(); // Fix hidden modal issue
-                }, 200); // Delay ensures proper resizing
-            }
+            setTimeout(() => {
+            map.invalidateSize();
+        }, 200);
         });
     });
 

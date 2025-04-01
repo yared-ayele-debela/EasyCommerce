@@ -61,14 +61,14 @@ input[type="range"] {
                     <div class="card offer-card">
                        <div class="card-body">
                         <form id="filterForm">
-                      
+
                             <div class="col-md-12 mb-3">
                                 <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-search"></i></span>
                                 <input type="text" name="search" class="form-control" placeholder="Search by name, code, or description">
                                 </div>
                             </div>
-                
+
                             <!-- Restaurant Dropdown -->
                             <div class="col-md-12 mb-3">
                                 <select name="restaurant_id" class="form-select">
@@ -78,7 +78,7 @@ input[type="range"] {
                                     @endforeach
                                 </select>
                             </div>
-                
+
                             <!-- Category Dropdown -->
                             <div class="col-md-12 mb-3">
                                 <select name="category_id" class="form-select">
@@ -88,7 +88,7 @@ input[type="range"] {
                                     @endforeach
                                 </select>
                             </div>
-                
+
                             <!-- Subcategory Dropdown -->
                             <div class="col-md-12 mb-3">
                                 <select name="subcategory_id" class="form-select">
@@ -98,7 +98,7 @@ input[type="range"] {
                                     @endforeach
                                 </select>
                             </div>
-                
+
                             <!-- City Dropdown -->
                             <div class="col-md-12 mb-3">
                                 <select name="city_id" class="form-select">
@@ -108,7 +108,7 @@ input[type="range"] {
                                     @endforeach
                                 </select>
                             </div>
-                
+
                             <!-- Menu Dropdown -->
                             <div class="col-md-12 mb-3">
                                 <select name="menu_id" class="form-select">
@@ -118,7 +118,7 @@ input[type="range"] {
                                     @endforeach
                                 </select>
                             </div>
-                
+
                             <!-- Discount Type -->
                             <div class="col-md-12 mb-3">
                                 <select name="discount_type" class="form-select">
@@ -127,7 +127,7 @@ input[type="range"] {
                                     <option value="fixed">Fixed Amount</option>
                                 </select>
                             </div>
-                
+
                             <!-- Free Delivery -->
                             <div class="col-md-12 mb-3">
                                 <select name="is_free" class="form-select">
@@ -136,31 +136,31 @@ input[type="range"] {
                                     <option value="0">No</option>
                                 </select>
                             </div>
-                
+
                             <!-- Delivery Fee -->
                             <div class="col-md-12">
                                 <label for="delivery_fee" class="form-label">💵 Max Delivery Fee: <span id="deliveryFeeValue">150</span> ETB</label>
                                 <input type="range" name="delivery_fee" id="delivery_fee" class="form-range" min="0" max="300" value="150" oninput="updateValue('delivery_fee', 'deliveryFeeValue')">
                             </div>
-                            
+
                             <!-- Delivery Time -->
                             <div class="col-md-12">
                                 <label for="delivery_time" class="form-label">⏳ Max Delivery Time: <span id="deliveryTimeValue">50</span> min</label>
                                 <input type="range" name="delivery_time" id="delivery_time" class="form-range" min="0" max="100" value="50" oninput="updateValue('delivery_time', 'deliveryTimeValue')">
                             </div>
-                
+
                             <!-- Most Popular -->
                             <div class="col-md-12 mb-3 form-check">
                                 <input type="checkbox" name="most_populer" value="1" class="form-check-input">
                                 <label class="form-check-label">🔥 Most Popular</label>
                             </div>
-                
+
                             <!-- Best Seller -->
                             <div class="col-md-12 mb-3 form-check">
                                 <input type="checkbox" name="best_seller" value="1" class="form-check-input">
                                 <label class="form-check-label">🏆 Best Seller</label>
                             </div>
-                
+
                             <!-- Apply Button -->
                             <div class="col-12 text-end">
                                 <button type="submit" class="btn btn-primary px-4"><i class="bi bi-check-circle"></i> Apply Filters</button>
@@ -173,11 +173,11 @@ input[type="range"] {
                     <div id="product-list">
                         @include('Restaurant.frontend.pages.products.partail')
                     </div>
-                    
+
                 </div>
             </div>
         </div>
-       
+
     </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

@@ -558,9 +558,12 @@ input[type="number"] {
   border: none;
   background-color: #fff;
 }
+.card-bg{
+    background-color: #F0F5FA;
+}
 
 .delivery-location {
-  padding: 15px;
+  padding: 5px;
   background-color: #F0F5FA;
   border-radius: 10px;
   font-size: 0.9rem;
@@ -642,32 +645,49 @@ input[type="number"] {
   font-size: 1.5rem;
   color: #12f512;
 }
-
 .payment-methods {
-  display: flex;
-  justify-content: space-between;
-  margin: 20px 0;
-}
+    display: flex;
+    gap: 35px;
+    margin-top: 15px;
+  }
 
-.payment-method {
-  width: 80px;
-  height: 80px;
-  border: 2px solid #ddd;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
+  .payment-method {
+    width: 90px;
+    height: 90px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    position: relative;
+  }
 
-.payment-method.selected {
-  border: 2px solid #17BE18;
-  background-color: #f0fff4;
-}
+  .payment-method input {
+    position: absolute;
+    opacity: 0;
+  }
 
-.payment-method img {
-  max-width: 60%;
-}
+  .payment-method img {
+    max-width: 70%;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .payment-method:hover {
+    border-color: #17BE18;
+    background-color: #f0fff4;
+  }
+
+  .payment-method.selected {
+    border-color: #17BE18;
+    background-color: #f0fff4;
+  }
+
+  .payment-method.selected img {
+    transform: scale(1.1);
+  }
+
 
 .tip-options {
   display: flex;
@@ -838,11 +858,12 @@ input[type="number"] {
 
 /* Input Field Styling */
 .search-input {
-    background-color: transparent !important;
+    background-color: white;
     outline: none;
     transition: all 0.3s ease-in-out;
     box-shadow: none !important;
 }
+
 
 /* Apply focus effect on .search-form when input is focused */
 .search-form:has(.search-input:focus) {
@@ -1010,4 +1031,28 @@ input[type="number"] {
     border-radius: 12px;
     border: none;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown-menu .dropdown-item:focus {
+    background-color: #91f591 !important; /* Change to your desired color */
+    color: white !important; /* Ensure text is visible */
+}
+
+.form-check-input:checked {
+    background-color: #17BE18 !important;
+    border-color: #17BE18 !important;
+}
+
+.table-light {
+    --bs-table-color: #000000;
+    --bs-table-bg: #F0F5FA;
+    --bs-table-border-color: #0d9e0d;
+    --bs-table-striped-bg: #ecedee;
+    --bs-table-striped-color: #000;
+    --bs-table-active-bg: #dfe0e1;
+    --bs-table-active-color: #000;
+    --bs-table-hover-bg: #e5e6e7;
+    --bs-table-hover-color: #000;
+    color: var(--bs-table-color);
+    border-color: var(--bs-table-border-color);
 }

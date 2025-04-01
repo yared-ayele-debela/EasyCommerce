@@ -32,5 +32,29 @@ class RestaurantController extends Controller
         return view('Restaurant.frontend.pages.restaurants.detail',compact('restaurant','categories', 'products'));
     }
 
+    public function getNearbyRestaurants(Request $request)
+    {
+        $userLat = $request->query('lat');
+        $userLng = $request->query('lng');
+
+        if (!$userLat || !$userLng) {
+            return response()->json(['error' => 'Location not provided'], 400);
+        }
+
+        // Calculate nearby restaurants using the Haversine formula
+        $restaurants = Restaurant::selectRaw("
+id, name, description, cover, address, latitude, longitude,
+            (6371 * acos(cos(radians(?)) * cos(radians(latitude)) 
+            * cos(radians(longitude) - radians(?)) 
+            + sin(radians(?)) * sin(radians(latitude)))) AS distance
+        ", [$userLat, $userLng, $userLat])
+        ->with(['admin', 'images','ratings'])
+        ->having("distance", "<", 10) // Restaurants within 10km
+        ->orderBy("distance")
+        ->get();
+
+        return response()->json($restaurants);
+    }
+
 
 }

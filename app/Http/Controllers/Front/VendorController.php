@@ -57,10 +57,7 @@ class VendorController extends Controller
             }
             // Check if the email already exists in the table
             if (Vendor::where('email', $email)->exists() || Admin::where('email', $email)->exists()) {
-                // Email already exists, display a message or throw an exception
-                // dd($email);die;
                 Alert::toast('Email already exists', 'error');
-
                 return redirect()->back();
             }
             // dd($request->all());
@@ -70,7 +67,7 @@ class VendorController extends Controller
             $vendor->name = $request->input('name');
             $vendor->mobile = $request->input('phone');
             $vendor->email = $request->input('email');
-            $vendor->status = 0;
+            $vendor->status = 1;
             $vendor->save();
 
 
@@ -83,22 +80,22 @@ class VendorController extends Controller
             $admin->mobile = $request->input('phone');
             $admin->email = $request->input('email');
             $admin->password = bcrypt($request->input('password'));
-            $admin->status = 0;
+            $admin->status = 1;
             $admin->save();
 
 
             $email = $request->input('email');
             $email_template = EmailTemplate::first();
 
-            $messageData = [
-                'email_template' => $email_template,
-                'email' => $request->input('email'),
-                'name' => $request->input('name'),
-                'code' => base64_encode($request->input('email')),
-            ];
-            Mail::send('emails.vendor_confirmation', $messageData, function ($message) use ($email) {
-                $message->to($email)->subject('Confirm your Vendor Account ');
-            });
+            // $messageData = [
+            //     'email_template' => $email_template,
+            //     'email' => $request->input('email'),
+            //     'name' => $request->input('name'),
+            //     'code' => base64_encode($request->input('email')),
+            // ];
+            // Mail::send('emails.vendor_confirmation', $messageData, function ($message) use ($email) {
+            //     $message->to($email)->subject('Confirm your Vendor Account ');
+            // });
             DB::commit();
 
 
