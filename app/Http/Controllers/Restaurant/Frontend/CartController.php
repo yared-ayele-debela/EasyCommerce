@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Restaurant\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\Country;
 use App\Models\Restaurant\Coupon;
+use App\Models\Restaurant\Product;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -136,5 +137,11 @@ class CartController extends Controller
             'new_total' => $newTotal
         ]);
     }
+
+    public function getProductSizes($id) {
+        $product = Product::findOrFail($id);
+        return response()->json(['sizes' => $product->sizes]);
+    }
+
 
 }

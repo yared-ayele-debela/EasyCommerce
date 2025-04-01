@@ -93,7 +93,7 @@
                 <div class="overflow-auto m-1" style="white-space: nowrap;">
                     <div class="d-flex gap-3" style="overflow-x: auto; scrollbar-width: thin;">
                         @foreach ($restaurant->ratings as $rating)
-                            <div class="offer-card shadow p-3 text-left " style="min-width: 300px; max-width: 350px;">
+                            <div class="offer-card shadow p-3 text-left mb-2" style="min-width: 300px; max-width: 350px;">
                                 <span class="font-italic">Name: {{ $rating->user->name }}</span>
                                 <br>
                                 <span class="fst-italic">Comment: {{ $rating->review }}</span>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Restaurant\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Restaurant\ProductRating;
+use App\Models\Restaurant\Restaurant;
 use App\Models\Restaurant\RestaurantRating;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -28,7 +29,11 @@ class RatingController extends Controller
             ['rating' => $request->rating, 'review' => $request->review]
         );
 
-
+        $rating=RestaurantRating::where('restaurant_id', $request->restaurant_id)->avg('rating');
+        $restaurant=Restaurant::findOrFail($request->restaurant_id);
+        $restaurant->rating=$rating;
+        $restaurant->save();
+        
         return response()->json(['status' => 'success', 'message' => 'Rating submitted successfully!']);
     }
     public function product_rating_store(Request $request)

@@ -8,6 +8,8 @@ use App\Http\Controllers\Admin\AdminRolesController;
 use App\Http\Controllers\Admin\AdminWithdrawRequestController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\AdminController;
+use App\Models\Restaurant\RestaurantRating;
+
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoriesController;
 use App\Http\Controllers\Admin\CouponsController;
@@ -1111,7 +1113,9 @@ Route::prefix('/restaurant')->group(function () {
         return response()->json(['products' => $products]);
     })->name('restaurant.products.filter');
 
-    Route::get('/all-products',[FrontendProductController::class,'index'])->name('all-restaurant-products');
+    Route::get('/products',[FrontendProductController::class,'filter'])->name('all-restaurant-products');
+    Route::get('all-products',[FrontendProductController::class,'index'])->name('all-restaurant-products-filter');
+    Route::post('filter-all-products',[FrontendProductController::class,'filterProducts'])->name('filter-restaurant-products');
 
     Route::get('product-detail/{id}',[FrontendProductController::class,'detail'])->name('restaurant-product-detail');
     Route::get('categories',[FrontendCategoryController::class,'index'])->name('restaurant.categories');
@@ -1124,6 +1128,7 @@ Route::prefix('/restaurant')->group(function () {
     Route::get('/cart/count', [CartController::class, 'getCartCount'])->name('restaurant.cart.count');
     Route::post('/apply-coupon', [CartController::class, 'applyCoupon'])->name('restaurant.apply.coupon');
     Route::get('/cart/remove/{key}', [CartController::class, 'removeFromCart']);
+    Route::get('/get-product-sizes/{id}', [CartController::class, 'getProductSizes']);
 
     // for wishlist
     Route::middleware('auth')->group(function () {
@@ -1160,8 +1165,8 @@ Route::prefix('/restaurant')->group(function () {
     });
 
 
-    Route::get('/nearby-restaurants', [FrontendRestaurantController::class, 'getNearbyRestaurants']);
-
+    Route::get('/restaurants/nearby', [FrontendRestaurantController::class, 'getNearbyRestaurants']);
+   
     Route::get('/states/{countryId}', [UserDeliveryAddressController::class, 'getRegions']);
     Route::get('/cities/{stateId}', [UserDeliveryAddressController::class, 'getCities']);
     Route::get('/sub-cities/{cityId}', [UserDeliveryAddressController::class, 'getSubCities']);

@@ -1,14 +1,24 @@
-    @forelse ($products as $product)
-        <div class="col-md-3 col-6 my-2">
+@extends('all_frontend_layouts.layouts')
+@section('content')
+<div class="container-fluid">
+    <div class="row">
+        <div class="header">
+            <button class="btn btn-link text-dark">
+                <a href="{{ url('/') }}" class="text-dark"><i class="bi bi-arrow-left"></i></a>
+            </button>
+            <h5 class="my-4 text-dark text-center">{{ ucfirst(str_replace('_', ' ', $filter)) }} Products</h5>
+        </div>
+        @forelse ($products as $product)
+        <div class="col-md-2 col-6 my-2">
             <div class="offer-card p-3 h-100">
                 <a href="{{ url('restaurant/product-detail/'.$product->id) }}">
                     @php
-                        $off = $product->price - $product->getFinalPrice();
+                    $off = $product->price - $product->getFinalPrice();
                     @endphp
                     @if($off > 0)
-                        <span class="badge-offer">
-                            {{ $off }} ETB OFF
-                        </span>
+                    <span class="badge-offer">
+                        {{ $off }} ETB OFF
+                    </span>
                     @endif
                     <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid mb-2" alt="{{ $product->name }}">
                     <h6 class="text-dark">{{ $product->name }}</h6>
@@ -30,6 +40,10 @@
                 </div>
             </div>
         </div>
-    @empty
+        @empty
         <p class="text-center text-muted">No products found.</p>
-    @endforelse
+        @endforelse
+    </div>
+</div>
+@endsection
+

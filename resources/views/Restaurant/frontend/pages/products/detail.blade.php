@@ -24,7 +24,7 @@
         cursor: pointer;
     }
 
-    .size-option input:checked + span {
+    .size-option input:checked+span {
         background-color: #12f512;
         color: white;
         border-radius: 50%;
@@ -34,6 +34,7 @@
         align-items: center;
         justify-content: center;
     }
+
 </style>
 <div class="container">
     <div class="header">
@@ -51,31 +52,27 @@
             </div>
             <div class="d-flex justify-content-center mt-3">
                 @foreach($product->images as $key => $image)
-                    <img src="{{ asset('storage/' . $image->image_path) }}"
-                        width="50"
-                        class="thumbnail mx-2 p-2 border rounded"
-                        alt="Product Image"
-                        style="cursor: pointer;">
+                <img src="{{ asset('storage/' . $image->image_path) }}" width="50" class="thumbnail mx-2 p-2 border rounded" alt="Product Image" style="cursor: pointer;">
                 @endforeach
             </div>
             @if($product->sizes->count() > 0)
             <div class="d-flex d-lg-none justify-content-center my-3">
                 @foreach($product->sizes as $size)
-                    <label class="size-option mx-2">
-                        <input type="radio" name="size" value="{{ $size->price }}" data-price="{{ $size->price }}" data-size="{{ $size->size }}" class="size-selector">
-                        <span>{{ strtoupper(substr($size->size, 0, 1)) }}</span>
-                    </label>
+                <label class="size-option mx-2">
+                    <input type="radio" name="size" value="{{ $size->price }}" data-price="{{ $size->price }}" data-size="{{ $size->size }}" class="size-selector">
+                    <span>{{ strtoupper(substr($size->size, 0, 1)) }}</span>
+                </label>
                 @endforeach
-             </div>
-           @endif
+            </div>
+            @endif
         </div>
         <div class="col-1 d-none d-lg-block">
             <div class="d-flex align-items-start flex-column bd-highlight mb-3" style="height: 200px;">
                 @foreach($product->sizes as $size)
-                    <label class="size-option mx-2 mb-3">
-                        <input type="radio" name="size" value="{{ $size->price }}" data-price="{{ $size->price }}" data-size="{{ $size->size }}" class="size-selector">
-                        <span>{{ strtoupper(substr($size->size, 0, 1)) }}</span>
-                    </label>
+                <label class="size-option mx-2 mb-3">
+                    <input type="radio" name="size" value="{{ $size->price }}" data-price="{{ $size->price }}" data-size="{{ $size->size }}" class="size-selector">
+                    <span>{{ strtoupper(substr($size->size, 0, 1)) }}</span>
+                </label>
                 @endforeach
             </div>
         </div>
@@ -112,23 +109,21 @@
 
                     <p class="card-text text-dark">{{ $product->description }}</p>
 
-                    <button class="btn bg-primary text-white rounded shadow" id="addToCart"
-                    data-product-id="{{ $product->id }}">Add To Cart</button>
+                    <button class="btn bg-primary text-white rounded shadow" id="addToCart" data-product-id="{{ $product->id }}">Add To Cart</button>
                     @php
-                        $isInWishlist = Auth::check() && \App\Models\Restaurant\Wishlist::where('user_id', Auth::id())->where('product_id', $product->id)->exists();
+                    $isInWishlist = Auth::check() && \App\Models\Restaurant\Wishlist::where('user_id', Auth::id())->where('product_id', $product->id)->exists();
                     @endphp
-                    <button class="btn shadow add-to-wishlist"
-                    data-product="{{ $product->id }}">
-                     <i class=" bi text-success bi-{{ $isInWishlist ? 'heart-fill' : 'heart' }}"></i>
-                   </button>
+                    <button class="btn shadow add-to-wishlist" data-product="{{ $product->id }}">
+                        <i class=" bi text-success bi-{{ $isInWishlist ? 'heart-fill' : 'heart' }}"></i>
+                    </button>
 
-                 </div>
+                </div>
             </div>
-              <div class="my-2 d-flex justify-content-between align-items-center">
+            <div class="my-2 d-flex justify-content-between align-items-center">
                 <p class="mt-3">
                     <a class="btn btn-outline-primary shadow-sm" data-bs-toggle="collapse" href="#RestaurantRating" role="button" aria-expanded="false" aria-controls="RestaurantRating">
                         @php
-                      $count= \App\Models\Restaurant\ProductRating::where('product_id', $product->id)->count();
+                        $count= \App\Models\Restaurant\ProductRating::where('product_id', $product->id)->count();
                         @endphp
                         Customer Feedback ({{ $count? $count:'0' }})
                     </a>
@@ -137,32 +132,30 @@
                     Rate this Product
                 </button>
 
-              </div>
-              @include('Restaurant.frontend.pages.products.rate')
-              <div class="collapse mb-2" id="RestaurantRating">
+            </div>
+            @include('Restaurant.frontend.pages.products.rate')
+            <div class="collapse mb-2" id="RestaurantRating">
                 <div class="overflow-auto" style="white-space: nowrap;">
                     <div class="d-flex gap-3" style="overflow-x: auto; scrollbar-width: thin;">
                         @foreach ($product->ratings as $rating)
-                        <div class="offer-card shadow p-3 text-left " style="min-width: 300px; max-width: 350px;">
+                        <div class="offer-card shadow p-3 text-left mb-2" style="min-width: 300px; max-width: 350px;">
                             <span class="font-italic">Name: {{ $rating->user->name }}</span>
-                                <br>
-                                <span class="fst-italic">Comment: {{ $rating->review }}</span>
-                                <br>
-                                <span>
-                                    @for ($i = 1; $i <= 5; $i++)
-                                        @if ($i <= $rating->rating)
-                                            <i class="bi bi-star-fill text-primary"></i>
-                                        @else
-                                            <i class="bi bi-star text-primary"></i>
-                                        @endif
+                            <br>
+                            <span class="fst-italic">Comment: {{ $rating->review }}</span>
+                            <br>
+                            <span>
+                                @for ($i = 1; $i <= 5; $i++) @if ($i <=$rating->rating)
+                                    <i class="bi bi-star-fill text-primary"></i>
+                                    @else
+                                    <i class="bi bi-star text-primary"></i>
+                                    @endif
                                     @endfor
-                                </span>
-                            </div>
+                            </span>
+                        </div>
                         @endforeach
                     </div>
                 </div>
-
-              </div>
+            </div>
         </div>
 
     </div>
@@ -182,7 +175,7 @@
                         @if($off>0)
                         <a class="bg-danger badge-offer" style="font-size: 12px;">
                             {{ $off }}
-                         ETB OFF
+                            ETB OFF
                         </a>
                         @endif
                         <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid mb-2" alt="{{ $product->name }}">
@@ -211,14 +204,13 @@
 
 </div>
 <script>
-
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
         let priceDisplay = document.getElementById("product-price");
         let quantityInput = document.getElementById("quantity");
         let incrementBtn = document.getElementById("increment");
         let decrementBtn = document.getElementById("decrement");
         let sizeSelectors = document.querySelectorAll(".size-selector");
-        let selectedPrice = parseFloat(sizeSelectors[0]?.getAttribute("data-price") || "{{ $product->original_price }}");
+        let selectedPrice = parseFloat(sizeSelectors[0] ? .getAttribute("data-price") || "{{ $product->original_price }}");
 
         // Function to update total price
         function updatePrice() {
@@ -229,20 +221,20 @@
 
         // Handle size selection
         sizeSelectors.forEach(button => {
-            button.addEventListener("change", function () {
+            button.addEventListener("change", function() {
                 selectedPrice = parseFloat(this.getAttribute("data-price"));
                 updatePrice();
             });
         });
 
         // Handle increment button
-        incrementBtn.addEventListener("click", function () {
+        incrementBtn.addEventListener("click", function() {
             quantityInput.value = parseInt(quantityInput.value) + 1;
             updatePrice();
         });
 
         // Handle decrement button (prevent going below 1)
-        decrementBtn.addEventListener("click", function () {
+        decrementBtn.addEventListener("click", function() {
             if (quantityInput.value > 1) {
                 quantityInput.value = parseInt(quantityInput.value) - 1;
                 updatePrice();
@@ -252,46 +244,15 @@
         // Update price initially
         updatePrice();
     });
-const mainImage = document.getElementById('mainProductImage');
-// Get all thumbnails and add a click event
-document.querySelectorAll('.thumbnail').forEach(thumbnail => {
-    thumbnail.addEventListener('click', function () {
-        mainImage.src = this.src; // Set main image to clicked thumbnail
+    const mainImage = document.getElementById('mainProductImage');
+    // Get all thumbnails and add a click event
+    document.querySelectorAll('.thumbnail').forEach(thumbnail => {
+        thumbnail.addEventListener('click', function() {
+            mainImage.src = this.src; // Set main image to clicked thumbnail
+        });
     });
-});
-document.getElementById('addToCart').addEventListener('click', function () {
-        let productId = this.getAttribute('data-product-id');
-        let selectedSize = document.querySelector('input[name="size"]:checked');
-        let quantity = document.getElementById('quantity').value;
-        if (!selectedSize) {
-            showAlert('info', 'Please select a size!');
+   
 
-            return;
-        }
-        let price = selectedSize.getAttribute('data-price');
-        let size = selectedSize.getAttribute('data-size');
-
-        fetch("{{ route('restaurant.cart.add') }}", {
-            method: "POST",
-            headers: {
-                "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                product_id: productId,
-                size: size,
-                price: price,
-                quantity: quantity
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            showAlert(data.status, data.message);
-            updateCartCount(); // Update cart count after adding item
-
-        })
-        .catch(error => console.error("Error:", error));
-    });
 </script>
 
 @endsection

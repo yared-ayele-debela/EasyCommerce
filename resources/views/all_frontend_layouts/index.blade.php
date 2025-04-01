@@ -48,9 +48,18 @@
         </div>
     </div>
 
+    @include('all_frontend_layouts.add_to_cart_modal')
     <div class="d-flex justify-content-between align-items-center">
         <h4 class="mt-5 mb-2">Special Offers</h4>
-        <h5 class="mt-5 mb-2"><a href="{{ url('restaurant/all-products') }}" class="text-dark">All</a></h5>
+        <h5 class="mt-5 mb-2">
+            <form action="{{ route('all-restaurant-products') }}" method="GET">
+                @csrf
+                <input type="hidden" name="type" value="specail_offer">
+                <button type="submit" class="text-dark border-0 bg-white">
+                    All
+                </button>
+            </form>
+        </h5>
     </div>
 
     <div class="row g-3">
@@ -82,6 +91,7 @@
                         <button class="btn-cart add-to-cart" data-product="{{ $product->id }}">
                             <i class="bi bi-cart-check-fill"></i>
                         </button>
+
                         <button class="btn-wishlist add-to-wishlist" data-product="{{ $product->id }}">
                             <i class="bi bi-heart text-white"></i>
                         </button>
@@ -93,7 +103,16 @@
     </div>
     <div class="d-flex justify-content-between align-items-center">
         <h4 class="mt-5 mb-2">Most Popular</h4>
-        <h5 class="mt-5 mb-2"><a href="{{ url('restaurant/all-products') }}" class="text-dark">All</a></h5>
+        <h5 class="mt-5 mb-2">
+            <form action="{{ route('all-restaurant-products') }}" method="GET">
+
+                @csrf
+                <input type="hidden" name="type" value="most_popular">
+                <button type="submit" class="text-dark border-0 bg-white">
+                    All
+                </button>
+            </form>
+        </h5>
     </div>
     <div class="row g-3">
         <div class="owl-carousel owl-theme products mt-4">
@@ -129,7 +148,16 @@
     </div>
     <div class="d-flex justify-content-between align-items-center">
         <h4 class="mt-5 mb-2">Best Seller</h4>
-        <h5 class="mt-5 mb-2"><a href="{{ url('restaurant/all-products') }}" class="text-dark">All</a></h5>
+        <h5 class="mt-5 mb-2">
+             <form action="{{ route('all-restaurant-products') }}" method="GET">
+
+                @csrf
+                <input type="hidden" name="type" value="best_seller">
+                <button type="submit" class="text-dark border-0 bg-white">
+                    All
+                </button>
+            </form>
+        </h5>
     </div>
     <div class="row g-3">
         <div class="owl-carousel owl-theme products mt-4">
@@ -165,11 +193,51 @@
     </div>
     <div class="d-flex justify-content-between align-items-center">
         <h4 class="mt-5 mb-3">All Restaurants Nearby</h4>
-        <h4 class="mt-5 mb-3"><a href="{{ url('restaurants') }}" class="text-dark">All</a></h4>
+        <h5 class="mt-5 mb-3"><a href="{{ url('restaurants') }}" class="text-dark">All</a></h5>
     </div>
-    <div class="row" id="restaurantContainer">
-
+    <div class="row" id="restaurant-container">
+        <!-- Placeholder Cards -->
+        <div class="col-md-6">
+            <div class="card placeholder-glow mb-3 p-2">
+                <div class="row g-0">
+                    <div class="col-md-6">
+                        <div class="placeholder rounded w-100 h-100" style="height: 150px;"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card-body">
+                            <h5 class="placeholder col-6"></h5>
+                            <p class="placeholder col-10"></p>
+                            <p class="placeholder col-10"></p>
+                            <p class="placeholder col-10"></p>
+                            <p class="placeholder col-8"></p>
+                            <span class="placeholder col-4"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <div class="col-md-6">
+            <div class="card placeholder-glow mb-3 p-2">
+                <div class="row g-0">
+                    <div class="col-md-6">
+                        <div class="placeholder rounded w-100 h-100" style="height: 150px;"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card-body">
+                            <h5 class="placeholder col-6"></h5>
+                            <p class="placeholder col-10"></p>
+                            <p class="placeholder col-10"></p>
+                            <p class="placeholder col-10"></p>
+                            <p class="placeholder col-8"></p>
+                            <span class="placeholder col-4"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+    
     <div class="row px-2 py-4 d-flex justify-content-center align-items-center flex-nowrap">
         <div class="col-md-4 col-4 text-center">
             <div class="icon-img-bg d-inline-block p-4 bg-primary rounded-circle">
@@ -195,64 +263,64 @@
     </div>
 </div>
 <script>
-   document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener('DOMContentLoaded', function () {
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                let latitude = position.coords.latitude;
-                let longitude = position.coords.longitude;
-
-                // Fetch nearby restaurants from the Laravel backend
-                fetchNearbyRestaurants(latitude, longitude);
-            }, function (error) {
-                console.error("Geolocation error:", error);
+            navigator.geolocation.getCurrentPosition(position => {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+    
+                fetch(`/restaurants/nearby?latitude=${latitude}&longitude=${longitude}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            renderRestaurants(data.restaurants);
+                        }
+                    })
+                    .catch(error => console.error('Error fetching restaurants:', error));
+            }, () => {
+                alert("Location access denied. Enable GPS to find nearby restaurants.");
             });
         } else {
-            alert("Geolocation is not supported by this browser.");
+            alert("Geolocation is not supported by your browser.");
         }
     });
-
-    function fetchNearbyRestaurants(lat, lng) {
-        fetch(`/nearby-restaurants?lat=${lat}&lng=${lng}`)
-            .then(response => response.json())
-            .then(data => {
-                let restaurantContainer = document.getElementById("restaurantContainer");
-                restaurantContainer.innerHTML = ""; // Clear previous content
-
-                data.forEach(restaurant => {
-                    let restaurantCard = `
-                        <div class="col-md-6">
-                            <div class="resturant_card card mb-3 p-2">
-                                <div class="row g-0">
-                                    <div class="col-md-6">
-                                        <a href="{{ url('restaurant/${restaurant.id}/detail') }}" class="">
-                                        <img src="/storage/${restaurant.cover}" class="img-fluid rounded-start" alt="Restaurant">
-                                        </a>
+    
+    function renderRestaurants(restaurants) {
+        const container = document.getElementById('restaurant-container');
+        container.innerHTML = '';
+    
+        restaurants.forEach(restaurant => {
+            container.innerHTML += `
+                <div class="col-md-6">
+                    <div class=" offer-card mb-3 p-2">
+                        <div class="row g-0">
+                            <div class="col-md-6">
+                                <img src="/storage/${restaurant.cover}" class="img-fluid rounded-start" alt="Restaurant">
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card-body">
+                                    <h5 class="card-title">${restaurant.name}</h5>
+                                    <p class="mb-1">${restaurant.description.substring(0, 50)}...</p>
+                                    <div class="mb-2">
+                                        <span class="badge resturant_badge p-2">Around ${restaurant.distance.toFixed(2)} km</span>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="card-body">
-                                            <h5 class="card-title">${restaurant.name}</h5>
-                                            <p class="mb-1">${restaurant.description.substring(0, 50)}...</p>
-                                            <div class="mb-2">
-                                                <span class="badge resturant_badge p-2">Around  km</span>
-                                                <span class="badge resturant_badge p-2">Around min</span>
-                                            </div>
-                                            <p class="mb-1"><i class="bi bi-pin-map-fill text-primary"></i> ${restaurant.address}</p>
-                                            <div class="d-flex justify-content-between align-items-center mt-3">
-                                                <div class="text-warning me-2">
-                                                    <span><span class="bi bi-star-fill text-primary"></span> ${restaurant.rating}</span>
-                                                </div>
-                                                <div><img src="/restaurant_frontend/assets/img/scooter-02.png" style="width: 20%;" alt=""> From 60 ETB</div>
-                                            </div>
-                                        </div>
+                                    <p class="mb-1"> <i class="bi bi-pin-map-fill text-primary"></i> ${restaurant.address}</p>
+                                    <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <div class="text-warning me-2">
+                                      
+                                        <span><span class="bi bi-star-fill text-primary"></span> ${restaurant.rating}</span>
                                     </div>
+                                    <div><img src="{{ asset('restaurant_frontend/assets/img/scooter-02.png') }}" style="width: 20%;" alt=""> From ${restaurant.start_from} ETB</div>
+                                </div>
                                 </div>
                             </div>
-                        </div>`;
-                    restaurantContainer.innerHTML += restaurantCard;
-                });
-            })
-            .catch(error => console.error("Error fetching restaurants:", error));
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
     }
-</script>
+    </script>
+    
 @endsection
 

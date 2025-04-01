@@ -42,6 +42,67 @@
     background-color: #f8f9fa;
     cursor: pointer;
 }
+.toggle-btn {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            background: #f3f3f3;
+            border-radius: 50px;
+            padding: 5px;
+            width: 150px;
+            height: 40px;
+            box-shadow: 1px 0px 1px 2px rgba(138, 243, 89, 0.74);
+            border: 1px solid #17BE18 !important;
+
+        }
+
+        .toggle {
+            flex: 1;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 0% !important;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            position: relative;
+            z-index: 2;
+
+        }
+
+        .slider {
+            position: absolute;
+            top: 5px;
+            bottom: 5px;
+            left: 5px;
+            width: 70px;
+            background: linear-gradient(90deg, #17BE18, #32CB32) !important;
+            border-radius: 50px;
+            transition: left 0.3s ease;
+            z-index: 1;
+        }
+
+        .active {
+            color: #6C757D;
+        }
+
+        .toggle-btn .toggle:not(.active) {
+            color: #3f3f3f;
+        }
+
+        .toggle-btn .toggle.active~.slider {
+            left: 5px;
+        }
+
+        .toggle-btn .toggle:not(.active):nth-child(2)~.slider {
+            left: calc(100% - 75px);
+        }
+
+        .toggle:hover {
+            color: #191716;
+        }
 </style>
 </head>
 
@@ -85,16 +146,25 @@
                 </span>
             </a>
             <div class="dropdown">
-                <a class="btn btn-primary text-white border border-1 dropdown-toggle d-flex align-items-center gap-1" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+               
                     @if(Auth::check())
+                    <a class="btn  text-dark border border-1 p-1 dropdown-toggle d-flex align-items-center gap-1" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         @if(Auth::user()->profile_photo_path)
                           <img src="{{ asset('storage/' . auth()->user()->profile_photo_path) }}" width="28" class="rounded-circle" alt="Profile Image">
                         @endif
-                        {{ strtok(Auth::user()->name,' ') }}
+                        {{-- {{ strtok(Auth::user()->name,' ') }} --}}
+                    </a>
                     @else
-                        Login/Register
+                
+                    <div class="toggle-btn d-none d-lg-flex">
+                        <a href="{{ route('auth.login') }}" class="toggle active" id="login">Login</a>
+                        <a href="{{ route('auth.login') }}" class="toggle text-white" id="signup">
+                            SignUp
+                        </a>
+                        <div class="slider"></div>
+                    </div>
                     @endif
-                </a>
+             
 
                 <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded" aria-labelledby="accountDropdown">
                     @if(Auth::check())

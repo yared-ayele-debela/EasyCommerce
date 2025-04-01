@@ -34,26 +34,26 @@ class RestaurantController extends Controller
 
     public function getNearbyRestaurants(Request $request)
     {
-        $userLat = $request->query('lat');
-        $userLng = $request->query('lng');
+        $latitude = $request->latitude;
+        $longitude = $request->longitude;
 
-        if (!$userLat || !$userLng) {
-            return response()->json(['error' => 'Location not provided'], 400);
+        if (!$latitude || !$longitude) {
+            return response()->json(['error' => 'Location is required'], 400);
         }
 
-        // Calculate nearby restaurants using the Haversine formula
+        // Calculate distance using Haversine formula
         $restaurants = Restaurant::selectRaw("
-id, name, description, cover, address, latitude, longitude,
-            (6371 * acos(cos(radians(?)) * cos(radians(latitude)) 
-            * cos(radians(longitude) - radians(?)) 
-            + sin(radians(?)) * sin(radians(latitude)))) AS distance
-        ", [$userLat, $userLng, $userLat])
-        ->with(['admin', 'images','ratings'])
-        ->having("distance", "<", 10) // Restaurants within 10km
-        ->orderBy("distance")
-        ->get();
+            id, name, cover, description, address,rating,start_from,
+            (6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) AS distance
+        ", [$latitude, $longitude, $latitude])
+            ->having('distance', '<=', 10) // Show restaurants within 10 km radius
+            ->orderBy('distance', 'asc') // Order by nearest first
+            ->get();
 
-        return response()->json($restaurants);
+        return response()->json([
+            'success' => true,
+            'restaurants' => $restaurants
+        ]);
     }
 
 

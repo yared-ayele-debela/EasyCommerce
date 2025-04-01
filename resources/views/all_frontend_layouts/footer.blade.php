@@ -108,10 +108,12 @@
     </div>
 </div>
 </footer>
+
 <!-- Bootstrap 5 JS (Optional) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{ asset('restaurant_frontend/assets/js/index.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+
 <script>
     function showAlert(type, message) {
         Swal.fire({
@@ -334,6 +336,40 @@
             showAlert('info',"An error occurred. Please try again later.");
         });
   });
+
+  document.getElementById('addToCart').addEventListener('click', function() {
+        let productId = this.getAttribute('data-product-id');
+        let selectedSize = document.querySelector('input[name="size"]:checked');
+        let quantity = document.getElementById('quantity').value;
+        if (!selectedSize) {
+            showAlert('info', 'Please select a size!');
+            return;
+        }
+        let price = selectedSize.getAttribute('data-price');
+        let size = selectedSize.getAttribute('data-size');
+
+        fetch("{{ route('restaurant.cart.add') }}", {
+                method: "POST"
+                , headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                    , "Content-Type": "application/json"
+                }
+                , body: JSON.stringify({
+                    product_id: productId
+                    , size: size
+                    , price: price
+                    , quantity: quantity
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                showAlert(data.status, data.message);
+                updateCartCount(); // Update cart count after adding item
+
+            })
+            .catch(error => console.error("Error:", error));
+    });
+
 
 </script>
 </body>
