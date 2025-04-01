@@ -252,15 +252,12 @@
         // Update price initially
         updatePrice();
     });
-    const mainImage = document.getElementById('mainProductImage');
-
+const mainImage = document.getElementById('mainProductImage');
 // Get all thumbnails and add a click event
 document.querySelectorAll('.thumbnail').forEach(thumbnail => {
     thumbnail.addEventListener('click', function () {
         mainImage.src = this.src; // Set main image to clicked thumbnail
     });
-
-
 });
 document.getElementById('addToCart').addEventListener('click', function () {
         let productId = this.getAttribute('data-product-id');
@@ -295,9 +292,6 @@ document.getElementById('addToCart').addEventListener('click', function () {
         })
         .catch(error => console.error("Error:", error));
     });
-
-
-
 </script>
 
 @endsection

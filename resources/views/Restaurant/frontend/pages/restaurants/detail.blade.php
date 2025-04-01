@@ -23,7 +23,7 @@
     <div class="row g-3">
         <div class="col-md-12 col-12">
             <div class="restaurants-card">
-                    <img src="{{ asset('storage/' . $restaurant->cover) }}" alt="Restaurant">
+                    <img id="mainProductImage" src="{{ asset('storage/' . $restaurant->cover) }}" alt="Restaurant">
 
                 <div class="info">
                     <h4>{{ $restaurant->name }}</h4>
@@ -43,6 +43,19 @@
                     @include('Restaurant.frontend.pages.restaurants.rating_modal')
                 </div>
             </div>
+        </div>
+        <div class="d-flex justify-content-start mt-3">
+            <img src="{{ asset('storage/' . $restaurant->cover) }}"  width="100"
+            class="thumbnail mx-2 p-2 border rounded"
+            alt="{{ $restaurant->name }}"
+            style="cursor: pointer;">
+            @foreach($restaurant->images as $key => $image)
+                <img src="{{ asset('storage/' . $image->image_path) }}"
+                    width="100"
+                    class="thumbnail mx-2 p-2 border rounded"
+                    alt="{{ $restaurant->name }}"
+                    style="cursor: pointer;">
+            @endforeach
         </div>
         <h4>Grub On Burger</h4>
         <div class="row pb-4 d-flex justify-content-between align-items-center">
@@ -163,6 +176,14 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        const mainImage = document.getElementById('mainProductImage');
+        // Get all thumbnails and add a click event
+        document.querySelectorAll('.thumbnail').forEach(thumbnail => {
+            thumbnail.addEventListener('click', function () {
+                mainImage.src = this.src; // Set main image to clicked thumbnail
+            });
+        });
+
         document.querySelectorAll(".category-filter").forEach(button => {
             button.addEventListener("click", function(event) {
                 event.preventDefault();
