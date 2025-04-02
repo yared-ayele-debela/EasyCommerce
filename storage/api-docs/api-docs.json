@@ -1468,6 +1468,9 @@
         },
         "/api/hotels": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Get a list of hotels",
                 "operationId": "4ea68c89b5c9eede5036b50194d6ced1",
                 "responses": {
@@ -1477,6 +1480,9 @@
                 }
             },
             "post": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Create a new hotel",
                 "operationId": "fb2fe15235465eae2bd7ec8a893d8f84",
                 "requestBody": {
@@ -1547,6 +1553,9 @@
         },
         "/api/hotels/{id}": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Get a hotel by ID",
                 "operationId": "2e8f8b85907181eacdc208d6c1bd69ee",
                 "parameters": [
@@ -1567,6 +1576,9 @@
                 }
             },
             "put": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Update a hotel",
                 "operationId": "2f14643018557239b7ca0d0964e773f8",
                 "parameters": [
@@ -1590,6 +1602,9 @@
                 }
             },
             "delete": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Delete a hotel",
                 "operationId": "8d96bc74721aadf8a9decf7c8396ecd3",
                 "parameters": [
@@ -1612,6 +1627,9 @@
         },
         "/api/hotels/{hotel_id}/photos": {
             "post": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Upload photos for a hotel",
                 "operationId": "99e65f5c6affdbd1e9443ab4fcdaf538",
                 "parameters": [
@@ -1656,6 +1674,9 @@
         },
         "/api/hotels/{hotel_id}/rooms": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Get rooms for a hotel",
                 "operationId": "c2399b214cc43ad4c0e26079316e8e7b",
                 "parameters": [
@@ -1678,6 +1699,9 @@
         },
         "/api/hotels/{hotel_id}/rooms/{room_id}": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Get room details",
                 "operationId": "c20e60590298db463be2222b33b325b5",
                 "parameters": [
@@ -1709,6 +1733,9 @@
         },
         "/api/hotels/{hotel_id}/rooms/{room_id}/availability": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Check room availability",
                 "operationId": "eb7364c2aa87843750677c80fdeb51bc",
                 "parameters": [
@@ -1760,6 +1787,9 @@
         },
         "/api/hotels/{hotel_id}/rooms/{room_id}/photos": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Get hotel photos",
                 "operationId": "832bea7e9d8f39d539b6b75bee076bb7",
                 "parameters": [
@@ -1791,6 +1821,9 @@
         },
         "/api/hotels/{hotel_id}/rooms/{room_id}/amenities": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Get hotel amenities",
                 "operationId": "73e9879a85ffaaf57ac1c466c6c9461c",
                 "parameters": [
@@ -1822,6 +1855,9 @@
         },
         "/api/hotels/{hotel_id}/rooms/{room_id}/similar": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Get similar rooms",
                 "operationId": "44857f670eb4ae31d5007080832de2ea",
                 "parameters": [
@@ -1853,6 +1889,9 @@
         },
         "/api/hotels/{hotel_id}/rooms/{room_id}/bookings": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Get room bookings",
                 "operationId": "6c3e2cec43e30eed69964a7a52984f2a",
                 "parameters": [
@@ -1884,6 +1923,9 @@
         },
         "/api/hotels/banners": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Get active banners",
                 "operationId": "ac2fbbe10be96e1207f343d5d70f7d36",
                 "responses": {
@@ -1895,6 +1937,9 @@
         },
         "/api/hotels/search": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Search for hotels",
                 "operationId": "b6d81b01a3e0c05edae3a8be1023b520",
                 "parameters": [
@@ -1962,6 +2007,9 @@
         },
         "/api/hotels/categories": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Get hotel categories",
                 "operationId": "6a7e78d0eaa962f56d3951763ded81bd",
                 "responses": {
@@ -1973,6 +2021,9 @@
         },
         "/api/hotels/categories/{category_id}": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Get hotels by category",
                 "operationId": "e939dbc4fa4ddc1ecc0ce324c3238813",
                 "parameters": [
@@ -1995,6 +2046,9 @@
         },
         "/api/hotels/locations": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Get hotel locations",
                 "operationId": "863e7669d737b69a6875351067c8f82a",
                 "responses": {
@@ -2006,6 +2060,9 @@
         },
         "/api/hotels/locations/{location}": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Get hotels by location",
                 "operationId": "426cca542c0d69bddb3b5fb21864f8e5",
                 "parameters": [
@@ -2028,6 +2085,9 @@
         },
         "/api/hotels/amenities": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Get hotel amenities",
                 "operationId": "718c464701fedb36dc21b5fa0370c115",
                 "responses": {
@@ -2039,6 +2099,9 @@
         },
         "/api/hotels/amenities/{amenity}": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Get hotels by amenity",
                 "operationId": "5df4a48bfc6ce7756b246f5cfd966015",
                 "parameters": [
@@ -2061,6 +2124,9 @@
         },
         "/api/hotels/featured": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Get featured hotels",
                 "operationId": "0630a91c87ce3bae7dddf3ea8735a3da",
                 "responses": {
@@ -2072,6 +2138,9 @@
         },
         "/api/hotels/featured/{hotel_id}": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Get featured hotel details",
                 "operationId": "840bcea21cbeff4447002027e5d42ad4",
                 "parameters": [
@@ -2094,6 +2163,9 @@
         },
         "/api/hotels/featured/{hotel_id}/rooms": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Get rooms for a featured hotel",
                 "operationId": "795677809a1b836277feffad1d25d4cf",
                 "responses": {
@@ -2105,6 +2177,9 @@
         },
         "/api/hotels/featured/{hotel_id}/rooms/{room_id}": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Get featured hotel room details",
                 "operationId": "f3067f725ac069c0be7445511054ea8a",
                 "responses": {
@@ -2116,6 +2191,9 @@
         },
         "/api/hotels/featured/{hotel_id}/rooms/{room_id}/availability": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Check featured hotel room availability",
                 "operationId": "708f1d9b8ed2ca78e47b7a596ca9c41e",
                 "responses": {
@@ -2127,6 +2205,9 @@
         },
         "/api/hotels/featured/{hotel_id}/rooms/{room_id}/photos": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Get featured hotel room photos",
                 "operationId": "462f5f3acbf3ef61435f0acd8b90f20c",
                 "responses": {
@@ -2138,6 +2219,9 @@
         },
         "/api/hotels/featured/{hotel_id}/rooms/{room_id}/amenities": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Get featured hotel room amenities",
                 "operationId": "169c504ea904ff44e21e63d536bb891f",
                 "responses": {
@@ -2149,6 +2233,9 @@
         },
         "/api/hotels/featured/{hotel_id}/rooms/{room_id}/similar": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Get similar featured hotel rooms",
                 "operationId": "332ccd80d85321e01d52dc468323aaa8",
                 "responses": {
@@ -2160,6 +2247,9 @@
         },
         "/api/hotels/featured/{hotel_id}/rooms/{room_id}/bookings": {
             "get": {
+                "tags": [
+                    "Hotel"
+                ],
                 "summary": "Get featured hotel room bookings",
                 "operationId": "11f3a38ae7182a31c74ca399e83bcbcc",
                 "responses": {
@@ -2823,6 +2913,10 @@
         },
         {
             "name": "Foods",
+            "description": "API Endpoints for managing foods"
+        },
+        {
+            "name": "Hotel",
             "description": "API Endpoints for managing foods"
         },
         {

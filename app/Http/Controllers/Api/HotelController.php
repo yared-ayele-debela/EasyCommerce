@@ -10,7 +10,7 @@ use App\Http\Controllers\Controller;
 
 /**
  * @OA\Tag(
- *     name="Foods",
+ *     name="Hotel",
  *     description="API Endpoints for managing foods"
  * )
  */
@@ -19,6 +19,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels",
+     *     tags={"Hotel"},
      *     summary="Get a list of hotels",
      *     @OA\Response(response=200, description="List of hotels")
      * )
@@ -36,6 +37,7 @@ class HotelController extends Controller
     /**
      * @OA\Post(
      *     path="/api/hotels",
+     *     tags={"Hotel"},
      *     summary="Create a new hotel",
      *     @OA\RequestBody(
      *         required=true,
@@ -94,6 +96,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels/{id}",
+     *     tags={"Hotel"},
      *     summary="Get a hotel by ID",
      *     @OA\Parameter(
      *         name="id",
@@ -118,6 +121,7 @@ class HotelController extends Controller
     /**
      * @OA\Put(
      *     path="/api/hotels/{id}",
+     *     tags={"Hotel"},
      *     summary="Update a hotel",
      *     @OA\Parameter(
      *         name="id",
@@ -167,6 +171,7 @@ class HotelController extends Controller
     /**
      * @OA\Delete(
      *     path="/api/hotels/{id}",
+     *     tags={"Hotel"},
      *     summary="Delete a hotel",
      *     @OA\Parameter(
      *         name="id",
@@ -192,6 +197,7 @@ class HotelController extends Controller
     /**
      * @OA\Post(
      *     path="/api/hotels/{hotel_id}/photos",
+     *     tags={"Hotel"},
      *     summary="Upload photos for a hotel",
      *     @OA\Parameter(
      *         name="hotel_id",
@@ -252,6 +258,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels/{hotel_id}/rooms",
+     *     tags={"Hotel"},
      *     summary="Get rooms for a hotel",
      *     @OA\Parameter(
      *         name="hotel_id",
@@ -283,6 +290,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels/{hotel_id}/rooms/{room_id}",
+     *     tags={"Hotel"},
      *     summary="Get room details",
      *     @OA\Parameter(
      *         name="hotel_id",
@@ -321,6 +329,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels/{hotel_id}/rooms/{room_id}/availability",
+     *     tags={"Hotel"},
      *     summary="Check room availability",
      *     @OA\Parameter(
      *         name="hotel_id",
@@ -393,6 +402,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels/{hotel_id}/rooms/{room_id}/photos",
+     *     tags={"Hotel"},
      *     summary="Get hotel photos",
      *     @OA\Parameter(
      *         name="hotel_id",
@@ -433,6 +443,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels/{hotel_id}/rooms/{room_id}/amenities",
+     *     tags={"Hotel"},
      *     summary="Get hotel amenities",
      *     @OA\Parameter(
      *         name="hotel_id",
@@ -473,6 +484,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels/{hotel_id}/rooms/{room_id}/similar",
+     *     tags={"Hotel"},
      *     summary="Get similar rooms",
      *     @OA\Parameter(
      *         name="hotel_id",
@@ -520,6 +532,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels/{hotel_id}/rooms/{room_id}/bookings",
+     *     tags={"Hotel"},
      *     summary="Get room bookings",
      *     @OA\Parameter(
      *         name="hotel_id",
@@ -560,6 +573,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels/banners",
+     *     tags={"Hotel"},
      *     summary="Get active banners",
      *     @OA\Response(response=200, description="List of active banners")
      * )
@@ -582,6 +596,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels/search",
+     *     tags={"Hotel"},
      *     summary="Search for hotels",
      *     @OA\Parameter(
      *         name="location",
@@ -677,6 +692,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels/categories",
+     *     tags={"Hotel"},
      *     summary="Get hotel categories",
      *     @OA\Response(response=200, description="List of hotel categories")
      * )
@@ -694,6 +710,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels/categories/{category_id}",
+     *     tags={"Hotel"},
      *     summary="Get hotels by category",
      *     @OA\Parameter(
      *         name="category_id",
@@ -724,6 +741,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels/locations",
+     *     tags={"Hotel"},
      *     summary="Get hotel locations",
      *     @OA\Response(response=200, description="List of hotel locations")
      * )
@@ -741,6 +759,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels/locations/{location}",
+     *     tags={"Hotel"},
      *     summary="Get hotels by location",
      *     @OA\Parameter(
      *         name="location",
@@ -771,6 +790,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels/amenities",
+     *     tags={"Hotel"},
      *     summary="Get hotel amenities",
      *     @OA\Response(response=200, description="List of hotel amenities")
      * )
@@ -783,6 +803,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels/amenities/{amenity}",
+     *     tags={"Hotel"},
      *     summary="Get hotels by amenity",
      *     @OA\Parameter(
      *         name="amenity",
@@ -803,6 +824,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels/featured",
+     *     tags={"Hotel"},
      *     summary="Get featured hotels",
      *     @OA\Response(response=200, description="List of featured hotels")
      * )
@@ -816,6 +838,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels/featured/{hotel_id}",
+     *     tags={"Hotel"},
      *     summary="Get featured hotel details",
      *     @OA\Parameter(
      *         name="hotel_id",
@@ -836,6 +859,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels/featured/{hotel_id}/rooms",
+     *     tags={"Hotel"},
      *     summary="Get rooms for a featured hotel",
      *     @OA\Response(response=200, description="List of rooms for the featured hotel")
      * )
@@ -849,6 +873,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels/featured/{hotel_id}/rooms/{room_id}",
+     *     tags={"Hotel"},
      *     summary="Get featured hotel room details",
      *     @OA\Response(response=200, description="Featured hotel room details")
      * )
@@ -862,6 +887,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels/featured/{hotel_id}/rooms/{room_id}/availability",
+     *     tags={"Hotel"},
      *     summary="Check featured hotel room availability",
      *     @OA\Response(response=200, description="Featured hotel room availability status")
      * )
@@ -875,6 +901,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels/featured/{hotel_id}/rooms/{room_id}/photos",
+     *     tags={"Hotel"},
      *     summary="Get featured hotel room photos",
      *     @OA\Response(response=200, description="List of featured hotel room photos")
      * )
@@ -888,6 +915,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels/featured/{hotel_id}/rooms/{room_id}/amenities",
+     *     tags={"Hotel"},
      *     summary="Get featured hotel room amenities",
      *     @OA\Response(response=200, description="List of featured hotel room amenities")
      * )
@@ -901,6 +929,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels/featured/{hotel_id}/rooms/{room_id}/similar",
+     *     tags={"Hotel"},
      *     summary="Get similar featured hotel rooms",
      *     @OA\Response(response=200, description="List of similar featured hotel rooms")
      * )
@@ -916,6 +945,7 @@ class HotelController extends Controller
     /**
      * @OA\Get(
      *     path="/api/hotels/featured/{hotel_id}/rooms/{room_id}/bookings",
+     *     tags={"Hotel"},
      *     summary="Get featured hotel room bookings",
      *     @OA\Response(response=200, description="List of featured hotel room bookings")
      * )
