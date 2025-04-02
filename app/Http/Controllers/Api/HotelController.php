@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Models\Hotel;
+use App\Models\Room;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 
