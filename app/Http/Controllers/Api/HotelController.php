@@ -585,7 +585,7 @@ class HotelController extends Controller
     {
         try {
             // Retrieve hotels that are marked as advertisements
-            $activeBanners = Hotel::where('is_advert', 1)
+            $activeBanners = Hotel::where('is_adverted', 1)
                 ->select('id', 'name', 'banner_image')
                 ->get();
 
