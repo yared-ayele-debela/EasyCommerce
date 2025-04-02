@@ -517,7 +517,7 @@ class HotelController extends Controller
 
             // Define similarity criteria (e.g., price range and amenities)
             $priceRange = 50; // Adjust the price range as needed
-            $roomPrice = $room->price_per_night;
+            $roomPrice = $room->price;
 
             // Retrieve similar rooms based on price range and amenities
             $similarRooms = Room::where('hotel_id', $hotel_id)
