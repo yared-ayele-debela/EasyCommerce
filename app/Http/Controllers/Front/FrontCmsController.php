@@ -67,20 +67,15 @@ class FrontCmsController extends Controller
                     $message->to($email)->subject('Enquiry');
                 });
 
-                Alert::toast('Thanks for your enquiry.We will get back to you soon', 'success');
-                return redirect()->back();
+                return redirect()->back()->with('success','Thanks for your enquiry.We will get back to you soon.');
             }
             $cms_pages = CmsPage::get()->toArray();
-
             $appsettings = AppSetting::all()->toArray();
             return view('NewFrontEndPage.pages.contact', compact('cms_pages', 'appsettings'));
         } catch (\Illuminate\Validation\ValidationException $e) {
-            // Laravel's built-in validation exception
             return redirect()->back()->withErrors($e->validator->errors())->withInput();
         } catch (\Exception $e) {
-            // Log or handle the exception as needed
-            Alert::toast('something is wrong!!', 'error');
-            return redirect()->back();
+            return redirect()->back()->with('success', 'something is wrong');
         }
     }
 }

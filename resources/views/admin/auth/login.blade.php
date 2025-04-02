@@ -1,69 +1,100 @@
-<html lang="en"><head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>{{ $appsettings[0]['application_title'] }}</title>
-    <!-- Standard Favicon -->
-    <link href="{{ asset('/storage/appsettings/'.$appsettings[0]['favicon']) }}" rel="shortcut icon">
-    <meta name="robots" content="noindex, nofollow">
-    <meta content="" name="description">
-    <meta content="" name="keywords">
-      <link href="https://fonts.gstatic.com" rel="preconnect">
-      <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
-      <link href="{{asset('dashboard/css/bootstrap.min.css')}}" rel="stylesheet">
-      <link href="{{asset('dashboard/css/bootstrap-icons.css')}}" rel="stylesheet">
-      <link href="{{asset('dashboard/css/boxicons.min.css')}}" rel="stylesheet">
-      <link href="{{asset('dashboard/css/quill.snow.css')}}" rel="stylesheet">
-      <link href="{{asset('dashboard/css/quill.bubble.css')}}" rel="stylesheet">
-      <link href="{{asset('dashboard/css/remixicon.css')}}" rel="stylesheet">
-      <link href="{{asset('dashboard/css/simple-datatables.css')}}" rel="stylesheet">
-      <link href="{{asset('dashboard/css/style.css')}}" rel="stylesheet">
- </head>
- <body>
-    <div class="container">
-        @include('sweetalert::alert')
-          <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
-             <div class="container">
-                <div class="row justify-content-center">
-                   <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
-                      <div class="card mb-3" style="border-radius:1rem; box-shadow:1px 1px 11px 1px rgb(169, 229, 253);">
-                         <div class="card-body">
-                            <div class="pt-4 pb-2">
-                                <div class="d-flex justify-content-center py-4">
-                                    <img src="{{ asset('/storage/appsettings/'.$appsettings[0]['logo']) }}" style="width: 200px; height:200px;"  class="app-brand-logo">
-                                </div>
-                            </div>
-                            <form class="row g-3 needs-validation" method="POST" action="{{ url('admin/login') }}" >
-                                @csrf
-                               <div class="col-12">
-                                  <label for="email" class="form-label">Email</label> <input type="email" name="email" class="form-control" pattern="[A-Za-Z]" title="Only alphabet characters are allowed."  id="email" required="">
-                                  <div class="invalid-feedback">Please enter a valid Email adddress!</div>
-                               </div>
-                               <div class="col-12">
-                                  <label for="password" class="form-label">Password</label> <input type="password" name="password" pattern=".{8,}" title="Only eight or more characters" class="form-control" id="yourPassword" required="">
-                                  <div class="invalid-feedback">Please enter your password!</div>
-                               </div>
-                               <div class="col-12"> <button class="btn btn-primary w-100" type="submit">Login with your Account</button></div>
-                                 <div class="col-12"><p class="text-center"></p><a href="{{ url('admin/forget-password') }}">Forget your password</a> </div>
-                            </form>
-                         </div>
-                      </div>
-                   </div>
-                </div>
-             </div>
-          </section>
-       </div>
-    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-    <script src="{{asset('dashboard/js/apexcharts.min.js')}}"></script>
-    <script src="{{asset('dashboard/js/bootstrap.bundle.min.js')}}"></script>
-    <script src="{{asset('dashboard/js/chart.min.js')}}"></script>
-    <script src="{{asset('dashboard/js/echarts.min.js')}}"></script>
-    <script src="{{asset('dashboard/js/quill.min.js')}}"></script>
-    <script src="{{asset('dashboard/js/simple-datatables.js')}}"></script>
-    <script src="{{asset('dashboard/js/tinymce.min.js')}}"></script>
-    <script src="{{asset('dashboard/js/validate.js')}}"></script>
-    <script src="{{asset('dashboard/js/main.js')}}"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<svg id="SvgjsSvg1001" width="2" height="0" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev" style="overflow: hidden; top: -100%; left: -100%; position: absolute; opacity: 0;"><defs id="SvgjsDefs1002"></defs><polyline id="SvgjsPolyline1003" points="0,0"></polyline><path id="SvgjsPath1004" d="M0 0 "></path></svg></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin Login</title>
 
- </body>
+    <!-- Bootstrap 4 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+        .card {
+            border-radius: 1rem;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+        .app-brand-logo {
+            width: 100px;
+            height: auto;
+        }
+        .btn-primary {
+            background: #17BE18;
+            border: none;
+            transition: 0.3s;
+        }
+        .btn-primary:hover {
+            background: #14a914;
+        }
+        .form-control {
+            border-radius: 0.5rem;
+        }
+        .text-muted a {
+            text-decoration: none;
+            color: #17BE18;
+        }
+        .text-muted a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container vh-100 d-flex justify-content-center align-items-center">
+    <div class="col-lg-5 col-md-6">
+        <div class="card p-4">
+            <div class="card-body">
+                <div class="pb-3 text-center">
+                    <img src="{{ asset('/storage/appsettings/'.$appsettings[0]['logo']) }}" class="app-brand-logo">
+                </div>
+                <h4 class="font-weight-bold text-dark text-center">Admin Login</h4>
+                <p class="text-muted text-center">Enter your credentials to access your account</p>
+
+                <form method="POST" action="{{ url('admin/login') }}" class="needs-validation" novalidate>
+                    @csrf
+                    <div class="form-group text-left">
+                        <label for="email">Email</label>
+                        <input type="email" name="email" class="form-control" id="email" required>
+                        <div class="invalid-feedback">Please enter a valid email address!</div>
+                    </div>
+                    <div class="form-group text-left">
+                        <label for="yourPassword">Password</label>
+                        <input type="password" name="password" class="form-control" id="yourPassword" pattern=".{8,}" title="At least 8 characters required" required>
+                        <div class="invalid-feedback">Please enter your password!</div>
+                    </div>
+                    <button class="btn btn-primary btn-block" type="submit">Login</button>
+                </form>
+                <div class="mt-3">
+                    <p class="text-muted"><a href="{{ url('admin/forget-password') }}">Forgot your password?</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap 4 JS -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Bootstrap validation
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            var forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
+
+</body>
 </html>

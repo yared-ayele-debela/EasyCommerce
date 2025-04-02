@@ -9,7 +9,6 @@ use App\Models\Restaurant\Product;
         border: 1px solid #2222 !important;
         margin: 5px !important;
     }
-
 </style>
 <div class="container my-4">
 
@@ -19,6 +18,24 @@ use App\Models\Restaurant\Product;
 
     <div class="row">
         <div class="col-12 col-md-8">
+            @session('success')
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="close btn" data-dismiss="alert" aria-label="Close
+                ">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @endif
+            @session('error')
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="close btn" data-dismiss="alert" aria-label="Close
+                ">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @endif
             <div class="delivery-location mb-2">
                 <div class="d-flex justify-content-between align-items-center">
                     <button type="button" class="btn btn-outline-primary fw-bold px-4 py-2 delivery_text" id="loadAddresses">
@@ -324,7 +341,7 @@ use App\Models\Restaurant\Product;
             var lat = e.latlng.lat.toFixed(6);
             var lng = e.latlng.lng.toFixed(6);
             updateMarker(lat, lng);
-            
+
         });
         var mapModal = document.getElementById('addressModal');
         mapModal.addEventListener('shown.bs.modal', function() {

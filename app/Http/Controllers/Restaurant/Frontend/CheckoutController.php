@@ -3,17 +3,21 @@
 namespace App\Http\Controllers\Restaurant\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Mail\Restaurant\OrderConfirmationMail;
 use App\Models\Country;
 use App\Models\Restaurant\Order;
 use App\Models\Restaurant\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
 {
     //
 
-    public function index(){
+    public function index()
+    {
         $cart = session()->get('cart', []);
 
         // Calculate subtotal
@@ -28,40 +32,51 @@ class CheckoutController extends Controller
 
     public function placeOrder(Request $request)
     {
+        // dd($request->all());
         $cart = session()->get('cart', []);
         if (empty($cart)) {
             return back()->with('error', 'Your cart is empty.');
         }
-        $subtotal = session('cart_subtotal', 0);
-        $discount = session('discount', 0);
+        $subtotal = session()->get('cart_subtotal', 0);
+        $discount = session()->get('discount', 0);
         $delivery_fee = 15;
         $total = max(($subtotal - $discount), 0) + $delivery_fee;
 
-        $order = Order::create([
-            'user_id' => Auth::id(),
-            'subtotal' => $subtotal,
-            'discount' => $discount,
-            'delivery_fee' => $delivery_fee,
-            'total' => $total,
-            'status' => 'pending',
-            'payment_method' => $request->payment_method,
-            'delivery_address_id' => $request->address_id,
-        ]);
+        DB::beginTransaction();
 
-        foreach ($cart as $item) {
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $item['product_id'],
-                'size' => $item['size'],
-                'quantity' => $item['quantity'],
-                'price' => $item['price'],
-                'total' => $item['price'] * $item['quantity'],
+        try {
+            $order = Order::create([
+                'user_id' => Auth::id(),
+                'subtotal' => $subtotal,
+                'discount' => $discount,
+                'delivery_fee' => $delivery_fee,
+                'total' => $total,
+                'status' => 'pending',
+                'payment_method' => $request->input('payment_method'),
+                'delivery_address_id' => $request->input('address_id'),
             ]);
-        }
 
-        session()->forget(['cart', 'discount', 'cart_subtotal']);
+            foreach ($cart as $item) {
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $item['product_id'],
+                    'size' => $item['size'],
+                    'quantity' => $item['quantity'],
+                    'price' => $item['price'],
+                    'total' => $item['price'] * $item['quantity'],
+                ]);
+            }
 
-        return redirect()->route('restaurant.order.success', ['order' => $order->id])
+            Mail::to(Auth::user()->email)->send(new OrderConfirmationMail($order));
+
+            DB::commit(); // Commit transaction
+            session()->forget(['cart', 'cart_subtotal', 'discount']); // Clear cart session after successful order
+
+            return redirect()->route('restaurant.order.success', ['order' => $order->id])
             ->with('success', 'Your order has been placed successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack(); // Rollback transaction on error
+            return back()->with('error', 'Something went wrong. Please try again.')->withErrors($e->getMessage());
+        }
     }
 }

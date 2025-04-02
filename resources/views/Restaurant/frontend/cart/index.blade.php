@@ -118,7 +118,7 @@ use App\Models\Restaurant\Product;
                         : ($subtotal - session('discount', 0) + $delivery_fee) }} ETB
                     </span>
                 </div>
-                <form action="{{ route('restaurant.checkout') }}" method="POST">
+                <form action="{{ route('restaurant.checkout') }}" method="GET">
                     @csrf
                     <button type="submit" class="checkout-btn border-0 bg-primary w-100 mt-3">
                         CHECKOUT
