@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Models\Hotel;
+use App\Models\HotelCategory;
 use App\Models\HotelPhoto;
 use App\Models\Room;
 use App\Models\Reservation;
@@ -703,7 +704,7 @@ class HotelController extends Controller
     public function getCategories()
     {
         try {
-            $categories = Category::all();
+            $categories = HotelCategory::all();
             return response()->json(['categories' => $categories], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Unable to fetch categories'], Response::HTTP_INTERNAL_SERVER_ERROR);
