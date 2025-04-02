@@ -106,9 +106,7 @@
                         </span>
                         <span class="text-dark">20min</span>
                     </h4>
-
                     <p class="card-text text-dark">{{ $product->description }}</p>
-
                     <button class="btn bg-primary text-white rounded shadow" id="addToCart" data-product-id="{{ $product->id }}">Add To Cart</button>
                     @php
                     $isInWishlist = Auth::check() && \App\Models\Restaurant\Wishlist::where('user_id', Auth::id())->where('product_id', $product->id)->exists();
@@ -116,7 +114,6 @@
                     <button class="btn shadow add-to-wishlist" data-product="{{ $product->id }}">
                         <i class=" bi text-success bi-{{ $isInWishlist ? 'heart-fill' : 'heart' }}"></i>
                     </button>
-
                 </div>
             </div>
             <div class="my-2 d-flex justify-content-between align-items-center">
@@ -131,7 +128,6 @@
                 <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#ratingModal">
                     Rate this Product
                 </button>
-
             </div>
             @include('Restaurant.frontend.pages.products.rate')
             <div class="collapse mb-2" id="RestaurantRating">
@@ -149,7 +145,7 @@
                                     @else
                                     <i class="bi bi-star text-primary"></i>
                                     @endif
-                                    @endfor
+                                @endfor
                             </span>
                         </div>
                         @endforeach
@@ -157,9 +153,7 @@
                 </div>
             </div>
         </div>
-
     </div>
-
     <div class="row g-1">
         <div class="col-12">
             <h4 class="text-dark">Related Products</h4>
@@ -201,59 +195,81 @@
             @endforeach
         </div>
     </div>
-
 </div>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+
+    document.addEventListener("DOMContentLoaded", function () {
         let priceDisplay = document.getElementById("product-price");
         let quantityInput = document.getElementById("quantity");
         let incrementBtn = document.getElementById("increment");
         let decrementBtn = document.getElementById("decrement");
         let sizeSelectors = document.querySelectorAll(".size-selector");
-        let selectedPrice = parseFloat(sizeSelectors[0] ? .getAttribute("data-price") || "{{ $product->original_price }}");
-
+        let selectedPrice = parseFloat(sizeSelectors[0]?.getAttribute("data-price") || "{{ $product->original_price }}");
         // Function to update total price
         function updatePrice() {
             let quantity = parseInt(quantityInput.value);
             let totalPrice = selectedPrice * quantity;
             priceDisplay.textContent = totalPrice.toFixed(2) + " Birr";
         }
-
         // Handle size selection
         sizeSelectors.forEach(button => {
-            button.addEventListener("change", function() {
+            button.addEventListener("change", function () {
                 selectedPrice = parseFloat(this.getAttribute("data-price"));
                 updatePrice();
             });
         });
-
         // Handle increment button
-        incrementBtn.addEventListener("click", function() {
+        incrementBtn.addEventListener("click", function () {
             quantityInput.value = parseInt(quantityInput.value) + 1;
             updatePrice();
         });
-
         // Handle decrement button (prevent going below 1)
-        decrementBtn.addEventListener("click", function() {
+        decrementBtn.addEventListener("click", function () {
             if (quantityInput.value > 1) {
                 quantityInput.value = parseInt(quantityInput.value) - 1;
                 updatePrice();
             }
         });
-
         // Update price initially
         updatePrice();
     });
     const mainImage = document.getElementById('mainProductImage');
-    // Get all thumbnails and add a click event
-    document.querySelectorAll('.thumbnail').forEach(thumbnail => {
-        thumbnail.addEventListener('click', function() {
-            mainImage.src = this.src; // Set main image to clicked thumbnail
-        });
+       document.querySelectorAll('.thumbnail').forEach(thumbnail => {
+           thumbnail.addEventListener('click', function () {
+               mainImage.src = this.src; // Set main image to clicked thumbnail
+           });
+       });
+document.getElementById('addToCart').addEventListener('click', function () {
+        let productId = this.getAttribute('data-product-id');
+        let selectedSize = document.querySelector('input[name="size"]:checked');
+        let quantity = document.getElementById('quantity').value;
+        if (!selectedSize) {
+            showAlert('info', 'Please select a size!');
+            return;
+        }
+        let price = selectedSize.getAttribute('data-price');
+        let size = selectedSize.getAttribute('data-size');
+        fetch("{{ route('restaurant.cart.add') }}", {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                product_id: productId,
+                size: size,
+                price: price,
+                quantity: quantity
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            showAlert(data.status, data.message);
+            updateCartCount(); // Update cart count after adding item
+
+        })
+        .catch(error => console.error("Error:", error));
     });
-   
-
 </script>
-
 @endsection
 

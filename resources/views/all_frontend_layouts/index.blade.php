@@ -216,7 +216,7 @@
                 </div>
             </div>
         </div>
-    
+
         <div class="col-md-6">
             <div class="card placeholder-glow mb-3 p-2">
                 <div class="row g-0">
@@ -237,7 +237,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="row px-2 py-4 d-flex justify-content-center align-items-center flex-nowrap">
         <div class="col-md-4 col-4 text-center">
             <div class="icon-img-bg d-inline-block p-4 bg-primary rounded-circle">
@@ -268,7 +268,7 @@
             navigator.geolocation.getCurrentPosition(position => {
                 const latitude = position.coords.latitude;
                 const longitude = position.coords.longitude;
-    
+
                 fetch(`/restaurants/nearby?latitude=${latitude}&longitude=${longitude}`)
                     .then(response => response.json())
                     .then(data => {
@@ -284,18 +284,20 @@
             alert("Geolocation is not supported by your browser.");
         }
     });
-    
+
     function renderRestaurants(restaurants) {
         const container = document.getElementById('restaurant-container');
         container.innerHTML = '';
-    
+
         restaurants.forEach(restaurant => {
             container.innerHTML += `
                 <div class="col-md-6">
                     <div class=" offer-card mb-3 p-2">
                         <div class="row g-0">
                             <div class="col-md-6">
+                            <a href="{{ url('restaurant/${restaurant.id}/detail') }}">
                                 <img src="/storage/${restaurant.cover}" class="img-fluid rounded-start" alt="Restaurant">
+                            </a>
                             </div>
                             <div class="col-md-6">
                                 <div class="card-body">
@@ -307,7 +309,7 @@
                                     <p class="mb-1"> <i class="bi bi-pin-map-fill text-primary"></i> ${restaurant.address}</p>
                                     <div class="d-flex justify-content-between align-items-center mt-3">
                                     <div class="text-warning me-2">
-                                      
+
                                         <span><span class="bi bi-star-fill text-primary"></span> ${restaurant.rating}</span>
                                     </div>
                                     <div><img src="{{ asset('restaurant_frontend/assets/img/scooter-02.png') }}" style="width: 20%;" alt=""> From ${restaurant.start_from} ETB</div>
@@ -321,6 +323,6 @@
         });
     }
     </script>
-    
+
 @endsection
 

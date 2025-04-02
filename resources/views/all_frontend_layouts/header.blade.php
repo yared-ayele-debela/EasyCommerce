@@ -52,7 +52,7 @@
             padding: 5px;
             width: 150px;
             height: 40px;
-            box-shadow: 1px 0px 1px 2px rgba(138, 243, 89, 0.74);
+            box-shadow: 1px 0px 1px 2px rgba(247, 247, 247, 0.74);
             border: 1px solid #17BE18 !important;
 
         }
@@ -146,7 +146,7 @@
                 </span>
             </a>
             <div class="dropdown">
-               
+
                     @if(Auth::check())
                     <a class="btn  text-dark border border-1 p-1 dropdown-toggle d-flex align-items-center gap-1" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         @if(Auth::user()->profile_photo_path)
@@ -155,7 +155,7 @@
                         {{-- {{ strtok(Auth::user()->name,' ') }} --}}
                     </a>
                     @else
-                
+
                     <div class="toggle-btn d-none d-lg-flex">
                         <a href="{{ route('auth.login') }}" class="toggle active" id="login">Login</a>
                         <a href="{{ route('auth.login') }}" class="toggle text-white" id="signup">
@@ -164,7 +164,7 @@
                         <div class="slider"></div>
                     </div>
                     @endif
-             
+
 
                 <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded" aria-labelledby="accountDropdown">
                     @if(Auth::check())
