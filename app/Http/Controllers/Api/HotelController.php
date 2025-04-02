@@ -513,7 +513,7 @@ class HotelController extends Controller
             $hotel = Hotel::findOrFail($hotel_id);
 
             // Check if the room belongs to the hotel
-            $room = $hotel->rooms()->findOrFail($room_id);
+            $room = Room::find($room_id);
 
             // Define similarity criteria (e.g., price range and amenities)
             $priceRange = 50; // Adjust the price range as needed
