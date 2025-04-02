@@ -225,9 +225,9 @@ Route::get('/hotels/featured/{hotel_id}/rooms/{room_id}/bookings', [HotelControl
 Route::get('/hotels/featured/{hotel_id}/rooms/{room_id}/availability', [HotelController::class, 'checkFeaturedHotelRoomAvailability']);
 Route::get('/hotels/featured/{hotel_id}/rooms/{room_id}/bookings', [HotelController::class, 'getFeaturedHotelRoomBookings']);
 
-Route::post('hotels/{hotel_id}/reviews', [ReviewController::class, 'store']);
-Route::get('hotels/{hotel_id}/reviews', [ReviewController::class, 'show']);
-Route::get('/hotels/featured/{hotel_id}/rooms/{room_id}/reviews', [ReviewController::class, 'getFeaturedHotelRoomReviews']);
+Route::post('hotels/{hotel_id}/reviews', [HotelReviewController::class, 'store']);
+Route::get('hotels/{hotel_id}/reviews', [HotelReviewController::class, 'show']);
+Route::get('/hotels/featured/{hotel_id}/rooms/{room_id}/reviews', [HotelReviewController::class, 'getFeaturedHotelRoomReviews']);
 Route::post('reservations', [ReservationController::class, 'store']);
 Route::get('users/{user_id}/reservations', [ReservationController::class, 'userReservations']);
 Route::put('reservations/{id}/cancel', [ReservationController::class, 'cancel']);
