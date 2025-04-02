@@ -8,6 +8,12 @@ use App\Models\Hotel;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 
+/**
+ * @OA\Tag(
+ *     name="Foods",
+ *     description="API Endpoints for managing foods"
+ * )
+ */
 class HotelController extends Controller
 {
     /**
