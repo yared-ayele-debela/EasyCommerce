@@ -1466,10 +1466,10 @@
                 }
             }
         },
-        "/hotels": {
+        "/api/hotels": {
             "get": {
                 "summary": "Get a list of hotels",
-                "operationId": "4f25dfe33057338d1695c3e277a75dc2",
+                "operationId": "4ea68c89b5c9eede5036b50194d6ced1",
                 "responses": {
                     "200": {
                         "description": "List of hotels"
@@ -1478,7 +1478,7 @@
             },
             "post": {
                 "summary": "Create a new hotel",
-                "operationId": "1586f145af3ebedd2ddb8f14e66ad4db",
+                "operationId": "fb2fe15235465eae2bd7ec8a893d8f84",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1545,10 +1545,10 @@
                 }
             }
         },
-        "/hotels/{id}": {
+        "/api/hotels/{id}": {
             "get": {
                 "summary": "Get a hotel by ID",
-                "operationId": "0135b5eaa30ae8aeef376b449304c1bc",
+                "operationId": "2e8f8b85907181eacdc208d6c1bd69ee",
                 "parameters": [
                     {
                         "name": "id",
@@ -1568,7 +1568,7 @@
             },
             "put": {
                 "summary": "Update a hotel",
-                "operationId": "b8d44eb3666ed43a43f6bd27e9a8f3c9",
+                "operationId": "2f14643018557239b7ca0d0964e773f8",
                 "parameters": [
                     {
                         "name": "id",
@@ -1591,7 +1591,7 @@
             },
             "delete": {
                 "summary": "Delete a hotel",
-                "operationId": "0cede913fe76d6da0bdacbdf029f4b46",
+                "operationId": "8d96bc74721aadf8a9decf7c8396ecd3",
                 "parameters": [
                     {
                         "name": "id",
@@ -1610,10 +1610,10 @@
                 }
             }
         },
-        "/hotels/{hotel_id}/photos": {
+        "/api/hotels/{hotel_id}/photos": {
             "post": {
                 "summary": "Upload photos for a hotel",
-                "operationId": "ee9092acc83fb0eb62201b7a111f787f",
+                "operationId": "99e65f5c6affdbd1e9443ab4fcdaf538",
                 "parameters": [
                     {
                         "name": "hotel_id",
@@ -1654,10 +1654,10 @@
                 }
             }
         },
-        "/hotels/{hotel_id}/rooms": {
+        "/api/hotels/{hotel_id}/rooms": {
             "get": {
                 "summary": "Get rooms for a hotel",
-                "operationId": "6d80fe100dca323a985b7dc5f4c65912",
+                "operationId": "c2399b214cc43ad4c0e26079316e8e7b",
                 "parameters": [
                     {
                         "name": "hotel_id",
@@ -1676,10 +1676,10 @@
                 }
             }
         },
-        "/hotels/{hotel_id}/rooms/{room_id}": {
+        "/api/hotels/{hotel_id}/rooms/{room_id}": {
             "get": {
                 "summary": "Get room details",
-                "operationId": "0a3a4169e748a0652129d4e8fd95ed5f",
+                "operationId": "c20e60590298db463be2222b33b325b5",
                 "parameters": [
                     {
                         "name": "hotel_id",
@@ -1707,10 +1707,10 @@
                 }
             }
         },
-        "/hotels/{hotel_id}/rooms/{room_id}/availability": {
+        "/api/hotels/{hotel_id}/rooms/{room_id}/availability": {
             "get": {
                 "summary": "Check room availability",
-                "operationId": "ece9b9314c5eac6c0c4ee191cfd9ec10",
+                "operationId": "eb7364c2aa87843750677c80fdeb51bc",
                 "parameters": [
                     {
                         "name": "hotel_id",
@@ -1758,10 +1758,10 @@
                 }
             }
         },
-        "/hotels/{hotel_id}/rooms/{room_id}/photos": {
+        "/api/hotels/{hotel_id}/rooms/{room_id}/photos": {
             "get": {
                 "summary": "Get hotel photos",
-                "operationId": "f6ff240651fa614c53635e67f2b1a55e",
+                "operationId": "832bea7e9d8f39d539b6b75bee076bb7",
                 "parameters": [
                     {
                         "name": "hotel_id",
@@ -1789,10 +1789,10 @@
                 }
             }
         },
-        "/hotels/{hotel_id}/rooms/{room_id}/amenities": {
+        "/api/hotels/{hotel_id}/rooms/{room_id}/amenities": {
             "get": {
                 "summary": "Get hotel amenities",
-                "operationId": "24cf9d4afbf8effd1a167d3a46953131",
+                "operationId": "73e9879a85ffaaf57ac1c466c6c9461c",
                 "parameters": [
                     {
                         "name": "hotel_id",
@@ -1820,10 +1820,10 @@
                 }
             }
         },
-        "/hotels/{hotel_id}/rooms/{room_id}/similar": {
+        "/api/hotels/{hotel_id}/rooms/{room_id}/similar": {
             "get": {
                 "summary": "Get similar rooms",
-                "operationId": "290d3fa73906fcd9a2c75f627f2a7604",
+                "operationId": "44857f670eb4ae31d5007080832de2ea",
                 "parameters": [
                     {
                         "name": "hotel_id",
@@ -1851,10 +1851,10 @@
                 }
             }
         },
-        "/hotels/{hotel_id}/rooms/{room_id}/bookings": {
+        "/api/hotels/{hotel_id}/rooms/{room_id}/bookings": {
             "get": {
                 "summary": "Get room bookings",
-                "operationId": "09a0b80b04645346fd7c660c407a6d68",
+                "operationId": "6c3e2cec43e30eed69964a7a52984f2a",
                 "parameters": [
                     {
                         "name": "hotel_id",
@@ -1882,10 +1882,10 @@
                 }
             }
         },
-        "/hotels/banners": {
+        "/api/hotels/banners": {
             "get": {
                 "summary": "Get active banners",
-                "operationId": "106ad34025063fb2e127db1761c8d002",
+                "operationId": "ac2fbbe10be96e1207f343d5d70f7d36",
                 "responses": {
                     "200": {
                         "description": "List of active banners"
@@ -1893,10 +1893,10 @@
                 }
             }
         },
-        "/hotels/search": {
+        "/api/hotels/search": {
             "get": {
                 "summary": "Search for hotels",
-                "operationId": "5e1b125249a239c8021411ffe73ea6ee",
+                "operationId": "b6d81b01a3e0c05edae3a8be1023b520",
                 "parameters": [
                     {
                         "name": "location",
@@ -1960,10 +1960,10 @@
                 }
             }
         },
-        "/hotels/categories": {
+        "/api/hotels/categories": {
             "get": {
                 "summary": "Get hotel categories",
-                "operationId": "76b4417a9b10505ac4e4c605e38d195d",
+                "operationId": "6a7e78d0eaa962f56d3951763ded81bd",
                 "responses": {
                     "200": {
                         "description": "List of hotel categories"
@@ -1971,10 +1971,10 @@
                 }
             }
         },
-        "/hotels/categories/{category_id}": {
+        "/api/hotels/categories/{category_id}": {
             "get": {
                 "summary": "Get hotels by category",
-                "operationId": "856fecc6cac579c5bd0c339689c2ab4a",
+                "operationId": "e939dbc4fa4ddc1ecc0ce324c3238813",
                 "parameters": [
                     {
                         "name": "category_id",
@@ -1993,10 +1993,10 @@
                 }
             }
         },
-        "/hotels/locations": {
+        "/api/hotels/locations": {
             "get": {
                 "summary": "Get hotel locations",
-                "operationId": "ecf98ef0b0c74c582a69c16939f26a88",
+                "operationId": "863e7669d737b69a6875351067c8f82a",
                 "responses": {
                     "200": {
                         "description": "List of hotel locations"
@@ -2004,10 +2004,10 @@
                 }
             }
         },
-        "/hotels/locations/{location}": {
+        "/api/hotels/locations/{location}": {
             "get": {
                 "summary": "Get hotels by location",
-                "operationId": "27f85ecdf78b5f2de8cb382faf60abb5",
+                "operationId": "426cca542c0d69bddb3b5fb21864f8e5",
                 "parameters": [
                     {
                         "name": "location",
@@ -2026,10 +2026,10 @@
                 }
             }
         },
-        "/hotels/amenities": {
+        "/api/hotels/amenities": {
             "get": {
                 "summary": "Get hotel amenities",
-                "operationId": "dff9507bd208ccd8a3e966130b9c9c71",
+                "operationId": "718c464701fedb36dc21b5fa0370c115",
                 "responses": {
                     "200": {
                         "description": "List of hotel amenities"
@@ -2037,10 +2037,10 @@
                 }
             }
         },
-        "/hotels/amenities/{amenity}": {
+        "/api/hotels/amenities/{amenity}": {
             "get": {
                 "summary": "Get hotels by amenity",
-                "operationId": "d709fe5d24d1345b863c9412424a3f79",
+                "operationId": "5df4a48bfc6ce7756b246f5cfd966015",
                 "parameters": [
                     {
                         "name": "amenity",
@@ -2059,10 +2059,10 @@
                 }
             }
         },
-        "/hotels/featured": {
+        "/api/hotels/featured": {
             "get": {
                 "summary": "Get featured hotels",
-                "operationId": "cd2643a25b7396f1cbdae986e38e9927",
+                "operationId": "0630a91c87ce3bae7dddf3ea8735a3da",
                 "responses": {
                     "200": {
                         "description": "List of featured hotels"
@@ -2070,10 +2070,10 @@
                 }
             }
         },
-        "/hotels/featured/{hotel_id}": {
+        "/api/hotels/featured/{hotel_id}": {
             "get": {
                 "summary": "Get featured hotel details",
-                "operationId": "7853e37945c4d6bb9eae34b096e5410d",
+                "operationId": "840bcea21cbeff4447002027e5d42ad4",
                 "parameters": [
                     {
                         "name": "hotel_id",
@@ -2092,10 +2092,10 @@
                 }
             }
         },
-        "/hotels/featured/{hotel_id}/rooms": {
+        "/api/hotels/featured/{hotel_id}/rooms": {
             "get": {
                 "summary": "Get rooms for a featured hotel",
-                "operationId": "33c93b167f11b7b1d02d30178e70c6aa",
+                "operationId": "795677809a1b836277feffad1d25d4cf",
                 "responses": {
                     "200": {
                         "description": "List of rooms for the featured hotel"
@@ -2103,10 +2103,10 @@
                 }
             }
         },
-        "/hotels/featured/{hotel_id}/rooms/{room_id}": {
+        "/api/hotels/featured/{hotel_id}/rooms/{room_id}": {
             "get": {
                 "summary": "Get featured hotel room details",
-                "operationId": "67c39e514388e798adac0f76dd004fce",
+                "operationId": "f3067f725ac069c0be7445511054ea8a",
                 "responses": {
                     "200": {
                         "description": "Featured hotel room details"
@@ -2114,10 +2114,10 @@
                 }
             }
         },
-        "/hotels/featured/{hotel_id}/rooms/{room_id}/availability": {
+        "/api/hotels/featured/{hotel_id}/rooms/{room_id}/availability": {
             "get": {
                 "summary": "Check featured hotel room availability",
-                "operationId": "8110c5eb0d0025b182c67947032258d6",
+                "operationId": "708f1d9b8ed2ca78e47b7a596ca9c41e",
                 "responses": {
                     "200": {
                         "description": "Featured hotel room availability status"
@@ -2125,10 +2125,10 @@
                 }
             }
         },
-        "/hotels/featured/{hotel_id}/rooms/{room_id}/photos": {
+        "/api/hotels/featured/{hotel_id}/rooms/{room_id}/photos": {
             "get": {
                 "summary": "Get featured hotel room photos",
-                "operationId": "5f0f0fe0ccc610897f55c1da7391ed45",
+                "operationId": "462f5f3acbf3ef61435f0acd8b90f20c",
                 "responses": {
                     "200": {
                         "description": "List of featured hotel room photos"
@@ -2136,10 +2136,10 @@
                 }
             }
         },
-        "/hotels/featured/{hotel_id}/rooms/{room_id}/amenities": {
+        "/api/hotels/featured/{hotel_id}/rooms/{room_id}/amenities": {
             "get": {
                 "summary": "Get featured hotel room amenities",
-                "operationId": "7bccf8ae064db5f476e9de037967dd69",
+                "operationId": "169c504ea904ff44e21e63d536bb891f",
                 "responses": {
                     "200": {
                         "description": "List of featured hotel room amenities"
@@ -2147,10 +2147,10 @@
                 }
             }
         },
-        "/hotels/featured/{hotel_id}/rooms/{room_id}/similar": {
+        "/api/hotels/featured/{hotel_id}/rooms/{room_id}/similar": {
             "get": {
                 "summary": "Get similar featured hotel rooms",
-                "operationId": "b29d2f86da2a0e6fa6e86d00561eff8b",
+                "operationId": "332ccd80d85321e01d52dc468323aaa8",
                 "responses": {
                     "200": {
                         "description": "List of similar featured hotel rooms"
@@ -2158,10 +2158,10 @@
                 }
             }
         },
-        "/hotels/featured/{hotel_id}/rooms/{room_id}/bookings": {
+        "/api/hotels/featured/{hotel_id}/rooms/{room_id}/bookings": {
             "get": {
                 "summary": "Get featured hotel room bookings",
-                "operationId": "7454d75cecb6c52a06ce96a6f5aac5f5",
+                "operationId": "11f3a38ae7182a31c74ca399e83bcbcc",
                 "responses": {
                     "200": {
                         "description": "List of featured hotel room bookings"
