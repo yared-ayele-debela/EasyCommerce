@@ -12,7 +12,7 @@ class Hotel extends Model
     protected $fillable = [
         'name', 'category_id', 'location', 'latitude', 'longitude',
         'price_per_night', 'banner_image', 'rating', 'reviews_count',
-        'discount', 'amenities', 'phone', 'description'
+        'discount', 'amenities', 'phone', 'description','is_adverted'
     ];
 
     protected $casts = [
