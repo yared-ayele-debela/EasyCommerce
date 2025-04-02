@@ -522,7 +522,7 @@ class HotelController extends Controller
             // Retrieve similar rooms based on price range and amenities
             $similarRooms = Room::where('hotel_id', $hotel_id)
                 ->where('id', '!=', $room_id)
-                ->whereBetween('price_per_night', [$roomPrice - $priceRange, $roomPrice + $priceRange])
+                ->whereBetween('price', [$roomPrice - $priceRange, $roomPrice + $priceRange])
                 ->get();
 
             return response()->json($similarRooms);
