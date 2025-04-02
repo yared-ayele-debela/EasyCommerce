@@ -22,6 +22,12 @@ use App\Http\Controllers\Api\DeliveryAddressController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\BannerController;
+use App\Http\Controllers\Api\ReservationController;
+use App\Http\Controllers\Api\HotelController;
+// use App\Http\Controllers\Api\ReviewController;
+
+
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -180,3 +186,49 @@ Route::middleware('auth:sanctum')->group(function () {
     // Logout
     Route::post('/logout', [AuthController::class, 'logout']);
 });
+// ================Hotel=================
+Route::get('hotels', [HotelController::class, 'hotelIndex']);
+Route::post('hotels', [HotelController::class, 'hotelStore']);
+Route::get('hotels/{id}', [HotelController::class, 'hotelShow']);
+Route::put('hotels/{id}', [HotelController::class, 'hotelUpdate']);
+Route::delete('hotels/{id}', [HotelController::class, 'hotelDestroy']);
+
+
+Route::post('hotels/{hotel_id}/photos', [HotelController::class, 'uploadPhotos']);
+Route::get('hotels/{hotel_id}/rooms', [HotelController::class, 'getRooms']);
+Route::get('hotels/{hotel_id}/rooms/{room_id}', [HotelController::class, 'getRoomDetails']);
+Route::get('hotels/{hotel_id}/rooms/{room_id}/availability', [HotelController::class, 'checkRoomAvailability']);
+Route::get('hotels/{hotel_id}/rooms/{room_id}/photos', [HotelController::class, 'getRoomPhotos']);
+Route::get('hotels/{hotel_id}/rooms/{room_id}/amenities', [HotelController::class, 'getRoomAmenities']);
+Route::get('hotels/{hotel_id}/rooms/{room_id}/similar', [HotelController::class, 'getSimilarRooms']);
+Route::get('hotels/{hotel_id}/rooms/{room_id}/bookings', [HotelController::class, 'getRoomBookings']);
+Route::get('hotels/{hotel_id}/rooms/{room_id}/availability', [HotelController::class, 'checkRoomAvailability']);
+
+
+Route::get('/hotels/banners', [HotelController::class, 'getActiveBanners']);
+Route::get('/hotels/search', [HotelController::class, 'hotelSearch']);
+Route::get('/hotels/categories', [HotelController::class, 'getCategories']);
+Route::get('/hotels/categories/{category_id}', [HotelController::class, 'getHotelsByCategory']);
+Route::get('/hotels/locations', [HotelController::class, 'getLocations']);
+Route::get('/hotels/locations/{location}', [HotelController::class, 'getHotelsByLocation']);
+Route::get('/hotels/amenities', [HotelController::class, 'getAmenities']);
+Route::get('/hotels/amenities/{amenity}', [HotelController::class, 'getHotelsByAmenity']);
+Route::get('/hotels/featured', [HotelController::class, 'getFeaturedHotels']);
+Route::get('/hotels/featured/{hotel_id}', [HotelController::class, 'getFeaturedHotelDetails']);
+Route::get('/hotels/featured/{hotel_id}/rooms', [HotelController::class, 'getFeaturedHotelRooms']);
+Route::get('/hotels/featured/{hotel_id}/rooms/{room_id}', [HotelController::class, 'getFeaturedHotelRoomDetails']);
+Route::get('/hotels/featured/{hotel_id}/rooms/{room_id}/availability', [HotelController::class, 'checkFeaturedHotelRoomAvailability']);
+Route::get('/hotels/featured/{hotel_id}/rooms/{room_id}/photos', [HotelController::class, 'getFeaturedHotelRoomPhotos']);
+Route::get('/hotels/featured/{hotel_id}/rooms/{room_id}/amenities', [HotelController::class, 'getFeaturedHotelRoomAmenities']);
+Route::get('/hotels/featured/{hotel_id}/rooms/{room_id}/similar', [HotelController::class, 'getSimilarFeaturedHotelRooms']);
+Route::get('/hotels/featured/{hotel_id}/rooms/{room_id}/bookings', [HotelController::class, 'getFeaturedHotelRoomBookings']);
+Route::get('/hotels/featured/{hotel_id}/rooms/{room_id}/availability', [HotelController::class, 'checkFeaturedHotelRoomAvailability']);
+Route::get('/hotels/featured/{hotel_id}/rooms/{room_id}/bookings', [HotelController::class, 'getFeaturedHotelRoomBookings']);
+
+Route::post('hotels/{hotel_id}/reviews', [ReviewController::class, 'store']);
+Route::get('hotels/{hotel_id}/reviews', [ReviewController::class, 'show']);
+Route::get('/hotels/featured/{hotel_id}/rooms/{room_id}/reviews', [ReviewController::class, 'getFeaturedHotelRoomReviews']);
+Route::post('reservations', [ReservationController::class, 'store']);
+Route::get('users/{user_id}/reservations', [ReservationController::class, 'userReservations']);
+Route::put('reservations/{id}/cancel', [ReservationController::class, 'cancel']);
+Route::get('hotels/{hotel_id}/rooms/{room_id}/reviews', [ReviewController::class, 'getRoomReviews']);
