@@ -9,14 +9,22 @@ class FoodCategory extends Model
 {
     use HasFactory;
 
-    protected $table = 'food_categories';
+    protected $fillable = ['country_id', 'parent_cat_id', 'category_name', 'description', 'image'];
 
-    protected $fillable = [
-        'country', 
-        'category_name', 
-        'description', 
-        'image'
-    ];
+    public function country()
+    {
+        return $this->belongsTo(Countries::class, 'country_id');
+    }
+
+    public function parentCategory()
+    {
+        return $this->belongsTo(FoodCategory::class, 'parent_cat_id');
+    }
+
+    public function subCategories()
+    {
+        return $this->hasMany(FoodCategory::class, 'parent_cat_id');
+    }
 
     public function foods()
     {

@@ -30,8 +30,7 @@ class HotelReviewController extends Controller
      *     ),
      *     @OA\Response(
      *         response=201,
-     *         description="Review created successfully",
-     *         @OA\JsonContent(ref="#/components/schemas/Review")
+     *         description="Review created successfully"
      *     )
      * )
      */
@@ -55,8 +54,7 @@ class HotelReviewController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="List of reviews",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Review"))
+     *         description="List of reviews"
      *     )
      * )
      */
@@ -86,8 +84,7 @@ class HotelReviewController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="List of reviews for the featured room",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Review"))
+     *         description="List of reviews for the featured room"
      *     )
      * )
      */

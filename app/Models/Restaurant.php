@@ -10,8 +10,9 @@ class Restaurant extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'description', 'address', 'city', 'state', 'postal_code', 'country', 
-        'phone', 'email', 'website', 'opening_time', 'closing_time', 'is_open'
+        'name', 'description', 'address', 'city', 'state', 'postal_code', 
+        'latitude', 'longitude', 'phone', 'email', 'website', 
+        'opening_time', 'closing_time', 'is_open', 'country_id'
     ];
 
     // protected $casts = [
@@ -34,4 +35,34 @@ class Restaurant extends Model
     {
         return $this->hasMany(Order::class);
     }
+    public function country()
+    {
+        return $this->belongsTo(Country::class, 'country_id');
+    }
+
+    public function foodCategories()
+    {
+        return $this->hasManyThrough(
+            FoodCategory::class,
+            Country::class,
+            'id', // Foreign key on Country (from the `countries` table)
+            'country_id', // Foreign key on FoodCategory
+            'country_id', // Local key on Restaurant
+            'id' // Local key on FoodCategory
+        );
+    }
+
+    public function foods()
+    {
+        return $this->hasManyThrough(
+            Food::class,
+            FoodCategory::class,
+            'category_id',
+            'restaurant_id',
+            'id',
+            'id'
+        );
+    }
+    
 }
+

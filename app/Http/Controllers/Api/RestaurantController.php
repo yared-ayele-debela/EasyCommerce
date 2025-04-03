@@ -8,6 +8,111 @@ class RestaurantController extends Controller
 {
     /**
      * @OA\Get(
+     *     path="/api/restaurants",
+     *     summary="Get all restaurants",
+     *     description="Retrieve a list of all restaurants with their associated country, food categories, and foods.",
+     *     operationId="getAllRestaurants",
+     *     tags={"Restaurants"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful response with a list of restaurants",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer", description="Restaurant ID"),
+     *                 @OA\Property(property="name", type="string", description="Restaurant name"),
+     *                 @OA\Property(property="country", type="object", description="Associated country"),
+     *                 @OA\Property(
+     *                     property="food_categories",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="object",
+     *                         @OA\Property(property="id", type="integer", description="Food category ID"),
+     *                         @OA\Property(property="name", type="string", description="Food category name"),
+     *                         @OA\Property(
+     *                             property="foods",
+     *                             type="array",
+     *                             @OA\Items(
+     *                                 type="object",
+     *                                 @OA\Property(property="id", type="integer", description="Food ID"),
+     *                                 @OA\Property(property="name", type="string", description="Food name"),
+     *                                 @OA\Property(property="price", type="number", format="float", description="Food price")
+     *                             )
+     *                         )
+     *                     )
+     *                 )
+     *             )
+     *         )
+     *     )
+     * )
+     */
+    public function index()
+    {
+        return response()->json(
+            Restaurant::with(['country', 'foodCategories.foods'])->get()
+        );
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/restaurants/{id}",
+     *     summary="Get a specific restaurant",
+     *     description="Retrieve a specific restaurant by its ID, including its associated country, food categories, and foods.",
+     *     operationId="getRestaurantById",
+     *     tags={"Restaurants"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID of the restaurant to retrieve",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful response with the restaurant details",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="id", type="integer", description="Restaurant ID"),
+     *             @OA\Property(property="name", type="string", description="Restaurant name"),
+     *             @OA\Property(property="country", type="object", description="Associated country"),
+     *             @OA\Property(
+     *                 property="food_categories",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="id", type="integer", description="Food category ID"),
+     *                     @OA\Property(property="name", type="string", description="Food category name"),
+     *                     @OA\Property(
+     *                         property="foods",
+     *                         type="array",
+     *                         @OA\Items(
+     *                             type="object",
+     *                             @OA\Property(property="id", type="integer", description="Food ID"),
+     *                             @OA\Property(property="name", type="string", description="Food name"),
+     *                             @OA\Property(property="price", type="number", format="float", description="Food price")
+     *                         )
+     *                     )
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Restaurant not found"
+     *     )
+     * )
+     */
+    public function show($id)
+    {
+        return response()->json(
+            Restaurant::with(['country', 'foodCategories.foods'])->findOrFail($id)
+        );
+    }
+    /**
+     * @OA\Get(
      *     path="/api/restaurants/nearby",
      *     summary="Get Nearby Restaurants by Latitude and Longitude",
      *     description="Retrieve a list of all nearby restaurants based on the user's latitude and longitude.",
@@ -90,6 +195,69 @@ class RestaurantController extends Controller
             $restaurant->distance_in_meters = $restaurant->distance * 1000; // Convert distance to meters
             return $restaurant;
         });
+
+        return response()->json($restaurants);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/restaurants/country/{countryId}",
+     *     summary="Get restaurants by country",
+     *     description="Retrieve a list of restaurants filtered by the specified country ID, including their food categories and foods.",
+     *     operationId="getRestaurantsByCountry",
+     *     tags={"Restaurants"},
+     *     @OA\Parameter(
+     *         name="countryId",
+     *         in="path",
+     *         description="ID of the country to filter restaurants by",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful response with a list of restaurants",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer", description="Restaurant ID"),
+     *                 @OA\Property(property="name", type="string", description="Restaurant name"),
+     *                 @OA\Property(property="country_id", type="integer", description="Country ID"),
+     *                 @OA\Property(
+     *                     property="food_categories",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="object",
+     *                         @OA\Property(property="id", type="integer", description="Food category ID"),
+     *                         @OA\Property(property="name", type="string", description="Food category name"),
+     *                         @OA\Property(
+     *                             property="foods",
+     *                             type="array",
+     *                             @OA\Items(
+     *                                 type="object",
+     *                                 @OA\Property(property="id", type="integer", description="Food ID"),
+     *                                 @OA\Property(property="name", type="string", description="Food name"),
+     *                                 @OA\Property(property="price", type="number", format="float", description="Food price")
+     *                             )
+     *                         )
+     *                     )
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Country not found"
+     *     )
+     * )
+     */
+    public function restaurantsByCountry($countryId)
+    {
+        $restaurants = Restaurant::with(['foodCategories.foods'])
+            ->where('country_id', $countryId)
+            ->get();
 
         return response()->json($restaurants);
     }

@@ -2,102 +2,98 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Food;
+use App\Models\FoodCategory;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class FoodController extends Controller
+/**
+ * @OA\Tag(
+ *     name="FoodCategory",
+ *     description="API Endpoints for managing food categories"
+ * )
+ */
+class FoodCategoryController extends Controller
 {
     /**
      * @OA\Get(
-     *     path="/api/foods",
-     *     summary="Get all foods",
-     *     tags={"Foods"},
+     *     path="/api/food-categories",
+     *     tags={"FoodCategory"},
+     *     summary="Get list of food categories",
      *     @OA\Response(
      *         response=200,
-     *         description="List of all foods with their categories"
+     *         description="Successful operation"
      *     )
      * )
      */
     public function index()
     {
-        return response()->json(Food::with('category')->get());
+        return response()->json(FoodCategory::with(['country', 'subCategories'])->get());
     }
-
-    
 
     /**
      * @OA\Get(
-     *     path="/api/foods/{id}",
-     *     summary="Get a specific food by ID",
-     *     tags={"Foods"},
+     *     path="/api/food-categories/{id}",
+     *     tags={"FoodCategory"},
+     *     summary="Get a specific food category",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="ID of the food",
+     *         description="ID of the food category",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Details of the food with its category"
+     *         description="Successful operation"
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Food not found"
+     *         description="Food category not found"
      *     )
      * )
      */
     public function show($id)
     {
-        return response()->json(Food::with('category')->findOrFail($id));
+        return response()->json(FoodCategory::with(['country', 'subCategories'])->findOrFail($id));
     }
-
-    
 
     /**
      * @OA\Post(
-     *     path="/api/foods",
-     *     summary="Create a new food",
-     *     tags={"Foods"},
+     *     path="/api/food-categories",
+     *     tags={"FoodCategory"},
+     *     summary="Create a new food category",
      *     @OA\RequestBody(
      *         required=true
      *     ),
      *     @OA\Response(
      *         response=201,
-     *         description="Food created successfully"
+     *         description="Food category created successfully"
      *     )
      * )
      */
     public function store(Request $request)
     {
         $data = $request->validate([
-            'restaurant_id' => 'required|integer',
-            'name' => 'required|string',
+            'country_id' => 'required|exists:countries,id',
+            'parent_cat_id' => 'nullable|exists:food_categories,id',
+            'category_name' => 'required|string',
             'description' => 'nullable|string',
             'image' => 'nullable|string',
-            'category_id' => 'nullable|exists:food_categories,id',
-            'price' => 'required|numeric',
-            'discount' => 'nullable|numeric',
-            'is_special_offer' => 'nullable|boolean',
-            'available' => 'nullable|boolean',
         ]);
 
-        return response()->json(Food::create($data), 201);
+        return response()->json(FoodCategory::create($data), 201);
     }
-
-    
 
     /**
      * @OA\Put(
-     *     path="/api/foods/{id}",
-     *     summary="Update an existing food",
-     *     tags={"Foods"},
+     *     path="/api/food-categories/{id}",
+     *     tags={"FoodCategory"},
+     *     summary="Update an existing food category",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="ID of the food",
+     *         description="ID of the food category",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\RequestBody(
@@ -105,52 +101,50 @@ class FoodController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Food updated successfully"
+     *         description="Food category updated successfully"
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Food not found"
+     *         description="Food category not found"
      *     )
      * )
      */
     public function update(Request $request, $id)
     {
-        $food = Food::findOrFail($id);
-        $food->update($request->all());
+        $category = FoodCategory::findOrFail($id);
+        $category->update($request->all());
 
-        return response()->json($food);
+        return response()->json($category);
     }
-
-    
 
     /**
      * @OA\Delete(
-     *     path="/api/foods/{id}",
-     *     summary="Delete a food",
-     *     tags={"Foods"},
+     *     path="/api/food-categories/{id}",
+     *     tags={"FoodCategory"},
+     *     summary="Delete a food category",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="ID of the food",
+     *         description="ID of the food category",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Food deleted successfully",
+     *         description="Food category deleted successfully",
      *         @OA\JsonContent(
      *             @OA\Property(property="message", type="string", example="Deleted successfully")
      *         )
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Food not found"
+     *         description="Food category not found"
      *     )
      * )
      */
     public function destroy($id)
     {
-        Food::destroy($id);
+        FoodCategory::destroy($id);
         return response()->json(['message' => 'Deleted successfully']);
     }
 }

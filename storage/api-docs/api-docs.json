@@ -789,36 +789,127 @@
                 }
             }
         },
-        "/api/banners/active": {
+        "/api/banners/ecommerce": {
             "get": {
                 "tags": [
                     "Banners"
                 ],
-                "summary": "Fetch all active banners",
-                "description": "Retrieve a list of all active banners.",
-                "operationId": "fetchActiveBanners",
+                "summary": "Get active Ecommerce banners",
+                "description": "Fetch active Ecommerce banners",
+                "operationId": "bcfbe0423038f990037efca8012244b5",
                 "responses": {
                     "200": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "data": {
-                                            "type": "object"
-                                        }
+                        "description": "Successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                }
+            }
+        },
+        "/api/banners/restaurant": {
+            "get": {
+                "tags": [
+                    "Banners"
+                ],
+                "summary": "Get active Restaurant banners",
+                "description": "Fetch active Restaurant banners",
+                "operationId": "4861d09952b40011c520bfe0b2c91a20",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                }
+            }
+        },
+        "/api/banners/hotel": {
+            "get": {
+                "tags": [
+                    "Banners"
+                ],
+                "summary": "Get active Hotel banners",
+                "description": "Fetch active Hotel banners",
+                "operationId": "f36bb3f9f778414a08602f052319cff4",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                }
+            }
+        },
+        "/api/banners": {
+            "post": {
+                "tags": [
+                    "Banners"
+                ],
+                "summary": "Create a new banner",
+                "description": "Store a new banner",
+                "operationId": "546707dc3442c51e694ec312df3664e9",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "service_id",
+                                    "product_id",
+                                    "type",
+                                    "title",
+                                    "alt",
+                                    "status"
+                                ],
+                                "properties": {
+                                    "service_id": {
+                                        "type": "integer",
+                                        "example": 1
                                     },
-                                    "type": "object"
-                                }
+                                    "product_id": {
+                                        "type": "integer",
+                                        "example": 101
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "ecommerce",
+                                            "restaurant",
+                                            "hotel"
+                                        ],
+                                        "example": "ecommerce"
+                                    },
+                                    "image": {
+                                        "type": "string",
+                                        "example": "https://example.com/banner.jpg"
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Best Selling Product"
+                                    },
+                                    "alt": {
+                                        "type": "string",
+                                        "example": "Top Electronics"
+                                    },
+                                    "status": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Banner created successfully"
                     },
-                    "500": {
-                        "description": "Internal server error"
+                    "400": {
+                        "description": "Bad request"
                     }
                 }
             }
@@ -1004,6 +1095,201 @@
                     },
                     "500": {
                         "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/countries": {
+            "get": {
+                "tags": [
+                    "Countries"
+                ],
+                "summary": "Get list of countries",
+                "operationId": "bbb90b9e86a9cab92aaa448fe98954c9",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Countries"
+                ],
+                "summary": "Create a new country",
+                "operationId": "575eed1b82f384d950b5b4541e3f2c50",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "code"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "Name of the country",
+                                        "type": "string"
+                                    },
+                                    "code": {
+                                        "description": "Code of the country",
+                                        "type": "string",
+                                        "maxLength": 5
+                                    },
+                                    "image": {
+                                        "description": "Image URL of the country",
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "food_image": {
+                                        "description": "Food image URL of the country",
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Country created successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/countries/{id}": {
+            "get": {
+                "tags": [
+                    "Countries"
+                ],
+                "summary": "Get a specific country by ID",
+                "operationId": "c172dfb1b3785a376f52b0f46f344f20",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the country to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Country not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Countries"
+                ],
+                "summary": "Update an existing country",
+                "operationId": "0c6426c4d0dfc8c5a372bad4825a38bc",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the country to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "Name of the country",
+                                        "type": "string"
+                                    },
+                                    "code": {
+                                        "description": "Code of the country",
+                                        "type": "string",
+                                        "maxLength": 5
+                                    },
+                                    "image": {
+                                        "description": "Image URL of the country",
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "food_image": {
+                                        "description": "Food image URL of the country",
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Country updated successfully"
+                    },
+                    "404": {
+                        "description": "Country not found"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Countries"
+                ],
+                "summary": "Delete a country",
+                "operationId": "47110a2e95266d7e013ca957c8e9dbb3",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the country to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Country deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Country not found"
                     }
                 }
             }
@@ -1324,13 +1610,13 @@
                 ]
             }
         },
-        "/api/foods": {
+        "/api/food-categories": {
             "get": {
                 "tags": [
-                    "Foods"
+                    "FoodCategory"
                 ],
-                "summary": "Get all foods",
-                "operationId": "getFoods",
+                "summary": "Get list of food categories",
+                "operationId": "729fe93917389e900a06fd95f0303fa0",
                 "responses": {
                     "200": {
                         "description": "Successful operation"
@@ -1339,120 +1625,32 @@
             },
             "post": {
                 "tags": [
-                    "Foods"
+                    "FoodCategory"
                 ],
-                "summary": "Create a new food item",
-                "operationId": "createFood",
+                "summary": "Create a new food category",
+                "operationId": "f5b40401a49fbf7210a3ea49e9f277eb",
                 "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "restaurant_id",
-                                    "category_id",
-                                    "name",
-                                    "price"
-                                ],
-                                "properties": {
-                                    "restaurant_id": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
-                                    "category_id": {
-                                        "type": "integer",
-                                        "example": 2
-                                    },
-                                    "name": {
-                                        "type": "string",
-                                        "example": "Pasta"
-                                    },
-                                    "price": {
-                                        "type": "number",
-                                        "format": "float",
-                                        "example": 12.99
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
+                    "required": true
                 },
                 "responses": {
                     "201": {
-                        "description": "Food created successfully"
-                    },
-                    "422": {
-                        "description": "Validation error"
+                        "description": "Food category created successfully"
                     }
                 }
             }
         },
-        "/api/foods/special-offers": {
+        "/api/food-categories/{id}": {
             "get": {
                 "tags": [
-                    "Foods"
+                    "FoodCategory"
                 ],
-                "summary": "Get all food items with discounts",
-                "operationId": "getSpecialOffers",
-                "responses": {
-                    "200": {
-                        "description": "Successful operation"
-                    }
-                }
-            }
-        },
-        "/api/foods/category": {
-            "get": {
-                "tags": [
-                    "Foods"
-                ],
-                "summary": "Get the category of a food item",
-                "description": "Returns the category associated with a specific food item.",
-                "operationId": "8b4929d3f457fe386b4b88018abf4a38",
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "id": {
-                                            "description": "Category ID",
-                                            "type": "integer"
-                                        },
-                                        "name": {
-                                            "description": "Category name",
-                                            "type": "string"
-                                        },
-                                        "description": {
-                                            "description": "Category description",
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Category not found"
-                    }
-                }
-            }
-        },
-        "/api/foods/category/{categoryId}": {
-            "get": {
-                "tags": [
-                    "Foods"
-                ],
-                "summary": "Get all foods by category",
-                "operationId": "getFoodsByCategory",
+                "summary": "Get a specific food category",
+                "operationId": "abcb67b7c9855984dbf90dc93943f2b8",
                 "parameters": [
                     {
-                        "name": "categoryId",
+                        "name": "id",
                         "in": "path",
-                        "description": "Category ID",
+                        "description": "ID of the food category",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -1462,6 +1660,202 @@
                 "responses": {
                     "200": {
                         "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Food category not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "FoodCategory"
+                ],
+                "summary": "Update an existing food category",
+                "operationId": "7bb4f43fe43dcd78bfcdeac4dd477b3a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the food category",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Food category updated successfully"
+                    },
+                    "404": {
+                        "description": "Food category not found"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "FoodCategory"
+                ],
+                "summary": "Delete a food category",
+                "operationId": "3754f07be56f2e6eae691b42745d14eb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the food category",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Food category deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Food category not found"
+                    }
+                }
+            }
+        },
+        "/api/foods": {
+            "get": {
+                "tags": [
+                    "Foods"
+                ],
+                "summary": "Get all foods",
+                "operationId": "ec8d976690dd1722198897e0b912c6a1",
+                "responses": {
+                    "200": {
+                        "description": "List of all foods with their categories"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Foods"
+                ],
+                "summary": "Create a new food",
+                "operationId": "5c0a84bf8f467a77cf98d8ec7c1a56e3",
+                "requestBody": {
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Food created successfully"
+                    }
+                }
+            }
+        },
+        "/api/foods/{id}": {
+            "get": {
+                "tags": [
+                    "Foods"
+                ],
+                "summary": "Get a specific food by ID",
+                "operationId": "7ad026b90906bfef0e2380a447567aac",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the food",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Details of the food with its category"
+                    },
+                    "404": {
+                        "description": "Food not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Foods"
+                ],
+                "summary": "Update an existing food",
+                "operationId": "3bbc8a6f58d24f62a782a65eab03da8a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the food",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Food updated successfully"
+                    },
+                    "404": {
+                        "description": "Food not found"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Foods"
+                ],
+                "summary": "Delete a food",
+                "operationId": "abe30efd51ab4b6b45a373afcc06e420",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the food",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Food deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Food not found"
                     }
                 }
             }
@@ -2259,6 +2653,108 @@
                 }
             }
         },
+        "/api/hotels/{hotel_id}/reviews": {
+            "get": {
+                "tags": [
+                    "Hotel Reviews"
+                ],
+                "summary": "Get all reviews for a hotel",
+                "operationId": "2c23341dd2c7993b2edb8dc9877a54ad",
+                "parameters": [
+                    {
+                        "name": "hotel_id",
+                        "in": "path",
+                        "description": "ID of the hotel",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of reviews"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Hotel Reviews"
+                ],
+                "summary": "Create a new review for a hotel",
+                "operationId": "5b41e4edd96c70052a31aef43f9fff17",
+                "parameters": [
+                    {
+                        "name": "hotel_id",
+                        "in": "path",
+                        "description": "ID of the hotel",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "rating": {
+                                        "type": "integer",
+                                        "example": 5
+                                    },
+                                    "comment": {
+                                        "type": "string",
+                                        "example": "Great hotel!"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Review created successfully"
+                    }
+                }
+            }
+        },
+        "/api/hotels/featured/{hotel_id}/rooms/{room_id}/reviews": {
+            "get": {
+                "tags": [
+                    "Hotel Reviews"
+                ],
+                "summary": "Get reviews for a featured hotel room",
+                "operationId": "7e504ed05139a1d3d0e4ee1e59691a4e",
+                "parameters": [
+                    {
+                        "name": "hotel_id",
+                        "in": "path",
+                        "description": "ID of the hotel",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "room_id",
+                        "in": "path",
+                        "description": "ID of the room",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of reviews for the featured room"
+                    }
+                }
+            }
+        },
         "/api/notifications": {
             "get": {
                 "tags": [
@@ -2594,6 +3090,169 @@
                 }
             }
         },
+        "/api/restaurants": {
+            "get": {
+                "tags": [
+                    "Restaurants"
+                ],
+                "summary": "Get all restaurants",
+                "description": "Retrieve a list of all restaurants with their associated country, food categories, and foods.",
+                "operationId": "getAllRestaurants",
+                "responses": {
+                    "200": {
+                        "description": "Successful response with a list of restaurants",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "description": "Restaurant ID",
+                                                "type": "integer"
+                                            },
+                                            "name": {
+                                                "description": "Restaurant name",
+                                                "type": "string"
+                                            },
+                                            "country": {
+                                                "description": "Associated country",
+                                                "type": "object"
+                                            },
+                                            "food_categories": {
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "description": "Food category ID",
+                                                            "type": "integer"
+                                                        },
+                                                        "name": {
+                                                            "description": "Food category name",
+                                                            "type": "string"
+                                                        },
+                                                        "foods": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "description": "Food ID",
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "name": {
+                                                                        "description": "Food name",
+                                                                        "type": "string"
+                                                                    },
+                                                                    "price": {
+                                                                        "description": "Food price",
+                                                                        "type": "number",
+                                                                        "format": "float"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/restaurants/{id}": {
+            "get": {
+                "tags": [
+                    "Restaurants"
+                ],
+                "summary": "Get a specific restaurant",
+                "description": "Retrieve a specific restaurant by its ID, including its associated country, food categories, and foods.",
+                "operationId": "getRestaurantById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the restaurant to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response with the restaurant details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "description": "Restaurant ID",
+                                            "type": "integer"
+                                        },
+                                        "name": {
+                                            "description": "Restaurant name",
+                                            "type": "string"
+                                        },
+                                        "country": {
+                                            "description": "Associated country",
+                                            "type": "object"
+                                        },
+                                        "food_categories": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "description": "Food category ID",
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "description": "Food category name",
+                                                        "type": "string"
+                                                    },
+                                                    "foods": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "description": "Food ID",
+                                                                    "type": "integer"
+                                                                },
+                                                                "name": {
+                                                                    "description": "Food name",
+                                                                    "type": "string"
+                                                                },
+                                                                "price": {
+                                                                    "description": "Food price",
+                                                                    "type": "number",
+                                                                    "format": "float"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Restaurant not found"
+                    }
+                }
+            }
+        },
         "/api/restaurants/nearby": {
             "get": {
                 "tags": [
@@ -2674,6 +3333,96 @@
                     },
                     "500": {
                         "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/api/restaurants/country/{countryId}": {
+            "get": {
+                "tags": [
+                    "Restaurants"
+                ],
+                "summary": "Get restaurants by country",
+                "description": "Retrieve a list of restaurants filtered by the specified country ID, including their food categories and foods.",
+                "operationId": "getRestaurantsByCountry",
+                "parameters": [
+                    {
+                        "name": "countryId",
+                        "in": "path",
+                        "description": "ID of the country to filter restaurants by",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response with a list of restaurants",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "description": "Restaurant ID",
+                                                "type": "integer"
+                                            },
+                                            "name": {
+                                                "description": "Restaurant name",
+                                                "type": "string"
+                                            },
+                                            "country_id": {
+                                                "description": "Country ID",
+                                                "type": "integer"
+                                            },
+                                            "food_categories": {
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "description": "Food category ID",
+                                                            "type": "integer"
+                                                        },
+                                                        "name": {
+                                                            "description": "Food category name",
+                                                            "type": "string"
+                                                        },
+                                                        "foods": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "description": "Food ID",
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "name": {
+                                                                        "description": "Food name",
+                                                                        "type": "string"
+                                                                    },
+                                                                    "price": {
+                                                                        "description": "Food price",
+                                                                        "type": "number",
+                                                                        "format": "float"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Country not found"
                     }
                 }
             }
@@ -2912,8 +3661,8 @@
             "description": "API Endpoints for managing delivery addresses"
         },
         {
-            "name": "Foods",
-            "description": "API Endpoints for managing foods"
+            "name": "FoodCategory",
+            "description": "API Endpoints for managing food categories"
         },
         {
             "name": "Hotel",
@@ -2958,6 +3707,18 @@
         {
             "name": "Checkout",
             "description": "Checkout"
+        },
+        {
+            "name": "Countries",
+            "description": "Countries"
+        },
+        {
+            "name": "Foods",
+            "description": "Foods"
+        },
+        {
+            "name": "Hotel Reviews",
+            "description": "Hotel Reviews"
         },
         {
             "name": "Payment",

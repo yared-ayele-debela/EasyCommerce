@@ -25,7 +25,9 @@ use App\Http\Controllers\Api\BannerController;
 use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\Api\HotelController;
 // use App\Http\Controllers\Api\ReviewController;
-
+use App\Http\Controllers\Api\CountryController;
+;
+use App\Http\Controllers\Api\FoodCategoryController;
 
 
 /*
@@ -232,3 +234,20 @@ Route::post('reservations', [ReservationController::class, 'store']);
 Route::get('users/{user_id}/reservations', [ReservationController::class, 'userReservations']);
 Route::put('reservations/{id}/cancel', [ReservationController::class, 'cancel']);
 Route::get('hotels/{hotel_id}/rooms/{room_id}/reviews', [ReviewController::class, 'getRoomReviews']);
+
+// ===================Banner=================
+
+Route::get('/banners/ecommerce', [BannerController::class, 'getEcommerceBanners']);
+Route::get('/banners/restaurant', [BannerController::class, 'getRestaurantBanners']);
+Route::get('/banners/hotel', [BannerController::class, 'getHotelBanners']);
+Route::post('/banners', [BannerController::class, 'store']);
+
+
+
+Route::apiResource('countries', CountryController::class);
+Route::apiResource('food-categories', FoodCategoryController::class);
+// Route::apiResource('foods', FoodController::class);
+
+Route::apiResource('restaurants', RestaurantController::class);
+// Fetch restaurants based on country_id
+Route::get('restaurants/country/{countryId}', [RestaurantController::class, 'restaurantsByCountry']);
