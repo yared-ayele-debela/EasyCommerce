@@ -153,4 +153,78 @@ class FoodController extends Controller
         Food::destroy($id);
         return response()->json(['message' => 'Deleted successfully']);
     }
+
+    /**
+     * @OA\Get(
+     *     path="/api/foods/category/{categoryId}",
+     *     summary="Get foods by category",
+     *     tags={"Foods"},
+     *     @OA\Parameter(
+     *         name="categoryId",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the category",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of foods in the specified category"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Category not found"
+     *     )
+     * )
+     */
+    public function getByCategory($categoryId)
+    {
+        $foods = Food::where('category_id', $categoryId)->with('category')->get();
+
+        if ($foods->isEmpty()) {
+            return response()->json(['message' => 'Category not found'], 404);
+        }
+
+        return response()->json($foods);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/foods/parent-category/{parentCatId}",
+     *     summary="Get foods by parent category",
+     *     tags={"Foods"},
+     *     @OA\Parameter(
+     *         name="parentCatId",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the parent category",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of foods under subcategories of the specified parent category"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Parent category not found or no foods available"
+     *     )
+     * )
+     */
+    public function getByParentCategory($parentCatId)
+    {
+        $subCategoryIds = \DB::table('food_categories')
+            ->where('parent_cat_id', $parentCatId)
+            ->pluck('id');
+
+        if ($subCategoryIds->isEmpty()) {
+            return response()->json(['message' => 'Parent category not found or no subcategories available'], 404);
+        }
+
+        $foods = Food::whereIn('category_id', $subCategoryIds)->with('category')->get();
+
+        if ($foods->isEmpty()) {
+            return response()->json(['message' => 'No foods available under the specified parent category'], 404);
+        }
+
+        return response()->json($foods);
+    }
 }

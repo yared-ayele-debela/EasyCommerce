@@ -48,7 +48,9 @@ class CountryController extends Controller
      */
     public function show($id)
     {
-        return response()->json(Countries::with('foodCategories')->findOrFail($id));
+        return response()->json(Countries::with(['foodCategories' => function ($query) {
+            $query->whereNull('parent_cat_id');
+        }])->findOrFail($id));
     }
 
     /**

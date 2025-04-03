@@ -71,6 +71,7 @@ class FoodCategoryController extends Controller
      *     )
      * )
      */
+
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -146,5 +147,38 @@ class FoodCategoryController extends Controller
     {
         FoodCategory::destroy($id);
         return response()->json(['message' => 'Deleted successfully']);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/food-categories/with-parent/{parent_cat_id}",
+     *     tags={"FoodCategory"},
+     *     summary="Get food categories by parent category ID",
+     *     @OA\Parameter(
+     *         name="parent_cat_id",
+     *         in="path",
+     *         required=true,
+     *         description="Parent category ID",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No food categories found for the given parent category ID"
+     *     )
+     * )
+     */
+    public function getByParentCategory($parent_cat_id)
+    {
+        $categories = FoodCategory::where('parent_cat_id', $parent_cat_id)->get();
+
+        if ($categories->isEmpty()) {
+            return response()->json(['message' => 'No food categories found for the given parent category ID'], 404);
+        }
+
+        return response()->json($categories);
     }
 }

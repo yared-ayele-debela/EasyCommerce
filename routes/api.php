@@ -242,6 +242,9 @@ Route::get('/banners/restaurant', [BannerController::class, 'getRestaurantBanner
 Route::get('/banners/hotel', [BannerController::class, 'getHotelBanners']);
 Route::post('/banners', [BannerController::class, 'store']);
 
+Route::get('/foods/parent-category/{parentCatId}', [FoodController::class, 'getByParentCategory']);
+Route::get('/foods/category/{categoryId}', [FoodController::class, 'getByCategory']);
+Route::get('/food-categories/with-parent/{parent_cat_id}', [FoodCategoryController::class, 'getByParentCategory']);
 
 
 Route::apiResource('countries', CountryController::class);
@@ -251,3 +254,23 @@ Route::apiResource('food-categories', FoodCategoryController::class);
 Route::apiResource('restaurants', RestaurantController::class);
 // Fetch restaurants based on country_id
 Route::get('restaurants/country/{countryId}', [RestaurantController::class, 'restaurantsByCountry']);
+Route::get('restaurants/{restaurantId}/categories', [RestaurantCategoryController::class, 'index']);
+Route::get('restaurants/{restaurantId}/categories/{categoryId}/foods', [FoodController::class, 'index']);
+Route::get('restaurants/{restaurantId}/categories/{categoryId}/foods/{foodId}', [FoodController::class, 'show']);
+// Route::get('restaurants/{restaurantId}/orders', [RestaurantOrderController::class, 'index']);
+// Route::get('restaurants/{restaurantId}/orders/{orderId}', [RestaurantOrderController::class, 'show']);
+// Route::post('restaurants/{restaurantId}/orders/{orderId}/accept', [RestaurantOrderController::class, 'acceptOrder']);
+// Route::post('restaurants/{restaurantId}/orders/{orderId}/reject', [RestaurantOrderController::class, 'rejectOrder']);
+// Route::post('restaurants/{restaurantId}/orders/{orderId}/complete', [RestaurantOrderController::class, 'completeOrder']);
+// Route::post('restaurants/{restaurantId}/orders/{orderId}/cancel', [RestaurantOrderController::class, 'cancelOrder']);
+// Route::get('restaurants/{restaurantId}/orders/{orderId}/reviews', [ReviewController::class, 'index']);
+// Route::post('restaurants/{restaurantId}/orders/{orderId}/reviews', [ReviewController::class, 'store']);
+// Route::get('restaurants/{restaurantId}/orders/{orderId}/reviews/{reviewId}', [ReviewController::class, 'show']);
+// Route::put('restaurants/{restaurantId}/orders/{orderId}/reviews/{reviewId}', [ReviewController::class, 'update']);
+// Route::delete('restaurants/{restaurantId}/orders/{orderId}/reviews/{reviewId}', [ReviewController::class, 'destroy']);
+// Route::get('restaurants/{restaurantId}/categories/{categoryId}/foods/{foodId}/reviews', [ReviewController::class, 'index']);
+// Route::post('restaurants/{restaurantId}/categories/{categoryId}/foods/{foodId}/reviews', [ReviewController::class, 'store']);
+// Route::get('restaurants/{restaurantId}/categories/{categoryId}/foods/{foodId}/reviews/{reviewId}', [ReviewController::class, 'show']);
+// Route::put('restaurants/{restaurantId}/categories/{categoryId}/foods/{foodId}/reviews/{reviewId}', [ReviewController::class, 'update']);
+// Route::delete('restaurants/{restaurantId}/categories/{categoryId}/foods/{foodId}/reviews/{reviewId}', [ReviewController::class, 'destroy']);
+// Route::get('restaurants/{restaurantId}/orders/{orderId}/reviews', [ReviewController::class, 'index']);

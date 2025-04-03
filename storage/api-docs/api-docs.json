@@ -1735,6 +1735,34 @@
                 }
             }
         },
+        "/api/food-categories/with-parent/{parent_cat_id}": {
+            "get": {
+                "tags": [
+                    "FoodCategory"
+                ],
+                "summary": "Get food categories by parent category ID",
+                "operationId": "62312d92b43456bccb1dc9e3f9eb7f75",
+                "parameters": [
+                    {
+                        "name": "parent_cat_id",
+                        "in": "path",
+                        "description": "Parent category ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "No food categories found for the given parent category ID"
+                    }
+                }
+            }
+        },
         "/api/foods": {
             "get": {
                 "tags": [
@@ -1856,6 +1884,62 @@
                     },
                     "404": {
                         "description": "Food not found"
+                    }
+                }
+            }
+        },
+        "/api/foods/category/{categoryId}": {
+            "get": {
+                "tags": [
+                    "Foods"
+                ],
+                "summary": "Get foods by category",
+                "operationId": "7a2617903f79666809068e3855d9f104",
+                "parameters": [
+                    {
+                        "name": "categoryId",
+                        "in": "path",
+                        "description": "ID of the category",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of foods in the specified category"
+                    },
+                    "404": {
+                        "description": "Category not found"
+                    }
+                }
+            }
+        },
+        "/api/foods/parent-category/{parentCatId}": {
+            "get": {
+                "tags": [
+                    "Foods"
+                ],
+                "summary": "Get foods by parent category",
+                "operationId": "6d3cecd0d3e4c7c8b3f844815137ef68",
+                "parameters": [
+                    {
+                        "name": "parentCatId",
+                        "in": "path",
+                        "description": "ID of the parent category",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of foods under subcategories of the specified parent category"
+                    },
+                    "404": {
+                        "description": "Parent category not found or no foods available"
                     }
                 }
             }
