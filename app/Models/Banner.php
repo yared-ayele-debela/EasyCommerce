@@ -10,7 +10,7 @@ class Banner extends Model
     use HasFactory;
 
     protected $fillable = ['service_id', 'product_id', 'image', 'type', 'title', 'alt', 'status'];
-
+    protected $table = 'banner';
     public function service()
     {
         return $this->belongsTo(Service::class);
