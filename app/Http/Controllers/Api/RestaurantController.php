@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Restaurant;
+use App\Models\FoodCategory;
 
 class RestaurantController extends Controller
 {
@@ -265,4 +266,85 @@ class RestaurantController extends Controller
     // {
     //     return response()->json(Restaurant::all());
     // }
+    /**
+     * @OA\Get(
+     *     path="/api/restaurants/food-category/{parentCatId}",
+     *     summary="Get restaurants by food category",
+     *     description="Retrieve a list of restaurants that have food categories under the specified parent category ID, including the subcategories and their foods.",
+     *     operationId="getRestaurantsByFoodCategory",
+     *     tags={"Restaurants"},
+     *     @OA\Parameter(
+     *         name="parentCatId",
+     *         in="path",
+     *         description="ID of the parent food category",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful response with a list of restaurants and their food categories",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer", description="Restaurant ID"),
+     *                 @OA\Property(property="name", type="string", description="Restaurant name"),
+     *                 @OA\Property(
+     *                     property="food_categories",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="object",
+     *                         @OA\Property(property="id", type="integer", description="Food category ID"),
+     *                         @OA\Property(property="category_name", type="string", description="Food category name"),
+     *                         @OA\Property(
+     *                             property="foods",
+     *                             type="array",
+     *                             @OA\Items(
+     *                                 type="object",
+     *                                 @OA\Property(property="id", type="integer", description="Food ID"),
+     *                                 @OA\Property(property="name", type="string", description="Food name"),
+     *                                 @OA\Property(property="price", type="number", format="float", description="Food price")
+     *                             )
+     *                         )
+     *                     )
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Parent category not found"
+     *     )
+     * )
+     */
+    public function restaurantsByFoodCategory($parentCatId)
+    {
+        // Get all subcategories under the given parent_cat_id
+        $subCategoryIds = FoodCategory::where('parent_cat_id', $parentCatId)->pluck('id')->toArray();
+        
+        // Include parentCatId in the search
+        $categoryIds = array_merge([(int)$parentCatId], $subCategoryIds);
+
+        // Fetch restaurants that have at least one food under these categories
+        $restaurants = Restaurant::whereHas('foods', function ($query) use ($categoryIds) {
+            // $query->whereIn('category_id', $categoryIds);
+        })
+        ->with([
+            'foods' => function ($query) use ($categoryIds) {
+                $query->whereIn('category_id', $categoryIds)
+                    ->select('id', 'name', 'description', 'price', 'image', 'restaurant_id', 'category_id');
+            }
+        ])
+        ->get();
+
+        if ($restaurants->isEmpty()) {
+            return response()->json(['error' => 'No restaurants found for the given parent category ID'], 404);
+        }
+
+        return response()->json($restaurants);
+    }
+
+
 }

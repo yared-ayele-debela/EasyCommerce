@@ -54,13 +54,16 @@ class Restaurant extends Model
 
     public function foods()
     {
-        return $this->hasManyThrough(
-            Food::class,
-            FoodCategory::class,
-            'category_id',
-            'restaurant_id',
-            'id',
-            'id'
+        // return $this->hasManyThrough(
+        //     Food::class,
+        //     FoodCategory::class,
+        //     'category_id',
+        //     'restaurant_id',
+        //     'id',
+        //     'id'
+        // );
+        return $this->hasMany(
+            Food::class
         );
     }
     

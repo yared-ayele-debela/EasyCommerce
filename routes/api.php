@@ -245,11 +245,13 @@ Route::post('/banners', [BannerController::class, 'store']);
 Route::get('/foods/parent-category/{parentCatId}', [FoodController::class, 'getByParentCategory']);
 Route::get('/foods/category/{categoryId}', [FoodController::class, 'getByCategory']);
 Route::get('/food-categories/with-parent/{parent_cat_id}', [FoodCategoryController::class, 'getByParentCategory']);
+Route::apiResource('foods', FoodController::class);
 
 
 Route::apiResource('countries', CountryController::class);
 Route::apiResource('food-categories', FoodCategoryController::class);
 // Route::apiResource('foods', FoodController::class);
+Route::get('/restaurants/food-category/{parentCatId}', [RestaurantController::class, 'restaurantsByFoodCategory']);
 
 Route::apiResource('restaurants', RestaurantController::class);
 // Fetch restaurants based on country_id

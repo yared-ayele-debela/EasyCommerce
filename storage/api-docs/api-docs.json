@@ -3511,6 +3511,92 @@
                 }
             }
         },
+        "/api/restaurants/food-category/{parentCatId}": {
+            "get": {
+                "tags": [
+                    "Restaurants"
+                ],
+                "summary": "Get restaurants by food category",
+                "description": "Retrieve a list of restaurants that have food categories under the specified parent category ID, including the subcategories and their foods.",
+                "operationId": "getRestaurantsByFoodCategory",
+                "parameters": [
+                    {
+                        "name": "parentCatId",
+                        "in": "path",
+                        "description": "ID of the parent food category",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response with a list of restaurants and their food categories",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "description": "Restaurant ID",
+                                                "type": "integer"
+                                            },
+                                            "name": {
+                                                "description": "Restaurant name",
+                                                "type": "string"
+                                            },
+                                            "food_categories": {
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "description": "Food category ID",
+                                                            "type": "integer"
+                                                        },
+                                                        "category_name": {
+                                                            "description": "Food category name",
+                                                            "type": "string"
+                                                        },
+                                                        "foods": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "description": "Food ID",
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "name": {
+                                                                        "description": "Food name",
+                                                                        "type": "string"
+                                                                    },
+                                                                    "price": {
+                                                                        "description": "Food price",
+                                                                        "type": "number",
+                                                                        "format": "float"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Parent category not found"
+                    }
+                }
+            }
+        },
         "/api/user/profile": {
             "get": {
                 "tags": [
