@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Restaurant\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Mail\Restaurant\OrderStatusUpdateMail;
 use App\Models\Restaurant\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -45,6 +47,9 @@ class OrderController extends Controller
             'status' => $request->order_status,
             'delivery_status' => $request->delivery_status
         ]);
+
+        Mail::to($order->user->email)->send(new OrderStatusUpdateMail($order));
+
 
         return redirect()->route('restaurant.orders.show', $order->id)->with('success', 'Order status updated successfully.');
     }

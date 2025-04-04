@@ -40,4 +40,11 @@ class OrderController extends Controller
         $order = Order::with('orderItems')->findOrFail($orderId); // Load order with items
         return view('restaurant.frontend.order.success', compact('order'));
     }
+
+    public function receipt(Request $request){
+
+        $order=Order::with('orderItems','address')->findOrFail($request->order_id); // Load order with items
+
+        return view('Restaurant.frontend.order.receipt',compact('order'));
+    }
 }

@@ -12,7 +12,7 @@
                         <span>Delivery Time</span>
                         <span>{{ $order->estimated_delivery_time ?? '20 Min' }}</span>
                     </div>
-                    <a href="{{ url('url') }}" class="btn bg-primary text-white w-100">Track Order</a>
+                    <a href="{{ url('restaurant/order/'.$order->id.'/track') }}" class="btn bg-primary text-white w-100">Track Order</a>
                     <div class="mt-2">
                         <a href="{{url('/')}}" class="btn btn-outline-primary w-100 ">Continue Shopping</a>
                     </div>

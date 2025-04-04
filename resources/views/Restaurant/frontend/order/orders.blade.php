@@ -65,8 +65,13 @@
                         </ul>
                     </div>
 
-                    <div class="text-end mt-3">
+                    <div class="text-end mt-3 d-flex justify-content-between align-items-center">
                         <a href="{{ route('order.track', $order->id) }}" class="btn btn-primary btn-sm"><span class="bi bi-pin-map text-white"></span> Track Order</a>
+                        <form action="{{ url('restaurant/order-receipt')}}" method="POST" target="_blank">
+                            @csrf
+                            <input type="hidden" name="order_id" value="{{ $order->id }}">
+                            <button type="submit"  class="btn btn-sm bg-primary text-white"><span class="bi bi-printer"></span></button>
+                        </form>
                     </div>
                 </div>
             </div>

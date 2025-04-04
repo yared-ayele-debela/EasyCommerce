@@ -1143,6 +1143,8 @@ Route::prefix('/restaurant')->group(function () {
     Route::post('/checkout/place-order', [CheckoutController::class, 'placeOrder'])->name('restaurant.checkout.placeOrder');
     Route::get('/order/success/{order}', [FrontendOrderController::class, 'success'])->name('restaurant.order.success');
     Route::get('/my-orders', [FrontendOrderController::class, 'index'])->name('user.orders');
+    Route::post('/order-receipt', [FrontendOrderController::class, 'receipt']);
+
     Route::get('/order/{order}/track', [FrontendOrderController::class, 'track'])->name('order.track');
     });
 
@@ -1166,7 +1168,6 @@ Route::prefix('/restaurant')->group(function () {
 
 
     Route::get('/restaurants/nearby', [FrontendRestaurantController::class, 'getNearbyRestaurants']);
-
     Route::get('/states/{countryId}', [UserDeliveryAddressController::class, 'getRegions']);
     Route::get('/cities/{stateId}', [UserDeliveryAddressController::class, 'getCities']);
     Route::get('/sub-cities/{cityId}', [UserDeliveryAddressController::class, 'getSubCities']);

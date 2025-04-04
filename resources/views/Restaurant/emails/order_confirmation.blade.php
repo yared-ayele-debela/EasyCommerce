@@ -21,7 +21,7 @@
             <div class="card-body text-center p-4">
                 <h4 class="text-dark">Hello, {{ $order->user->name }}!</h4>
                 <p class="fs-5"><strong>Order ID:</strong> #{{ $order->id }}</p>
-                <p class="fs-5"><strong>Total Amount:</strong> ${{ $order->total }}</p>
+                <p class="fs-5"><strong>Total Amount:</strong> {{ $order->total }}ETB</p>
                 <p class="text-muted">Your receipt is attached.</p>
                 <p class="fw-bold">We appreciate your business!</p>
             </div>

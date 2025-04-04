@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Add this in your <head> -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 
     <title>Order Receipt</title>
     <style>
@@ -111,17 +112,22 @@
                 max-width: 100px;
             }
         }
+        .custom-btn{
+            background-color:#17BE18;
+            color: white;
+        }
 
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="receipt">
         <div class="header d-flex justify-content-between align-items-center">
             <div>
                 <img src="{{ asset('restaurant_frontend/assets/img/logo.png') }}" alt="Company Logo" class="logo">
             </div>
-            <div>
-                <h2>📦 Order Receipt</h2>
+            <div class="d-flex justify-content-end align-items-center">
+                <h4>📦 Order Receipt</h4> &nbsp;
+                <button class="btn custom-btn btn-sm" onclick="printReceipt()"><i class="bi bi-printer-fill"></i></button>
             </div>
         </div>
 
@@ -178,6 +184,15 @@
         <p class="total">Total: {{ number_format($order->total, 2) }} ETB</p>
         <p class="date"><small class="font-italic float-right">Date : {{ $order->created_at->format('F d, Y')  }}</small></p>
     </div>
+    <script>
+        function printReceipt() {
+            var printContents = document.getElementById("receipt").innerHTML;
+            var originalContents = document.body.innerHTML;
+            document.body.innerHTML = printContents;
+            window.print();
+            document.body.innerHTML = originalContents;
+        }
+    </script>
 </body>
 </html>
 
