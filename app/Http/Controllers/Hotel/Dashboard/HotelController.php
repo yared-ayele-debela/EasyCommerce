@@ -1,0 +1,103 @@
+<?php
+
+namespace App\Http\Controllers\Hotel\Dashboard;
+
+use App\Http\Controllers\Controller;
+use App\Models\Amenity;
+use App\Models\Hotel;
+use App\Models\HotelCategory;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
+class HotelController extends Controller
+{
+    public function index()
+    {
+        $hotels = Hotel::with('category')->latest()->get();
+        $categories = HotelCategory::all();
+        $amenities = Amenity::all();
+        return view('hotel.dashboard.hotels.index', compact('hotels', 'categories','amenities'));
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'category_id' => 'nullable|exists:hotel_categories,id',
+            'location' => 'required|string',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
+            'price_per_night' => 'required|numeric',
+            'banner_image' => 'nullable|image',
+            'is_adverted' => 'nullable|boolean',
+            'discount' => 'nullable|numeric',
+            'is_featured' => 'nullable|boolean',
+            'phone' => 'nullable|string|max:20',
+            'description' => 'nullable|string',
+        ]);
+        // dd($request->all());
+
+        if ($request->hasFile('banner_image')) {
+            $validated['banner_image'] = $request->file('banner_image')->store('hotels', 'public');
+        }
+
+        $selectedIds = array_keys($request->amenities ?? []);
+
+        // Get their names from the DB
+        $amenityNames = \App\Models\Amenity::whereIn('id', $selectedIds)->pluck('name')->toArray();
+
+        // Store as JSON
+        $validated['amenities'] = json_encode($amenityNames);
+
+        Hotel::create($validated);
+
+        return redirect()->back()->with('success', 'Hotel created successfully!');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $hotel = Hotel::findOrFail($id);
+
+        $validated = $request->validate([
+           'name' => 'required|string|max:255',
+            'category_id' => 'nullable|exists:hotel_categories,id',
+            'location' => 'required|string',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
+            'price_per_night' => 'required|numeric',
+            'banner_image' => 'nullable|image',
+            'is_adverted' => 'nullable|boolean',
+            'discount' => 'nullable|numeric',
+            'is_featured' => 'nullable|boolean',
+            'phone' => 'nullable|string|max:20',
+            'description' => 'nullable|string',
+        ]);
+
+        if ($request->hasFile('banner_image')) {
+            if ($hotel->banner_image && Storage::disk('public')->exists($hotel->banner_image)) {
+                Storage::disk('public')->delete($hotel->banner_image);
+            }
+            $validated['banner_image'] = $request->file('banner_image')->store('hotels', 'public');
+        }
+
+
+        $selectedIds = array_keys($request->amenities ?? []);
+        // Get their names from the DB
+        $amenityNames = \App\Models\Amenity::whereIn('id', $selectedIds)->pluck('name')->toArray();
+        // Store as JSON
+        $validated['amenities'] = json_encode($amenityNames);
+        $hotel->update($validated);
+
+        return redirect()->back()->with('success', 'Hotel updated successfully!');
+    }
+
+    public function destroy($id)
+    {
+        $hotel = Hotel::findOrFail($id);
+        if ($hotel->banner_image && Storage::disk('public')->exists($hotel->banner_image)) {
+            Storage::disk('public')->delete($hotel->banner_image);
+        }
+        $hotel->delete();
+        return redirect()->back()->with('success', 'Hotel deleted!');
+    }
+}

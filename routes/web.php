@@ -108,6 +108,13 @@ use App\Http\Controllers\Front\SpecialLinkController;
 use App\Http\Controllers\Front\TrackYourOrderController;
 use App\Http\Controllers\Front\UserController;
 use App\Http\Controllers\Front\VendorController as FrontVendorController;
+use App\Http\Controllers\Hotel\Dashboard\AmenityController;
+use App\Http\Controllers\Hotel\Dashboard\DashboardController as DashboardDashboardController;
+use App\Http\Controllers\Hotel\Dashboard\HotelCategoryController;
+use App\Http\Controllers\Hotel\Dashboard\HotelController;
+use App\Http\Controllers\Hotel\Dashboard\HotelPhotoController;
+use App\Http\Controllers\Hotel\Dashboard\HotelReviewController;
+use App\Http\Controllers\Hotel\Dashboard\ReservationsController;
 use App\Http\Controllers\SalesUserAuth\DashboardController as SalesUserAuthDashboardController;
 use App\Http\Controllers\SalesUserAuth\ForgotPasswordController;
 use App\Http\Controllers\SalesUserAuth\LoginController as SalesUserAuthLoginController;
@@ -149,6 +156,7 @@ use App\Http\Controllers\Restaurant\Frontend\SubCategoryController as FrontendSu
 use App\Http\Controllers\Restaurant\Frontend\SuCategoryController;
 use App\Http\Controllers\Restaurant\Frontend\WishController;
 use App\Http\Controllers\UserDeliveryAddressController;
+use App\Models\HotelCategory;
 use App\Models\Restaurant\Product as RestaurantProduct;
 use App\Models\Restaurant\Restaurant;
 use Illuminate\Support\Facades\Auth;
@@ -1073,6 +1081,29 @@ Route::prefix('admin/restaurant')->middleware(['admin'])->group(function () {
     Route::post('/orders/{id}/update', [DashboardOrderController::class, 'updateStatus'])->name('restaurant.orders.updateStatus');
 });
 
+
+// Hotel Reservations
+    Route::group(['middleware' => ['admin']], function () {
+
+        Route::resource('admin/hotels', HotelController::class);
+        Route::prefix('admin/hotel')->middleware(['admin'])->group(function () {
+
+        Route::get('dashboard', [DashboardDashboardController::class, 'index'])
+            ->name('hotel.dashboard');
+
+        Route::resource('amenities', AmenityController::class);
+        Route::resource('hotel-categories', HotelCategoryController::class);
+        Route::post('/hotel-photos', [HotelPhotoController::class, 'store'])->name('hotel_photos.store');
+        Route::delete('/hotel-photos/{id}', [HotelPhotoController::class, 'destroy'])->name('hotel_photos.destroy');
+
+        Route::get('{id}/reviews', [HotelReviewController::class, 'index'])->name('hotel-reviews.index');
+        Route::get('/reservations', [ReservationsController::class, 'index'])->name('reservations.index');
+        Route::put('/reservations/{id}/status', [ReservationsController::class, 'updateStatus'])->name('reservations.updateStatus');
+        Route::delete('/reservations/{id}', [ReservationsController::class, 'destroy'])->name('reservations.destroy');
+        Route::get('/reservations/receipt', [ReservationsController::class, 'receipt'])->name('reservations.receipt');
+
+    });
+});
 
 // Restaurant Frontend Routes
 
