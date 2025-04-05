@@ -115,6 +115,7 @@ use App\Http\Controllers\Hotel\Dashboard\HotelController;
 use App\Http\Controllers\Hotel\Dashboard\HotelPhotoController;
 use App\Http\Controllers\Hotel\Dashboard\HotelReviewController;
 use App\Http\Controllers\Hotel\Dashboard\ReservationsController;
+use App\Http\Controllers\Hotel\Dashboard\RoomController;
 use App\Http\Controllers\SalesUserAuth\DashboardController as SalesUserAuthDashboardController;
 use App\Http\Controllers\SalesUserAuth\ForgotPasswordController;
 use App\Http\Controllers\SalesUserAuth\LoginController as SalesUserAuthLoginController;
@@ -1101,6 +1102,8 @@ Route::prefix('admin/restaurant')->middleware(['admin'])->group(function () {
         Route::put('/reservations/{id}/status', [ReservationsController::class, 'updateStatus'])->name('reservations.updateStatus');
         Route::delete('/reservations/{id}', [ReservationsController::class, 'destroy'])->name('reservations.destroy');
         Route::get('/reservations/receipt', [ReservationsController::class, 'receipt'])->name('reservations.receipt');
+
+        Route::resource('rooms', RoomController::class);
 
     });
 });

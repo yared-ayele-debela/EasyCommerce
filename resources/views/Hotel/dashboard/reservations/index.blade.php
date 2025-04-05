@@ -188,8 +188,7 @@
                                 </div>
                             </td>
                             <td>
-                                {{-- <a href="{{ route('reservations.edit', $reservation->id) }}" class="btn btn-primary">Edit</a> --}}
-                                <form action="{{ route('reservations.destroy', $reservation->id) }}" method="POST" style="display: inline-block;">
+                                <form action="{{ route('reservations.destroy', $reservation->id) }}" method="POST" class="mb-2" style="display: inline-block;">
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn btn-danger btn-sm delete-restaurant"><i class="bi bi-trash-fill"></i></button>
@@ -199,14 +198,11 @@
                                     <input type="hidden" name="id" value="{{ $reservation->id }}">
                                     <button type="submit" class="btn btn-secondary btn-sm "><i class="bi bi-printer-fill"></i></button>
                                 </form>
-    
                             </td>
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
-    
-    
             </div>
         </div>
     </div>
@@ -234,6 +230,5 @@
     });
 
 </script>
-
 @endsection
 

@@ -41,6 +41,16 @@
             </li>
             {{-- @endif --}}
            {{-- @if ($user && $user->hasPermissionByRole('view_product')) --}}
+            <li class="{{ request()->is('admin/hotel/rooms')?'nav-item active':'' }}">
+                <a class="nav-link {{request()->is('admin/hotel/rooms')}}" data-bs-target="#nav-hotell" data-bs-toggle="collapse" href="javascripit:void(0);" aria-expanded="false"> <i class="bi bi-archive"></i><span>Rooms Management</span><i class="bi bi-chevron-down  ms-auto"></i> </a>
+                <ul id="nav-hotell" class="nav-content collapse  {{ request()->is('admin/hotel/rooms')?'show':'' }} " data-bs-parent="" style="">
+                    {{-- @if ($user && $user->hasPermissionByRole('view_product')) --}}
+                    <li> <a href="{{ route('rooms.index') }}" class=" {{ request()->is('admin/hotel/rooms')?' nav-link active':'' }}"> <i class="bi bi-circle"></i><span>List of Rooms</span> </a></li>
+                    {{-- @endif --}}
+                </ul>
+            </li>
+            {{-- @endif --}}
+           {{-- @if ($user && $user->hasPermissionByRole('view_product')) --}}
             <li class="{{ request()->is('admin/hotel/reservation*')?'nav-item active':'' }}">
                 <a class="nav-link {{request()->is('admin/hotel/reservation*')}}" data-bs-target="#nav-hotel-re" data-bs-toggle="collapse" href="javascripit:void(0);" aria-expanded="false"> <i class="bi bi-calendar3-event"></i><span>Reservations Management</span><i class="bi bi-chevron-down  ms-auto"></i> </a>
                 <ul id="nav-hotel-re" class="nav-content collapse  {{ request()->is('admin/hotel/reservation*')?'show':'' }} " data-bs-parent="" style="">

@@ -90,8 +90,6 @@
             </div>
             {{ $amenities->links() }}
         </div>
-
-        <!-- Add Amenity Modal -->
         <div class="modal fade" id="addAmenityModal" tabindex="-1" aria-labelledby="addAmenityLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <form method="POST" action="{{ route('amenities.store') }}" enctype="multipart/form-data">
@@ -120,9 +118,7 @@
         </div>
     </div>
 </div>
-
 @endsection
-
 @section('scripts')
 <script>
     function openModal() {
@@ -131,7 +127,6 @@
         document.getElementById('amenityId').value = '';
         document.getElementById('amenityModalLabel').innerText = 'Add Amenity';
     }
-
     function editAmenity(id) {
         fetch(`/amenities/${id}/edit`)
             .then(response => response.json())
@@ -143,7 +138,6 @@
                 new bootstrap.Modal(document.getElementById('amenityModal')).show();
             });
     }
-
     document.getElementById('amenityForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
