@@ -100,4 +100,29 @@ class HotelController extends Controller
         $hotel->delete();
         return redirect()->back()->with('success', 'Hotel deleted!');
     }
+
+    public function toggleAdvertise($id)
+    {
+        $hotel = Hotel::findOrFail($id);
+        $hotel->is_adverted = !$hotel->is_adverted;
+        $hotel->save();
+
+        return redirect()->back()->with('success', 'Hotel advertisement status updated!');
+    }
+    public function toggleFeatured($id)
+    {
+        $hotel = Hotel::findOrFail($id);
+        $hotel->is_featured = !$hotel->is_featured;
+        $hotel->save();
+
+        return redirect()->back()->with('success', 'Hotel featured status updated!');
+    }
+    public function my_hotel(){
+        
+        $hotel= Hotel::with(['photos', 'rooms.images'])->findOrFail(6);
+        $categories = HotelCategory::all();
+        $amenities = Amenity::all();
+        
+        return view('Hotel.dashboard.hotels.my_hotel.index', compact('hotel', 'categories','amenities'));
+    }
 }

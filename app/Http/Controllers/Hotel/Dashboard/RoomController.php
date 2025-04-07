@@ -29,12 +29,23 @@ class RoomController extends Controller
             'hotel_id' => 'required|exists:hotels,id',
             'room_type' => 'required|string|max:255',
             'capacity' => 'required|integer',
-            'price' => 'required|numeric',
+            'price' => 'required',
             'is_available' => 'required|boolean',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            // 'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'description' => 'nullable|string',
 
-        $room = Room::create($request->only(['hotel_id', 'room_type', 'capacity', 'price', 'is_available']));
+        ]);
+        // dd($request->all());
+
+        $data = $request->only(['hotel_id', 'room_type', 'capacity', 'price', 'is_available','description']);
+
+        if ($request->hasFile('cover_image')) {
+            $path = $request->file('cover_image')->store('room_images', 'public');
+            $data['cover_image'] = $path;
+        }
+
+        $room = Room::create($data);
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
@@ -59,25 +70,33 @@ class RoomController extends Controller
             'capacity' => 'required|integer',
             'price' => 'required|numeric',
             'is_available' => 'required|boolean',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            // 'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'description' => 'nullable|string',
         ]);
 
-        $room->update($request->only(['room_type', 'capacity', 'price', 'is_available']));
+        $data = $request->only(['room_type', 'capacity', 'price', 'is_available','description']);
+
+        if ($request->hasFile('cover_image')) {
+            if ($room->cover_image) {
+                Storage::delete('public/' . $room->cover_image);
+            }
+            $data['cover_image'] = $request->file('cover_image')->store('room_images', 'public');
+        }
+
+        $room->update($data);
 
         if ($request->hasFile('images')) {
-            // ✅ Delete all old images first
             foreach ($room->images as $oldImage) {
                 Storage::delete('public/' . $oldImage->image_path);
                 $oldImage->delete();
             }
-        
-            // ✅ Then upload and save the new ones
             foreach ($request->file('images') as $image) {
                 $path = $image->store('room_images', 'public');
                 $room->images()->create(['image_path' => $path]);
             }
         }
-        
+
 
         return redirect()->route('rooms.index')->with('success', 'Room updated successfully.');
     }

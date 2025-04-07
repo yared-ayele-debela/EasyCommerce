@@ -14,9 +14,11 @@ class Room extends Model
     protected $fillable = [
         'hotel_id',
         'room_type',
+        'cover_image',
         'capacity',
         'price',
         'is_available',
+        'description',
     ];
 
     protected $casts = [

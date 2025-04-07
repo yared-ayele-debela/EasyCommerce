@@ -157,6 +157,7 @@ use App\Http\Controllers\Restaurant\Frontend\SubCategoryController as FrontendSu
 use App\Http\Controllers\Restaurant\Frontend\SuCategoryController;
 use App\Http\Controllers\Restaurant\Frontend\WishController;
 use App\Http\Controllers\UserDeliveryAddressController;
+use App\Models\Hotel\Hotel;
 use App\Models\HotelCategory;
 use App\Models\Restaurant\Product as RestaurantProduct;
 use App\Models\Restaurant\Restaurant;
@@ -1105,6 +1106,7 @@ Route::prefix('admin/restaurant')->middleware(['admin'])->group(function () {
 
         Route::resource('rooms', RoomController::class);
 
+        Route::get('my-hotel',[HotelController::class,'my_hotel'])->name('my-hotel');
     });
 });
 

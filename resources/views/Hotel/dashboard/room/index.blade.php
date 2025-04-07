@@ -19,7 +19,7 @@
             <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addRoomModal">Add Room</button>
         </div>
         <div class="card-body">
-           
+
             <!-- Room List Table -->
             <table class="table ">
                 <thead>
@@ -28,6 +28,7 @@
                         <th>Capacity</th>
                         <th>Price</th>
                         <th>Available</th>
+                        <th>Cover Image</th>
                         <th>Images</th>
                         <th>Actions</th>
                     </tr>
@@ -38,7 +39,16 @@
                             <td>{{ $room->room_type }}</td>
                             <td>{{ $room->capacity }}</td>
                             <td>{{ $room->price }}</td>
-                            <td>{{ $room->is_available ? 'Yes' : 'No' }}</td>
+                            <td>
+                                <div class="btn btn-sm btn-{{ $room->is_available ? 'success' : 'danger' }}">
+                                    {{ $room->is_available ? 'Yes' : 'No' }}
+                                </div>
+                            </td>
+                            <td>
+                                @if($room->cover_image)
+                                    <img src="{{ asset('storage/'.$room->cover_image) }}" width="50" height="50">
+                                @endif
+                            </td>
                             <td>
                                 @foreach($room->images as $img)
                                     <img src="{{ asset('storage/'.$img->image_path) }}" width="50" height="50">
@@ -56,7 +66,7 @@
                                 </button>
                                 <!-- Edit Room Modal -->
                                 <div class="modal fade" id="editRoomModal{{ $room->id }}" tabindex="-1">
-                                    <div class="modal-dialog">
+                                    <div class="modal-dialog modal-lg modal-scrollbar-measure">
                                         <form method="POST" enctype="multipart/form-data" action="{{ route('rooms.update',$room->id) }}" class="modal-content">
                                             @csrf
                                             @method('PUT')
@@ -65,72 +75,103 @@
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                             </div>
                                             <div class="modal-body">
-                                                <div class="mb-3">
-                                                    <div class="form-group">
-                                                      <label for="hotel_id">Hotel</label>
-                                                      <select class="form-control" name="hotel_id" id="hotel_id" required>
-                                                        @foreach ($hotels as $hotel)
-                                                        <option @if($room->hotel_id===$hotel->id) selected @endif value="{{ $hotel->id }}">{{ $hotel->name }}</option>          
-                                                        @endforeach
-                                                      </select>
+                                                 <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <div class="form-group">
+                                                              <label for="hotel_id">Hotel</label>
+                                                              <select class="form-control" name="hotel_id" id="hotel_id" required>
+                                                                @foreach ($hotels as $hotel)
+                                                                <option @if($room->hotel_id===$hotel->id) selected @endif value="{{ $hotel->id }}">{{ $hotel->name }}</option>
+                                                                @endforeach
+                                                              </select>
+                                                            </div>
+                                                            @error('hotel_id')
+                                                                <span class="alert alert-danger">{{ $message }}</span>
+                                                            @enderror
+                                                        </div>
                                                     </div>
-                                                    @error('hotel_id')
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <div class="form-group">
+                                                                <label for="room_type">Room Type</label>
+                                                                <select class="form-control" name="room_type" id="room_type" required>
+                                                                  <option @if($room->room_type==="Presidential") selected @endif  value="Presidential">Presidential</option>
+                                                                  <option @if($room->room_type==="Sweet") selected @endif  value="Sweet">Sweet</option>
+                                                                  <option @if($room->room_type==="Family") selected @endif  value="Family">Family</option>
+                                                                  <option @if($room->room_type==="Double") selected @endif  value="Double">Double</option>
+                                                                </select>
+                                                              </div>
+                                                              @error('room_type')
+                                                              <span class="alert alert-danger">{{ $message }}</span>
+                                                          @enderror
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label for="capacity" class="form-label">Capacity</label>
+                                                            <input type="number" value="{{ $room->capacity }}" name="capacity" class="form-control" required>
+                                                            @error('capacity')
+                                                            <span class="alert alert-danger">{{ $message }}</span>
+                                                        @enderror
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label for="price" class="form-label">Price</label>
+                                                            <input type="text" value="{{ $room->price }}" name="price" class="form-control" required>
+                                                            @error('price')
+                                                            <span class="alert alert-danger">{{ $message }}</span>
+                                                        @enderror
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label for="cover_image" class="form-label">Cover cover_image</label>
+                                                            <input type="file" name="cover_image" class="form-control">
+                                                            @error('cover_image')
+                                                            <span class="alert alert-danger">{{ $message }}</span>
+                                                            @enderror
+                                                            @if($room->cover_image)
+                                                                <img src="{{ asset('storage/'.$room->cover_image) }}" width="50" height="50">
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label for="images" class="form-label">Upload Mulitiple Images</label>
+                                                            <input type="file" name="images[]" class="form-control" multiple>
+                                                            @error('images')
+                                                            <span class="alert alert-danger">{{ $message }}</span>
+                                                            @enderror
+                                                            @if($room->images)
+                                                                @foreach($room->images as $img)
+                                                                    <img src="{{ asset('storage/'.$img->image_path) }}" width="50" height="50">
+                                                                @endforeach
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3 form-check">
+                                                            <input type="checkbox" name="is_available" class="form-check-input" @if($room->is_available=="1") checked @endif id="is_available" value="1">
+                                                            <label for="is_available" class="form-check-label">Available</label>
+                                                            @error('is_available')
+                                                            <span class="alert alert-danger">{{ $message }}</span>
+                                                        @enderror
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="form-group">
+                                                          <label for="description" class=" form-label">Description</label>
+                                                          <textarea class="form-control" name="description" id="description" rows="3">
+                                                            {{ $room->description? $room->description : old('description') }}
+                                                          </textarea>
+                                                        </div>
+                                                        @error('description')
                                                         <span class="alert alert-danger">{{ $message }}</span>
-                                                    @enderror
+                                                        @enderror
                                                 </div>
-                                                
-                                                <div class="mb-3">
-                                                    <div class="form-group">
-                                                        <label for="room_type">Room Type</label>
-                                                        <select class="form-control" name="room_type" id="room_type" required>
-                                                          <option @if($room->room_type==="Presidential") selected @endif  value="Presidential">Presidential</option>          
-                                                          <option @if($room->room_type==="Sweet") selected @endif  value="Sweet">Sweet</option>          
-                                                          <option @if($room->room_type==="Family") selected @endif  value="Family">Family</option>          
-                                                          <option @if($room->room_type==="Double") selected @endif  value="Double">Double</option>          
-                                                        </select>
-                                                      </div>
-                                                      @error('room_type')
-                                                      <span class="alert alert-danger">{{ $message }}</span>
-                                                  @enderror
-                                                </div>
-                                                
-                                                <div class="mb-3">
-                                                    <label for="capacity" class="form-label">Capacity</label>
-                                                    <input type="number" value="{{ $room->capacity }}" name="capacity" class="form-control" required>
-                                                    @error('capacity')
-                                                    <span class="alert alert-danger">{{ $message }}</span>
-                                                @enderror
-                                                </div>
-                                                
-                                                <div class="mb-3">
-                                                    <label for="price" class="form-label">Price</label>
-                                                    <input type="text" value="{{ $room->price }}" name="price" class="form-control" required>
-                                                    @error('price')
-                                                    <span class="alert alert-danger">{{ $message }}</span>
-                                                @enderror
-                                                </div>
-                                                
-                                                <div class="mb-3 form-check">
-                                                    <input type="checkbox" name="is_available" class="form-check-input" @if($room->is_available=="1") checked @endif id="is_available" value="1">
-                                                    <label for="is_available" class="form-check-label">Available</label>
-                                                    @error('is_available')
-                                                    <span class="alert alert-danger">{{ $message }}</span>
-                                                @enderror
-                                                </div>
-                                                
-                                                <div class="mb-3">
-                                                    <label for="images" class="form-label">Upload Mulitiple Images</label>
-                                                    <input type="file" name="images[]" class="form-control" multiple>
-                                                    @error('images')
-                                                    <span class="alert alert-danger">{{ $message }}</span>
-                                                    @enderror
-                                                    @if($room->images)
-                                                        @foreach($room->images as $img)
-                                                            <img src="{{ asset('storage/'.$img->image_path) }}" width="50" height="50">
-                                                        @endforeach
-                                                    @endif
-                                                </div>
-                                                
+                                                 </div>
                                             </div>
                                             <div class="modal-footer">
                                                 <button class="btn btn-success" type="submit">Update Room</button>
@@ -138,7 +179,7 @@
                                         </form>
                                     </div>
                                 </div>
-        
+
                                 <form action="{{ route('rooms.destroy', $room->id) }}" method="POST" style="display:inline;">
                                     @csrf @method('DELETE')
                                     <button  class="btn btn-sm btn-danger delete-restaurant"><i class="bi bi-trash-fill"></i></button>
@@ -155,7 +196,7 @@
 
 <!-- Add Room Modal -->
 <div class="modal fade" id="addRoomModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg modal-scrollbar-measure">
         <form action="{{ route('rooms.store') }}" method="POST" enctype="multipart/form-data" class="modal-content">
             @csrf
             <div class="modal-header">
