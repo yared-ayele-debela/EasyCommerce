@@ -15,7 +15,7 @@ $user = Auth::guard('admin')->user();
                 </div>
                 <div class="card-body">
                     @if($order->user->profile_photo_path)
-                    <img src="{{ asset('storage/' . auth()->user()->profile_photo_path) }}" width="100" class="rounded-circle py-2" alt="Profile Image">
+                    <img src="{{ asset('storage/' . $order->user->profile_photo_path) }}" width="100" class="rounded-circle py-2" alt="Profile Image">
                     @endif
                     <p><strong>Name:</strong> {{ $order->user->name }}</p>
                     <p><strong>Email:</strong> {{ $order->user->email }}</p>

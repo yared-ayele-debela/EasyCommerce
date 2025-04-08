@@ -12,12 +12,9 @@ class Hotel extends Model
     protected $fillable = [
         'name', 'category_id', 'location', 'latitude', 'longitude',
         'price_per_night', 'banner_image','is_adverted', 'rating', 'reviews_count',
-        'discount', 'amenities','is_featured', 'phone', 'description','is_adverted'
+        'discount', 'is_featured', 'phone', 'description','is_adverted'
     ];
 
-    protected $casts = [
-        'amenities' => 'array',
-    ];
 
     public function category()
     {
@@ -37,10 +34,5 @@ class Hotel extends Model
     public function photos()
     {
         return $this->hasMany(HotelPhoto::class);
-    }
-
-    public function amenities()
-    {
-        return $this->belongsToMany(Amenity::class, 'hotel_amenities');
     }
 }

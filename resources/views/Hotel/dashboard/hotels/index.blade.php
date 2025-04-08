@@ -30,10 +30,11 @@
                         <tr>
                             <th>Name</th>
                             <th>Category</th>
-                            <th>Amenities</th>
                             <th>Location</th>
                             <th>Banner</th>
                             <th>Gallery</th>
+                            <th>Is Advertised</th>
+                            <th>Is Featured</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -42,27 +43,7 @@
                         <tr>
                             <td>{{ $hotel->name }}</td>
                             <td>{{ $hotel->category->name ?? '-' }}</td>
-                            <td>
-                                @php
-                                $hotelAmenities = is_array($hotel->amenities) ? $hotel->amenities : json_decode($hotel->amenities, true);
-                                @endphp
-                                <h6>Amenities:</h6>
-                                <ul class="list-inline">
-                                    @foreach ($hotelAmenities as $key => $isEnabled)
-                                    @if ($isEnabled && isset($amenities[$key]))
-                                    <a href="javascript:void(0);" class="mb-1 rounded rounded-3 btn-outline-primary list-inline-item">
-                                        @php $icon = optional($amenities[$key])->icon; @endphp
-                                        @if($icon && Storage::exists('public/' . $icon))
-                                        <img src="{{ asset('storage/' . $icon) }}" alt="{{ $amenities[$key]->name }}" width="24" height="24">
-                                        @else
-                                        <img src="{{ asset('restaurant_frontend/default-image.png') }}" alt="{{ $amenities[$key]->name }}" width="24" height="24">
-                                        @endif
-                                        <small>{{ $amenities[$key]->name }}</small>
-                                    </a>
-                                    @endif
-                                    @endforeach
-                                </ul>
-                            </td>
+                            
                             <td>{{ $hotel->location }}</td>
                             <td>
                                 @if($hotel->banner_image)
@@ -144,6 +125,16 @@
                                 </div>
                             </td>
 
+                            <td>
+                                <a href="{{ url('admin/hotel/'.$hotel->id.'/toggleAdvertise') }}" class="btn btn-sm {{ $hotel->is_adverted? 'btn-success':'btn-danger' }} ">
+                                    {{ $hotel->is_adverted? "Yes":"No"}}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ url('admin/hotel/'.$hotel->id.'/toggleFeatured') }}" class="btn btn-sm {{ $hotel->is_featured? 'btn-success':'btn-danger' }} ">
+                                    {{ $hotel->is_featured? "Yes":"No"}}
+                                </a>
+                            </td>
                             <td>
                                 <a href="{{ url('admin/hotel/'.$hotel->id.'/reviews') }}" class="btn btn-sm btn-warning text-white"><i class="bi bi-star-fill"></i></a>
                                 <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#editHotelModal{{ $hotel->id }}"><i class="bi bi-pencil-square"></i></button>
@@ -248,34 +239,7 @@
                                                     <textarea name="description" class="form-control">{{ $hotel ? $hotel->description : old('description') }}</textarea>
                                                 </div>
                                             </div>
-                                            <div class="col-md-12">
-
-                                                <div class="mb-2 ">
-                                                    @php
-                                                    $selectedAmenities = [];
-
-                                                    if (isset($hotel)) {
-                                                    $selectedAmenities = is_string($hotel->amenities)
-                                                    ? json_decode($hotel->amenities, true)
-                                                    : $hotel->amenities;
-                                                    }
-                                                    @endphp
-
-                                                    <label class="form-label">Amenities</label>
-                                                    <div class="row">
-                                                        @foreach($amenities as $amenity)
-                                                        <div class="col-2">
-                                                            <div class="form-check">
-                                                                <input type="checkbox" name="amenities[{{ $amenity->id }}]" id="amenity_{{ $amenity->id }}" class="form-check-input" {{ in_array($amenity->name, $selectedAmenities) ? 'checked' : '' }}>
-                                                                <label for="amenity_{{ $amenity->id }}" class="form-check-label">
-                                                                    {{ $amenity->name }}
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                        @endforeach
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            
                                         </div>
                                     </div>
                                     <div class="modal-footer">
@@ -308,34 +272,7 @@
                                             <div id="map" style="height: 300px;"></div>
                                         </div>
                                     </div>
-                                    <div class="col-md-12">
-
-                                        <div class="mb-2 ">
-                                            @php
-                                            $selectedAmenities = [];
-
-                                            if (isset($hotel)) {
-                                            $selectedAmenities = is_string($hotel->amenities)
-                                            ? json_decode($hotel->amenities, true)
-                                            : $hotel->amenities;
-                                            }
-                                            @endphp
-
-                                            <label class="form-label">Amenities</label>
-                                            <div class="row">
-                                                @foreach($amenities as $amenity)
-                                                <div class="col-2">
-                                                    <div class="form-check">
-                                                        <input type="checkbox" name="amenities[{{ $amenity->id }}]" id="amenity_{{ $amenity->id }}" class="form-check-input">
-                                                        <label for="amenity_{{ $amenity->id }}" class="form-check-label">
-                                                            {{ $amenity->name }}
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    </div>
+                                    
                                 </div>
 
                                 <div class="col-md-6">

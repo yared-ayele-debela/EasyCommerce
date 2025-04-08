@@ -86,33 +86,6 @@ $edit = isset($hotel);
             <textarea name="description" class="form-control">{{ $edit ? $hotel->description : old('description') }}</textarea>
         </div>
     </div>
-    <div class="col-md-12">
-
-        <div class="mb-2 ">
-            @php
-            $selectedAmenities = [];
-
-            if (isset($hotel)) {
-            $selectedAmenities = is_string($hotel->amenities)
-            ? json_decode($hotel->amenities, true)
-            : $hotel->amenities;
-            }
-            @endphp
-
-            <label class="form-label">Amenities</label>
-            <div class="row">
-                @foreach($amenities as $amenity)
-                <div class="col-2">
-                    <div class="form-check">
-                        <input type="checkbox" name="amenities[{{ $amenity->id }}]" id="amenity_{{ $amenity->id }}" class="form-check-input" {{ in_array($amenity->name, $selectedAmenities) ? 'checked' : '' }}>
-                        <label for="amenity_{{ $amenity->id }}" class="form-check-label">
-                            {{ $amenity->name }}
-                        </label>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
+    
 </div>
 

@@ -17,4 +17,9 @@ class Amenity extends Model
     ];
 
     public $timestamps = false;
+
+    public function rooms()
+    {
+        return $this->belongsToMany(Room::class, 'room_amenities', 'amenity_id', 'rooms_id');
+    }
 }

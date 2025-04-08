@@ -13,6 +13,11 @@
     <div class="card">
         <div class="card-header">
             <h4>All Reservations</h4>
+            @session('success')
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+            </div>
+            @endsession
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -26,7 +31,8 @@
                             <th>Check-in Date</th>
                             <th>Check-out Date</th>
                             <th>Total Price</th>
-                            <th>Status</th>
+                            <th>Reservation Status</th>
+                            <th>Payment Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -181,6 +187,53 @@
                                                         <button type="submit" class="btn btn-primary">Update</button>
                                                     </div>
     
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="btn btn-sm @if($reservation->payment_status == 'Pending') btn-warning
+                                @elseif($reservation->payment_status == 'Paid') btn-success
+                                @elseif($reservation->payment_status == 'Failed') btn-danger
+                                @elseif($reservation->payment_status == 'Cancelled') btn-outline-danger
+                                @elseif($reservation->payment_status == 'Processing') btn-secondary
+                                @endif">
+                                    {{ ucfirst($reservation->payment_status) }}
+                                </span>
+                                <!-- Button trigger modal -->
+                                <button type="button" class="btn btn-info btn-sm text-white" data-toggle="modal" data-target="#paymentstatus{{ $reservation->id }}">
+                                    Update
+                                </button>
+    
+                                <!-- Modal -->
+                                <div class="modal fade" id="paymentstatus{{ $reservation->id }}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Update Reservation Status</h5>
+                                                <button type="button" class="close btn" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="{{ route('reservations.updatePaymentStatus', $reservation->id) }}" method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <div class="form-group mb-3">
+                                                        <label for="status" class="form-lable">Payment Status:</label>
+                                                        <select name="payment_status" id="payment_status" class="form-control">
+                                                            <option value="Pending" @if($reservation->payment_status == 'Pending') selected @endif>Pending</option>
+                                                            <option value="Paid" @if($reservation->payment_status == 'Paid') selected @endif>Paid</option>
+                                                            <option value="Failed" @if($reservation->payment_status == 'Failed') selected @endif>Failed</option>
+                                                            <option value="Cancelled" @if($reservation->payment_status == 'Cancelled') selected @endif>Cancelled</option>
+                                                            <option value="Processing" @if($reservation->payment_status == 'Processing') selected @endif>Processing</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <button type="submit" class="btn btn-primary">Update</button>
+                                                    </div>
                                                 </form>
                                             </div>
                                         </div>

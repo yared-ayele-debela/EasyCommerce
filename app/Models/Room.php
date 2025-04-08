@@ -14,6 +14,8 @@ class Room extends Model
     protected $fillable = [
         'hotel_id',
         'room_type',
+        'room_number',
+        'floor',
         'cover_image',
         'capacity',
         'price',
@@ -35,4 +37,10 @@ class Room extends Model
     {
         return $this->hasMany(RoomImage::class);
     }
+
+    public function amenities()
+    {
+        return $this->belongsToMany(Amenity::class, 'room_amenities', 'rooms_id', 'amenity_id');
+    }
+
 }

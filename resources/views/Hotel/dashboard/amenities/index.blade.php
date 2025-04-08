@@ -36,7 +36,7 @@
                                 @if($amenity->icon)
                                 <img src="{{ asset('storage/' . $amenity->icon) }}" width="40" height="40" alt="icon">
                                 @else
-                                N/A
+                                <img src="{{ asset('restaurant_frontend/default-image.png') }}" width="40" height="40" alt="">
                                 @endif
                             </td>
                             <td>{{ $amenity->name }}</td>

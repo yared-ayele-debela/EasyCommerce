@@ -30,6 +30,24 @@
             @enderror
         </div>
     </div>
+    <div class="col-md-6">
+        <div class="mb-3">
+            <label for="room_number" class="form-label">Room Number</label>
+            <input type="number" name="room_number" class="form-control" required>
+            @error('room_number')
+            <span class="alert alert-danger">{{ $message }}</span>
+            @enderror
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="mb-3">
+            <label for="floor" class="form-label">floor</label>
+            <input type="number" name="floor" class="form-control" required>
+            @error('floor')
+            <span class="alert alert-danger">{{ $message }}</span>
+            @enderror
+        </div>
+    </div>
     <div class="col-6">
         <div class="mb-3">
             <label for="capacity" class="form-label">Capacity</label>
@@ -79,15 +97,28 @@
         </div>
     </div>
     <div class="col-12">
-            <div class="form-group">
-              <label for="description" class=" form-label">Description</label>
-              <textarea class="form-control" name="description" id="description" rows="3">
-                {{ old('description') }}
-              </textarea>
+        <div class="form-group">
+            <label for="description" class=" form-label">Description</label>
+            <textarea class="form-control" name="description" id="description" rows="3">
+            {{ old('description') }}
+            </textarea>
+        </div>
+        @error('description')
+        <span class="alert alert-danger">{{ $message }}</span>
+        @enderror
+    </div>
+    <label class="form-label">Amenities</label>
+    <div class="row">
+        @foreach($amenities as $amenity)
+        <div class="col-2">
+            <div class="form-check">
+                <input type="checkbox" name="amenities[{{ $amenity->id }}]" value="{{ $amenity->id }}" id="amenity_{{ $amenity->id }}" class="form-check-input">
+                <label for="amenity_{{ $amenity->id }}" class="form-check-label">
+                    {{ $amenity->name }}
+                </label>
             </div>
-            @error('description')
-            <span class="alert alert-danger">{{ $message }}</span>
-            @enderror
+        </div>
+        @endforeach
     </div>
 </div>
 

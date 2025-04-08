@@ -1086,10 +1086,11 @@ Route::prefix('admin/restaurant')->middleware(['admin'])->group(function () {
 
 // Hotel Reservations
     Route::group(['middleware' => ['admin']], function () {
-
         Route::resource('admin/hotels', HotelController::class);
+        Route::get('admin/hotel/{id}/toggleAdvertise',[HotelController::class,'toggleAdvertise']);
+        Route::get('admin/hotel/{id}/toggleFeatured',[HotelController::class,'toggleFeatured']);
+        
         Route::prefix('admin/hotel')->middleware(['admin'])->group(function () {
-
         Route::get('dashboard', [DashboardDashboardController::class, 'index'])
             ->name('hotel.dashboard');
 
@@ -1101,6 +1102,7 @@ Route::prefix('admin/restaurant')->middleware(['admin'])->group(function () {
         Route::get('{id}/reviews', [HotelReviewController::class, 'index'])->name('hotel-reviews.index');
         Route::get('/reservations', [ReservationsController::class, 'index'])->name('reservations.index');
         Route::put('/reservations/{id}/status', [ReservationsController::class, 'updateStatus'])->name('reservations.updateStatus');
+        Route::put('/reservations/{id}/payment_status', [ReservationsController::class, 'updatePaymentStatus'])->name('reservations.updatePaymentStatus');
         Route::delete('/reservations/{id}', [ReservationsController::class, 'destroy'])->name('reservations.destroy');
         Route::get('/reservations/receipt', [ReservationsController::class, 'receipt'])->name('reservations.receipt');
 

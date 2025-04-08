@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Hotel\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Mail\HotelReservationPaymentStatusUpdated;
 use App\Mail\HotelReservationStatusUpdated;
 use App\Models\AppSetting;
 use App\Models\Reservation;
@@ -32,10 +33,22 @@ class ReservationsController extends Controller
         $reservation->status = $request->status;
         $reservation->save();
 
-        Mail::to($reservation->user->email)->send(new HotelReservationStatusUpdated($reservation));
-
-       
+        Mail::to($reservation->user->email)->send(new HotelReservationStatusUpdated($reservation));       
         return redirect()->route('reservations.index')->with('success', 'Reservation status updated successfully');
+    }
+    public function updatePaymentStatus(Request $request, $id)
+    {
+        $reservation = Reservation::findOrFail($id);
+        $request->validate([
+            'payment_status' => 'required',
+        ]);
+
+        // Update the status
+        $reservation->payment_status = $request->payment_status;
+        $reservation->save();
+
+        Mail::to($reservation->user->email)->send(new HotelReservationPaymentStatusUpdated($reservation));       
+        return redirect()->route('reservations.index')->with('success', 'Reservation Payment Status updated successfully');
     }
 
     public function destroy($id)

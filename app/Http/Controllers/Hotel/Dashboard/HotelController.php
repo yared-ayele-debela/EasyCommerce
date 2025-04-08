@@ -41,14 +41,7 @@ class HotelController extends Controller
             $validated['banner_image'] = $request->file('banner_image')->store('hotels', 'public');
         }
 
-        $selectedIds = array_keys($request->amenities ?? []);
-
-        // Get their names from the DB
-        $amenityNames = \App\Models\Amenity::whereIn('id', $selectedIds)->pluck('name')->toArray();
-
-        // Store as JSON
-        $validated['amenities'] = json_encode($amenityNames);
-
+        
         Hotel::create($validated);
 
         return redirect()->back()->with('success', 'Hotel created successfully!');
@@ -81,11 +74,7 @@ class HotelController extends Controller
         }
 
 
-        $selectedIds = array_keys($request->amenities ?? []);
-        // Get their names from the DB
-        $amenityNames = \App\Models\Amenity::whereIn('id', $selectedIds)->pluck('name')->toArray();
-        // Store as JSON
-        $validated['amenities'] = json_encode($amenityNames);
+        
         $hotel->update($validated);
 
         return redirect()->back()->with('success', 'Hotel updated successfully!');

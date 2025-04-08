@@ -25,212 +25,32 @@
 }
 
 </style>
-<div class="pagetitle shadow-sm">
-    <nav class="p-4 text-center">
-       <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-          <li class="breadcrumb-item active">Dashboard</li>
-       </ol>
-    </nav>
- </div>
+
  <section class="section dashboard">
+    <h3 class="mb-4 fw-bold">Dashboard</h3>
     <div class="row">
        <div class="col-lg-12">
-          <div class="row">
-            <div class="col-md-3">
-                <div class="card cards custom-card">
-                    <div class="card-body">
-                       <a href="">
-                        <h5 class="card-title text-white">Total Hotels</h5>
-                        <div class="d-flex align-items-center">
-                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                            <i class="bi bi-building text-white"></i>
-                        </div>
-                            <div class="ps-3">
-                                <h6 class="text-white"><strong>{{ $total_hotel }}</strong></h6>
-                            </div>
-                        </div>
-                       </a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card cards info-card custom-card">
-                    <a href="">
-                        <div class="card-body">
-                            <h5 class="card-title text-white">Total Rooms</h5>
-                            <div class="d-flex align-items-center">
-                                <div class="card-icon text-white rounded-circle d-flex align-items-center justify-content-center">
-                                    <i class="bi bi-bookmark"></i>
-                                </div>
-                                <div class="ps-3">
-                                    <h6 class="text-white">{{ $total_rooms }}</h6>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-           
-
-            <div class="col-md-3">
-                <div class="card cards info-card custom-card">
-                    <a href="11">
-                        <div class="card-body">
-                            <h5 class="card-title text-white">Customers</h5>
-                            <div class="d-flex align-items-center">
-                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                    <i class="bi bi-person-circle text-white"></i>
-                                </div>
-                                <div class="ps-3">
-                                    <h6 class="text-white">{{ $total_customers }}</h6>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="card cards info-card custom-card">
-                   <a href="1">
-                    <div class="card-body">
-                        <h5 class="card-title text-white">Total Hotel Categories</h5>
-                        <div class="d-flex align-items-center">
-                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                <i class="bi bi-bookmark-check-fill text-white"></i>
-                            </div>
-                            <div class="ps-3">
-                                <h6 class="text-white">{{ $total_category }}</h6>
-                            </div>
-                        </div>
-                    </div>
-                   </a>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="card cards info-card custom-card">
-                    <a href="">
-                        <div class="card-body">
-                            <h5 class="card-title text-white">Total Amenities</h5>
-                            <div class="d-flex align-items-center">
-                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                    <i class="bi bi-command text-white"></i>
-                                </div>
-                                <div class="ps-3">
-                                    <h6 class="text-white">{{ $total_amenities }}</h6>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-            <hr>
-            <div class="col-md-2">
-                <div class="card cards info-card custom-card h-100">
-                    <div class="card-body">
-                        <a href="">
-                            <h5 class="card-title text-white">Total Reservations</h5>
-                            <div class="d-flex align-items-center">
-                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                    <i class="bi  bi-calendar3-event text-white"></i>
-                                </div>
-                                <div class="ps-3">
-                                    <h6 class="text-white" ><b>{{ $total_bookings }}</b></h6>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="card cards info-card pending  h-100">
-                    <div class="card-body">
-                        <a href="">
-                            <h5 class="card-title text-white">Pending Reservations</h5>
-                            <div class="d-flex align-items-center">
-                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                    <i class="bi  bi-calendar3-event text-white"></i>
-                                </div>
-                                <div class="ps-3">
-                                    <h6 class="text-white" ><b>{{ $total_pending_bookings }}</b></h6>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="card cards info-card confirmed h-100">
-                    <div class="card-body">
-                        <a href="">
-                            <h5 class="card-title text-white">Comfirmed Reservations</h5>
-                            <div class="d-flex align-items-center">
-                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                    <i class="bi bi-calendar3-event text-white"></i>
-                                </div>
-                                <div class="ps-3">
-                                    <h6 class="text-white" ><b>{{ $total_confirmed_bookings }}</b></h6>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="card cards info-card cancelled h-100">
-                    <div class="card-body">
-                        <a href="">
-                            <h5 class="card-title text-white">Cancelled Reservations</h5>
-                            <div class="d-flex align-items-center">
-                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                    <i class="bi  bi-calendar3-event text-white"></i>
-                                </div>
-                                <div class="ps-3">
-                                    <h6 class="text-white" ><b>{{ $total_cancelled_bookings }}</b></h6>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="card cards info-card checked_in h-100">
-                    <div class="card-body">
-                        <a href="">
-                            <h5 class="card-title text-white">Checked_in Reservations</h5>
-                            <div class="d-flex align-items-center">
-                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                    <i class="bi  bi-calendar3-event text-white"></i>
-                                </div>
-                                <div class="ps-3">
-                                    <h6 class="text-white" ><b>{{ $total_checked_in_bookings }}</b></h6>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="card cards info-card completed h-100">
-                    <div class="card-body">
-                        <a href="">
-                            <h5 class="card-title text-white">Completed Reservations</h5>
-                            <div class="d-flex align-items-center">
-                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                    <i class="bi  bi-calendar3-event text-white"></i>
-                                </div>
-                                <div class="ps-3">
-                                    <h6 class="text-white" ><b>{{ $total_completed_bookings }}</b></h6>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-          </div>
+        <div class="row g-4">
+            {{-- Hotels --}}
+            <x-hotel-dashboard-card title="Total Hotels" :value="$total_hotel" icon="bi-building" color="primary" />
+    
+            {{-- Rooms --}}
+            <x-hotel-dashboard-card title="Total Rooms" :value="$total_rooms" icon="bi-door-open" color="info" />
+    
+            <x-hotel-dashboard-card title="Total Customers" :value="$total_customers" icon="bi-people" color="dark" />
+    
+            <x-hotel-dashboard-card title="Hotel Categories" :value="$total_category" icon="bi-tags" color="warning" />
+    
+            <x-hotel-dashboard-card title="Amenities" :value="$total_amenities" icon="bi-list-check" color="success" />
+    
+            <x-hotel-dashboard-card title="Total Bookings" :value="$total_bookings" icon="bi-calendar-check" color="success" />
+            <x-hotel-dashboard-card title="Pending Bookings" :value="$total_pending_bookings" icon="bi-hourglass-split" color="secondary" />
+            <x-hotel-dashboard-card title="Confirmed Bookings" :value="$total_confirmed_bookings" icon="bi-check2-square" color="info" />
+            <x-hotel-dashboard-card title="Checked-in Bookings" :value="$total_checked_in_bookings" icon="bi-door-closed" color="primary" />
+            <x-hotel-dashboard-card title="Completed Bookings" :value="$total_completed_bookings" icon="bi-clipboard-check" color="success" />
+            <x-hotel-dashboard-card title="Cancelled Bookings" :value="$total_cancelled_bookings" icon="bi-x-octagon" color="danger" />
+    
+        </div>
        </div>
     </div>
  </section>
