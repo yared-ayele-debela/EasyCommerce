@@ -34,6 +34,9 @@ class RoomController extends Controller
         $request->validate([
             'hotel_id' => 'required|exists:hotels,id',
             'room_type' => 'required|string|max:255',
+            'total_adult' => 'nullable|string|max:255',
+            'total_child' => 'nullable|string|max:255',
+            'total_infant' => 'nullable|string|max:255',
             'room_number' => 'nullable|integer|unique:rooms,room_number',
             'floor' => 'nullable|integer',
             'capacity' => 'required|integer',
@@ -48,7 +51,7 @@ class RoomController extends Controller
         // dd($request->all());
 
 
-        $data = $request->only(['hotel_id', 'room_type','room_number','floor', 'capacity', 'price', 'is_available','description']);
+        $data = $request->only(['hotel_id', 'room_type','total_adult','total_child','total_infant','room_number','floor', 'capacity', 'price', 'is_available','description']);
 
         if ($request->hasFile('cover_image')) {
             $path = $request->file('cover_image')->store('room_images', 'public');
@@ -86,7 +89,10 @@ class RoomController extends Controller
         // dd($request->all());
         $request->validate([
             'room_type' => 'required|string|max:255',
-             'room_number' => 'nullable|integer|unique:rooms,room_number,' . $room->id,
+            'total_adult' => 'nullable|string|max:255',
+            'total_child' => 'nullable|string|max:255',
+            'total_infant' => 'nullable|string|max:255',
+            'room_number' => 'nullable|integer|unique:rooms,room_number,' . $room->id,
             'floor' => 'nullable|integer',
             'capacity' => 'required|integer',
             'price' => 'required|numeric',
@@ -97,7 +103,7 @@ class RoomController extends Controller
             'amenities' => 'array', // should be an array of amenity_ids
         ]);
 
-        $data = $request->only(['room_type','room_number','floor', 'capacity', 'price', 'is_available','description']);
+        $data = $request->only(['room_type','total_adult','total_child','total_infant','room_number','floor', 'capacity', 'price', 'is_available','description']);
         if ($request->hasFile('cover_image')) {
             if ($room->cover_image) {
                 Storage::delete('public/' . $room->cover_image);

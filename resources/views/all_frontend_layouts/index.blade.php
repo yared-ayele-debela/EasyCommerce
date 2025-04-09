@@ -5,8 +5,8 @@
     <div class="row d-flex justify-content-center align-items-center pt-3">
         <div class="custom-nav-container">
             <nav class="nav justify-content-between custom-nav p-2">
-                <a href="#" class="custom-switch nav-link text-white fw-bold nav-active">Order Food</a>
-                <a href="#" class="custom-switch nav-link text-dark fw-bold ">Reserve Hotel</a>
+                <a href="{{ url('/') }}" class="custom-switch nav-link text-white fw-bold {{ request()->is('/')?'nav-active':'' }}">Order Food</a>
+                <a href="{{ url('/hotel') }}" class="custom-switch nav-link text-dark fw-bold {{ request()->is('/hotel')?'nav-active':'' }}">Reserve Hotel</a>
                 <a href="#" class="custom-switch nav-link text-dark fw-bold">Buy Goods</a>
             </nav>
         </div>

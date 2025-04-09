@@ -3,9 +3,9 @@
 <div class="container-fluid">
     <div class="row">
         <div class="header">
-            <button class="btn btn-link text-dark">
-                <a href="{{ url('/') }}" class="text-dark"><i class="bi bi-arrow-left"></i></a>
-            </button>
+            <button class="btn btn-link text-dark" onclick="history.back()">
+                <i class="bi bi-arrow-left"></i>
+             </button>
             <h5 class="my-4 text-dark text-center">{{ ucfirst(str_replace('_', ' ', $filter)) }} Products</h5>
         </div>
         @forelse ($products as $product)

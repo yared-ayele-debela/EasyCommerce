@@ -28,6 +28,9 @@
                 <thead>
                     <tr>
                         <th>Room Type</th>
+                        <th>Total Adult</th>
+                        <th>Total Child</th>
+                        <th>Total Infant</th>
                         <th>Room Number</th>
                         <th>Floor</th>
                         <th>Capacity</th>
@@ -43,6 +46,9 @@
                     @foreach ($rooms as $room)
                     <tr>
                         <td>{{ $room->room_type }}</td>
+                        <td>{{ $room->total_adult }}</td>
+                        <td>{{ $room->total_child }}</td>
+                        <td>{{ $room->total_infant }}</td>
                         <td>{{ $room->room_number }}</td>
                         <td>{{ $room->floor }}</td>
                         <td>{{ $room->capacity }}</td>
@@ -118,6 +124,33 @@
                                                             </select>
                                                         </div>
                                                         @error('room_type')
+                                                        <span class="alert alert-danger">{{ $message }}</span>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="mb-3">
+                                                        <label for="total_adult" class="form-label">Total Adult</label>
+                                                        <input type="number" value="{{ $room->total_adult }}" minlength="1" name="total_adult" class="form-control" required>
+                                                        @error('room_number')
+                                                        <span class="alert alert-danger">{{ $message }}</span>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="mb-3">
+                                                        <label for="total_child" class="form-label">Total Child</label>
+                                                        <input type="number" value="{{ $room->total_child }}" minlength="1" name="total_child" class="form-control" required>
+                                                        @error('total_child')
+                                                        <span class="alert alert-danger">{{ $message }}</span>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="mb-3">
+                                                        <label for="total_infant" class="form-label">Total Infant</label>
+                                                        <input type="number" value="{{ $room->total_infant }}" minlength="1"  name="total_infant" class="form-control" required>
+                                                        @error('total_infant')
                                                         <span class="alert alert-danger">{{ $message }}</span>
                                                         @enderror
                                                     </div>

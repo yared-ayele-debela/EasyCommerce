@@ -72,27 +72,6 @@
             <p><strong>Price per Night:</strong> ETB {{ number_format($hotel->price_per_night, 2) }}</p>
             <p><strong>Rating:</strong> ⭐ {{ $hotel->rating }} ({{ $hotel->reviews_count }} reviews)</p>
 
-            <p><strong>Amenities:</strong> 
-                @php
-                $hotelAmenities = is_array($hotel->amenities) ? $hotel->amenities : json_decode($hotel->amenities, true);
-                @endphp
-                <h6>Amenities:</h6>
-                <ul class="list-inline">
-                    @foreach ($hotelAmenities as $key => $isEnabled)
-                    @if ($isEnabled && isset($amenities[$key]))
-                    <a href="javascript:void(0);" class="mb-1 p-1 rounded rounded-3 btn-outline-primary list-inline-item">
-                        @php $icon = optional($amenities[$key])->icon; @endphp
-                        @if($icon && Storage::exists('public/' . $icon))
-                        <img src="{{ asset('storage/' . $icon) }}" alt="{{ $amenities[$key]->name }}" width="24" height="24">
-                        @else
-                        <img src="{{ asset('restaurant_frontend/default-image.png') }}" alt="{{ $amenities[$key]->name }}" width="24" height="24">
-                        @endif
-                        <small>{{ $amenities[$key]->name }}</small>
-                    </a>
-                    @endif
-                    @endforeach
-                </ul>
-            </p>
 
             @if ($hotel->photos->count())
             <div id="carouselHotel{{ $hotel->id }}" class="carousel slide mb-3" data-bs-ride="carousel">
@@ -131,7 +110,19 @@
                             <p class="text-muted">Capacity: {{ $room->capacity }} | ETB {{ number_format($room->price, 2) }}</p>
                             <p>{{ $room->description }}</p>
                             <p>Status: <span class="badge {{ $room->is_available ? 'bg-success' : 'bg-danger' }}">{{ $room->is_available ? 'Available' : 'Booked' }}</span></p>
+                            <p>Amenites:</p>
+                            @foreach ($room->amenities as $key => $am)
 
+                            <a href="javascript:void(0);" class="mb-1 rounded rounded-3 btn-outline-primary list-inline-item">
+                                @php $icon = optional($am)->icon; @endphp
+                                @if($icon && Storage::exists('public/' . $icon))
+                                <img src="{{ asset('storage/' . $icon) }}" alt="{{ $am->name }}" width="24" height="24">
+                                @else
+                                <img src="{{ asset('restaurant_frontend/default-image.png') }}" alt="{{ $am->name }}" width="24" height="24">
+                                @endif
+                                <small>{{ $am->name }}</small>
+                            </a>
+                            @endforeach
                             @if ($room->images->count())
                             <div id="carouselRoom{{ $room->id }}" class="carousel slide" data-bs-ride="carousel">
                                 <div class="carousel-inner">

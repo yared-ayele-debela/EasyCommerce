@@ -7,7 +7,9 @@ use App\Models\Amenity;
 use App\Models\Hotel;
 use App\Models\HotelCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class HotelController extends Controller
 {
@@ -106,12 +108,21 @@ class HotelController extends Controller
 
         return redirect()->back()->with('success', 'Hotel featured status updated!');
     }
-    public function my_hotel(){
+    
+    
+    public function my_hotel(Request $request){
         
-        $hotel= Hotel::with(['photos', 'rooms.images'])->findOrFail(6);
-        $categories = HotelCategory::all();
-        $amenities = Amenity::all();
-        
-        return view('Hotel.dashboard.hotels.my_hotel.index', compact('hotel', 'categories','amenities'));
+        $hotel= Hotel::with(['photos','rooms.images'])->where('id',$request->id)->where('admin_id',Auth::guard('admin')->user()->id)->first();
+        if($hotel){
+            $categories = HotelCategory::all();
+            $amenities = Amenity::all();
+            
+            return view('Hotel.dashboard.hotels.my_hotel.index', compact('hotel', 'categories','amenities'));
+        }else{
+            
+            Alert::toast('Something was wrong','error');
+            return redirect()->back();
+        }
+       
     }
 }

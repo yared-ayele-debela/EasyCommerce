@@ -73,9 +73,9 @@
 
             <br>
 
-            <li class=" {{ request()->is('admin/hotel/my-hotel')?'nav-item active':'' }} " >
+            {{-- <li class=" {{ request()->is('admin/hotel/my-hotel')?'nav-item active':'' }} " >
                 <a href="{{ url('admin/hotel/my-hotel') }}" class="nav-link" > <i class="bi bi-house-fill"></i><span>My Hotel</span></a>
-            </li>
+            </li> --}}
 
     </ul>
 </aside>

@@ -28,6 +28,7 @@
                 <table class="table">
                     <thead>
                         <tr>
+                            <th>#</th>
                             <th>Name</th>
                             <th>Category</th>
                             <th>Location</th>
@@ -41,6 +42,7 @@
                     <tbody>
                         @foreach($hotels as $hotel)
                         <tr>
+                            <td>{{ $hotel->id }}</td>
                             <td>{{ $hotel->name }}</td>
                             <td>{{ $hotel->category->name ?? '-' }}</td>
                             
@@ -141,6 +143,11 @@
                                 <form action="{{ route('hotels.destroy', $hotel->id) }}" method="POST" class="d-inline">
                                     @csrf @method('DELETE')
                                     <button class="btn btn-sm btn-danger delete-restaurant"><i class=" bi bi-trash-fill"></i></button>
+                                </form>
+                                <form action="{{ route('my-hotel') }}" method="GET" class="d-inline">
+                                    @csrf
+                                    <input type="hidden" name="id" id="id" value="{{ $hotel->id }}">
+                                    <button class="btn btn-sm btn-secondary text-white"><i class="bi bi-eye-fill"></i> Hotel</button>
                                 </form>
 
                             </td>

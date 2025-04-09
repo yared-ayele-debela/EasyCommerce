@@ -30,6 +30,33 @@
             @enderror
         </div>
     </div>
+    <div class="col-md-4">
+        <div class="mb-3">
+            <label for="total_adult" class="form-label">Total Adult</label>
+            <input type="number"  minlength="1" name="total_adult" class="form-control" required>
+            @error('room_number')
+            <span class="alert alert-danger">{{ $message }}</span>
+            @enderror
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="mb-3">
+            <label for="total_child" class="form-label">Total Child</label>
+            <input type="number" minlength="1" name="total_child" class="form-control" required>
+            @error('total_child')
+            <span class="alert alert-danger">{{ $message }}</span>
+            @enderror
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="mb-3">
+            <label for="total_infant" class="form-label">Total Infant</label>
+            <input type="number"  minlength="1"  name="total_infant" class="form-control" required>
+            @error('total_infant')
+            <span class="alert alert-danger">{{ $message }}</span>
+            @enderror
+        </div>
+    </div>
     <div class="col-md-6">
         <div class="mb-3">
             <label for="room_number" class="form-label">Room Number</label>

@@ -214,6 +214,24 @@
             }
         }
     });
+    $('.hotel').owlCarousel({
+        loop: true
+        , margin: 30
+        , nav: false
+        , dots: true
+        , autoplay: true
+        , autoplayHoverPause: true // Stops autoplay when hovered
+        , responsiveClass: true
+        , responsive: {
+            0: {
+                items: 1
+                , nav: false
+            }
+            , 1024: {
+                items: 4
+            }
+        }
+    });
     $('.imgs').owlCarousel({
         loop: true
         , margin: 30

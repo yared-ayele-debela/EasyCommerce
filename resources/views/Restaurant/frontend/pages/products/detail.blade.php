@@ -38,9 +38,9 @@
 </style>
 <div class="container">
     <div class="header">
-        <button class="btn btn-link text-dark">
-            <a href="{{ url('/') }}" class="text-dark"><i class="bi bi-arrow-left"></i></a>
-        </button>
+        <button class="btn btn-link text-dark" onclick="history.back()">
+            <i class="bi bi-arrow-left"></i>
+         </button>
         <h5 class="my-4 text-dark text-center">Product Detail</h5>
     </div>
     <div class="row align-items-center mb-3">

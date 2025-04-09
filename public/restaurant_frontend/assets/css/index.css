@@ -496,7 +496,7 @@ input[type="number"] {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15px;
+  padding: 10px;
 }
 
 .header img {
@@ -1056,3 +1056,7 @@ input[type="number"] {
     color: var(--bs-table-color);
     border-color: var(--bs-table-border-color);
 }
+
+.custom-border-radius{
+    border-radius: 40px 40px;
+  }

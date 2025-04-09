@@ -13,6 +13,6 @@ class HotelCategory extends Model
 
     public function hotels()
     {
-        return $this->hasMany(Hotel::class);
+        return $this->hasMany(Hotel::class, 'category_id');
     }
 }
