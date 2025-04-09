@@ -45,14 +45,12 @@ class AmenityController extends Controller
         ]);
 
         if ($request->hasFile('icon')) {
-            // Delete the old icon if it exists
-            if ($amenity->icon && Storage::disk('public')->exists($amenity->icon)) {
+             if($amenity->icon && Storage::disk('public')->exists($amenity->icon)) {
                 Storage::disk('public')->delete($amenity->icon);
             }
             $iconPath = $request->file('icon')->store('icons', 'public');
             $amenity->icon = $iconPath;
         }
-
         $amenity->name = $request->name;
         $amenity->save();
 

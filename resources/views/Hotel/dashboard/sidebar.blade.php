@@ -10,6 +10,16 @@
         <li class="nav-item"> <a class="nav-link" href="{{ url('admin/hotel/dashboard') }}"> <i class="bi bi-bank "></i> <span>Hotel Dashboard</span> </a></li>
 
            {{-- @if ($user && $user->hasPermissionByRole('view_product')) --}}
+            <li class="  {{ request()->is('admin/hotel/hotel-slider-banners')?'nav-item active':'' }}">
+                <a class="nav-link {{request()->is('admin/hotel/hotel-slider-banners')}}" data-bs-target="#hotel-slider-banners-nav" data-bs-toggle="collapse" href="javascripit:void(0);" aria-expanded="false"> <i class="bi bi-image"></i><span>Hotel Banners Managements</span><i class="bi bi-chevron-down  ms-auto"></i> </a>
+                <ul id="hotel-slider-banners-nav" class="nav-content collapse  {{ request()->is('admin/hotel/hotel-slider-banners')?'show':'' }} " data-bs-parent="" style="">
+                    {{-- @if ($user && $user->hasPermissionByRole('view_product')) --}}
+                    <li> <a href="{{ route('hotel-slider-banners.index') }}" class=" {{ request()->is('admin/hotel/hotel-slider-banners')?' nav-link active':'' }}"> <i class="bi bi-circle"></i><span>List of Banners</span> </a></li>
+                    {{-- @endif --}}
+                </ul>
+            </li>
+            {{-- @endif --}}
+           {{-- @if ($user && $user->hasPermissionByRole('view_product')) --}}
             <li class="  {{ request()->is('admin/hotel/amenities')?'nav-item active':'' }}">
                 <a class="nav-link {{request()->is('admin/hotel/amenities')}}" data-bs-target="#amenities-nav" data-bs-toggle="collapse" href="javascripit:void(0);" aria-expanded="false"> <i class="bi bi-command"></i><span>Amenities Managements</span><i class="bi bi-chevron-down  ms-auto"></i> </a>
                 <ul id="amenities-nav" class="nav-content collapse  {{ request()->is('admin/hotel/amenities')?'show':'' }} " data-bs-parent="" style="">

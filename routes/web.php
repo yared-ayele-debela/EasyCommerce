@@ -116,6 +116,7 @@ use App\Http\Controllers\Hotel\Dashboard\HotelPhotoController;
 use App\Http\Controllers\Hotel\Dashboard\HotelReviewController;
 use App\Http\Controllers\Hotel\Dashboard\ReservationsController;
 use App\Http\Controllers\Hotel\Dashboard\RoomController;
+use App\Http\Controllers\Hotel\Dashboard\SliderBannerController as DashboardSliderBannerController;
 use App\Http\Controllers\SalesUserAuth\DashboardController as SalesUserAuthDashboardController;
 use App\Http\Controllers\SalesUserAuth\ForgotPasswordController;
 use App\Http\Controllers\SalesUserAuth\LoginController as SalesUserAuthLoginController;
@@ -1089,8 +1090,9 @@ Route::prefix('admin/restaurant')->middleware(['admin'])->group(function () {
         Route::resource('admin/hotels', HotelController::class);
         Route::get('admin/hotel/{id}/toggleAdvertise',[HotelController::class,'toggleAdvertise']);
         Route::get('admin/hotel/{id}/toggleFeatured',[HotelController::class,'toggleFeatured']);
-        
+
         Route::prefix('admin/hotel')->middleware(['admin'])->group(function () {
+
         Route::get('dashboard', [DashboardDashboardController::class, 'index'])
             ->name('hotel.dashboard');
 
@@ -1107,8 +1109,10 @@ Route::prefix('admin/restaurant')->middleware(['admin'])->group(function () {
         Route::get('/reservations/receipt', [ReservationsController::class, 'receipt'])->name('reservations.receipt');
 
         Route::resource('rooms', RoomController::class);
-
         Route::get('my-hotel',[HotelController::class,'my_hotel'])->name('my-hotel');
+
+        Route::resource('/hotel-slider-banners', DashboardSliderBannerController::class);
+
     });
 });
 

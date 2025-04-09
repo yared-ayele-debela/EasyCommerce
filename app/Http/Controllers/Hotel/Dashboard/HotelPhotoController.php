@@ -18,28 +18,21 @@ class HotelPhotoController extends Controller
         ]);
 
         if ($request->hasFile('photo_url')) {
-            // Store in "public/hotel_photos" directory
             $path = $request->file('photo_url')->store('hotel_photos', 'public');
-
             HotelPhoto::create([
                 'hotel_id' => $request->hotel_id,
                 'photo_url' => $path, // only path, not full URL
             ]);
         }
         return redirect()->back()->with('success', 'Photo uploaded successfully!');
-
     }
 
     public function destroy($id)
     {
         $photo = HotelPhoto::findOrFail($id);
-
-        // Delete the image file from storage
         if (Storage::disk('public')->exists($photo->photo_url)) {
             Storage::disk('public')->delete($photo->photo_url);
         }
-
-        // Delete from database
         $photo->delete();
 
         return redirect()->back()->with('success', 'Photo deleted successfully!');
