@@ -124,22 +124,33 @@
         <div class="row">
             @foreach ($rooms as $room)
             <div class="col-12 col-sm-6 col-md-3 my-4">
-                <div class="card hotel-img">
+                <div class="offer-card h-100">
                     @if($room->cover_image)
                     <a href="{{ url('hotel/room/'.$room->id.'/detail') }}">
-                    <img class="card-img-top" src="{{ asset('storage/'.$room->cover_image) }}" alt="{{ $room->room_type }}">
-                   </a>
-                    @else
-                    <img class="card-img-top" src="{{ asset('restaurant_frontend/default-image.png')}}" alt="{{ $room->room_type }}">
-                    @endif
+                        <img class="card-img-top" src="{{ asset('storage/'.$room->cover_image) }}"
+                            alt="{{ $room->room_type }}">
+                        @else
+                        <img class="card-img-top" src="{{ asset('restaurant_frontend/default-image.png')}}"
+                            alt="{{ $room->room_type }}">
+                        @endif
+                    </a>
                     <div class="card-body">
-                        <span class="card-text text-dark star">1.0 Km . &nbsp; <i class="bi bi-star-fill"></i> 4.8 Reviews </span>
-                            <h4 class="card-title">{{ $room->room_type }}</h4>
-                            {{-- <p class="card-text text-dark"><i class="bi bi-pin-map-fill text-primary"></i> {{ $room->location }}</p> --}}
-                            <p class="card-text text-dark">Capacity :{{ $room->capacity }}</p>
-                            <p class="card-text text-dark">Room Number :{{ $room->room_number }}</p>
-                            <p class="card-text text-dark">Floor :{{ $room->floor }}</p>
-                            <h5 class="text-primary">{{ $room->price }} ETB / Night</h5>
+                        <h5 class="card-title">{{ $room->room_type }} (No: {{ $room->room_number }})</h5>
+                        <p class="card-text">
+                            Floor: {{ $room->floor }}<br>
+                            Guests: {{ $room->total_adult+ $room->total_child + $room->total_infant }}<br>
+                            Capacity: {{ $room->capacity }}<br>
+                            Price: <strong>{{ $room->price }} ETB</strong><br>
+                            <span class="{{ $room->is_available? 'text-primary':'text-danger'}}">{{ $room->is_available?'Available':'Not Available'}}</span>
+                        </p>
+                        <p class="card-text">
+                            {{ \Illuminate\Support\Str::limit($room->description, 60) }}
+                        </p>
+                        <div><strong>Amenities:</strong><br>
+                            @foreach ($room->amenities as $amenity)
+                            <span class="badge bg-primary">{{ $amenity->name}}</span>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             </div>

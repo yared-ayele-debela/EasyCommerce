@@ -5,7 +5,7 @@
     .amenity-box {
         transition: all 0.3s ease;
         background-color: #fff;
-        
+
     }
 
     .amenity-box:hover {
@@ -17,7 +17,7 @@
 </style>
 
 </style>
-<div class="container-fluid">
+<div class="container">
     <div class="header">
         <button class="btn btn-link text-dark" onclick="history.back()">
             <i class="bi bi-arrow-left"></i>
@@ -29,8 +29,8 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="d-flex">
-                        <p> {{ $room->room_type }} </p>
-                         <p> laksjfdl lkas fdslak </p>
+                        <p> {{ $room->hotel->name }} </p>
+                         <p> {{ $room->hotel->location }} </p>
                     </div>
                 </div>
                 <div class="col-md-6 text-end">
@@ -39,19 +39,19 @@
             </div>
         </div>
         @foreach($room->images as $img)
-        <div class="col-md-4">
+        <div class="col-md-4 offer-card py-2">
             <img src="{{ asset('storage/'.$img->image_path) }}" class=" img-fluid rounded rounded-3">
         </div>
         @endforeach
         <br>
-        <div class="col-12 col-md-8 my-3 ">
+        <div class="col-12 col-md-8 my-3 offer-card p-3">
             <p><strong>About Room : </strong> {{ $room->description }}</p>
         </div>
         <div class="col-md-4 my-3">
-            <div class="offer-card">
+            <div class="offer-card ">
                 <div class="card-body">
                     <h4 class="card-title">Start Booking</h4>
-                    <p class="text-primary my-2" style="font-size: 20px;">{{ $room->price }} ETB Per Night</p>
+                    <p class="text-primary my-2" style="font-size: 20px;"><strong>{{ $room->price }} ETB / Night</strong></p>
                     <form action="{{ route('select_date',encrypt($room->id)) }}" method="GET">
                         @csrf
                         <input type="hidden" name="id" value="{{ $room->id }}">
@@ -68,25 +68,25 @@
         <div class="row g-3">
             @foreach ($room->amenities as $am)
                 <div class="col-4 col-sm-4 col-md-3 col-lg-1 mb-2">
-                    <div class="offer-card text-center border rounded shadow-sm amenity-box h-100">
+                    <div class="offer-card p-2 text-center border rounded shadow-sm amenity-box h-100">
                         @php $icon = optional($am)->icon; @endphp
-                        <img 
-                            src="{{ $icon && Storage::exists('public/' . $icon) 
-                                ? asset('storage/' . $icon) 
-                                : asset('restaurant_frontend/default-image.png') 
-                            }}" 
-                            alt="{{ $am->name }}" 
-                            width="36" 
-                            height="36" 
+                        <img
+                            src="{{ $icon && Storage::exists('public/' . $icon)
+                                ? asset('storage/' . $icon)
+                                : asset('restaurant_frontend/default-image.png')
+                            }}"
+                            alt="{{ $am->name }}"
+                            width="16"
+                            height="16"
                             class="my-2"
                         >
-                        <p class="mb-0 small fw-semibold text-dark">{{ $am->name }}</p>
+                        <p class="mb-0 small fw-semibold text-dark" style="font-size: 11px;">{{ $am->name }}</p>
                     </div>
                 </div>
             @endforeach
         </div>
     </div>
-    
+
 </div>
 @endsection
 

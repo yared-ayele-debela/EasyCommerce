@@ -136,7 +136,7 @@
     }
 </style>
 
-<div class="container-fluid py-4">
+<div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <button class="btn btn-link text-dark me-2" onclick="history.back()">
             <i class="bi bi-arrow-left fs-5"></i>
@@ -164,8 +164,10 @@
             </div>
         </div>
     </div>
-
+    <form action="{{ route('reservation.store') }}" method="POST">
+        @csrf
     <div class="row gy-4">
+
         <div class="col-md-8">
             <div class="offer-card shadow-sm p-4">
                 <h5 class="mb-4">Select Dates</h5>
@@ -173,12 +175,34 @@
                     @csrf
                     <div class="row g-3">
                         <div class="col-md-4">
-                            <label class="form-label">Check-in Date</label>
+                            <input type="hidden" name="room_id" value="{{ $room->id }}">
+                            @error('room_id')
+                            <span class="text-danger">{{ $message }}</span>
+                            @enderror
+
+                            <input type="hidden" name="user_id" value="@if(Auth::check()) {{ Auth::user()->id }} @endif">
+                            @error('user_id')
+                            <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                            <label class="form-label" for="check_in_date">Check-in Date</label>
                             <input type="text" id="check_in_date" name="check_in_date" class="form-control" placeholder="Check-in" required>
+                            @error('check_in_date')
+                            <span class="text-danger">{{ $message }}</span>
+                            @enderror
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Check-out Date</label>
+                            <label class="form-label" for="check_out_date">Check-out Date</label>
                             <input type="text" id="check_out_date" name="check_out_date" class="form-control" placeholder="Check-out" required>
+                            @error('check_out_date')
+                            <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="total_night">Total Night</label>
+                            <input type="number" id="total_night" min="0" name="total_night" class="form-control w-100" placeholder="Enter total night " required>
+                            @error('total_night')
+                            <span class="text-danger">{{ $message }}</span>
+                            @enderror
                         </div>
                         <div class="col-md-4 d-flex align-items-end">
                             <button type="submit" class="btn btn-primary w-100">Book Now</button>
@@ -204,9 +228,12 @@
                         </div>
                         <div class="guest-controls">
                             <button class="btn-minus" onclick="changeCount('adult', -1)">−</button>
-                            <input type="number" max="{{ $room->total_adult }}" class="count-input" id="adult-count" value="1" min="0">
+                            <input type="number" max="{{ $room->total_adult }}" class="count-input"  name="total_adult" id="adult-count" value="1" min="0">
                             <button class="btn-plus" onclick="changeCount('adult', 1)">+</button>
                         </div>
+                        @error('total_adult')
+                            <span class="text-danger">{{ $message }}</span>
+                            @enderror
                     </div>
                     <div class="guest-row">
                         <div>
@@ -216,10 +243,14 @@
                         </div>
                         <div class="guest-controls">
                             <button class="btn-minus" onclick="changeCount('child', -1)">−</button>
-                            <input type="number" max="{{ $room->total_child }}" class="count-input" id="child-count" value="2" min="0">
+                            <input type="number" max="{{ $room->total_child }}" class="count-input"  name="total_child" id="child-count" value="0" min="0">
                             <button class="btn-plus" onclick="changeCount('child', 1)">+</button>
                         </div>
+                        @error('total_child')
+                            <span class="text-danger">{{ $message }}</span>
+                            @enderror
                     </div>
+
                     <div class="guest-row">
                         <div>
                             <div class="fw-bold">Infants </div>
@@ -228,15 +259,20 @@
                         </div>
                         <div class="guest-controls">
                             <button class="btn-minus" onclick="changeCount('infant', -1)">−</button>
-                            <input type="number" max="{{ $room->total_infant }}" class="count-input" id="infant-count" value="2" min="0">
+                            <input type="number" max="{{ $room->total_infant }}" class="count-input" name="total_infant" id="infant-count" value="0" min="0">
                             <button class="btn-plus" onclick="changeCount('infant', 1)">+</button>
                         </div>
+                        @error('total_infant')
+                            <span class="text-danger">{{ $message }}</span>
+                            @enderror
                     </div>
                     {{-- <button class="next-btn">Next</button> --}}
                 </div>
             </div>
         </div>
+
     </div>
+    </form>
 </div>
 
 @php

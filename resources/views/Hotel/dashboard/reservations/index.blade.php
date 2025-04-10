@@ -46,7 +46,7 @@
                                 <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modelId{{ $reservation->id }}">
                                     View Customer
                                 </button>
-    
+
                                 <!-- Modal -->
                                 <div class="modal fade" id="modelId{{ $reservation->id }}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
@@ -62,7 +62,7 @@
                                                 <img src="{{ asset('storage/' . $reservation->user->profile_photo_path) }}" alt="Profile Image" class=" img-fluid -bottom-3 mb-2" style="width: 100px; height: 100px; padding:2px; border:4px solid rgb(93, 94, 93); border-radius: 50%;">
                                                 @else
                                                 <img src="{{ asset('restaurant_frontend/no-image.jpg') }}" alt="Profile Image" class=" img-fluid -bottom-3 mb-2" style="width: 100px; height: 100px; padding:2px; border:4px solid rgb(93, 94, 93); border-radius: 50%;">
-    
+
                                                 @endif
                                                 <p><strong>Name:</strong> {{ $reservation->user->name }}</p>
                                                 <p><strong>Phone:</strong> {{ $reservation->user->mobile }}</p>
@@ -83,7 +83,7 @@
                                 <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#Hotel{{ $reservation->id }}">
                                     View Hotel Detail
                                 </button>
-    
+
                                 <div class="modal fade" id="Hotel{{ $reservation->id }}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
@@ -94,6 +94,7 @@
                                                 </button>
                                             </div>
                                             <div class="modal-body">
+                                                @if($reservation->hotel)
                                                 @if($reservation->hotel->banner_image)
                                                 <img src="{{ asset('storage/'.$reservation->hotel->banner_image) }}" alt="Profile Image" class=" img-fluid -bottom-3 mb-2" >
                                                 @else
@@ -104,7 +105,8 @@
                                                 <p class="card-text"><strong>Category :</strong> {{ $reservation->hotel->category->name }}</p>
                                                 <p class="card-text"><strong>Address :</strong> {{ $reservation->hotel->location }}</p>
                                                 <p class="card-text"><strong>Price per Night :</strong> {{ $reservation->hotel->price_per_night }} ETB</p>
-                                            
+                                                @endif
+
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -118,7 +120,7 @@
                                 <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#Room{{ $reservation->id }}">
                                     View Room Detail
                                 </button>
-    
+
                                 <div class="modal fade" id="Room{{ $reservation->id }}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
@@ -159,7 +161,7 @@
                                 <button type="button" class="btn btn-info btn-sm text-white" data-toggle="modal" data-target="#status{{ $reservation->id }}">
                                     Update
                                 </button>
-    
+
                                 <!-- Modal -->
                                 <div class="modal fade" id="status{{ $reservation->id }}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
@@ -187,7 +189,7 @@
                                                     <div class="form-group">
                                                         <button type="submit" class="btn btn-primary">Update</button>
                                                     </div>
-    
+
                                                 </form>
                                             </div>
                                         </div>
@@ -207,7 +209,7 @@
                                 <button type="button" class="btn btn-info btn-sm text-white" data-toggle="modal" data-target="#paymentstatus{{ $reservation->id }}">
                                     Update
                                 </button>
-    
+
                                 <!-- Modal -->
                                 <div class="modal fade" id="paymentstatus{{ $reservation->id }}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
@@ -246,7 +248,7 @@
                                 <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#Reservation{{ $reservation->id }}">
                                     <i class="bi bi-eye-fill"></i> Payment information
                                 </button>
-    
+
                                 <div class="modal fade" id="Reservation{{ $reservation->id }}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
@@ -271,7 +273,7 @@
                                     </div>
                                 </div>
                                 @else
-                                <p>No Room</p>
+                                <span class="btn btn-sm btn-danger">Unpaid</span>
                                 @endif
                             </td>
                             <td>

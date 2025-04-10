@@ -121,6 +121,7 @@ use App\Http\Controllers\Hotel\Frontend\BookingController;
 use App\Http\Controllers\Hotel\Frontend\CategoryController as HotelFrontendCategoryController;
 use App\Http\Controllers\Hotel\Frontend\FrontendController as FrontendFrontendController;
 use App\Http\Controllers\Hotel\Frontend\HotelController as FrontendHotelController;
+use App\Http\Controllers\Hotel\Frontend\ReservationController;
 use App\Http\Controllers\Hotel\Frontend\RoomController as FrontendRoomController;
 use App\Http\Controllers\SalesUserAuth\DashboardController as SalesUserAuthDashboardController;
 use App\Http\Controllers\SalesUserAuth\ForgotPasswordController;
@@ -1222,16 +1223,29 @@ Route::get('/streets/{subCityId}', [UserDeliveryAddressController::class, 'getSt
 Route::prefix('/hotel')->group(function () {
     Route::get('/',[FrontendFrontendController::class,'index'])->name('hotel-reservation.index');
     Route::get('categories',[HotelFrontendCategoryController::class,'index'])->name('hotel.categories');
-    
+
     Route::get('categories/{category}',[HotelFrontendCategoryController::class,'show'])->name('hotel.category.detail');
     Route::get('{id}/detail',[FrontendHotelController::class,'index'])->name('hotel.detail');
     Route::get('room/{id}/detail',[FrontendRoomController::class,'index'])->name('hotel.room.detail');
     Route::get('discounted-hotels',[FrontendHotelController::class,'discounted'])->name('discounted-hotels');
     Route::get('latest-hotels',[FrontendHotelController::class,'latest'])->name('latest-hotels');
     Route::get('{id}/gallery',[FrontendHotelController::class,'gallery'])->name('hotel.photo.gallery');
-    
+
     Route::get('select-date/{id}',[FrontendHotelController::class,'select_date'])->name('select_date');
+
+    Route::get('rooms',[FrontendRoomController::class,'indexs'])->name('room.indexs');
+    Route::get('/rooms/filter', [FrontendRoomController::class, 'filter'])->name('rooms.filter');
 
     Route::post('/check-availability', [BookingController::class, 'checkAvailability'])->name('check.availability');
 
+    Route::middleware('auth')->group(function () {
+        Route::post('/reserve', [ReservationController::class, 'store'])->name('reservation.store');
+        Route::get('/reservation/confirmation', [ReservationController::class, 'confirmation'])->name('reservation.confirmation');
+
+        Route::get('my-reservation',[ReservationController::class, 'my_reservation'])->name('my.reservation');
+    });
+
 });
+
+Route::get('hotels',[FrontendHotelController::class,'latest'])->name('hotels');
+Route::get('/hotels/filter', [FrontendHotelController::class, 'filter'])->name('hotels.filter');

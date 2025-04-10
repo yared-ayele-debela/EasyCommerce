@@ -12,7 +12,7 @@ class Hotel extends Model
     protected $fillable = [
         'name', 'category_id', 'location', 'latitude', 'longitude',
         'price_per_night', 'banner_image','is_adverted', 'rating', 'reviews_count',
-        'discount', 'is_featured', 'phone', 'description','is_adverted'
+        'discount', 'is_featured', 'phone', 'description','is_adverted','country','state','city'
     ];
 
 

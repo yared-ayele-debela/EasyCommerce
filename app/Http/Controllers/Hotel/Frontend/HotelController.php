@@ -3,8 +3,12 @@
 namespace App\Http\Controllers\Hotel\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\City;
+use App\Models\Country;
 use App\Models\Hotel;
+use App\Models\HotelCategory;
 use App\Models\Room;
+use App\Models\State;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -15,12 +19,12 @@ class HotelController extends Controller
         try{
             $hotel=Hotel::findOrFail($id);
             $rooms=$hotel->rooms()->latest()->paginate(10);
-            
-            return view('Hotel.frontend.pages.hotel.detail',compact('hotel','rooms'));  
+
+            return view('Hotel.frontend.pages.hotel.detail',compact('hotel','rooms'));
         }catch(Exception $e){
             return redirect()->back();
         }
-        
+
     }
     public function gallery($id){
         try{
@@ -40,7 +44,7 @@ class HotelController extends Controller
     }
 
     public function discounted(){
-        
+
         $hotels=Hotel::with('photos')->where('discount','>','0')->latest()->paginate(10);
         $name="Discounted Hotels";
         // dd($hotels);
@@ -48,11 +52,35 @@ class HotelController extends Controller
         return view('Hotel.frontend.pages.hotel.index',compact('hotels','name'));
     }
     public function latest(){
-        
-        $hotels=Hotel::with('photos')->latest()->paginate(10);
-        $name="Latest Hotels";
+
+        $cities=City::all();
+        $countries=Country::all();
+        // dd($countries);
+        $states=State::all();
+        $categories=HotelCategory::all();
         // dd($hotels);
 
-        return view('Hotel.frontend.pages.hotel.index',compact('hotels','name'));
+        return view('Hotel.frontend.pages.hotel.search',compact('cities','countries','states','categories'));
     }
+
+    public function filter(Request $request)
+    {
+        // Filtering hotels based on provided parameters
+        $hotels = Hotel::with('category')
+            ->when($request->search, fn($q) => $q->where('name', 'like', "%{$request->search}%"))
+            ->when($request->min_price, fn($q) => $q->where('price_per_night', '>=', $request->min_price))
+            ->when($request->max_price, fn($q) => $q->where('price_per_night', '<=', $request->max_price))
+            ->when($request->rating, fn($q) => $q->where('rating', '>=', $request->rating))
+            ->when($request->category, fn($q) => $q->where('category_id', $request->category))
+            ->when($request->country, fn($q) => $q->where('country', $request->country))
+            ->when($request->state, fn($q) => $q->where('state', $request->state))
+            ->when($request->city, fn($q) => $q->where('city', $request->city))
+            ->when($request->location, fn($q) => $q->where('location', 'like', "%{$request->location}%"))
+            ->when($request->is_featured, fn($q) => $q->where('is_featured', $request->is_featured))
+            ->orderBy('price_per_night', 'desc') // Sorting by price descending
+            ->get();
+
+        return response()->json(['hotels' => $hotels]);
+    }
+
 }

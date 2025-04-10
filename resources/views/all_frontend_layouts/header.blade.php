@@ -183,6 +183,11 @@
                             </a>
                         </li>
                         <li class="mb-2">
+                            <a class="dropdown-item d-flex align-items-center gap-2" href="{{ url('hotel/my-reservation') }}">
+                                <i class="far fa-calendar text-primary"></i> My Reservation
+                            </a>
+                        </li>
+                        <li class="mb-2">
                             <hr class="dropdown-divider">
                         </li>
                         <li>

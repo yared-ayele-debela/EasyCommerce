@@ -4,8 +4,12 @@ namespace App\Http\Controllers\Hotel\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Amenity;
+use App\Models\City;
+use App\Models\Country;
 use App\Models\Hotel;
 use App\Models\HotelCategory;
+use App\Models\State;
+use App\Models\SubCity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -18,7 +22,11 @@ class HotelController extends Controller
         $hotels = Hotel::with('category')->latest()->get();
         $categories = HotelCategory::all();
         $amenities = Amenity::all();
-        return view('hotel.dashboard.hotels.index', compact('hotels', 'categories','amenities'));
+        $cities=City::all();
+        $countries=Country::all();
+        // dd($countries);
+        $states=State::all();
+        return view('hotel.dashboard.hotels.index', compact('hotels', 'categories','amenities','cities','states','countries'));
     }
 
     public function store(Request $request)
@@ -36,6 +44,9 @@ class HotelController extends Controller
             'is_featured' => 'nullable|boolean',
             'phone' => 'nullable|string|max:20',
             'description' => 'nullable|string',
+            'country' => 'nullable|string',
+            'state' => 'nullable|string',
+            'city' => 'nullable|string',
         ]);
         // dd($request->all());
 
@@ -43,7 +54,7 @@ class HotelController extends Controller
             $validated['banner_image'] = $request->file('banner_image')->store('hotels', 'public');
         }
 
-        
+
         Hotel::create($validated);
 
         return redirect()->back()->with('success', 'Hotel created successfully!');
@@ -66,6 +77,9 @@ class HotelController extends Controller
             'is_featured' => 'nullable|boolean',
             'phone' => 'nullable|string|max:20',
             'description' => 'nullable|string',
+            'country' => 'nullable|string',
+            'state' => 'nullable|string',
+            'city' => 'nullable|string',
         ]);
 
         if ($request->hasFile('banner_image')) {
@@ -76,7 +90,7 @@ class HotelController extends Controller
         }
 
 
-        
+
         $hotel->update($validated);
 
         return redirect()->back()->with('success', 'Hotel updated successfully!');
@@ -108,21 +122,21 @@ class HotelController extends Controller
 
         return redirect()->back()->with('success', 'Hotel featured status updated!');
     }
-    
-    
+
+
     public function my_hotel(Request $request){
-        
+
         $hotel= Hotel::with(['photos','rooms.images'])->where('id',$request->id)->where('admin_id',Auth::guard('admin')->user()->id)->first();
         if($hotel){
             $categories = HotelCategory::all();
             $amenities = Amenity::all();
-            
+
             return view('Hotel.dashboard.hotels.my_hotel.index', compact('hotel', 'categories','amenities'));
         }else{
-            
+
             Alert::toast('Something was wrong','error');
             return redirect()->back();
         }
-       
+
     }
 }

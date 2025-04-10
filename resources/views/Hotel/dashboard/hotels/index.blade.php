@@ -31,6 +31,9 @@
                             <th>#</th>
                             <th>Name</th>
                             <th>Category</th>
+                            <th>Country</th>
+                            <th>State</th>
+                            <th>City</th>
                             <th>Location</th>
                             <th>Banner</th>
                             <th>Gallery</th>
@@ -45,7 +48,10 @@
                             <td>{{ $hotel->id }}</td>
                             <td>{{ $hotel->name }}</td>
                             <td>{{ $hotel->category->name ?? '-' }}</td>
-                            
+
+                            <td>{{ $hotel->country }}</td>
+                            <td>{{ $hotel->state }}</td>
+                            <td>{{ $hotel->city }}</td>
                             <td>{{ $hotel->location }}</td>
                             <td>
                                 @if($hotel->banner_image)
@@ -53,43 +59,49 @@
                                 @endif
                             </td>
                             <td>
-                                <button class="btn btn-primary mb-3 btn-sm" data-bs-toggle="modal" data-bs-target="#addPhotoModal{{ $hotel->id }}">Add Photo</button>
-                                @foreach($hotel->photos as $photo)
-                                <div class="col-md-3">
-                                    <div class="card mb-3">
-                                        <img src="{{ asset('storage/' . $photo->photo_url) }}" width="40" class="" alt="Photo">
-                                        <div class="card-body p-2">
-                                            <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal_{{ $photo->id }}">
-                                                x
-                                            </button>
+                                <!-- Button trigger modal -->
+                                <button type="button" class="btn btn-secondary btn-sm mb-1" data-toggle="modal" data-target="#viewImage{{ $hotel->id }}">
+                                  View Images
+                                </button>
+
+                                <!-- Modal -->
+                                <div class="modal fade" id="viewImage{{ $hotel->id }}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Hotel Image Gallery</h5>
+                                                    <button type="button" class="close btn" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    @foreach($hotel->photos as $photo)
+                                                <div class="col-md-3">
+                                                    <div class="card mb-3">
+                                                        <img src="{{ asset('storage/' . $photo->photo_url) }}"  class=" img-fluid" alt="Photo">
+                                                        <div class="card-body p-2">
+                                                            <form action="{{ route('hotel_photos.destroy', $photo->id) }}" method="POST">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                                    x
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                @endforeach
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+                                <button class="btn btn-primary mb-3 btn-sm" data-bs-toggle="modal" data-bs-target="#addPhotoModal{{ $hotel->id }}">Add Photo</button>
 
-                                <!-- Delete Modal -->
-                                <div class="modal fade" id="deleteModal_{{ $photo->id }}" tabindex="-1" aria-labelledby="deleteModalLabel_{{ $photo->id }}" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <form action="{{ route('hotel_photos.destroy', $photo->id) }}" method="POST">
-                                            @csrf
-                                            @method('DELETE')
-
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Confirm Deletion</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    Are you sure you want to delete this photo?
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="submit" class="btn btn-danger">Yes, Delete</button>
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                                @endforeach
                                 <div class="modal fade" id="addPhotoModal{{ $hotel->id }}" tabindex="-1" aria-labelledby="addPhotoModalLabel" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <form action="{{ route('hotel_photos.store') }}" method="POST" enctype="multipart/form-data">
@@ -246,7 +258,7 @@
                                                     <textarea name="description" class="form-control">{{ $hotel ? $hotel->description : old('description') }}</textarea>
                                                 </div>
                                             </div>
-                                            
+
                                         </div>
                                     </div>
                                     <div class="modal-footer">
@@ -279,7 +291,14 @@
                                             <div id="map" style="height: 300px;"></div>
                                         </div>
                                     </div>
-                                    
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="location" class="form-label">Location</label>
+                                            <br>
+                                            <button type="button" onclick="getLocation()" class="btn btn-secondary">Use My Location</button>
+                                        </div>
+                                    </div>
+
                                 </div>
 
                                 <div class="col-md-6">
@@ -347,13 +366,7 @@
                                                 @enderror
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="location" class="form-label">Location</label>
-                                                <br>
-                                                <button type="button" onclick="getLocation()" class="btn btn-secondary">Use My Location</button>
-                                            </div>
-                                        </div>
+
                                         <div class="col-md-12">
                                             <div id="locationMessage" class="text-success"></div>
                                         </div>
@@ -390,6 +403,39 @@
                                                     <input type="checkbox" class="form-check-input" name="is_adverted" id="is_adverted" value="1" {{ old('is_adverted') ? 'checked' : '' }}>
                                                 </label>
                                             </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="country">Country</label>
+                                                <select class="form-control" name="country" id="country">
+                                                    <option value="">Select Country</option>
+                                                    @foreach($countries as $country)
+                                                    <option value="{{ $country->country_name }}">{{ $country->country_name }}</option>
+                                                    @endforeach
+                                                </select>
+                                              </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="state">State</label>
+                                                <select class="form-control" name="state" id="state">
+                                                    <option value="">Select State</option>
+                                                    @foreach($states as $state)
+                                                    <option value="{{ $state->name }}">{{ $state->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                              </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="city">City</label>
+                                                <select class="form-control" name="city" id="city">
+                                                    <option value="">Select City</option>
+                                                    @foreach($cities as $city)
+                                                    <option value="{{ $city->name }}">{{ $city->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                              </div>
                                         </div>
                                     </div>
                                 </div>
