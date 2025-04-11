@@ -888,12 +888,16 @@ class HotelController extends Controller
     {
         try {
             // Validate the request
-            $request->validate([
-                'check_in' => 'required|date',
+            $validator = Validator::make($request->all(), [
+                'check_in' => 'required|date|after_or_equal:today',
                 'check_out' => 'required|date|after:check_in',
-                'payment_type' => 'required|string',
+                'payment_type' => 'required|string|in:telebirr,CBE',
                 'payment_status' => 'required|string|in:paid,pending',
             ]);
+
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 400);
+            }
 
             // Find the hotel and room
             $hotel = Hotel::findOrFail($hotel_id);
