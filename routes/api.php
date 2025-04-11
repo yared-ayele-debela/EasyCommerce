@@ -209,6 +209,7 @@ Route::get('/hotels/discounted', [HotelController::class, 'getDiscountedHotels']
 Route::get('/hotels/nearby', [HotelController::class, 'getNearbyHotels']);
 Route::get('/hotels/best', [HotelController::class, 'getBestHotels']);
 Route::get('/hotels/search/keyword', [HotelController::class, 'searchHotelsByKeyword']);
+Route::post('/hotels/{hotel_id}/rooms/{room_id}/reserve', [ReservationController::class, 'hotelReservation']);
 
 Route::get('/hotels/banners', [HotelController::class, 'getActiveBanners']);
 Route::get('/hotels/search', [HotelController::class, 'hotelSearch']);

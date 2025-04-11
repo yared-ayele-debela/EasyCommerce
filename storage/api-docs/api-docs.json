@@ -2609,6 +2609,81 @@
                 }
             }
         },
+        "/api/hotels/{hotel_id}/rooms/{room_id}/reserve": {
+            "post": {
+                "tags": [
+                    "Hotel"
+                ],
+                "summary": "Reserve a room in a hotel",
+                "description": "Reserve a room in a hotel after payment is made",
+                "operationId": "f308f90aae7b8093a89c37ab20eb1dc5",
+                "parameters": [
+                    {
+                        "name": "hotel_id",
+                        "in": "path",
+                        "description": "ID of the hotel",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "room_id",
+                        "in": "path",
+                        "description": "ID of the room",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "check_in": {
+                                        "description": "Check-in date",
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "check_out": {
+                                        "description": "Check-out date",
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "payment_type": {
+                                        "description": "Payment type (e.g., credit_card, paypal)",
+                                        "type": "string"
+                                    },
+                                    "payment_status": {
+                                        "description": "Payment status",
+                                        "type": "string",
+                                        "enum": [
+                                            "paid",
+                                            "pending"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Reservation successful"
+                    },
+                    "400": {
+                        "description": "Invalid input or payment not completed"
+                    },
+                    "404": {
+                        "description": "Hotel or room not found"
+                    }
+                }
+            }
+        },
         "/api/hotels/categories": {
             "get": {
                 "tags": [

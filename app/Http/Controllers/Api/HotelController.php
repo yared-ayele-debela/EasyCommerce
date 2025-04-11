@@ -849,7 +849,109 @@ class HotelController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/hotels/{hotel_id}/rooms/{room_id}/reserve",
+     *     tags={"Hotel"},
+     *     summary="Reserve a room in a hotel",
+     *     description="Reserve a room in a hotel after payment is made",
+     *     @OA\Parameter(
+     *         name="hotel_id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the hotel",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="room_id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the room",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="check_in", type="string", format="date", description="Check-in date"),
+     *             @OA\Property(property="check_out", type="string", format="date", description="Check-out date"),
+     *             @OA\Property(property="payment_type", type="string", description="Payment type (e.g., credit_card, paypal)"),
+     *             @OA\Property(property="payment_status", type="string", enum={"paid", "pending"}, description="Payment status")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Reservation successful"),
+     *     @OA\Response(response=400, description="Invalid input or payment not completed"),
+     *     @OA\Response(response=404, description="Hotel or room not found")
+     * )
+     */
+    public function hotelReservation(Request $request, $hotel_id, $room_id)
+    {
+        try {
+            // Validate the request
+            $request->validate([
+                'check_in' => 'required|date',
+                'check_out' => 'required|date|after:check_in',
+                'payment_type' => 'required|string',
+                'payment_status' => 'required|string|in:paid,pending',
+            ]);
 
+            // Find the hotel and room
+            $hotel = Hotel::findOrFail($hotel_id);
+            $room = $hotel->rooms()->findOrFail($room_id);
+
+            // Check if the room is available for the given date range
+            $checkIn = $request->input('check_in');
+            $checkOut = $request->input('check_out');
+            $isAvailable = !Reservation::where('room_id', $room_id)
+                ->where(function ($query) use ($checkIn, $checkOut) {
+                    $query->whereBetween('check_in_date', [$checkIn, $checkOut])
+                        ->orWhereBetween('check_out_date', [$checkIn, $checkOut])
+                        ->orWhere(function ($query) use ($checkIn, $checkOut) {
+                            $query->where('check_in_date', '<=', $checkIn)
+                                  ->where('check_out_date', '>=', $checkOut);
+                        });
+                })
+                ->exists();
+
+            if (!$isAvailable) {
+                return response()->json(['error' => 'Room is not available for the selected dates'], 400);
+            }
+
+            // If payment is pending, initiate payment gateway and return redirect URL
+            if ($request->input('payment_status') === 'pending') {
+                $paymentType = $request->input('payment_type');
+                $paymentGatewayUrl = $this->initiatePaymentGateway($hotel_id, $room_id, $checkIn, $checkOut, $paymentType);
+
+                return response()->json(['message' => 'Payment initiation required', 'redirect_url' => $paymentGatewayUrl], 200);
+            }
+
+            // Ensure payment is completed
+            if ($request->input('payment_status') !== 'paid') {
+                return response()->json(['error' => 'Payment not completed'], 400);
+            }
+
+            // Create the reservation
+            $reservation = Reservation::create([
+                'hotel_id' => $hotel_id,
+                'room_id' => $room_id,
+                'check_in_date' => $checkIn,
+                'check_out_date' => $checkOut,
+                'status' => 'reserved',
+            ]);
+
+            return response()->json(['message' => 'Reservation successful', 'reservation' => $reservation], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to reserve the room'], 500);
+        }
+    }
+
+    private function initiatePaymentGateway($hotel_id, $room_id, $checkIn, $checkOut, $paymentType)
+    {
+        // Simulate payment gateway initiation logic
+        // Replace this with actual payment gateway integration
+        $redirectUrl = "https://payment-gateway.com/pay?hotel_id={$hotel_id}&room_id={$room_id}&check_in={$checkIn}&check_out={$checkOut}&payment_type={$paymentType}";
+        return $redirectUrl;
+    }
     /**
      * @OA\Get(
      *     path="/api/hotels/categories",
