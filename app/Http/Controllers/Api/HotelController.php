@@ -11,6 +11,7 @@ use App\Models\Room;
 use App\Models\Reservation;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @OA\Tag(
@@ -99,7 +100,160 @@ class HotelController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/hotels/{id}",
+     *     path="/api/hotels/discounted",
+     *     tags={"Hotel"},
+     *     summary="Get discounted hotels",
+     *     @OA\Response(response=200, description="List of discounted hotels")
+     * )
+     */
+    public function getDiscountedHotels()
+    {
+        try {
+            $discountedHotels = Hotel::where('discount', '>', 0)->get();
+            return response()->json($discountedHotels);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to retrieve discounted hotels'], 500);
+        }
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/hotels/nearby",
+     *     tags={"Hotel"},
+     *     summary="Get nearby hotels",
+     *     @OA\Parameter(
+     *         name="latitude",
+     *         in="query",
+     *         required=true,
+     *         description="Latitude of the location",
+     *         @OA\Schema(type="number", format="float")
+     *     ),
+     *     @OA\Parameter(
+     *         name="longitude",
+     *         in="query",
+     *         required=true,
+     *         description="Longitude of the location",
+     *         @OA\Schema(type="number", format="float")
+     *     ),
+     *     @OA\Parameter(
+     *         name="radius",
+     *         in="query",
+     *         required=false,
+     *         description="Radius in kilometers to search for hotels",
+     *         @OA\Schema(type="number", format="float", default=10)
+     *     ),
+     *     @OA\Response(response=200, description="List of nearby hotels")
+     * )
+     */
+    public function getNearbyHotels(Request $request)
+    {
+        try {
+            $request->validate([
+                'latitude' => 'required|numeric',
+                'longitude' => 'required|numeric',
+                'radius' => 'nullable|numeric|min:1',
+            ]);
+
+            $latitude = $request->input('latitude');
+            $longitude = $request->input('longitude');
+            $radius = $request->input('radius', 10); // Default radius is 10 km
+
+            // Haversine formula to calculate distance
+            $nearbyHotels = Hotel::selectRaw(
+                "*, (6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) AS distance",
+                [$latitude, $longitude, $latitude]
+            )
+            ->having('distance', '<=', $radius)
+            ->orderBy('distance', 'asc')
+            ->get();
+
+            return response()->json($nearbyHotels);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to fetch nearby hotels'], 500);
+        }
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/hotels/best",
+     *     tags={"Hotel"},
+     *     summary="Get the best hotel",
+     *     description="Retrieve the hotel with the highest rating",
+     *     @OA\Response(response=200, description="Best hotel details"),
+     *     @OA\Response(response=404, description="No hotels found")
+     * )
+     */
+    public function bestHotel()
+    {
+        try {
+            $bestHotel = Hotel::orderBy('rating', 'desc')->first();
+
+            if (!$bestHotel) {
+                return response()->json(['error' => 'No hotels found'], 404);
+            }
+
+            return response()->json($bestHotel);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to retrieve the best hotel'], 500);
+        }
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/hotels/search/keyword",
+     *     tags={"Hotel"},
+     *     summary="Search hotels by keyword",
+     *     @OA\Parameter(
+     *         name="keyword",
+     *         in="query",
+     *         required=true,
+     *         description="Keyword to search hotels (e.g., 'Resort')",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="start",
+     *         in="query",
+     *         required=false,
+     *         description="Start index for pagination",
+     *         @OA\Schema(type="integer", default=0)
+     *     ),
+     *     @OA\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         required=false,
+     *         description="Number of results to fetch",
+     *         @OA\Schema(type="integer", default=10)
+     *     ),
+     *     @OA\Response(response=200, description="List of hotels matching the keyword")
+     * )
+     */
+    public function searchByKeyword(Request $request)
+    {
+        try {
+            $request->validate([
+                'keyword' => 'required|string',
+                'start' => 'nullable|integer|min:0',
+                'limit' => 'nullable|integer|min:1',
+            ]);
+
+            $keyword = $request->input('keyword');
+            $start = $request->input('start', 0);
+            $limit = $request->input('limit', 10);
+
+            $hotels = Hotel::where('name', 'like', "%{$keyword}%")
+                ->orWhere('description', 'like', "%{$keyword}%")
+                ->skip($start)
+                ->take($limit)
+                ->get();
+
+            return response()->json($hotels);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to search hotels by keyword'], 500);
+        }
+    }
+    /**
+     * @OA\Get(
+     *     path="/api/get/hotels/{id}",
      *     tags={"Hotel"},
      *     summary="Get a hotel by ID",
      *     @OA\Parameter(
@@ -115,6 +269,7 @@ class HotelController extends Controller
     public function hotelShow($id)
     {
         try {
+            
             $hotel = Hotel::findOrFail($id);
             return response()->json($hotel);
         } catch (\Exception $e) {
@@ -651,15 +806,17 @@ class HotelController extends Controller
     {
         try {
             $query = Hotel::query();
-
+            
             // Filter by location
             if ($request->has('location')) {
+                
                 $location = $request->input('location');
                 $query->where('location', 'like', "%{$location}%");
             }
-
+            
             // Filter by price range
             if ($request->has('min_price')) {
+                
                 $query->where('price_per_night', '>=', $request->input('min_price'));
             }
             if ($request->has('max_price')) {
@@ -705,7 +862,7 @@ class HotelController extends Controller
     {
         try {
             $categories = HotelCategory::all();
-            return response()->json(['categories' => $categories], Response::HTTP_OK);
+            return response()->json(['categories' => $categories]);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Unable to fetch categories'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -754,9 +911,9 @@ class HotelController extends Controller
     {
         try {
             $locations = Hotel::distinct()->pluck('location');
-            return response()->json(['locations' => $locations], Response::HTTP_OK);
+            return response()->json(['locations' => $locations]);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Unable to fetch locations'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json(['error' => 'Unable to fetch locations']);
         }
     }
 
@@ -778,11 +935,12 @@ class HotelController extends Controller
     public function getHotelsByLocation($location)
     {
         try {
-            $validatedData = request()->validate([
-                'location' => 'required|string|exists:hotels,location'
-            ]);
+            
 
-            $hotels = Hotel::where('location', $validatedData['location'])->get();
+            // $validatedData = request()->validate([
+            //     'location' => 'required'
+            // ]);
+            $hotels = Hotel::where('location', 'like', "%{$location}%")->get();
             return response()->json(['hotels' => $hotels], Response::HTTP_OK);
         } catch (ValidationException $e) {
             return response()->json(['error' => $e->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);

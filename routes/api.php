@@ -191,7 +191,7 @@ Route::middleware('auth:sanctum')->group(function () {
 // ================Hotel=================
 Route::get('hotels', [HotelController::class, 'hotelIndex']);
 Route::post('hotels', [HotelController::class, 'hotelStore']);
-Route::get('hotels/{id}', [HotelController::class, 'hotelShow']);
+Route::get('/get/hotels/{id}', [HotelController::class, 'hotelShow']);
 Route::put('hotels/{id}', [HotelController::class, 'hotelUpdate']);
 Route::delete('hotels/{id}', [HotelController::class, 'hotelDestroy']);
 
@@ -205,7 +205,10 @@ Route::get('hotels/{hotel_id}/rooms/{room_id}/amenities', [HotelController::clas
 Route::get('hotels/{hotel_id}/rooms/{room_id}/similar', [HotelController::class, 'getSimilarRooms']);
 Route::get('hotels/{hotel_id}/rooms/{room_id}/bookings', [HotelController::class, 'getRoomBookings']);
 Route::get('hotels/{hotel_id}/rooms/{room_id}/availability', [HotelController::class, 'checkRoomAvailability']);
-
+Route::get('/hotels/discounted', [HotelController::class, 'getDiscountedHotels']);
+Route::get('/hotels/nearby', [HotelController::class, 'getNearbyHotels']);
+Route::get('/hotels/best', [HotelController::class, 'getBestHotels']);
+Route::get('/hotels/search/keyword', [HotelController::class, 'searchHotelsByKeyword']);
 
 Route::get('/hotels/banners', [HotelController::class, 'getActiveBanners']);
 Route::get('/hotels/search', [HotelController::class, 'hotelSearch']);

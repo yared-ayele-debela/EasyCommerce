@@ -2029,13 +2029,137 @@
                 }
             }
         },
-        "/api/hotels/{id}": {
+        "/api/hotels/discounted": {
+            "get": {
+                "tags": [
+                    "Hotel"
+                ],
+                "summary": "Get discounted hotels",
+                "operationId": "67de9dff658ff4edda027da6facaa91b",
+                "responses": {
+                    "200": {
+                        "description": "List of discounted hotels"
+                    }
+                }
+            }
+        },
+        "/api/hotels/nearby": {
+            "get": {
+                "tags": [
+                    "Hotel"
+                ],
+                "summary": "Get nearby hotels",
+                "operationId": "019a012abfe721b1a707dbea7efcad96",
+                "parameters": [
+                    {
+                        "name": "latitude",
+                        "in": "query",
+                        "description": "Latitude of the location",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    },
+                    {
+                        "name": "longitude",
+                        "in": "query",
+                        "description": "Longitude of the location",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    },
+                    {
+                        "name": "radius",
+                        "in": "query",
+                        "description": "Radius in kilometers to search for hotels",
+                        "required": false,
+                        "schema": {
+                            "type": "number",
+                            "format": "float",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of nearby hotels"
+                    }
+                }
+            }
+        },
+        "/api/hotels/best": {
+            "get": {
+                "tags": [
+                    "Hotel"
+                ],
+                "summary": "Get the best hotel",
+                "description": "Retrieve the hotel with the highest rating",
+                "operationId": "a10cdd189f12e4b5f5f6db54ec112f45",
+                "responses": {
+                    "200": {
+                        "description": "Best hotel details"
+                    },
+                    "404": {
+                        "description": "No hotels found"
+                    }
+                }
+            }
+        },
+        "/api/hotels/search/keyword": {
+            "get": {
+                "tags": [
+                    "Hotel"
+                ],
+                "summary": "Search hotels by keyword",
+                "operationId": "b49e05e0df051d37185306978a1b33ec",
+                "parameters": [
+                    {
+                        "name": "keyword",
+                        "in": "query",
+                        "description": "Keyword to search hotels (e.g., 'Resort')",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "start",
+                        "in": "query",
+                        "description": "Start index for pagination",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 0
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of results to fetch",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of hotels matching the keyword"
+                    }
+                }
+            }
+        },
+        "/api/get/hotels/{id}": {
             "get": {
                 "tags": [
                     "Hotel"
                 ],
                 "summary": "Get a hotel by ID",
-                "operationId": "2e8f8b85907181eacdc208d6c1bd69ee",
+                "operationId": "9caff5a95b8e3cc1eb5b5bc3e84838c3",
                 "parameters": [
                     {
                         "name": "id",
@@ -2052,7 +2176,9 @@
                         "description": "Hotel details"
                     }
                 }
-            },
+            }
+        },
+        "/api/hotels/{id}": {
             "put": {
                 "tags": [
                     "Hotel"
