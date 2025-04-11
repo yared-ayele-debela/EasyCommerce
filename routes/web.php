@@ -109,6 +109,7 @@ use App\Http\Controllers\Front\TrackYourOrderController;
 use App\Http\Controllers\Front\UserController;
 use App\Http\Controllers\Front\VendorController as FrontVendorController;
 use App\Http\Controllers\Hotel\Dashboard\AmenityController;
+use App\Http\Controllers\Hotel\Dashboard\CouponController as DashboardCouponController;
 use App\Http\Controllers\Hotel\Dashboard\DashboardController as DashboardDashboardController;
 use App\Http\Controllers\Hotel\Dashboard\HotelCategoryController;
 use App\Http\Controllers\Hotel\Dashboard\HotelController;
@@ -1096,7 +1097,6 @@ Route::group(['middleware' => ['admin']], function () {
     Route::get('admin/hotel/{id}/toggleFeatured', [HotelController::class, 'toggleFeatured']);
 
     Route::prefix('admin/hotel')->middleware(['admin'])->group(function () {
-
         Route::get('dashboard', [DashboardDashboardController::class, 'index'])
             ->name('hotel.dashboard');
 
@@ -1104,7 +1104,6 @@ Route::group(['middleware' => ['admin']], function () {
         Route::resource('hotel-categories', HotelCategoryController::class);
         Route::post('/hotel-photos', [HotelPhotoController::class, 'store'])->name('hotel_photos.store');
         Route::delete('/hotel-photos/{id}', [HotelPhotoController::class, 'destroy'])->name('hotel_photos.destroy');
-
         Route::get('{id}/reviews', [HotelReviewController::class, 'index'])->name('hotel-reviews.index');
         Route::get('/reservations', [ReservationsController::class, 'index'])->name('reservations.index');
         Route::put('/reservations/{id}/status', [ReservationsController::class, 'updateStatus'])->name('reservations.updateStatus');
@@ -1116,6 +1115,13 @@ Route::group(['middleware' => ['admin']], function () {
         Route::get('my-hotel', [HotelController::class, 'my_hotel'])->name('my-hotel');
 
         Route::resource('/hotel-slider-banners', DashboardSliderBannerController::class);
+
+        Route::get('/coupons', [DashboardCouponController::class, 'index'])->name('hotel.coupon.index');
+        Route::post('/coupons', [DashboardCouponController::class, 'store'])->name('hotel.coupon.store');
+        Route::put('/coupons/{coupon}', [DashboardCouponController::class, 'update'])->name('hotel.coupon.update');
+        Route::delete('/coupons/{coupon}', [DashboardCouponController::class, 'destroy'])->name('hotel.coupon.destroy');
+
+
     });
 });
 
@@ -1239,9 +1245,11 @@ Route::prefix('/hotel')->group(function () {
     Route::post('/check-availability', [BookingController::class, 'checkAvailability'])->name('check.availability');
 
     Route::middleware('auth')->group(function () {
+        Route::post('/reservation/preview', [ReservationController::class, 'preview'])->name('reservation.preview');
+        Route::post('/apply-coupon', [ReservationController::class, 'apply'])->name('hotel.coupons.apply');
+
         Route::post('/reserve', [ReservationController::class, 'store'])->name('reservation.store');
         Route::get('/reservation/confirmation', [ReservationController::class, 'confirmation'])->name('reservation.confirmation');
-
         Route::get('my-reservation',[ReservationController::class, 'my_reservation'])->name('my.reservation');
     });
 

@@ -19,12 +19,23 @@
                 </ul>
             </li>
             {{-- @endif --}}
-           {{-- @if ($user && $user->hasPermissionByRole('view_product')) --}}
+
+            {{-- @if ($user && $user->hasPermissionByRole('view_product')) --}}
             <li class="  {{ request()->is('admin/hotel/amenities')?'nav-item active':'' }}">
                 <a class="nav-link {{request()->is('admin/hotel/amenities')}}" data-bs-target="#amenities-nav" data-bs-toggle="collapse" href="javascripit:void(0);" aria-expanded="false"> <i class="bi bi-command"></i><span>Amenities Managements</span><i class="bi bi-chevron-down  ms-auto"></i> </a>
                 <ul id="amenities-nav" class="nav-content collapse  {{ request()->is('admin/hotel/amenities')?'show':'' }} " data-bs-parent="" style="">
                     {{-- @if ($user && $user->hasPermissionByRole('view_product')) --}}
                     <li> <a href="{{ route('amenities.index') }}" class=" {{ request()->is('admin/hotel/amenities')?' nav-link active':'' }}"> <i class="bi bi-circle"></i><span>List of Amenities</span> </a></li>
+                    {{-- @endif --}}
+                </ul>
+            </li>
+            {{-- @endif --}}
+            {{-- @if ($user && $user->hasPermissionByRole('view_product')) --}}
+            <li class="  {{ request()->is('admin/hotel/coupons')?'nav-item active':'' }}">
+                <a class="nav-link {{request()->is('admin/hotel/coupons')}}" data-bs-target="#coupons-nav" data-bs-toggle="collapse" href="javascripit:void(0);" aria-expanded="false"> <i class="bi bi-cart-dash"></i><span>Coupon Managements</span><i class="bi bi-chevron-down  ms-auto"></i> </a>
+                <ul id="coupons-nav" class="nav-content collapse  {{ request()->is('admin/hotel/coupons')?'show':'' }} " data-bs-parent="" style="">
+                    {{-- @if ($user && $user->hasPermissionByRole('view_product')) --}}
+                    <li> <a href="{{ route('hotel.coupon.index') }}" class=" {{ request()->is('admin/hotel/coupons')?' nav-link active':'' }}"> <i class="bi bi-circle"></i><span>List of Coupons</span> </a></li>
                     {{-- @endif --}}
                 </ul>
             </li>

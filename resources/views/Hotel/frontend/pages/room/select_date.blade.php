@@ -164,7 +164,7 @@
             </div>
         </div>
     </div>
-    <form action="{{ route('reservation.store') }}" method="POST">
+    <form action="{{ route('reservation.preview') }}" method="POST">
         @csrf
     <div class="row gy-4">
 
@@ -227,9 +227,9 @@
                             <small class="text-muted">Age 14 Or Above</small>
                         </div>
                         <div class="guest-controls">
-                            <button class="btn-minus" onclick="changeCount('adult', -1)">−</button>
+                            <button type="button" class="btn-minus" onclick="changeCount('adult', -1)">−</button>
                             <input type="number" max="{{ $room->total_adult }}" class="count-input"  name="total_adult" id="adult-count" value="1" min="0">
-                            <button class="btn-plus" onclick="changeCount('adult', 1)">+</button>
+                            <button type="button" class="btn-plus" onclick="changeCount('adult', 1)">+</button>
                         </div>
                         @error('total_adult')
                             <span class="text-danger">{{ $message }}</span>
@@ -242,9 +242,9 @@
                             <small class="text-muted">Age 2-13</small>
                         </div>
                         <div class="guest-controls">
-                            <button class="btn-minus" onclick="changeCount('child', -1)">−</button>
+                            <button type="button" class="btn-minus" onclick="changeCount('child', -1)">−</button>
                             <input type="number" max="{{ $room->total_child }}" class="count-input"  name="total_child" id="child-count" value="0" min="0">
-                            <button class="btn-plus" onclick="changeCount('child', 1)">+</button>
+                            <button type="button" class="btn-plus" onclick="changeCount('child', 1)">+</button>
                         </div>
                         @error('total_child')
                             <span class="text-danger">{{ $message }}</span>
@@ -258,9 +258,9 @@
                             <small class="text-muted">Under 2</small>
                         </div>
                         <div class="guest-controls">
-                            <button class="btn-minus" onclick="changeCount('infant', -1)">−</button>
+                            <button type="button" class="btn-minus" onclick="changeCount('infant', -1)">−</button>
                             <input type="number" max="{{ $room->total_infant }}" class="count-input" name="total_infant" id="infant-count" value="0" min="0">
-                            <button class="btn-plus" onclick="changeCount('infant', 1)">+</button>
+                            <button type="button" class="btn-plus" onclick="changeCount('infant', 1)">+</button>
                         </div>
                         @error('total_infant')
                             <span class="text-danger">{{ $message }}</span>

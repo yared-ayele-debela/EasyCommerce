@@ -15,7 +15,7 @@
                     <p class="text-center text-muted">Thank you for choosing our services. You can check your reservation status anytime.</p>
                     <!-- Action Buttons -->
                     <div class="d-flex justify-content-center mt-4">
-                        <a href="" class="btn btn-primary shadow-sm rounded rounded-1">
+                        <a href="{{ route('my.reservation') }}" class="btn btn-primary shadow-sm rounded rounded-1">
                             <i class="bi bi-eye"></i> Check Reservation Status
                         </a>
                     </div>

@@ -30,10 +30,13 @@
                             <th>Room</th>
                             <th>Check-in Date</th>
                             <th>Check-out Date</th>
-                            <th>Total Price</th>
+                            <th>Amount</th>
+                            <th>Discount Amount</th>
+                            <th>Total Amount</th>
+                            <th>Other Info</th>
                             <th>Reservation Status</th>
                             <th>Payment Status</th>
-                            <th>Payment Status</th>
+                            <th>Payment Detail</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -43,7 +46,7 @@
                             <td>{{ $reservation->id }}</td>
                             <td>
                                 <!-- Button trigger modal -->
-                                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modelId{{ $reservation->id }}">
+                                <button type="button" class="btn btn-primary btn-sm" style="font-size: 12px;" data-toggle="modal" data-target="#modelId{{ $reservation->id }}">
                                     View Customer
                                 </button>
 
@@ -80,7 +83,7 @@
                                 </div>
                             </td>
                             <td>
-                                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#Hotel{{ $reservation->id }}">
+                                <button type="button" style="font-size: 12px;" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#Hotel{{ $reservation->id }}">
                                     View Hotel Detail
                                 </button>
 
@@ -117,7 +120,7 @@
                             </td>
                             <td>
                                 @if($reservation->room)
-                                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#Room{{ $reservation->id }}">
+                                <button type="button" style="font-size: 12px;" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#Room{{ $reservation->id }}">
                                     View Room Detail
                                 </button>
 
@@ -148,6 +151,40 @@
                             <td>{{ $reservation->check_in_date }}</td>
                             <td>{{ $reservation->check_out_date }}</td>
                             <td>{{ number_format($reservation->total_price, 2) }} ETB</td>
+                            <td>{{ number_format($reservation->discount_amount, 2) }} ETB</td>
+                            <td>{{ number_format($reservation->final_price, 2) }} ETB</td>
+                            <td>
+                                <!-- Button trigger modal -->
+                                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#otherInfo{{ $reservation->id }}">
+                                  View Detail
+                                </button>
+
+                                <!-- Modal -->
+                                <div class="modal fade" id="otherInfo{{ $reservation->id }}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Other information</h5>
+                                                    <button type="button" class="close btn" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                            </div>
+                                            <div class="modal-body">
+                                             <p class="card-text">
+                                                <strong>Number of Guests :</strong> {{ $reservation->total_adult + $reservation->total_child + $reservation->total_infant }} <br>
+                                                {{ $reservation->total_adult }} adult, {{ $reservation->total_child }} child, {{ $reservation->total_infant }} Infant
+                                             </p>
+                                             <p class="card-text">
+                                               Reserved days {{ $reservation->total_night }}
+                                             </p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
                             <td>
                                 <span class="btn btn-sm @if($reservation->status == 'Pending') btn-warning
                                 @elseif($reservation->status == 'Confirmed') btn-info
@@ -260,7 +297,12 @@
                                             </div>
                                             <div class="modal-body">
                                                 <p>Receipt:</p>
+                                                @if($reservation->hotel_reservation_payment_info->receipt)
+                                                <img src="{{ asset('storage/'.$reservation->hotel_reservation_payment_info->receipt) }}"  class="img-fluid" alt="{{ $reservation->hotel_reservation_payment_info->bank_name }}">
+                                                @else
                                                 <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid" alt="{{ $reservation->hotel_reservation_payment_info->bank_name }}">
+                                                @endif
+                                                {{-- <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid" alt="{{ $reservation->hotel_reservation_payment_info->bank_name }}"> --}}
                                                 <p class="card-text"><strong>Bank Name :</strong> {{ $reservation->hotel_reservation_payment_info->bank_name }}</p>
                                                 <p class="card-text"><strong>Transaction Number :</strong> <strong>{{ $reservation->hotel_reservation_payment_info->transaction_number }}</strong></p>
                                                 <p class="card-text"><strong>Amount Paid :</strong> {{ $reservation->hotel_reservation_payment_info->amount_paid }} ETB</p>
@@ -273,7 +315,7 @@
                                     </div>
                                 </div>
                                 @else
-                                <span class="btn btn-sm btn-danger">Unpaid</span>
+
                                 @endif
                             </td>
                             <td>
