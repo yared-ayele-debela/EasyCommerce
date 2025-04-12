@@ -59,18 +59,40 @@
                             </div>
                         </td>
                         <td>
-                            @foreach ($room->amenities as $key => $am)
+                           <!-- Button trigger modal -->
+                           <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#Amenities{{ $room->id }}">
+                             view Amenities
+                           </button>
 
-                            <a href="javascript:void(0);" class="mb-1 rounded rounded-3 btn-outline-primary list-inline-item">
-                                @php $icon = optional($am)->icon; @endphp
-                                @if($icon && Storage::exists('public/' . $icon))
-                                <img src="{{ asset('storage/' . $icon) }}" alt="{{ $am->name }}" width="24" height="24">
-                                @else
-                                <img src="{{ asset('restaurant_frontend/default-image.png') }}" alt="{{ $am->name }}" width="24" height="24">
-                                @endif
-                                <small>{{ $am->name }}</small>
-                            </a>
-                            @endforeach
+                           <div class="modal fade" id="Amenities{{ $room->id }}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Amenities</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        @foreach ($room->amenities as $key => $am)
+
+                                        <a href="javascript:void(0);" class="mb-1 rounded rounded-3 btn-outline-primary list-inline-item">
+                                            @php $icon = optional($am)->icon; @endphp
+                                            @if($icon && Storage::exists('public/' . $icon))
+                                            <img src="{{ asset('storage/' . $icon) }}" alt="{{ $am->name }}" width="24" height="24">
+                                            @else
+                                            <img src="{{ asset('restaurant_frontend/default-image.png') }}" alt="{{ $am->name }}" width="24" height="24">
+                                            @endif
+                                            <small>{{ $am->name }}</small>
+                                        </a>
+                                        @endforeach
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                           </div>
                         </td>
                         <td>
                             @if($room->cover_image)
@@ -78,9 +100,32 @@
                             @endif
                         </td>
                         <td>
-                            @foreach($room->images as $img)
-                            <img src="{{ asset('storage/'.$img->image_path) }}" width="50" height="50">
-                            @endforeach
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#imageGallery{{ $room->id }}">
+                              View images
+                            </button>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="imageGallery{{ $room->id }}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Images Gallery</h5>
+                                                <button type="button" class="close btn" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            @foreach($room->images as $img)
+                                             <img src="{{ asset('storage/'.$img->image_path) }}" width="50" height="50" class="mb-2">
+                                            @endforeach
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </td>
                         <td>
                             <button class="btn btn-sm btn-warning edit-btn" data-id="{{ $room->id }}" data-room_type="{{ $room->room_type }}" data-capacity="{{ $room->capacity }}" data-price="{{ $room->price }}" data-is_available="{{ $room->is_available }}" data-hotel_id="{{ $room->hotel_id }}" data-bs-toggle="modal" data-bs-target="#editRoomModal{{ $room->id }}"><i class="bi bi-pencil-square"></i>

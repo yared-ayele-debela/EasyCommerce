@@ -94,7 +94,13 @@
             text-align: left;
             font-size: 1.2rem;
             font-weight: bold;
-            margin-top: 20px;
+            margin-top: 10px;
+        }
+        .totals {
+            text-align: left;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-top: 5px;
         }
 
         .date {
@@ -137,11 +143,21 @@
                 <p><strong>Reservation Date:</strong> {{ $reservation->created_at->format('F d, Y') }}</p>
                 <p><strong>Check in Date:</strong> {{ $reservation->check_in_date }}</p>
                 <p><strong>Check out Date:</strong> {{ $reservation->check_out_date }}</p>
+                <p><strong>Reserved days:</strong> {{ $reservation->total_night }}</p>
+                @if($reservation->total_adult > 0)
+                <p><strong>Total Adults:</strong> {{ $reservation->total_adult }}</p>
+                @endif
+                @if($reservation->total_child > 0)
+                <p><strong>Total Childern:</strong> {{ $reservation->total_child }}</p>
+                @endif
+                @if($reservation->total_infant > 0)
+                <p><strong>Total Infants:</strong> {{ $reservation->total_infant }}</p>
+                @endif
                 <p><strong>Status:</strong> {{ $reservation->status }}</p>
             </div>
 
             <div class="info-box">
-                <h4 class="section-title">📍 Customer Address</h4>
+                <h4 class="section-title"><i class="bi bi-pin-map-fill"></i> Customer Address</h4>
                 <p><strong>Address:</strong> {{ $reservation->user->address ?? '-' }}</p>
                 <p><strong>City:</strong> {{ $reservation->user->city ?? '-' }}</p>
                 <p><strong>State:</strong> {{ $reservation->user->state ?? '-' }}</p>
@@ -164,7 +180,10 @@
             </div>
         </div>
         <hr>
-        <p class="total">Total: {{ number_format($reservation->total_price, 2) }} ETB</p>
+        <p class="totals">Final Price: {{ number_format($reservation->total_price, 2) }} ETB</p>
+        <p class="totals">Discount Amount: {{ number_format($reservation->discount_amount, 2) }} ETB</p>
+        <hr>
+        <p class="total">Total: {{ number_format($reservation->final_price, 2) }} ETB</p>
         <p class="date"><small class="font-italic float-right">Date: {{ $reservation->created_at->format('F d, Y') }}</small></p>
     </div>
     <script>

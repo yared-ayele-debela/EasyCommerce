@@ -11,6 +11,7 @@ use App\Models\Room;
 use App\Models\State;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class HotelController extends Controller
 {
@@ -24,7 +25,6 @@ class HotelController extends Controller
         }catch(Exception $e){
             return redirect()->back();
         }
-
     }
     public function gallery($id){
         try{
@@ -62,6 +62,38 @@ class HotelController extends Controller
 
         return view('Hotel.frontend.pages.hotel.search',compact('cities','countries','states','categories'));
     }
+
+    public function nearby()
+    {
+        return view('Hotel.frontend.pages.hotel.nearby');
+    }
+    public function getNearbyHotels(Request $request)
+{
+    $latitude = $request->lat;
+    $longitude = $request->lng;
+    $radius = 30; // km
+
+    $hotels = Hotel::select('*', DB::raw("
+        (6371 * acos(
+            cos(radians($latitude)) *
+            cos(radians(latitude)) *
+            cos(radians(longitude) - radians($longitude)) +
+            sin(radians($latitude)) *
+            sin(radians(latitude))
+        )) AS distance
+    "))
+    ->having('distance', '<=', $radius)
+    ->orderBy('distance')
+    ->where('is_active', true)
+    ->take(8)
+    ->get();
+
+    // Render partial blade view and return as HTML
+    $html = view('Hotel.frontend.pages.hotel.partials.nearby-hotels', compact('hotels'))->render();
+
+    return response()->json(['html' => $html]);
+ }
+
 
     public function filter(Request $request)
     {

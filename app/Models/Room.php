@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Hotel\RoomRating;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -42,6 +43,10 @@ class Room extends Model
     public function amenities()
     {
         return $this->belongsToMany(Amenity::class, 'room_amenities', 'rooms_id', 'amenity_id');
+    }
+    public function rating()
+    {
+        return $this->hasMany(HotelReview::class,'room_id');
     }
 
 }

@@ -326,7 +326,7 @@
                                 </form>
                                 <form action="{{ route('reservations.receipt') }}" method="GET" target="_blank">
                                     @csrf
-                                    <input type="hidden" name="id" value="{{ $reservation->id }}">
+                                    <input type="hidden" name="id" value="{{ encrypt( $reservation->id) }}">
                                     <button type="submit" class="btn btn-secondary btn-sm "><i class="bi bi-printer-fill"></i></button>
                                 </form>
                             </td>

@@ -67,8 +67,10 @@ class ReservationsController extends Controller
         return redirect()->route('reservations.index')->with('success', 'Reservation deleted successfully');
     }
     public function receipt(Request $request)
+
     {
-        $reservation = Reservation::with('user', 'hotel', 'room')->where('id', $request->id)->first();
+        $id=decrypt($request->id);
+        $reservation = Reservation::with('user', 'hotel', 'room')->where('id', $id)->first();
 
         return view('Hotel.dashboard.reservations.receipt', compact('reservation'));
     }

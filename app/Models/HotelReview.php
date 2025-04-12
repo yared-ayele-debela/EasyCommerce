@@ -9,7 +9,7 @@ class HotelReview extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['hotel_id','room_id', 'user_id', 'rating', 'comment'];
+    protected $fillable = ['hotel_id','room_id', 'user_id', 'rating', 'review'];
 
     public function hotel()
     {

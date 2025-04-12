@@ -122,15 +122,15 @@
                         @php
                         $count= \App\Models\Restaurant\ProductRating::where('product_id', $product->id)->count();
                         @endphp
-                        Customer Feedback ({{ $count? $count:'0' }})
+                        Customer Reviews  ({{ $count? $count:'0' }})
                     </a>
                 </p>
                 <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#ratingModal">
-                    Rate this Product
+                    Leave a Review
                 </button>
             </div>
             @include('Restaurant.frontend.pages.products.rate')
-            <div class="collapse mb-2" id="RestaurantRating">
+            <div class="collapse mb-2 show" id="RestaurantRating">
                 <div class="overflow-auto" style="white-space: nowrap;">
                     <div class="d-flex gap-3" style="overflow-x: auto; scrollbar-width: thin;">
                         @foreach ($product->ratings as $rating)

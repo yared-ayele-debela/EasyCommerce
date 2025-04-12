@@ -38,7 +38,7 @@
                     </div>
                      <!-- Add a rating button here -->
                     <button class="btn btn-outline-primary mt-3" data-bs-toggle="modal" data-bs-target="#ratingModal">
-                        Rate this Restaurant
+                       Leave a Review
                     </button>
                     @include('Restaurant.frontend.pages.restaurants.rating_modal')
                 </div>
@@ -84,12 +84,12 @@
                     Customer Feedback ({{ $count? $count:'0' }})
                 </a>
               </p>
-              <div class="collapse mb-2" id="RestaurantDescription">
+              <div class="collapse mb-2 show" id="RestaurantDescription">
                 <div class="offer-card card-body">
                   {{ $restaurant->description }}
                 </div>
               </div>
-              <div class="collapse mb-2" id="RestaurantRating">
+              <div class="collapse mb-2 show" id="RestaurantRating">
                 <div class="overflow-auto m-1" style="white-space: nowrap;">
                     <div class="d-flex gap-3" style="overflow-x: auto; scrollbar-width: thin;">
                         @foreach ($restaurant->ratings as $rating)

@@ -167,7 +167,8 @@
                         <!-- Edit Modal -->
                         <div class="modal fade " id="editHotelModal{{ $hotel->id }}" tabindex="-1">
                             <div class="modal-dialog bg-white modal-fullscreen modal-dialog-scrollable">
-                                <form method="POST" action="{{ route('hotels.update', $hotel->id) }}" enctype="multipart/form-data" class="modal-content">
+                                <div class="modal-content shadow-lg border-0 rounded-4">
+                                <form method="POST" action="{{ route('hotels.update', $hotel->id) }}" enctype="multipart/form-data">
                                     @csrf @method('PUT')
                                     <div class="modal-header">
                                         <h5 class="modal-title">Edit Hotel</h5>
@@ -226,7 +227,7 @@
                                             <div class="col-md-4">
                                                 <div class="mb-3">
                                                     <label for="latitudes" class="form-label">Latitude</label>
-                                                    <input type="text" id="latitudes" name="latitude" class="form-control" placeholder="Enter Latitude" required>
+                                                    <input type="text" id="latitudes" name="latitude" class="form-control" value="{{ $hotel->latitude }}" placeholder="Enter Latitude" required>
                                                     @error('latitude')
                                                     <small class="text-danger">{{ $message }}</small>
                                                     @enderror
@@ -235,7 +236,7 @@
                                             <div class="col-md-4">
                                                 <div class="mb-3">
                                                     <label for="longitudes" class="form-label">Longitude</label>
-                                                    <input type="text" id="longitudes" name="longitude" class="form-control" placeholder="Enter Longitude" required>
+                                                    <input type="text" id="longitudes" name="longitude" class="form-control" value="{{ $hotel->longitude }}" placeholder="Enter Longitude" required>
                                                     @error('longitude')
                                                     <small class="text-danger">{{ $message }}</small>
                                                     @enderror
@@ -248,9 +249,15 @@
                                                     <button type="button" onclick="getLocation()" class="btn btn-secondary">Use My Location</button>
                                                 </div>
                                             </div>
+                                            <div class="col-md-12">
+                                                <div class="mb-3">
+                                                    <label for="map{{ $hotel->id }}">Select Location on Map</label>
+                                                    <div id="map{{ $hotel->id }}" style="height: 300px;"></div>
+                                                </div>
+                                            </div>
 
                                             <div class="col-md-12">
-                                                <div id="locationMessage" class="text-success"></div>
+                                                <div id="locationMessages" class="text-success"></div>
                                             </div>
                                             <div class="col-md-12">
                                                 <div class="mb-2">
@@ -266,6 +273,7 @@
                                         <button class="btn btn-success">Update</button>
                                     </div>
                                 </form>
+                                </div>
                             </div>
                         </div>
                         @endforeach
@@ -463,6 +471,9 @@
                     document.getElementById('latitude').value = position.coords.latitude;
                     document.getElementById('longitude').value = position.coords.longitude;
                     document.getElementById('locationMessage').innerText = "Location captured!";
+                    document.getElementById('latitudes').value = position.coords.latitude;
+                    document.getElementById('longitudes').value = position.coords.longitude;
+                    document.getElementById('locationMessages').innerText = "Location captured!";
                 }
                 , function(error) {
                     document.getElementById('locationMessage').innerText = "Error: Unable to retrieve location.";
@@ -473,22 +484,7 @@
         }
     }
 
-    function getLocations() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                function(position) {
-                    document.getElementById('latitudes').value = position.coords.latitude;
-                    document.getElementById('longitudes').value = position.coords.longitude;
-                    document.getElementById('locationMessages').innerText = "Location captured!";
-                }
-                , function(error) {
-                    document.getElementById('locationMessages').innerText = "Error: Unable to retrieve location.";
-                }
-            );
-        } else {
-            document.getElementById('locationMessage').innerText = "Geolocation is not supported by this browser.";
-        }
-    }
+
     document.addEventListener("DOMContentLoaded", function() {
         // Default location: Addis Ababa, Ethiopia
         var defaultLat = 9.03;
@@ -510,10 +506,11 @@
         function updateCoordinates(lat, lng) {
             document.getElementById('latitude').value = lat;
             document.getElementById('longitude').value = lng;
+            document.getElementById('latitudes').value = lat;
+            document.getElementById('longitudes').value = lng;
             document.getElementById('locationMessage').innerText = `Selected: ${lat}, ${lng}`;
         }
 
-        // Set default coordinates
         updateCoordinates(defaultLat, defaultLng);
 
         // Update coordinates when clicking on the map
@@ -535,6 +532,7 @@
             }
         });
 
+       
         // Update coordinates when dragging marker
         marker.on('dragend', function(e) {
             var position = marker.getLatLng();
@@ -564,6 +562,6 @@
             });
         });
     });
-
 </script>
+
 @endsection

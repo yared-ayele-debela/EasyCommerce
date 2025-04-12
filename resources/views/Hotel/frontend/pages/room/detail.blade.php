@@ -39,7 +39,7 @@
             </div>
         </div>
         @foreach($room->images as $img)
-        <div class="col-md-4 offer-card py-2">
+        <div class="col-md-4 offer-card py-2 mr-1">
             <img src="{{ asset('storage/'.$img->image_path) }}" class=" img-fluid rounded rounded-3">
         </div>
         @endforeach
@@ -84,6 +84,43 @@
                     </div>
                 </div>
             @endforeach
+        </div>
+    </div>
+    <div class="my-2">
+        <div class="row d-flex justify-content-between align-items-center mb-2">
+            <div class="col-md-4 col-7">
+                <h5 class="text-dark mb-3">Customer Reviews ({{ $room->rating->count() }})</h5>
+             </div>
+             <div class="col-md-8 col-5 text-end">
+                @if(Auth::check() && $is_reserved)
+                <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#ratingModal">
+                    Leave a Review
+               </button>
+               @endif
+             </div>
+        </div>
+        @if(Auth::check() && $is_reserved)
+        @include('Hotel.frontend.pages.room.rating')
+        @endif
+        <div class="overflow-auto" style="white-space: nowrap;">
+            <div class="d-flex gap-3" style="overflow-x: auto; scrollbar-width: thin;">
+                @foreach ($room->rating as $rating)
+                <div class="offer-card shadow p-3 text-left mb-2" style="min-width: 300px;">
+                    <span class="font-italic">Name: {{ $rating->user->name }}</span>
+                    <br>
+                    <span class="fst-italic">Comment: {{ $rating->review }}</span>
+                    <br>
+                    <span>
+                        @for ($i = 1; $i <= 5; $i++) @if ($i <=$rating->rating)
+                            <i class="bi bi-star-fill text-primary"></i>
+                            @else
+                            <i class="bi bi-star text-primary"></i>
+                            @endif
+                        @endfor
+                    </span>
+                </div>
+                @endforeach
+            </div>
         </div>
     </div>
 

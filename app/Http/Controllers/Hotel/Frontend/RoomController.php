@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Hotel\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Amenity;
+use App\Models\HotelReview;
+use App\Models\Reservation;
 use App\Models\Room;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RoomController extends Controller
 {
@@ -13,9 +16,35 @@ class RoomController extends Controller
     public function index($id){
 
 
-        $room=Room::with('images','amenities','hotel')->findOrFail($id);
-        return view('Hotel.frontend.pages.room.detail',compact('room'));
+        $room=Room::with('images','amenities','hotel','rating')->findOrFail($id);
+        $is_reserved = false;
+        $user= Reservation::where('room_id',$id)->where('user_id',auth()->user()->id)->first();
+        if($user){
+            $is_reserved = true;
+        }
+        // dd($room);
+        return view('Hotel.frontend.pages.room.detail',compact('room','is_reserved'));
     }
+
+    public function room_rating_store(Request $request)
+    {
+        if (!Auth::check()) {
+            return response()->json(['status' => 'error', 'message' => 'Please log in first!'], 401);
+        }
+        $request->validate([
+            'hotel_id' => 'required|exists:hotels,id',
+            'room_id' => 'required|exists:rooms,id',
+            'rating' => 'required|integer|min:1|max:5',
+            'review'=> 'required'
+        ]);
+        // Save or update the user's rating
+        HotelReview::updateOrCreate(
+            ['user_id' => Auth::id(), 'hotel_id' => $request->hotel_id, 'room_id' => $request->room_id],
+            ['rating' => $request->rating, 'review' => $request->review]
+        );
+        return response()->json(['status' => 'success', 'message' => 'Rating submitted successfully!']);
+    }
+
 
     public function indexs()
     {

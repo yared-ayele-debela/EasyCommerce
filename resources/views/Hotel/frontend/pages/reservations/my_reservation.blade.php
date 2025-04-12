@@ -58,10 +58,16 @@
                         </div>
                         <div class="card-footer d-flex justify-content-between align-items-center">
                         @if($reservation->hotel_reservation_payment_info)
-                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#Reservation{{ $reservation->id }}">
-                            <i class="bi bi-eye-fill"></i> Payment information
-                        </button>
-
+                        <div class="d-flex justify-content-around align-items-center">
+                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#Reservation{{ $reservation->id }}">
+                                <i class="bi bi-eye-fill"></i> Payment information
+                            </button> &nbsp;
+                            <form action="{{ route('reservations.receipt') }}" method="GET" target="_blank">
+                                @csrf
+                                <input type="hidden" name="id" value="{{ encrypt($reservation->id) }}">
+                                <button type="submit" class="btn btn-outline-secondary btn-sm "><i class="bi bi-printer-fill"></i></button>
+                            </form>
+                        </div>
                         <div class="modal fade" id="Reservation{{ $reservation->id }}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
@@ -91,6 +97,7 @@
                         </div>
                         @else
                         @endif
+
                         <a href="{{ url('hotel/'.$reservation->hotel->id.'/detail') }}" class="btn btn-sm btn-primary">
                             View Hotel
                         </a>

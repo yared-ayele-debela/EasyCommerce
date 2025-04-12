@@ -1109,7 +1109,6 @@ Route::group(['middleware' => ['admin']], function () {
         Route::put('/reservations/{id}/status', [ReservationsController::class, 'updateStatus'])->name('reservations.updateStatus');
         Route::put('/reservations/{id}/payment_status', [ReservationsController::class, 'updatePaymentStatus'])->name('reservations.updatePaymentStatus');
         Route::delete('/reservations/{id}', [ReservationsController::class, 'destroy'])->name('reservations.destroy');
-        Route::get('/reservations/receipt', [ReservationsController::class, 'receipt'])->name('reservations.receipt');
 
         Route::resource('rooms', RoomController::class);
         Route::get('my-hotel', [HotelController::class, 'my_hotel'])->name('my-hotel');
@@ -1120,7 +1119,6 @@ Route::group(['middleware' => ['admin']], function () {
         Route::post('/coupons', [DashboardCouponController::class, 'store'])->name('hotel.coupon.store');
         Route::put('/coupons/{coupon}', [DashboardCouponController::class, 'update'])->name('hotel.coupon.update');
         Route::delete('/coupons/{coupon}', [DashboardCouponController::class, 'destroy'])->name('hotel.coupon.destroy');
-
 
     });
 });
@@ -1251,9 +1249,15 @@ Route::prefix('/hotel')->group(function () {
         Route::post('/reserve', [ReservationController::class, 'store'])->name('reservation.store');
         Route::get('/reservation/confirmation', [ReservationController::class, 'confirmation'])->name('reservation.confirmation');
         Route::get('my-reservation',[ReservationController::class, 'my_reservation'])->name('my.reservation');
+
+        Route::post('/rate-hotel-room', [FrontendRoomController::class, 'room_rating_store'])->name('hotel.room.rate');
     });
+
+    Route::get('/reservations/receipt', [ReservationsController::class, 'receipt'])->name('reservations.receipt');
 
 });
 
 Route::get('hotels',[FrontendHotelController::class,'latest'])->name('hotels');
+Route::get('nearby-hotels',[FrontendHotelController::class,'nearby'])->name('nearby.hotels');
 Route::get('/hotels/filter', [FrontendHotelController::class, 'filter'])->name('hotels.filter');
+Route::get('/get-nearby-hotels', [FrontendHotelController::class, 'getNearbyHotels']);
