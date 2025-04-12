@@ -992,11 +992,8 @@ class HotelController extends Controller
     public function getHotelsByCategory($category_id)
     {
         try {
-            $validatedData = request()->validate([
-                'category_id' => 'required|integer|exists:categories,id'
-            ]);
-
-            $hotels = Hotel::where('category_id', $validatedData['category_id'])->get();
+           
+            $hotels = Hotel::where('category_id', $category_id)->get();
             return response()->json(['hotels' => $hotels], Response::HTTP_OK);
         } catch (ValidationException $e) {
             return response()->json(['error' => $e->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
