@@ -2389,6 +2389,31 @@
                 }
             }
         },
+        "/api/hotels/{hotel_id}/gallery": {
+            "get": {
+                "tags": [
+                    "Hotel"
+                ],
+                "summary": "Get hotel gallery images",
+                "operationId": "af020a7b637151000402173e3a628261",
+                "parameters": [
+                    {
+                        "name": "hotel_id",
+                        "in": "path",
+                        "description": "ID of the hotel",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of hotel gallery images"
+                    }
+                }
+            }
+        },
         "/api/hotels/{hotel_id}/rooms/{room_id}/photos": {
             "get": {
                 "tags": [

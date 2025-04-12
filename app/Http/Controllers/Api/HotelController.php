@@ -556,6 +556,35 @@ class HotelController extends Controller
             return response()->json(['error' => 'Failed to check room availability'], 500);
         }
     }
+    /**
+     * @OA\Get(
+     *     path="/api/hotels/{hotel_id}/gallery",
+     *     tags={"Hotel"},
+     *     summary="Get hotel gallery images",
+     *     @OA\Parameter(
+     *         name="hotel_id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the hotel",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="List of hotel gallery images")
+     * )
+     */
+    public function getHotelGallery($hotel_id)
+    {
+        try {
+            // Find the hotel by ID
+            $hotel = Hotel::findOrFail($hotel_id);
+
+            // Retrieve gallery images associated with the hotel
+            $galleryImages = HotelPhoto::where('hotel_id', $hotel_id)->get();
+
+            return response()->json(['gallery' => $galleryImages]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to retrieve hotel gallery images'], 500);
+        }
+    }
 
 
     /**
@@ -589,12 +618,12 @@ class HotelController extends Controller
             // Check if the room belongs to the hotel
             $room = $hotel->rooms()->findOrFail($room_id);
 
-            // Retrieve photos associated with the hotel
-            $photos = HotelPhoto::where('hotel_id', $hotel_id)->get();
+            // Retrieve photos associated with the room
+            $photos = $room->photos()->get();
 
             return response()->json($photos);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to retrieve hotel photos'], 500);
+            return response()->json(['error' => 'Failed to retrieve room photos'], 500);
         }
     }
 
