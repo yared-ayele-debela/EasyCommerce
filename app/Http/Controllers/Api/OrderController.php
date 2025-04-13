@@ -23,7 +23,6 @@ class OrderController extends Controller
      *     path="/api/orders",
      *     tags={"Orders"},
      *     summary="Get list of orders",
-     *     security={{"sanctum":{}}},
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation"
@@ -67,7 +66,7 @@ class OrderController extends Controller
      *     )
      * )
      */
-    public function detail($id)
+    public function getOrderDetails($id)
     {
         try {
             $order = Order::find($id);
@@ -132,6 +131,48 @@ class OrderController extends Controller
             $order->save();
 
             return response()->json(['success' => true, 'message' => 'Order cancelled successfully'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+    /**
+     * @OA\Post(
+     *     path="/api/orders/reorder/{id}",
+     *     tags={"Orders"},
+     *     summary="Reorder an existing order",
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Order ID",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Order placed successfully"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Order not found"
+     *     )
+     * )
+     */
+    public function reorder($id)
+    {
+        try {
+            $order = Order::find($id);
+            if (!$order) {
+                return response()->json(['success' => false, 'message' => 'Order not found'], 404);
+            }
+
+            $newOrder = $order->replicate();
+            $newOrder->status = 'pending'; // Reset status for the new order
+            $newOrder->created_at = now();
+            $newOrder->updated_at = now();
+            $newOrder->save();
+
+            return response()->json(['success' => true, 'message' => 'Order placed successfully', 'data' => $newOrder], 200);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }

@@ -212,6 +212,20 @@ Route::get('/hotels/search/keyword', [HotelController::class, 'searchHotelsByKey
 Route::post('/hotels/{hotel_id}/rooms/{room_id}/reserve', [HotelController::class, 'hotelReservation']);
 Route::get('/hotels/{hotel_id}/gallery', [HotelController::class, 'getHotelGallery']);
 
+// API routes for orders
+Route::prefix('orders')->group(function () {
+    // Cancel an order
+    Route::put('cancel/{id}', [OrderController::class, 'cancel']);
+
+    // Get order details by ID
+    Route::get('{id}', [OrderController::class, 'getOrderDetails']);
+
+    // Get all orders
+    Route::get('/', [OrderController::class, 'index']);
+    // Reorder an order
+    Route::post('reorder/{id}', [OrderController::class, 'reorder']);
+});
+
 Route::get('/hotels/banners', [HotelController::class, 'getActiveBanners']);
 Route::get('/hotels/search', [HotelController::class, 'hotelSearch']);
 Route::get('/hotels/categories', [HotelController::class, 'getCategories']);
