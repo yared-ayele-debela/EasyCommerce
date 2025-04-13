@@ -3157,7 +3157,7 @@
                 "tags": [
                     "Orders"
                 ],
-                "summary": "Get list of orders",
+                "summary": "Get list of user's orders",
                 "operationId": "955bb77a45ae173a485fadb8befed93f",
                 "responses": {
                     "200": {
@@ -3166,7 +3166,12 @@
                     "401": {
                         "description": "Unauthorized"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/api/orders/{id}": {
@@ -3239,6 +3244,39 @@
                 "responses": {
                     "200": {
                         "description": "Order cancelled successfully"
+                    },
+                    "404": {
+                        "description": "Order not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/orders/reorder/{id}": {
+            "post": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Reorder an existing order",
+                "operationId": "54fea74bc563f98609822a5afbec1d9d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Order ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Order placed successfully"
                     },
                     "404": {
                         "description": "Order not found"

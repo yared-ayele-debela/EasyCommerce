@@ -22,7 +22,8 @@ class OrderController extends Controller
      * @OA\Get(
      *     path="/api/orders",
      *     tags={"Orders"},
-     *     summary="Get list of orders",
+     *     summary="Get list of user's orders",
+     *     security={{"sanctum":{}}},
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation"
@@ -33,10 +34,11 @@ class OrderController extends Controller
      *     )
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $orders = Order::all();
+            $user = $request->user(); // Get the authenticated user
+            $orders = Order::where('user_id', $user->id)->get(); // Fetch only the user's orders
             return response()->json(['success' => true, 'data' => $orders], 200);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
