@@ -46,10 +46,10 @@ class RoomController extends Controller
     }
 
 
-    public function indexs()
+    public function indexs(Request $request)
     {
         $amenities = Amenity::all();
-        return view('Hotel.frontend.pages.room.search', compact('amenities'));
+        return view('Hotel.frontend.pages.room.search', compact('amenities','request'));
     }
     public function filter(Request $request)
     {

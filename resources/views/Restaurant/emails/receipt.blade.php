@@ -1,3 +1,8 @@
+
+@php
+   use App\Models\AppSetting;
+   $setting = AppSetting::first();
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -118,7 +123,10 @@
     <div class="container">
         <div class="header d-flex justify-content-between align-items-center">
             <div>
-                <img src="{{ asset('restaurant_frontend/assets/img/logo.png') }}" alt="Company Logo" class="logo">
+                <div class="text-center p-4 pb-2 border-bottom">
+                    <img src="{{ asset('/storage/appsettings/'.$setting->logo) }}" alt="Company Logo" style="max-height: 60px;">
+                    <h4 class="mt-2">{{ $setting->application_title }}</h4>
+                </div>
             </div>
             <div>
                 <h2>📦 Order Receipt</h2>

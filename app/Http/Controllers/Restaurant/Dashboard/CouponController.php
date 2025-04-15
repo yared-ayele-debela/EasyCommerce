@@ -5,18 +5,26 @@ namespace App\Http\Controllers\Restaurant\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Models\Restaurant\Coupon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CouponController extends Controller
 {
     public function index()
     {
-        $coupons = Coupon::all();
+        $adminType = Auth::guard('admin')->user()->type;
+        if ($adminType === "Super Admin") {
+            $coupons = Coupon::latest()->get();
+        } else {
+            $coupons = Coupon::where('admin_id', Auth::guard('admin')->user()->id)->latest()->get();
+        }
+        // $coupons = Coupon::all();
         return view('Restaurant.dashboard.coupons.index', compact('coupons'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
+            'admin_id' => 'nullable',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'code' => 'required|string|unique:restaurant_coupons,code',
@@ -25,6 +33,8 @@ class CouponController extends Controller
             'validated_date' => 'nullable|date',
             'is_active' => 'boolean'
         ]);
+        $request['admin_id'] = Auth::guard('admin')->user()->id;
+
 
         Coupon::create($request->all());
 

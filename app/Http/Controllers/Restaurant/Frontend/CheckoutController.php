@@ -7,10 +7,12 @@ use App\Mail\Restaurant\OrderConfirmationMail;
 use App\Models\Country;
 use App\Models\Restaurant\Order;
 use App\Models\Restaurant\OrderItem;
+use App\Models\Restaurant\OrderPaymentInfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 
 class CheckoutController extends Controller
 {
@@ -32,7 +34,27 @@ class CheckoutController extends Controller
 
     public function placeOrder(Request $request)
     {
-        // dd($request->all());
+        if($request->payment_method==="manual"){
+            // dd('manual');
+            $validator = Validator::make($request->all(), [
+                'payment_method' => 'required|string',
+                'address_id' => 'required|exists:delivery_address,id',
+                'bank_name' => 'nullable|string|max:255',
+                'transaction_number' => 'nullable|string|max:255',
+                'receipt' => 'nullable|file|mimes:jpeg,png,pdf|max:2048',
+            ]);
+        }else{
+            // dd("dot");
+            $validator = Validator::make($request->all(), [
+                'payment_method' => 'required|string',
+                'address_id' => 'required|exists:delivery_address,id',
+            ]);
+        }
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
         $cart = session()->get('cart', []);
         if (empty($cart)) {
             return back()->with('error', 'Your cart is empty.');
@@ -67,9 +89,19 @@ class CheckoutController extends Controller
                 ]);
             }
 
+            $payment= new OrderPaymentInfo();
+            $payment->restaurant_orders_id=$order->id;
+            $payment->user_id=Auth::id();
+            $payment->bank_name=$request->input('bank_name');
+            $payment->transaction_number=$request->input('transaction_number');
+            $payment->receipt=$request->file('receipt')->store('restaurant', 'public');;
+            $payment->amount_paid=$total;
+            $payment->save();
+
+
             Mail::to(Auth::user()->email)->send(new OrderConfirmationMail($order));
 
-            DB::commit(); // Commit transaction
+            DB::commit();
             session()->forget(['cart', 'cart_subtotal', 'discount']); // Clear cart session after successful order
 
             return redirect()->route('restaurant.order.success', ['order' => $order->id])

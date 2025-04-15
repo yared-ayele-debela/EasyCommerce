@@ -5,9 +5,8 @@
     $appsettings=AppSetting::all()->toArray();
 
 @endphp
-<footer class="bg-primary pt-5 pb-3">
+<footer class="bg-primary pt-5 pb-3 d-none d-md-block">
     <div class="container-fluid">
-        <!-- Exclusive Subscribe Section -->
         <form class="newsletter-form" action="{{ url('newslettersubscriber') }}" method="POST">
             @csrf
             <div class="row d-flex justify-content-center align-items-center mb-4">
@@ -15,7 +14,6 @@
                     <h4 class="text-white">Exclusive Subscribe</h4>
                     <p class="text-white">Get 10% off your first order</p>
                     <div class="d-flex justify-content-center align-items-center newsletter-container p-2 rounded">
-
                         <input type="email" class="form-control newsletter-input me-2 border-0" name="email" placeholder="Enter your email">
                         <button type="submit" class="btn newsletter-button">SUBMIT</button>
                     </div>

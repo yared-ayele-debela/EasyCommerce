@@ -7,9 +7,11 @@ use App\Models\Restaurant\Category;
 use App\Models\Restaurant\City;
 use App\Models\Restaurant\Product;
 use App\Models\Restaurant\ProductImage;
+use App\Models\Restaurant\Restaurant;
 use App\Models\Restaurant\RestaurantMenu;
 use App\Models\Restaurant\Subcategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -17,7 +19,16 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with('images','city','menu','category','subcategory')->get();
+        $adminType = Auth::guard('admin')->user()->type;
+        if($adminType==="Super Admin"){
+            $products = Product::with('images','city','menu','category','subcategory')->latest()->get();
+        }else{
+            $restaurants=Restaurant::where('admin_id',Auth::guard('admin')->user()->id)->get();
+            $restaurantId= $restaurants->pluck('id');
+            $products = Product::with('images','city','menu','category','subcategory')->whereIn('restaurant_id',$restaurantId)->latest()->get();
+        }
+        
+        // $products = Product::with('images','city','menu','category','subcategory')->get();
         // dd($products);
         $categories=Category::all();
         $subcategories=Subcategory::all();
@@ -28,7 +39,11 @@ class ProductController extends Controller
 
     public function show($id){
 
-        $product = Product::with('images','sizes')->find($id);
+        $restaurants=Restaurant::where('admin_id',Auth::guard('admin')->user()->id)->get();
+        $restaurantId= $restaurants->pluck('id');
+        
+        $product = Product::with('images','sizes')->whereIn('restaurant_id',$restaurantId)->findOrFail($id);
+        
         return view('Restaurant.dashboard.products.show',compact('product'));
     }
 

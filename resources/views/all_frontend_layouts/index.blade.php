@@ -11,7 +11,6 @@
             </nav>
         </div>
     </div>
-
 </div>
 
 <div class="container-fluid mb-2">
@@ -67,7 +66,7 @@
             @foreach ($products as $product)
             <div class="item my-2">
                 <div class="offer-card p-3 h-100">
-                    <a href="{{ url('restaurant/product-detail/'.$product->id) }}">
+                    <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}">
                         @php
                         $off=$product->price-$product->getFinalPrice();
                         @endphp
@@ -85,7 +84,7 @@
                         </p>
                     </a>
                     <div class="hover-buttons">
-                        <button onclick="window.location.href='{{ url('restaurant/product-detail/'.$product->id) }}'" class="btn-view">
+                        <button onclick="window.location.href='{{ url('restaurant/product-detail/'.encrypt($product->id)) }}'" class="btn-view">
                             <i class="bi bi-eye-fill"></i>
                         </button>
                         <button class="btn-cart add-to-cart" data-product="{{ $product->id }}">
@@ -119,7 +118,7 @@
             @foreach ($most_popular_products as $product)
             <div class="item my-2">
                 <div class="offer-card p-3 h-100">
-                    <a href="{{ url('restaurant/product-detail/'.$product->id) }}">
+                    <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}">
                         <a class="bg-warning badge-offer" style="font-size: 12px;">
                             Most Popular
                         </a>
@@ -131,7 +130,7 @@
                         </p>
                     </a>
                     <div class="hover-buttons">
-                        <button onclick="window.location.href='{{ url('restaurant/product-detail/'.$product->id) }}'" class="btn-view">
+                        <button onclick="window.location.href='{{ url('restaurant/product-detail/'.encrypt($product->id)) }}'" class="btn-view">
                             <i class="bi bi-eye-fill"></i>
                         </button>
                         <button class="btn-cart add-to-cart" data-product="{{ $product->id }}">
@@ -164,7 +163,7 @@
             @foreach ($best_seller_products as $product)
             <div class="item my-2">
                 <div class="offer-card p-3 h-100">
-                    <a href="{{ url('restaurant/product-detail/'.$product->id) }}">
+                    <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}">
                         <a class="bg-info badge-offer" style="font-size: 12px;">
                             Best Seller
                         </a>
@@ -176,7 +175,49 @@
                         </p>
                     </a>
                     <div class="hover-buttons">
-                        <button onclick="window.location.href='{{ url('restaurant/product-detail/'.$product->id) }}'" class="btn-view">
+                        <button onclick="window.location.href='{{ url('restaurant/product-detail/'.encrypt($product->id)) }}'" class="btn-view">
+                            <i class="bi bi-eye-fill"></i>
+                        </button>
+                        <button class="btn-cart add-to-cart" data-product="{{ $product->id }}">
+                            <i class="bi bi-cart-check-fill"></i>
+                        </button>
+                        <button class="btn-wishlist add-to-wishlist" data-product="{{ $product->id }}">
+                            <i class="bi bi-heart text-white"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    <div class="d-flex justify-content-between align-items-center">
+        <h4 class="mt-5 mb-2">Latest Product</h4>
+        <h5 class="mt-5 mb-2">
+             <form action="{{ url('restaurant/all-products') }}" method="GET">
+
+                @csrf
+                <input type="hidden" name="type" value="best_seller">
+                <button type="submit" class="text-dark border-0 bg-white">
+                    All
+                </button>
+            </form>
+        </h5>
+    </div>
+    <div class="row g-3">
+        <div class="owl-carousel owl-theme products mt-4">
+            @foreach ($latest_products as $product)
+            <div class="item my-2">
+                <div class="offer-card p-3 h-100">
+                    <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}">
+                        <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid mb-2" alt="{{ $product->name }}">
+                        <h6 class="text-dark">{{ $product->name }}</h6>
+                        <p class="mb-0">
+                            <span class="price">{{ $product->getFinalPrice() }} ETB</span>
+                            <span class="price-old">{{ $product->price }} ETB</span>
+                        </p>
+                    </a>
+                    <div class="hover-buttons">
+                        <button onclick="window.location.href='{{ url('restaurant/product-detail/'.encrypt($product->id)) }}'" class="btn-view">
                             <i class="bi bi-eye-fill"></i>
                         </button>
                         <button class="btn-cart add-to-cart" data-product="{{ $product->id }}">

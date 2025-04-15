@@ -182,20 +182,32 @@ class AdminController extends Controller
 
             if (Auth::guard('admin')->attempt(['email' => $data['email'], 'password' => $data['password'], 'status' => 1])) {
                 if (Auth::guard('admin')->user()->type == "vendor" & Auth::guard('admin')->user()->confirm == "No") {
-
                     Alert::toast('Please confirm your email to active your Vendor Account', 'error');
                     return redirect()->back();
                 } else if (Auth::guard('admin')->user()->type != "vendor" && Auth::guard('admin')->user()->status = "0") {
                     Alert::toast('Your account is not acitve', 'error');
                     return redirect()->back();
                 } else {
-
                     $currentDateTime = Carbon::now();
                     $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
 
                     ActivityLogger::log('User login', "user login at {$formattedDateTime}");
                     Alert::toast('Welcome to Dashboard', 'success');
-                    return redirect('/admin/dashboard');
+                    
+                    switch (Auth::guard('admin')->user()->type) {
+                        case 'Hotel Manager':
+                            return redirect('/admin/hotel/dashboard');
+                        case 'Restaurant Manager':
+                            return redirect('/admin/restaurant/dashboard');
+                        case 'Ecommerce Manager':
+                            return redirect('/admin/dashboard');
+                        case 'Super Admin':
+                            return redirect('/admin/dashboard');
+                        default:
+                            Auth::logout();
+                            abort(403);
+                    }
+                  
                 }
             } else {
                 Alert::toast('Your email or password is incorrect', 'error');

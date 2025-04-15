@@ -16,8 +16,17 @@ class RoomController extends Controller
 {
     public function index()
     {
-        $rooms = Room::with('images','amenities')->get();
-        $hotels=Hotel::where('admin_id',Auth::guard('admin')->user()->id)->get();
+        $adminType = Auth::guard('admin')->user()->type;
+        $hotels = Hotel::where('admin_id',Auth::guard('admin')->user()->id)->latest()->get();
+
+        if($adminType==="Super Admin"){
+            $rooms = Room::with('images','amenities')->latest()->get();
+        }else{
+            $hotelId= $hotels->pluck('id');
+            $rooms = Room::with('images','amenities')->whereIn('hotel_id',$hotelId)->latest()->get();
+            // dd($rooms);
+        }
+     
         // dd($hotels);
         $amenities = Amenity::all();
         return view('hotel.dashboard.room.index', compact('rooms','hotels','amenities'));

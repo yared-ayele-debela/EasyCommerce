@@ -26,4 +26,8 @@ class Order extends Model
 
         return $this->belongsTo(DeliveryAddress::class,'delivery_address_id');
     }
+    public function paymentInfo()
+    {
+        return $this->hasOne(OrderPaymentInfo::class,'restaurant_orders_id');
+    }
 }

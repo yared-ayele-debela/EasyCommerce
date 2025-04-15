@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Restaurant\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\AppSetting;
+use App\Models\Order as ModelsOrder;
 use App\Models\Restaurant\Order;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,9 +18,13 @@ class OrderController extends Controller
     public function index()
     {
         // Fetch the authenticated user's orders with related items
-        $orders = Order::where('user_id', Auth::id())->with('orderItems.product')->latest()->get();
+        $orders = Order::where('user_id', Auth::id())->with('orderItems.product','paymentInfo')->latest()->get();
+        $user = auth()->user()->id;
+        $user = User::findOrFail($user);
+        $reservations = $user->reservations()->with(['hotel', 'room','hotel_reservation_payment_info'])->latest()->get();
+        $good_orders = ModelsOrder::with('orders_products')->where('user_id', Auth::user()->id)->latest()->get();
 
-        return view('restaurant.frontend.order.orders', compact('orders'));
+        return view('all_frontend_layouts.my_orders.inex', compact('orders','reservations','good_orders'));
     }
 
     /**
@@ -45,6 +52,7 @@ class OrderController extends Controller
 
         $order=Order::with('orderItems','address')->findOrFail($request->order_id); // Load order with items
 
-        return view('Restaurant.frontend.order.receipt',compact('order'));
+        $settings=AppSetting::first();
+        return view('Restaurant.frontend.order.receipt',compact('order','settings'));
     }
 }

@@ -1,3 +1,7 @@
+@php
+   use App\Models\AppSetting;
+   $setting = AppSetting::first();
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,6 +18,10 @@
 <body class="bg-light">
     <div class="container py-5 d-flex justify-content-center align-items-center min-vh-100">
         <div class="card shadow-lg border-0" style="max-width: 500px;">
+            <div class="text-center p-4 pb-2 border-bottom">
+                <img src="{{ asset('/storage/appsettings/'.$setting->logo) }}" alt="Company Logo" style="max-height: 60px;">
+                <h4 class="mt-2">{{ $setting->application_title }}</h4>
+            </div>
             <div class="card-header bg-success text-white text-center py-4">
                 <h2 class="fw-bold">Thank You!</h2>
                 <p class="mb-0">Your order has been confirmed</p>

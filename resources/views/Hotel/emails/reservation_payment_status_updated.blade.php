@@ -50,7 +50,7 @@
                     <td>{{ number_format($reservation->total_price, 2) }} ETB</td>
                 </tr>
             </table>
-            <p>If you have any questions or need further assistance, please don't hesitate to <a href="mailto:{{ $setting->email_address }}" class="text-primary">contact us</a>.</p>
+            <p>If you have any questions or need further assistance, please don't hesitate to <a href="{{ $setting->email_address }}" class="text-primary">{{ $setting->email_address }}</a>.</p>
             <p>Best regards,<br><strong> {{ $setting->application_title }}</strong></p>
         </div>
 

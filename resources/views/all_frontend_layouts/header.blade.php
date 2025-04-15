@@ -121,7 +121,7 @@
         </a>
 
         <!-- Search Bar -->
-        <div class="mx-auto search-form border bg-white border-1 p-1 rounded w-50">
+        <div class="mx-auto search-form border bg-white border-1 p-1 rounded rounded-3 text-primary rounded w-50">
             <form class="d-flex position-relative">
                 <input class="form-control me-2 search-input border-0" id="search-box" type="search" placeholder="Search for products" aria-label="Search">
                 {{-- <button class="btn search-button" type="submit"><i class="bi bi-search"></i></button> --}}
@@ -152,11 +152,10 @@
             <div class="dropdown">
 
                     @if(Auth::check())
-                    <a class="btn  text-dark border border-1 p-1 dropdown-toggle d-flex align-items-center gap-1" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="btn text-dark border border-0 p-1 d-flex align-items-center gap-1" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         @if(Auth::user()->profile_photo_path)
-                          <img src="{{ asset('storage/' . auth()->user()->profile_photo_path) }}" width="28" class="rounded-circle" alt="Profile Image">
+                          <img src="{{ asset('storage/' . auth()->user()->profile_photo_path) }}" width="38" class="rounded-circle m-1 border border-3 shadow" alt="Profile Image">
                         @endif
-                        {{-- {{ strtok(Auth::user()->name,' ') }} --}}
                     </a>
                     @else
 
@@ -178,15 +177,11 @@
                             </a>
                         </li>
                         <li class="mb-2">
-                            <a class="dropdown-item d-flex align-items-center gap-2" href="{{ url('restaurant/my-orders') }}">
+                            <a class="dropdown-item d-flex align-items-center gap-2" href="{{ url('my-orders') }}">
                                 <i class="far fa-heart text-primary"></i> My Orders
                             </a>
                         </li>
-                        <li class="mb-2">
-                            <a class="dropdown-item d-flex align-items-center gap-2" href="{{ url('hotel/my-reservation') }}">
-                                <i class="far fa-calendar text-primary"></i> My Reservation
-                            </a>
-                        </li>
+                      
                         <li class="mb-2">
                             <hr class="dropdown-divider">
                         </li>
@@ -230,12 +225,11 @@
                 <i class="bi bi-cart" style="font-size: 18px;"></i>
             </a>
             <div class="dropdown">
-                <a class="btn border border-1 text-dark dropdown-toggle d-flex align-items-center gap-1" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a class="btn text-dark border border-0 p-1 d-flex align-items-center gap-1" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     @if(Auth::check())
                         @if(Auth::user()->profile_photo_path)
                           <img src="{{ asset('storage/' . auth()->user()->profile_photo_path) }}" width="28" class="rounded-circle" alt="Profile Image">
                         @endif
-                        {{ strtok(Auth::user()->name,' ') }}
                     @else
                         Login/Register
                     @endif
@@ -249,7 +243,7 @@
                             </a>
                         </li>
                         <li class="mb-2">
-                            <a class="dropdown-item d-flex align-items-center gap-2" href="{{ url('restaurant/my-orders') }}">
+                            <a class="dropdown-item d-flex align-items-center gap-2" href="{{ url('my-orders') }}">
                                 <i class="far fa-heart text-primary"></i> My Orders
                             </a>
                         </li>

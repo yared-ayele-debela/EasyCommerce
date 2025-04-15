@@ -13,7 +13,7 @@ class OrderController extends Controller
     //
     public function index()
     {
-        // Fetch all orders with related order items and products
+                
         $orders = Order::with('orderItems.product')->latest()->get();
 
         return view('restaurant.dashboard.orders.index', compact('orders'));

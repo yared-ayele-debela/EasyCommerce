@@ -197,9 +197,9 @@
                             <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label" for="total_night">Total Night</label>
-                            <input type="number" id="total_night" min="0" name="total_night" class="form-control w-100" placeholder="Enter total night " required>
+                        <div class="col-md-2">
+                            <label class="form-label" for="total_night">Reserved Days</label>
+                            <input type="number" id="total_night" disabled min="0" name="total_night" class="form-control w-100" placeholder="" required>
                             @error('total_night')
                             <span class="text-danger">{{ $message }}</span>
                             @enderror
@@ -291,6 +291,29 @@
 @endphp
 
 <script>
+    function calculateTotalNights() {
+    let checkIn = document.getElementById("check_in_date").value;
+    let checkOut = document.getElementById("check_out_date").value;
+
+    if (checkIn && checkOut) {
+        let checkInDate = new Date(checkIn);
+        let checkOutDate = new Date(checkOut);
+
+        // Calculate the time difference in milliseconds
+        let timeDiff = checkOutDate - checkInDate;
+
+        // Convert time difference from milliseconds to days
+        let nightCount = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+
+        // Update the total_night input field if the count is positive
+        if (nightCount > 0) {
+            document.getElementById("total_night").value = nightCount;
+        } else {
+            document.getElementById("total_night").value = '';
+        }
+    }
+}
+
     let disabledDates = @json($disabledDates);
 
     flatpickr("#check_in_date", {
@@ -337,8 +360,15 @@
         }
     }
 
-    document.getElementById("check_in_date").addEventListener("change", checkAvailability);
-    document.getElementById("check_out_date").addEventListener("change", checkAvailability);
+    document.getElementById("check_in_date").addEventListener("change", function () {
+    checkAvailability();
+    calculateTotalNights();
+});
+
+document.getElementById("check_out_date").addEventListener("change", function () {
+    checkAvailability();
+    calculateTotalNights();
+});
 
     function changeCount(type, delta) {
         const input = document.getElementById(`${type}-count`);

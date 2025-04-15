@@ -9,7 +9,7 @@ class Hotel extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
+    protected $fillable = ['admin_id',
         'name', 'category_id', 'location', 'latitude', 'longitude',
         'price_per_night', 'banner_image','is_adverted', 'rating', 'reviews_count',
         'discount', 'is_featured', 'phone', 'description','is_adverted','country','state','city'

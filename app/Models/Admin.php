@@ -67,10 +67,15 @@ class Admin extends Authenticable
      public function Bank(){
 
         return $this->belongsTo('App\Models\VendorBankDetails','vendor_id');
-     }
+    }
   
     protected $hidden = [
         'password',
         'remember_token',
     ];
+
+    public function hotel()
+    {
+        return $this->hasMany(Hotel::class);
+    }
 }

@@ -23,9 +23,10 @@ class FrontendController extends Controller
         $products = Product::where('discount', '>', 0)
             ->orderBy('discount', 'desc')  // Order by discount in descending order
             ->get();
-        $most_popular_products=Product::where('most_populer',1)->latest()->get();   
-        $best_seller_products=Product::where('best_seller',1)->latest()->get(); 
+        $most_popular_products=Product::where('most_populer',1)->latest()->get();
+        $best_seller_products=Product::where('best_seller',1)->latest()->get();
+        $latest_products=Product::latest()->get();
         $restaurants= Restaurant::where('is_active',1)->get();
-        return view('all_frontend_layouts.index', compact('banners', 'categories', 'menus', 'products','restaurants','most_popular_products','best_seller_products'));
+        return view('all_frontend_layouts.index', compact('banners', 'categories', 'menus', 'products','restaurants','most_popular_products','best_seller_products','latest_products'));
     }
 }

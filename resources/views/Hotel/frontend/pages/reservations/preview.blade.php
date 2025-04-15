@@ -47,7 +47,7 @@
                         <label for="coupon_code" class="form-label">Coupon Code <small class="text-muted">(Optional)</small></label>
                         <div class="promo-code pt-0 mt-0">
                             <input type="text" id="coupon_code" class="promo-input" placeholder="Enter Promo Code">
-                            <button id="apply_coupon" class="bg-primary text-white" onclick="applyCoupon()">APPLY</button>
+                            <button type="button"  id="apply_coupon" class="bg-primary text-white">APPLY</button>
                         </div>
                         <span id="discount-info" class="mt-2 text-primary "></span>
                         <hr>
@@ -118,6 +118,7 @@
                             <input type="hidden" name="total_child" value="{{ $validated['total_child'] }}">
                             <input type="hidden" name="total_infant" value="{{ $validated['total_infant'] }}">
                             <input type="hidden" name="total_price" id="_total_price" value="{{ $basePrice }}">
+                            <input type="hidden" name="coupon_id" id="coupon_id" value="">
                             <input type="hidden" name="discount_amount" id="_discount_amount" value="0">
                             <input type="hidden" name="final_price" id="_final_price" value="{{ $basePrice }}">
                             <button type="submit" class="btn btn-primary rounded rounded-1">Confirm & Reserve</button>
@@ -129,24 +130,34 @@
         </div>
     </div>
 </div>
-<script>
-    function applyCoupon() {
-        const coupon = document.getElementById('coupon_code').value;
-        const basePrice = {
-            {
-                $basePrice
-            }
-        };
+   <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const applyButton = document.getElementById("apply_coupon");
 
-        fetch("{{ route('hotel.coupons.apply') }}", {
-                method: 'POST'
-                , headers: {
-                    'Content-Type': 'application/json'
-                    , 'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                , }
-                , body: JSON.stringify({
-                    coupon_code: coupon
-                })
+        if (applyButton) {
+            applyButton.addEventListener("click", applyCoupon);
+            // alert("correct");
+        }
+        // alert("incorrect");
+
+        function applyCoupon(event) {
+            event.preventDefault();
+
+            const coupon = document.getElementById('coupon_code').value.trim();
+            const basePrice = {{ $basePrice ?? 0 }};
+
+            if (!coupon) {
+                alert("Please enter a coupon code.");
+                return;
+            }
+
+            fetch("{{ route('hotel.coupons.apply') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ coupon_code: coupon })
             })
             .then(response => {
                 if (!response.ok) {
@@ -155,14 +166,15 @@
                 return response.json();
             })
             .then(data => {
-
                 let discount = 0;
                 if (data.type === 'percent') {
                     discount = basePrice * (data.value / 100);
                 } else if (data.type === 'fixed') {
                     discount = parseFloat(data.value);
                 }
-                const finalPrice = basePrice - discount;
+
+                const finalPrice = Math.max(basePrice - discount, 0);
+
                 document.getElementById('discount-info').style.display = 'block';
                 document.getElementById('discount-info').innerText = data.message;
                 document.getElementById('discount_amount').innerText = discount.toFixed(2);
@@ -171,16 +183,17 @@
                 document.getElementById('_discount_amount').value = discount.toFixed(2);
                 document.getElementById('_total_price').value = basePrice.toFixed(2);
                 document.getElementById('_final_price').value = finalPrice.toFixed(2);
+                document.getElementById('coupon_id').value = data.coupon;
             })
             .catch(error => {
                 alert(error.message);
                 document.getElementById('discount-info').style.display = 'none';
                 document.getElementById('discount_amount').innerText = '0';
                 document.getElementById('total_price').innerText = basePrice.toFixed(2);
-                document.getElementById('final_price').value = basePrice.toFixed(2);
+                document.getElementById('_final_price').value = basePrice.toFixed(2);
             });
-    }
-
+        }
+    });
 </script>
 @endsection
 

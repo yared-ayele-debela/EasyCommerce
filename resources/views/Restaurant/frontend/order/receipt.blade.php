@@ -123,7 +123,8 @@
     <div class="container" id="receipt">
         <div class="header d-flex justify-content-between align-items-center">
             <div>
-                <img src="{{ asset('restaurant_frontend/assets/img/logo.png') }}" alt="Company Logo" class="logo">
+                <img src="{{ asset('/storage/appsettings/'.$settings->logo) }}" alt="Company Logo" style="max-height: 60px;">
+                <h6 class="text-dark">{{ $settings->application_title }}</h6>
             </div>
             <div class="d-flex justify-content-end align-items-center">
                 <h4>📦 Order Receipt</h4> &nbsp;
@@ -183,6 +184,10 @@
         <hr>
         <p class="total">Total: {{ number_format($order->total, 2) }} ETB</p>
         <p class="date"><small class="font-italic float-right">Date : {{ $order->created_at->format('F d, Y')  }}</small></p>
+
+        <div class="mt-4">
+            <p>If you have any questions or need further assistance, please don't hesitate to <a href="mailto:{{ $settings->email_address }}" class="text-dark">contact us</a>.</p>
+        </div>
     </div>
     <script>
         function printReceipt() {

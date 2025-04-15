@@ -19,7 +19,13 @@ class HotelController extends Controller
 {
     public function index()
     {
-        $hotels = Hotel::with('category')->latest()->get();
+        $adminType = Auth::guard('admin')->user()->type;
+        if($adminType==="Super Admin"){
+            $hotels = Hotel::with('category')->latest()->get();
+        }else{
+            $hotels = Hotel::with('category')->where('admin_id',Auth::guard('admin')->user()->id)->latest()->get();
+        }
+
         $categories = HotelCategory::all();
         $amenities = Amenity::all();
         $cities=City::all();
@@ -32,6 +38,7 @@ class HotelController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'admin_id' => 'nullable|exists:admins,id',
             'name' => 'required|string|max:255',
             'category_id' => 'nullable|exists:hotel_categories,id',
             'location' => 'required|string',
@@ -53,6 +60,7 @@ class HotelController extends Controller
         if ($request->hasFile('banner_image')) {
             $validated['banner_image'] = $request->file('banner_image')->store('hotels', 'public');
         }
+        $validated['admin_id'] = Auth::guard('admin')->user()->id;
 
 
         Hotel::create($validated);

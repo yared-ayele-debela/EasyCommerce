@@ -11,7 +11,7 @@
         @forelse ($products as $product)
         <div class="col-md-2 col-6 my-2">
             <div class="offer-card p-3 h-100">
-                <a href="{{ url('restaurant/product-detail/'.$product->id) }}">
+                <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}">
                     @php
                     $off = $product->price - $product->getFinalPrice();
                     @endphp
@@ -28,7 +28,7 @@
                     </p>
                 </a>
                 <div class="hover-buttons">
-                    <button onclick="window.location.href='{{ url('restaurant/product-detail/'.$product->id) }}'" class="btn-view">
+                    <button onclick="window.location.href='{{ url('restaurant/product-detail/'.encrypt($product->id)) }}'" class="btn-view">
                         <i class="bi bi-eye-fill"></i>
                     </button>
                     <button class="btn-cart add-to-cart" data-product="{{ $product->id }}">

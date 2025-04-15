@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Restaurant\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Models\Restaurant\Product;
 use App\Models\Restaurant\ProductSize;
+use App\Models\Restaurant\Restaurant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProductSizeController extends Controller
 {
@@ -18,9 +20,14 @@ class ProductSizeController extends Controller
             'stock' => 'required|integer|min:0',
         ]);
 
+        // Find the product by ID
         
-        $product = Product::findOrFail($productId);
-
+        $restaurants=Restaurant::where('admin_id',Auth::guard('admin')->user()->id)->get();
+        $restaurantId= $restaurants->pluck('id');
+        
+        $product = Product::whereIn('restaurant_id',$restaurantId)->findOrFail($productId);
+        if($product){
+        
         // // Check if the size already exists for the product
         // $existingSize = ProductSize::where('product_id', $productId)
         // ->where('size', $request->size)
@@ -38,6 +45,10 @@ class ProductSizeController extends Controller
         $productSize->price = $request->price;
         $productSize->stock = $request->stock;
         $productSize->save();
+        }
+        else{
+            return redirect()->back()->with('error', 'Product not found.');
+        }
 
         return redirect()->route('products.show', $productId)->with('success', 'Product size created successfully.');
     }

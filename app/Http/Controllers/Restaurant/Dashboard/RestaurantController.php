@@ -16,7 +16,13 @@ class RestaurantController extends Controller
 {
     public function index()
     {
-        $restaurants = RestaurantRestaurant::with(['admin', 'images'])->latest()->get();
+        $adminType = Auth::guard('admin')->user()->type;
+        if ($adminType === "Super Admin") {
+            $restaurants = RestaurantRestaurant::with(['admin', 'images'])->latest()->get();
+        } else {
+            $restaurants = RestaurantRestaurant::with(['admin', 'images'])->where('admin_id', Auth::guard('admin')->user()->id)->latest()->get();
+        }
+        // $restaurants = RestaurantRestaurant::with(['admin', 'images'])->latest()->get();
         return view('restaurant.dashboard.restaurants.index', compact('restaurants'));
     }
 

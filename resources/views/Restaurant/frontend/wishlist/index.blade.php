@@ -4,7 +4,7 @@
     <div class="checkout-header">
         <a href="{{ url('/') }}">Home</a> / <span>My Wishlist</span>
       </div>
-    
+
     <div class="row">
         <div class="col-md-10">
             @if(count($wishlist) > 0)
@@ -23,8 +23,8 @@
                 @endphp
                 <tr>
                     <td>
-                        <a href="{{ url('restaurant/product-detail/'.$product->id) }}" class="text-dark">
-                            <img src="{{ asset('storage/' . $product->image) }}" width="50"> 
+                        <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}" class="text-dark">
+                            <img src="{{ asset('storage/' . $product->image) }}" width="50">
                           {{ $product->name }}
                         </a>
                     </td>

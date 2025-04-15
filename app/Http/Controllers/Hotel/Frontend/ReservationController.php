@@ -20,7 +20,6 @@ class ReservationController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->all());
 
         // Validate the incoming request
         $request->validate([
@@ -60,6 +59,13 @@ class ReservationController extends Controller
             'status' => 'Pending', // Example status
             'payment_status' => 'Pending', // Example payment status
         ]);
+        
+        if($request->input('discount_amount') > 0){
+            $coupon = HotelCoupon::find($request->input('coupon_id'));
+            if ($coupon) {
+                $coupon->increment('used');
+            }
+        }
 
         $payment= new HotelReservationPaymentInfo();
         $payment->reservation_id=$reservation->id;
@@ -73,9 +79,10 @@ class ReservationController extends Controller
         Mail::to($reservation->user->email)->send(new ReservationConfirmationMail($reservation));
 
         // Redirect to a confirmation page or the hotel page
-        return redirect()->route('reservation.confirmation')
-            ->with('success', 'Your reservation has been made successfully!')
-            ->with('reservation', $reservation);
+        
+        return redirect()->route('reservations.receipt', ['id' => encrypt($reservation->id)])
+        ->with('success', 'Your reservation has been made successfully!');
+
     }
     public function preview(Request $request)
     {
@@ -135,6 +142,7 @@ class ReservationController extends Controller
 
         return response()->json([
             'type' => $coupon->type,
+            'coupon' => $coupon->id,
             'value' => $coupon->value,
             'message' => 'Coupon applied successfully!',
         ]);

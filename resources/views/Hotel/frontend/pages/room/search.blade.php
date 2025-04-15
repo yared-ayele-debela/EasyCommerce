@@ -8,13 +8,13 @@
         <h5 class="my-4 text-dark text-center">Rooms</h5>
     </div>
     <div class="offer-card shadow-sm rounded-4 p-3 mb-4 bg-white">
-        <h4 class="mb-3"><i class="bi bi-funnel-fill me-2 text-primary"></i> Advanced Room Filters</h4>
+        <h4 class="mb-3 text-dark"><i class="bi bi-funnel-fill me-2 text-primary"></i> Advanced Room Filters</h4>
         <div class="row g-3 align-items-end">
             <div class="col-md-3">
                 <label for="search" class="form-label">Search Room Type</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-search"></i></span>
-                    <input type="text" id="search" class="form-control shadow-sm" placeholder="e.g. Deluxe, Standard">
+                    <input type="text" id="search" class="form-control shadow-sm" value="{{ request('search') }}" placeholder="e.g. Deluxe, Standard">
                 </div>
             </div>
 
@@ -22,7 +22,7 @@
                 <label for="min_price" class="form-label">Min Price</label>
                 <div class="input-group">
                     <span class="input-group-text">ETB</span>
-                    <input type="number" id="min_price" class="form-control shadow-sm" placeholder="1000">
+                    <input type="number" id="min_price" class="form-control shadow-sm" value="{{ request('min_price') }}" placeholder="1000">
                 </div>
             </div>
 
@@ -30,7 +30,7 @@
                 <label for="max_price" class="form-label">Max Price</label>
                 <div class="input-group">
                     <span class="input-group-text">ETB</span>
-                    <input type="number" id="max_price" class="form-control shadow-sm" placeholder="5000">
+                    <input type="number" id="max_price" class="form-control shadow-sm" value="{{ request('max_price') }}" placeholder="5000">
                 </div>
             </div>
 
@@ -38,28 +38,28 @@
                 <label for="capacity" class="form-label">Min Capacity</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-people"></i></span>
-                    <input type="number" id="capacity" class="form-control shadow-sm" placeholder="e.g. 2">
+                    <input type="number" id="capacity" class="form-control shadow-sm"  value="{{ request('capacity') }}" placeholder="e.g. 2">
                 </div>
             </div>
             <div class="col-md-1">
                 <label for="total_adult" class="form-label">Adults</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-people"></i></span>
-                    <input type="number" id="total_adult" class="form-control shadow-sm" placeholder="2">
+                    <input type="number" id="total_adult" class="form-control shadow-sm" value="{{ request('total_adult') }}" placeholder="2">
                 </div>
             </div>
             <div class="col-md-1">
                 <label for="total_child" class="form-label">Children</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-person-walking"></i></span>
-                    <input type="number" id="total_child" class="form-control shadow-sm" placeholder="2">
+                    <input type="number" id="total_child" class="form-control shadow-sm" value="{{ request('total_child') }}" placeholder="2">
                 </div>
             </div>
             <div class="col-md-1">
                 <label for="total_infant" class="form-label">Infants</label>
                 <div class="input-group">
                     <span class="input-group-text"><img src="{{ asset('restaurant_frontend/baby.png') }}" width="20" alt=""></span>
-                    <input type="number" id="total_infant" class="form-control shadow-sm" placeholder="2">
+                    <input type="number" id="total_infant" class="form-control shadow-sm" value="{{ request('total_infant') }}" placeholder="2">
                 </div>
             </div>
 
@@ -73,7 +73,7 @@
         <hr class="my-4">
 
         <div class="mb-2">
-            <label class="form-label"><strong><i class="bi bi-stars"></i> Filter by Amenities:</strong></label>
+            <label class="form-label text-dark"><strong><i class="bi bi-stars text-primary"></i> Filter by Amenities:</strong></label>
         </div>
         <div class="row g-2">
             @foreach ($amenities as $amenity)
@@ -88,6 +88,7 @@
             @endforeach
         </div>
     </div>
+    <hr>
 
 
     <div class="row" id="room-list"></div>

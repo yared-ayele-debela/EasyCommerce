@@ -47,7 +47,7 @@ use App\Models\Restaurant\Product;
                     </a>
                 </div>
             </div>
-            <form action="{{ route('restaurant.checkout.placeOrder') }}" id="checkoutForm" method="POST">
+            <form action="{{ route('restaurant.checkout.placeOrder') }}" id="checkoutForm" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="row" id="addressContainer">
                     <p class="text-muted text-center">Click "Load Addresses" to view your addresses.</p>
@@ -143,13 +143,13 @@ use App\Models\Restaurant\Product;
                 <div class="delivery-location mt-3 p-3">
                     <h6 class="fw-bold text-dark mb-2">Payment Method</h6>
                     <div class="payment-methods">
-                        <label class="payment-method">
+                        {{-- <label class="payment-method">
                             <input type="radio" name="payment_method" value="telebirr" class="d-none">
                             <img src="{{ asset('restaurant_frontend/assets/img/Telebirr 2.png') }}" alt="Telebirr">
-                        </label>
-                        <label class="payment-method">
-                            <input type="radio" name="payment_method" value="cbe" class="d-none">
-                            <img src="{{ asset('restaurant_frontend/assets/img/CBE_SA 2.png') }}" alt="CBE">
+                        </label> --}}
+                        <label type="button" class="payment-method" data-bs-toggle="modal" data-bs-target="#modalId">
+                            <input type="radio" name="payment_method" value="manual" class="d-none">
+                            <img src="{{ asset('restaurant_frontend/bill.png') }}" width="40" alt="CBE">
                         </label>
                         <label class="payment-method">
                             <input type="radio" name="payment_method" value="cash" class="d-none">
@@ -158,6 +158,66 @@ use App\Models\Restaurant\Product;
                     </div>
                     <span id="payment-error" class="text-danger d-none">Please select a payment method.</span>
                 </div>
+
+                <!-- Modal Body -->
+                <div class="modal fade" id="modalId" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalTitleId">
+                                    Manual Payment
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-2">
+                                    <input type="hidden" name="id" value="">
+                                    <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
+                                    <label for="bank" class="form-label">Select Bank</label>
+                                    <select class="form-select" name="bank_name" required>
+                                        <option value="" selected disabled>-- Choose Bank --</option>
+                                        <option value="CBE">Commercial Bank of Ethiopia</option>
+                                        <option value="Awash">Awash Bank</option>
+                                        <option value="Dashen">Dashen Bank</option>
+                                    </select>
+                                    @error('bank_name')
+                                    <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="mb-2">
+                                    <label for="transaction_number" class="form-label">Transaction Number</label>
+                                    <input type="text" name="transaction_number" class="form-control" required>
+                                    @error('transaction_number')
+                                    <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="mb-2">
+                                    <label for="receipt" class="form-label">Upload Receipt</label>
+                                    <input type="file" name="receipt" class="form-control" accept="image/*,application/pdf" required>
+                                    @error('receipt')
+                                    <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Optional: Place to the bottom of scripts -->
+                <script>
+                    const myModal = new bootstrap.Modal(
+                        document.getElementById("modalId")
+                        , options
+                    , );
+
+                </script>
+
+
               <button type="button" class="checkout-btn border-0 bg-primary w-100 mt-3" id="placeOrder">Place Order</button>
         </form>
     </div>

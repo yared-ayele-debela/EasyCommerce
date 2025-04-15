@@ -9,6 +9,7 @@ use App\Models\AppSetting;
 use App\Models\HotelReservationPaymentInfo;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
 class ReservationsController extends Controller
@@ -16,11 +17,18 @@ class ReservationsController extends Controller
     //
     public function index()
     {
-        // Fetch all reservations with related user, hotel, and room data
-        $reservations = Reservation::with('user', 'hotel', 'room', 'hotel_reservation_payment_info')->latest()->get();
-        // dd($reservations);
-        // dd($reservations);
+        $adminType = Auth::guard('admin')->user()->type;
+        if ($adminType === "Super Admin") {
+            $reservations = Reservation::with('user', 'hotel', 'room', 'hotel_reservation_payment_info')->latest()->get();
+        } else {
+            $hotelIds = Auth::guard('admin')->user()->hotel()->pluck('id'); // assuming a relationship `hotels()`
 
+            $reservations = Reservation::with(['user', 'hotel', 'room', 'hotel_reservation_payment_info'])
+                ->whereIn('hotel_id', $hotelIds)
+                ->latest()
+                ->get();
+            }
+    
         return view('hotel.dashboard.reservations.index', compact('reservations'));
     }
     public function updateStatus(Request $request, $id)
@@ -71,7 +79,8 @@ class ReservationsController extends Controller
     {
         $id=decrypt($request->id);
         $reservation = Reservation::with('user', 'hotel', 'room')->where('id', $id)->first();
+        $settings=AppSetting::first();
 
-        return view('Hotel.dashboard.reservations.receipt', compact('reservation'));
+        return view('Hotel.dashboard.reservations.receipt', compact('reservation','settings'));
     }
 }

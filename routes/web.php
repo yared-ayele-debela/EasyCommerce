@@ -1054,52 +1054,51 @@ Route::prefix('sales')->name('sales.')->group(function () {
 
 
 // Restaurant Routes
-Route::prefix('admin/restaurant')->middleware(['admin'])->group(function () {
-    Route::get('dashboard', [RestaurantDashboardController::class, 'index'])
+Route::prefix('admin/restaurant')->group(function () {
+    Route::group(['middleware' => ['admin', 'check.admin:Restaurant Manager']], function () {
+
+        Route::get('dashboard', [RestaurantDashboardController::class, 'index'])
         ->name('restaurant.dashboard');
-    Route::resource('slider-banners', SliderBannerController::class);
-    Route::resource('restaurants', RestaurantController::class);
-    Route::get('my-restaurant', [RestaurantController::class, 'show'])->name('my-restaurant');
-    Route::delete('/restaurant-images/{id}', [RestaurantController::class, 'deleteImage'])->name('restaurants.deleteImage');
-    Route::resource('categories', CategoryController::class);
-    Route::resource('menus', RestaurantMenuController::class);
+        Route::resource('slider-banners', SliderBannerController::class);
+        Route::resource('restaurants', RestaurantController::class);
+        Route::get('my-restaurant', [RestaurantController::class, 'show'])->name('my-restaurant');
+        Route::delete('/restaurant-images/{id}', [RestaurantController::class, 'deleteImage'])->name('restaurants.deleteImage');
+        Route::resource('categories', CategoryController::class);
+        Route::resource('menus', RestaurantMenuController::class);
 
-    Route::resource('subcategories', FrontendSubCategoryController::class);
+        Route::resource('subcategories', FrontendSubCategoryController::class);
+        Route::get('/coupons', [CouponController::class, 'index'])->name('coupons.index');
+        Route::post('/coupons/store', [CouponController::class, 'store'])->name('coupons.store');
+        Route::post('/coupons/update/{id}', [CouponController::class, 'update'])->name('coupons.update');
+        Route::post('/coupons/delete/{id}', [CouponController::class, 'destroy'])->name('coupons.destroy');
 
+        Route::get('/cities', [DashboardCityController::class, 'index'])->name('cities.index');
+        Route::post('/cities/store', [DashboardCityController::class, 'store'])->name('cities.store');
+        Route::post('/cities/update/{id}', [DashboardCityController::class, 'update'])->name('cities.update');
+        Route::delete('/cities/destroy/{id}', [DashboardCityController::class, 'destroy'])->name('cities.destroy');
+        
+        Route::resource('products', DashboardProductController::class);
+        Route::get('show-product/{id}', [DashboardProductController::class, 'show'])->name('show.product');
 
-    Route::get('/coupons', [CouponController::class, 'index'])->name('coupons.index');
-    Route::post('/coupons/store', [CouponController::class, 'store'])->name('coupons.store');
-    Route::post('/coupons/update/{id}', [CouponController::class, 'update'])->name('coupons.update');
-    Route::post('/coupons/delete/{id}', [CouponController::class, 'destroy'])->name('coupons.destroy');
+        Route::post('products/{product}/sizes', [ProductSizeController::class, 'store'])->name('productSizes.store');
+        Route::put('product-sizes/{size}', [ProductSizeController::class, 'update'])->name('productSizes.update');
+        Route::delete('product-sizes/{product}/{size}', [ProductSizeController::class, 'destroy'])->name('productSizes.destroy');
 
-    Route::get('/cities', [DashboardCityController::class, 'index'])->name('cities.index');
-    Route::post('/cities/store', [DashboardCityController::class, 'store'])->name('cities.store');
-    Route::post('/cities/update/{id}', [DashboardCityController::class, 'update'])->name('cities.update');
-    Route::delete('/cities/destroy/{id}', [DashboardCityController::class, 'destroy'])->name('cities.destroy');
-
-    Route::resource('products', DashboardProductController::class);
-    Route::get('show-product/{id}', [DashboardProductController::class, 'show'])->name('show.product');
-
-    Route::post('products/{product}/sizes', [ProductSizeController::class, 'store'])->name('productSizes.store');
-    Route::put('product-sizes/{size}', [ProductSizeController::class, 'update'])->name('productSizes.update');
-    Route::delete('product-sizes/{product}/{size}', [ProductSizeController::class, 'destroy'])->name('productSizes.destroy');
-
-    Route::get('/orders', [DashboardOrderController::class, 'index'])->name('restaurant.orders.index');
-    Route::get('/orders/{id}', [DashboardOrderController::class, 'show'])->name('restaurant.orders.show');
-    Route::post('/orders/{id}/update', [DashboardOrderController::class, 'updateStatus'])->name('restaurant.orders.updateStatus');
+        Route::get('/orders', [DashboardOrderController::class, 'index'])->name('restaurant.orders.index');
+        Route::get('/orders/{id}', [DashboardOrderController::class, 'show'])->name('restaurant.orders.show');
+        Route::post('/orders/{id}/update', [DashboardOrderController::class, 'updateStatus'])->name('restaurant.orders.updateStatus');
+    });
 });
 
 
 // Hotel Reservations
-Route::group(['middleware' => ['admin']], function () {
+Route::group(['middleware' => ['admin', 'check.admin:Hotel Manager']], function () {
     Route::resource('admin/hotels', HotelController::class);
     Route::get('admin/hotel/{id}/toggleAdvertise', [HotelController::class, 'toggleAdvertise']);
     Route::get('admin/hotel/{id}/toggleFeatured', [HotelController::class, 'toggleFeatured']);
-
     Route::prefix('admin/hotel')->middleware(['admin'])->group(function () {
         Route::get('dashboard', [DashboardDashboardController::class, 'index'])
             ->name('hotel.dashboard');
-
         Route::resource('amenities', AmenityController::class);
         Route::resource('hotel-categories', HotelCategoryController::class);
         Route::post('/hotel-photos', [HotelPhotoController::class, 'store'])->name('hotel_photos.store');
@@ -1109,17 +1108,13 @@ Route::group(['middleware' => ['admin']], function () {
         Route::put('/reservations/{id}/status', [ReservationsController::class, 'updateStatus'])->name('reservations.updateStatus');
         Route::put('/reservations/{id}/payment_status', [ReservationsController::class, 'updatePaymentStatus'])->name('reservations.updatePaymentStatus');
         Route::delete('/reservations/{id}', [ReservationsController::class, 'destroy'])->name('reservations.destroy');
-
         Route::resource('rooms', RoomController::class);
         Route::get('my-hotel', [HotelController::class, 'my_hotel'])->name('my-hotel');
-
         Route::resource('/hotel-slider-banners', DashboardSliderBannerController::class);
-
         Route::get('/coupons', [DashboardCouponController::class, 'index'])->name('hotel.coupon.index');
         Route::post('/coupons', [DashboardCouponController::class, 'store'])->name('hotel.coupon.store');
         Route::put('/coupons/{coupon}', [DashboardCouponController::class, 'update'])->name('hotel.coupon.update');
         Route::delete('/coupons/{coupon}', [DashboardCouponController::class, 'destroy'])->name('hotel.coupon.destroy');
-
     });
 });
 
@@ -1146,7 +1141,6 @@ Route::middleware('auth')->group(function () {
 Route::get('restaurants', [FrontendRestaurantController::class, 'index'])->name('restaurants');
 // Route::get('ecommerce',[FrontendRestaurantController::class,'index'])->name('restaurants');
 Route::prefix('/restaurant')->group(function () {
-
     Route::get('/{id}/detail', [FrontendRestaurantController::class, 'detail'])->name('restaurant.detail');
     Route::post('/restaurant/products/filter', function (Request $request) {
         $categoryId = $request->category_id;
@@ -1157,6 +1151,8 @@ Route::prefix('/restaurant')->group(function () {
             })->get(['id', 'name', 'image', 'price']); // Fetch necessary fields only
         $products->transform(function ($product) {
             $product->final_price = $product->getFinalPrice();
+            $product->encrypted_id = encrypt($product->id); // 🔐 Encrypt the ID
+
             return $product;
         });
         return response()->json(['products' => $products]);
@@ -1191,7 +1187,6 @@ Route::prefix('/restaurant')->group(function () {
         Route::get('check-out', [CheckoutController::class, 'index'])->name('restaurant.checkout');
         Route::post('/checkout/place-order', [CheckoutController::class, 'placeOrder'])->name('restaurant.checkout.placeOrder');
         Route::get('/order/success/{order}', [FrontendOrderController::class, 'success'])->name('restaurant.order.success');
-        Route::get('/my-orders', [FrontendOrderController::class, 'index'])->name('user.orders');
         Route::post('/order-receipt', [FrontendOrderController::class, 'receipt']);
 
         Route::get('/order/{order}/track', [FrontendOrderController::class, 'track'])->name('order.track');
@@ -1205,12 +1200,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/addresses', [UserDeliveryAddressController::class, 'store'])->middleware('auth');
     Route::get('/addresses', [UserDeliveryAddressController::class, 'index'])->middleware('auth');
     Route::delete('/addresses/{id}', [UserDeliveryAddressController::class, 'destroy'])->middleware('auth');
-
     // account detail
     Route::put('user/account/update', [UserController::class, 'updateAccountDetails'])->name('user.account.update');
     // Route to update password
     Route::put('user-password/update', [UserController::class, 'updatePassword'])->name('user.password.update');
     Route::get('user/account/update', [UserController::class, 'createuserAccount'])->name('user.account.update.form');
+
+    Route::get('/my-orders', [FrontendOrderController::class, 'index'])->name('user.orders');
 });
 
 
@@ -1225,19 +1221,19 @@ Route::get('/streets/{subCityId}', [UserDeliveryAddressController::class, 'getSt
 // hotel reservation
 
 Route::prefix('/hotel')->group(function () {
-    Route::get('/',[FrontendFrontendController::class,'index'])->name('hotel-reservation.index');
-    Route::get('categories',[HotelFrontendCategoryController::class,'index'])->name('hotel.categories');
+    Route::get('/', [FrontendFrontendController::class, 'index'])->name('hotel-reservation.index');
+    Route::get('categories', [HotelFrontendCategoryController::class, 'index'])->name('hotel.categories');
 
-    Route::get('categories/{category}',[HotelFrontendCategoryController::class,'show'])->name('hotel.category.detail');
-    Route::get('{id}/detail',[FrontendHotelController::class,'index'])->name('hotel.detail');
-    Route::get('room/{id}/detail',[FrontendRoomController::class,'index'])->name('hotel.room.detail');
-    Route::get('discounted-hotels',[FrontendHotelController::class,'discounted'])->name('discounted-hotels');
-    Route::get('latest-hotels',[FrontendHotelController::class,'latest'])->name('latest-hotels');
-    Route::get('{id}/gallery',[FrontendHotelController::class,'gallery'])->name('hotel.photo.gallery');
+    Route::get('categories/{category}', [HotelFrontendCategoryController::class, 'show'])->name('hotel.category.detail');
+    Route::get('{id}/detail', [FrontendHotelController::class, 'index'])->name('hotel.detail');
+    Route::get('room/{id}/detail', [FrontendRoomController::class, 'index'])->name('hotel.room.detail');
+    Route::get('discounted-hotels', [FrontendHotelController::class, 'discounted'])->name('discounted-hotels');
+    Route::get('latest-hotels', [FrontendHotelController::class, 'latest'])->name('latest-hotels');
+    Route::get('{id}/gallery', [FrontendHotelController::class, 'gallery'])->name('hotel.photo.gallery');
 
-    Route::get('select-date/{id}',[FrontendHotelController::class,'select_date'])->name('select_date');
+    Route::get('select-date/{id}', [FrontendHotelController::class, 'select_date'])->name('select_date');
 
-    Route::get('rooms',[FrontendRoomController::class,'indexs'])->name('room.indexs');
+    Route::get('rooms', [FrontendRoomController::class, 'indexs'])->name('room.indexs');
     Route::get('/rooms/filter', [FrontendRoomController::class, 'filter'])->name('rooms.filter');
 
     Route::post('/check-availability', [BookingController::class, 'checkAvailability'])->name('check.availability');
@@ -1245,19 +1241,16 @@ Route::prefix('/hotel')->group(function () {
     Route::middleware('auth')->group(function () {
         Route::post('/reservation/preview', [ReservationController::class, 'preview'])->name('reservation.preview');
         Route::post('/apply-coupon', [ReservationController::class, 'apply'])->name('hotel.coupons.apply');
-
         Route::post('/reserve', [ReservationController::class, 'store'])->name('reservation.store');
         Route::get('/reservation/confirmation', [ReservationController::class, 'confirmation'])->name('reservation.confirmation');
-        Route::get('my-reservation',[ReservationController::class, 'my_reservation'])->name('my.reservation');
+        // Route::get('my-reservation',[ReservationController::class, 'my_reservation'])->name('my.reservation');
 
         Route::post('/rate-hotel-room', [FrontendRoomController::class, 'room_rating_store'])->name('hotel.room.rate');
     });
-
     Route::get('/reservations/receipt', [ReservationsController::class, 'receipt'])->name('reservations.receipt');
-
 });
 
-Route::get('hotels',[FrontendHotelController::class,'latest'])->name('hotels');
-Route::get('nearby-hotels',[FrontendHotelController::class,'nearby'])->name('nearby.hotels');
+Route::get('hotels', [FrontendHotelController::class, 'latest'])->name('hotels');
+Route::get('nearby-hotels', [FrontendHotelController::class, 'nearby'])->name('nearby.hotels');
 Route::get('/hotels/filter', [FrontendHotelController::class, 'filter'])->name('hotels.filter');
 Route::get('/get-nearby-hotels', [FrontendHotelController::class, 'getNearbyHotels']);

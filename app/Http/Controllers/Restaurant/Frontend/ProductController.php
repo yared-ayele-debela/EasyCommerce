@@ -57,7 +57,7 @@ class ProductController extends Controller
     catch(Exception $e){
         return redirect()->back();
     }
-  
+
 
     return view('restaurant.frontend.pages.products.filtered_products', compact('products', 'filter'));
     }
@@ -65,13 +65,13 @@ class ProductController extends Controller
     public function index(Request $request){
         $products = Product::where('is_active',1)->latest()->get();
         // dd($products);
-        
+
         $categories = Category::all();
         $restaurants = Restaurant::all();
         $subcategories= Subcategory::all();
         $cities=ModelsCity::all();
         $menus=RestaurantMenu::all();
-        
+
         return view('Restaurant.frontend.pages.products.index',compact('products','categories', 'restaurants','cities','subcategories','menus'));
     }
 
@@ -105,6 +105,7 @@ class ProductController extends Controller
 
 
     public function detail($id){
+        $id=decrypt($id);
         $product=Product::with(['images','sizes','ratings'])->findOrFail($id);
         $related_products=Product::where('category_id',$product->category_id)->where('id','!=',$product->id)->get();
 
