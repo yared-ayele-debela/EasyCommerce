@@ -44,8 +44,8 @@ class CheckoutController extends Controller
             'items.*.quantity' => 'required|integer|min:1',
             'payment_method' => 'required|string|in:cash_on_delivery',
             'coupon_code' => 'nullable|string',
-            'transaction_id' => 'required|string',
-            'screenshot' => 'required|file|mimes:jpeg,png,jpg|max:2048'
+            'transaction_id' => 'nullable|string',
+            'screenshot' => 'nullable|file|mimes:jpeg,png,jpg|max:2048'
         ]);
 
         if ($validator->fails()) {
@@ -153,13 +153,13 @@ class CheckoutController extends Controller
             $validator = Validator::make($request->all(), [
                 'user_id' => 'required|integer',
                 'room_id' => 'required|integer',
-                'check_in_date' => 'required|date',
+                'check_in_date' => 'required|date|after_or_equal:today',
                 'check_out_date' => 'required|date|after:check_in_date',
-                'coupon_code' => 'nullable|string',
-                'price' => 'required|integer',
-                'transaction_id' => 'required|string',
-                'screenshot' => 'sometime|file|mimes:jpeg,png,jpg|max:2048',
-                'payment_method' => 'sometime|string|in:credit_card,cash'
+                'coupon_code' => 'nullable|string|max:50',
+                'price' => 'required|numeric|min:0',
+                'transaction_id' => 'required|string|max:100',
+                'screenshot' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
+                'payment_method' => 'nullable|string|in:credit_card,cash'
             ]);
 
             if ($validator->fails()) {
