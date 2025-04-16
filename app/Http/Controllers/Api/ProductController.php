@@ -208,6 +208,92 @@ class ProductController extends Controller
             return response()->json(['error' => 'Failed to fetch product details'], 500);
         }
     }
+
+    /**
+     * @OA\Get(
+     *     path="/api/products/search",
+     *     summary="Search products by keyword",
+     *     tags={"Products"},
+     *     operationId="searchProducts",
+     *     @OA\Parameter(
+     *         name="keyword",
+     *         in="query",
+     *         required=true,
+     *         description="Search keyword",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of products matching the search keyword retrieved successfully"
+     *     ),
+     *     @OA\Response(response=500, description="Server error")
+     * )
+     */
+    public function searchProduct(Request $request)
+    {
+        $keyword = $request->input('keyword');
+
+        if (!$keyword) {
+            return response()->json(['error' => 'Keyword is required'], 400);
+        }
+
+        $products = Product::where('product_name', 'LIKE', '%' . $keyword . '%')
+            ->orWhere('description', 'LIKE', '%' . $keyword . '%')
+            ->where('status', 1) // Ensure product is active
+            ->get();
+
+        return response()->json($products);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/products/filter",
+     *     summary="Filter products by criteria",
+     *     tags={"Products"},
+     *     operationId="filterProducts",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="category_id", type="integer", description="Category ID"),
+     *             @OA\Property(property="min_price", type="number", format="float", description="Minimum price"),
+     *             @OA\Property(property="max_price", type="number", format="float", description="Maximum price"),
+     *             @OA\Property(property="brand", type="string", description="Brand name")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of filtered products retrieved successfully"
+     *     ),
+     *     @OA\Response(response=500, description="Server error")
+     * )
+     */
+    public function filterProduct(Request $request)
+    {
+        $query = Product::query();
+
+        if ($request->has('category_id')) {
+            $query->where('category_id', $request->input('category_id'));
+        }
+
+        if ($request->has('min_price')) {
+            $query->where('product_price', '>=', $request->input('min_price'));
+        }
+
+        if ($request->has('max_price')) {
+            $query->where('product_price', '<=', $request->input('max_price'));
+        }
+
+        if ($request->has('brand')) {
+            $query->where('brand_id', $request->input('brand'));
+        }
+
+        $query->where('status', 1); // Ensure product is active
+
+        $products = $query->get();
+
+        return response()->json($products);
+    }
 }
 
 

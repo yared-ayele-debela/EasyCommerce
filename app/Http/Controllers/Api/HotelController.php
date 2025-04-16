@@ -183,7 +183,7 @@ class HotelController extends Controller
      *     @OA\Response(response=404, description="No hotels found")
      * )
      */
-    public function bestHotel()
+    public function getBestHotels()
     {
         try {
             $bestHotel = Hotel::orderBy('rating', 'desc')->first();
@@ -227,7 +227,7 @@ class HotelController extends Controller
      *     @OA\Response(response=200, description="List of hotels matching the keyword")
      * )
      */
-    public function searchByKeyword(Request $request)
+    public function searchHotelsByKeyword(Request $request)
     {
         try {
             $request->validate([

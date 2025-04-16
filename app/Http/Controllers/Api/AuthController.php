@@ -19,47 +19,68 @@ class AuthController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"name", "mobile", "email", "password"},
-     *             @OA\Property(property="name", type="string", example="John Doe"),
-     *             @OA\Property(property="mobile", type="string", example="1234567890"),
-     *             @OA\Property(property="email", type="string", format="email", example="user@example.com"),
-     *             @OA\Property(property="password", type="string", format="password", example="password123")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Successful registration",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="token", type="string"),
-     *             @OA\Property(property="user")
-     *         )
-     *     ),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+    *             required={"name", "mobile", "email", "password", "address", "city", "state", "country", "pincode", "latitude", "longitude"},
+    *             @OA\Property(property="name", type="string", example="John Doe"),
+    *             @OA\Property(property="mobile", type="string", example="1234567890"),
+    *             @OA\Property(property="email", type="string", format="email", example="user@example.com"),
+    *             @OA\Property(property="password", type="string", format="password", example="password123"),
+    *             @OA\Property(property="address", type="string", example="123 Main Street"),
+    *             @OA\Property(property="city", type="string", example="New York"),
+    *             @OA\Property(property="state", type="string", example="NY"),
+    *             @OA\Property(property="country", type="string", example="USA"),
+    *             @OA\Property(property="pincode", type="string", example="10001"),
+    *             @OA\Property(property="latitude", type="string", example="40.712776"),
+    *             @OA\Property(property="longitude", type="string", example="-74.005974")
+    *         )
+    *     ),
+    *     @OA\Response(
+    *         response=201,
+    *         description="Successful registration",
+    *         @OA\JsonContent(
+    *             @OA\Property(property="token", type="string"),
+    *             @OA\Property(property="user")
+    *         )
+    *     ),
+    *     @OA\Response(response=500, description="Server error")
+    * )
+    */
     public function register(Request $request)
     {
-        try {
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'mobile' => 'required|string|unique:users',
-                'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|min:8',
-            ]);
+       try {
+          $request->validate([
+             'name' => 'required|string|max:255',
+             'mobile' => 'required|string|unique:users',
+             'email' => 'required|string|email|max:255|unique:users',
+             'password' => 'required|string|min:8',
+             'address' => 'nullable|string|max:255',
+             'city' => 'nullable|string|max:255',
+             'state' => 'nullable|string|max:255',
+             'country' => 'nullable|string|max:255',
+             'pincode' => 'nullable|string|max:255',
+             'latitude' => 'nullable|string',
+             'longitude' => 'nullable|string',
+          ]);
 
-            $user = User::create([
-                'name' => $request->name,
-                'mobile' => $request->mobile,
-                'email' => $request->email,
-                'password' => bcrypt($request->password),
-            ]);
+          $user = User::create([
+             'name' => $request->name,
+             'mobile' => $request->mobile,
+             'email' => $request->email,
+             'password' => bcrypt($request->password),
+             'address' => $request->address,
+             'city' => $request->city,
+             'state' => $request->state,
+             'country' => $request->country,
+             'pincode' => $request->pincode,
+             'latitude' => $request->latitude,
+             'longitude' => $request->longitude,
+          ]);
 
-            $token = $user->createToken('auth_token')->plainTextToken;
+          $token = $user->createToken('auth_token')->plainTextToken;
 
-            return response()->json(['token' => $token, 'user' => $user], 201);
-        } catch (Exception $e) {
-            return response()->json(['error' => 'An error occurred while registering', 'details' => $e->getMessage()], 500);
-        }
+          return response()->json(['token' => $token, 'user' => $user], 201);
+       } catch (Exception $e) {
+          return response()->json(['error' => 'An error occurred while registering', 'details' => $e->getMessage()], 500);
+       }
     }
 
     /**

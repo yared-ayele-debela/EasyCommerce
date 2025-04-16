@@ -398,7 +398,14 @@
                                     "name",
                                     "mobile",
                                     "email",
-                                    "password"
+                                    "password",
+                                    "address",
+                                    "city",
+                                    "state",
+                                    "country",
+                                    "pincode",
+                                    "latitude",
+                                    "longitude"
                                 ],
                                 "properties": {
                                     "name": {
@@ -418,6 +425,34 @@
                                         "type": "string",
                                         "format": "password",
                                         "example": "password123"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "123 Main Street"
+                                    },
+                                    "city": {
+                                        "type": "string",
+                                        "example": "New York"
+                                    },
+                                    "state": {
+                                        "type": "string",
+                                        "example": "NY"
+                                    },
+                                    "country": {
+                                        "type": "string",
+                                        "example": "USA"
+                                    },
+                                    "pincode": {
+                                        "type": "string",
+                                        "example": "10001"
+                                    },
+                                    "latitude": {
+                                        "type": "string",
+                                        "example": "40.712776"
+                                    },
+                                    "longitude": {
+                                        "type": "string",
+                                        "example": "-74.005974"
                                     }
                                 },
                                 "type": "object"
@@ -914,6 +949,34 @@
                 }
             }
         },
+        "/api/brands": {
+            "get": {
+                "tags": [
+                    "Brands"
+                ],
+                "summary": "Fetch all brands",
+                "operationId": "8a50cdf849205d06b572bdc518acfaee",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {}
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/cart": {
             "get": {
                 "tags": [
@@ -1029,13 +1092,58 @@
         "/api/categories": {
             "get": {
                 "tags": [
-                    "Categories"
+                    "Product Categories"
                 ],
                 "summary": "Get all categories",
                 "operationId": "ac9c4d978ea4e5b72915ca9728e5b8b1",
                 "responses": {
                     "200": {
                         "description": "List of categories"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/api/categories/main": {
+            "get": {
+                "tags": [
+                    "Product Categories"
+                ],
+                "summary": "Get main categories",
+                "operationId": "53b5f21ab23042424c7b91a0213a209e",
+                "responses": {
+                    "200": {
+                        "description": "List of main categories"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/api/categories/sub/{parentId}": {
+            "get": {
+                "tags": [
+                    "Product Categories"
+                ],
+                "summary": "Get subcategories by parent category ID",
+                "operationId": "267ce9f37cd3eb3d04e81eadf9f991fb",
+                "parameters": [
+                    {
+                        "name": "parentId",
+                        "in": "path",
+                        "description": "Parent category ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of subcategories"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -1078,7 +1186,20 @@
                                     },
                                     "payment_method": {
                                         "type": "string",
-                                        "example": "credit_card"
+                                        "example": "cash_on_delivery"
+                                    },
+                                    "coupon_code": {
+                                        "type": "string",
+                                        "example": "DISCOUNT10"
+                                    },
+                                    "transaction_id": {
+                                        "type": "string",
+                                        "example": "TRX123456"
+                                    },
+                                    "screenshot": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "example": "screenshot.jpg"
                                     }
                                 },
                                 "type": "object"
@@ -1089,6 +1210,124 @@
                 "responses": {
                     "200": {
                         "description": "Checkout successful"
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/hotel-reservation-checkout": {
+            "post": {
+                "tags": [
+                    "Checkout"
+                ],
+                "summary": "Process hotel reservation checkout",
+                "operationId": "a52ee546c95f92b4213d672c77160b74",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "room_id": {
+                                        "type": "integer",
+                                        "example": 101
+                                    },
+                                    "check_in_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2023-12-01"
+                                    },
+                                    "check_out_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2023-12-05"
+                                    },
+                                    "coupon_code": {
+                                        "type": "string",
+                                        "example": "HOTEL10"
+                                    },
+                                    "payment_method": {
+                                        "type": "string",
+                                        "example": "credit_card"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Hotel reservation checkout successful"
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/restaurant-order-checkout": {
+            "post": {
+                "tags": [
+                    "Checkout"
+                ],
+                "summary": "Process restaurant food order checkout",
+                "operationId": "816ef658fcc69c4b5e62f9872fdd8e60",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "items": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "menu_item_id": {
+                                                    "type": "integer",
+                                                    "example": 201
+                                                },
+                                                "quantity": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "coupon_code": {
+                                        "type": "string",
+                                        "example": "FOOD20"
+                                    },
+                                    "payment_method": {
+                                        "type": "string",
+                                        "example": "cash"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Restaurant food order checkout successful"
                     },
                     "400": {
                         "description": "Validation error"
@@ -2097,7 +2336,7 @@
                 ],
                 "summary": "Get the best hotel",
                 "description": "Retrieve the hotel with the highest rating",
-                "operationId": "a10cdd189f12e4b5f5f6db54ec112f45",
+                "operationId": "56ce537e6039b88c2a664ca2daf8ac7e",
                 "responses": {
                     "200": {
                         "description": "Best hotel details"
@@ -2114,7 +2353,7 @@
                     "Hotel"
                 ],
                 "summary": "Search hotels by keyword",
-                "operationId": "b49e05e0df051d37185306978a1b33ec",
+                "operationId": "241da5b4b3979f52c144f39cd284cf6c",
                 "parameters": [
                     {
                         "name": "keyword",
@@ -3433,6 +3672,81 @@
                 }
             }
         },
+        "/api/products/search": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Search products by keyword",
+                "operationId": "searchProducts",
+                "parameters": [
+                    {
+                        "name": "keyword",
+                        "in": "query",
+                        "description": "Search keyword",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of products matching the search keyword retrieved successfully"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/api/products/filter": {
+            "post": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Filter products by criteria",
+                "operationId": "filterProducts",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "category_id": {
+                                        "description": "Category ID",
+                                        "type": "integer"
+                                    },
+                                    "min_price": {
+                                        "description": "Minimum price",
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "max_price": {
+                                        "description": "Maximum price",
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "brand": {
+                                        "description": "Brand name",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "List of filtered products retrieved successfully"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
         "/api/restaurants": {
             "get": {
                 "tags": [
@@ -4106,10 +4420,6 @@
             "description": "API Endpoints for managing orders"
         },
         {
-            "name": "Categories",
-            "description": "API Endpoints for managing restaurant categories"
-        },
-        {
             "name": "User Profile",
             "description": "API Endpoints for User Profile Management"
         },
@@ -4130,8 +4440,16 @@
             "description": "Banners"
         },
         {
+            "name": "Brands",
+            "description": "Brands"
+        },
+        {
             "name": "Cart",
             "description": "Cart"
+        },
+        {
+            "name": "Product Categories",
+            "description": "Product Categories"
         },
         {
             "name": "Checkout",

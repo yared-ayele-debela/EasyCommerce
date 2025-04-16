@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\DeliveryAddressController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\BannerController;
+use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\Api\HotelController;
 // use App\Http\Controllers\Api\ReviewController;
@@ -81,6 +82,8 @@ Route::prefix('auth')->group(function () {
 // Category routes
 Route::prefix('categories')->group(function () {
     Route::get('/', [CategoryController::class, 'index']);
+    Route::get('/sub/{parentId}', [CategoryController::class, 'subCategories']);
+    Route::get('/main', [CategoryController::class, 'mainCategories']);
 });
 
 // Product routes
@@ -93,8 +96,13 @@ Route::prefix('products')->group(function () {
     Route::get('search', [ProductController::class, 'search']);
     Route::get('{id}/similar', [ProductController::class, 'similar']);
     Route::get('{id}', [ProductController::class, 'detail']);
+    Route::get('search', [ProductController::class, 'searchProduct']);
+    Route::post('filter', [ProductController::class, 'filterProduct']);
 });
-
+// Brand routes
+Route::prefix('brands')->group(function () {
+    Route::get('/', [BrandController::class, 'brand']);
+});
 // Cart routes
 Route::prefix('cart')->group(function () {
     Route::get('/', [CartController::class, 'index']);
@@ -211,7 +219,11 @@ Route::get('/hotels/best', [HotelController::class, 'getBestHotels']);
 Route::get('/hotels/search/keyword', [HotelController::class, 'searchHotelsByKeyword']);
 Route::post('/hotels/{hotel_id}/rooms/{room_id}/reserve', [HotelController::class, 'hotelReservation']);
 Route::get('/hotels/{hotel_id}/gallery', [HotelController::class, 'getHotelGallery']);
+// Hotel Reservation Checkout
+Route::post('/hotel-reservation-checkout', [CheckoutController::class, 'hotelReservationCheckout']);
 
+// Restaurant Order Checkout
+Route::post('/restaurant-order-checkout', [CheckoutController::class, 'restaurantOrderCheckout']);
 // API routes for orders
 Route::prefix('orders')->group(function () {
     // Cancel an order
