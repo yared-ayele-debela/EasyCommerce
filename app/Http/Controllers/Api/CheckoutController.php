@@ -42,7 +42,7 @@ class CheckoutController extends Controller
             'items' => 'required|array',
             'items.*.product_id' => 'required|integer',
             'items.*.quantity' => 'required|integer|min:1',
-            'payment_method' => 'required|string|in:cash_on_delivery',
+            'payment_method' => 'required|string',
             'coupon_code' => 'nullable|string',
             'transaction_id' => 'nullable|string',
             'screenshot' => 'nullable|file|mimes:jpeg,png,jpg|max:2048'
@@ -159,7 +159,7 @@ class CheckoutController extends Controller
                 'price' => 'required|numeric|min:0',
                 'transaction_id' => 'required|string|max:100',
                 'screenshot' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
-                'payment_method' => 'nullable|string|in:credit_card,cash'
+                'payment_method' => 'nullable|string'
             ]);
 
             if ($validator->fails()) {
@@ -243,8 +243,8 @@ class CheckoutController extends Controller
                 'coupon_code' => 'nullable|string',
                 'price' => 'required|integer',
                 'transaction_id' => 'required|string',
-                'screenshot' => 'sometime|file|mimes:jpeg,png,jpg|max:2048',
-                'payment_method' => 'sometime|string|in:cash,credit_card'
+                'screenshot' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
+                'payment_method' => 'nullable|string'
             ]);
 
             if ($validator->fails()) {
