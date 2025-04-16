@@ -1255,9 +1255,22 @@
                                         "type": "string",
                                         "example": "HOTEL10"
                                     },
+                                    "price": {
+                                        "type": "integer",
+                                        "example": 5000
+                                    },
                                     "payment_method": {
                                         "type": "string",
                                         "example": "credit_card"
+                                    },
+                                    "transaction_id": {
+                                        "type": "string",
+                                        "example": "TRX123456"
+                                    },
+                                    "screenshot": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "example": "receipt.jpg"
                                     }
                                 },
                                 "type": "object"
@@ -1314,6 +1327,19 @@
                                     "coupon_code": {
                                         "type": "string",
                                         "example": "FOOD20"
+                                    },
+                                    "price": {
+                                        "type": "integer",
+                                        "example": 500
+                                    },
+                                    "transaction_id": {
+                                        "type": "string",
+                                        "example": "TRX987654"
+                                    },
+                                    "screenshot": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "example": "receipt.jpg"
                                     },
                                     "payment_method": {
                                         "type": "string",

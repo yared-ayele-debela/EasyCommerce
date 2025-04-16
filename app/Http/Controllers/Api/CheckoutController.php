@@ -136,7 +136,10 @@ class CheckoutController extends Controller
      *             @OA\Property(property="check_in_date", type="string", format="date", example="2023-12-01"),
      *             @OA\Property(property="check_out_date", type="string", format="date", example="2023-12-05"),
      *             @OA\Property(property="coupon_code", type="string", example="HOTEL10"),
-     *             @OA\Property(property="payment_method", type="string", example="credit_card")
+     *             @OA\Property(property="price", type="integer", example=5000),
+     *             @OA\Property(property="payment_method", type="string", example="credit_card"),
+     *             @OA\Property(property="transaction_id", type="string", example="TRX123456"),
+     *             @OA\Property(property="screenshot", type="string", format="binary", example="receipt.jpg")
      *         )
      *     ),
      *     @OA\Response(response=200, description="Hotel reservation checkout successful"),
@@ -153,7 +156,10 @@ class CheckoutController extends Controller
                 'check_in_date' => 'required|date',
                 'check_out_date' => 'required|date|after:check_in_date',
                 'coupon_code' => 'nullable|string',
-                'payment_method' => 'required|string|in:credit_card,cash'
+                'price' => 'required|integer',
+                'transaction_id' => 'required|string',
+                'screenshot' => 'sometime|file|mimes:jpeg,png,jpg|max:2048',
+                'payment_method' => 'sometime|string|in:credit_card,cash'
             ]);
 
             if ($validator->fails()) {
@@ -165,12 +171,13 @@ class CheckoutController extends Controller
             }
 
             // Logic for processing hotel reservation checkout
-            $reservation = new \App\Models\HotelReservation();
+            $reservation = new \App\Models\Reservation();
             $reservation->user_id = $request->input('user_id');
+            $reservation->hotel_id = $request->input('hotel_id');
             $reservation->room_id = $request->input('room_id');
             $reservation->check_in_date = $request->input('check_in_date');
             $reservation->check_out_date = $request->input('check_out_date');
-            $reservation->payment_method = $request->input('payment_method');
+            $reservation->total_price = $request->input('price');
 
             $couponCode = $request->input('coupon_code');
             if ($couponCode) {
@@ -214,6 +221,9 @@ class CheckoutController extends Controller
      *                 @OA\Property(property="quantity", type="integer", example=2)
      *             )),
      *             @OA\Property(property="coupon_code", type="string", example="FOOD20"),
+     *             @OA\Property(property="price", type="integer", example=500),
+     *             @OA\Property(property="transaction_id", type="string", example="TRX987654"),
+     *             @OA\Property(property="screenshot", type="string", format="binary", example="receipt.jpg"),
      *             @OA\Property(property="payment_method", type="string", example="cash")
      *         )
      *     ),
@@ -231,7 +241,10 @@ class CheckoutController extends Controller
                 'items.*.menu_item_id' => 'required|integer',
                 'items.*.quantity' => 'required|integer|min:1',
                 'coupon_code' => 'nullable|string',
-                'payment_method' => 'required|string|in:cash,credit_card'
+                'price' => 'required|integer',
+                'transaction_id' => 'required|string',
+                'screenshot' => 'sometime|file|mimes:jpeg,png,jpg|max:2048',
+                'payment_method' => 'sometime|string|in:cash,credit_card'
             ]);
 
             if ($validator->fails()) {
@@ -249,7 +262,7 @@ class CheckoutController extends Controller
             $order->save();
 
             foreach ($request->input('items') as $item) {
-                $orderItem = new \App\Models\RestaurantOrderItem();
+                $orderItem = new \App\Models\Food();
                 $orderItem->order_id = $order->id;
                 $orderItem->menu_item_id = $item['menu_item_id'];
                 $orderItem->quantity = $item['quantity'];
