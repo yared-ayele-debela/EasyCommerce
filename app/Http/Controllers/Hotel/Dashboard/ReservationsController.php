@@ -28,8 +28,8 @@ class ReservationsController extends Controller
                 ->latest()
                 ->get();
             }
-    
-        return view('hotel.dashboard.reservations.index', compact('reservations'));
+
+        return view('Hotel.dashboard.reservations.index', compact('reservations'));
     }
     public function updateStatus(Request $request, $id)
     {

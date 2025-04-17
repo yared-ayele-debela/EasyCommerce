@@ -32,7 +32,7 @@ class HotelController extends Controller
         $countries=Country::all();
         // dd($countries);
         $states=State::all();
-        return view('hotel.dashboard.hotels.index', compact('hotels', 'categories','amenities','cities','states','countries'));
+        return view('Hotel.dashboard.hotels.index', compact('hotels', 'categories','amenities','cities','states','countries'));
     }
 
     public function store(Request $request)

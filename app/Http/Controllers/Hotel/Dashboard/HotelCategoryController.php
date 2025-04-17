@@ -13,7 +13,7 @@ class HotelCategoryController extends Controller
     public function index()
     {
         $categories = HotelCategory::latest()->paginate(8);
-        return view('hotel.dashboard.hotel_categories.index', compact('categories'));
+        return view('Hotel.dashboard.hotel_categories.index', compact('categories'));
     }
 
     public function store(Request $request)

@@ -19,6 +19,6 @@ class HotelReviewController extends Controller
         $reviews =HotelReview::where('hotel_id', $id)->with('user','hotel')->latest()->paginate(10);
         $hotel=Hotel::findOrFail($id);
 
-        return view('hotel.dashboard.hotels.reviews', compact('reviews','hotel'));
+        return view('Hotel.dashboard.hotels.reviews', compact('reviews','hotel'));
     }
 }

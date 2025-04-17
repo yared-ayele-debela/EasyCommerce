@@ -13,7 +13,7 @@ class SliderBannerController extends Controller
     public function index()
     {
         $banners = HotelSlider::latest()->get();
-        return view('hotel.dashboard.slider-banners.index', compact('banners'));
+        return view('Hotel.dashboard.slider-banners.index', compact('banners'));
     }
 
     /**

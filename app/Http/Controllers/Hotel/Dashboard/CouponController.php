@@ -18,7 +18,7 @@ class CouponController extends Controller
         }else{
             $coupons = HotelCoupon::where('admin_id',Auth::guard('admin')->user()->id)->latest()->get();
         }
-        return view('hotel.dashboard.coupon.index', compact('coupons'));
+        return view('Hotel.dashboard.coupon.index', compact('coupons'));
     }
 
     public function store(Request $request)

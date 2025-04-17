@@ -26,10 +26,10 @@ class RoomController extends Controller
             $rooms = Room::with('images','amenities')->whereIn('hotel_id',$hotelId)->latest()->get();
             // dd($rooms);
         }
-     
+
         // dd($hotels);
         $amenities = Amenity::all();
-        return view('hotel.dashboard.room.index', compact('rooms','hotels','amenities'));
+        return view('Hotel.dashboard.room.index', compact('rooms','hotels','amenities'));
     }
 
     public function create()
