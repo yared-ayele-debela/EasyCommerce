@@ -20,4 +20,4 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           server-dir: ${{ secrets.FTP_TARGET }}
-          local-dir: public
+          local-dir: public/
