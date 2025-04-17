@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Commerce Slider and Categories</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+      <!-- Custom Styles for Subcategory Dropdown -->
+      <style>
+        .category-list {
+          position: relative;
+        }
+
+        .category-list li {
+          cursor: pointer;
+          position: relative;
+        }
+
+        .subcategory-dropdown {
+          background: #fff;
+          border: 1px solid #dee2e6;
+          padding: 10px;
+          display: none;
+          z-index: 1000;
+          border-radius: 0.5rem;
+          margin-top: 10px;
+        }
+
+        .subcategory-dropdown li {
+          list-style: none;
+          padding: 5px 10px;
+        }
+
+        .subcategory-dropdown li a {
+          text-decoration: none;
+          color: #333;
+          display: block;
+        }
+
+        .subcategory-dropdown li a:hover {
+          color: #4e54c8;
+          font-weight: 500;
+        }
+
+        /* Hover for desktop */
+        @media (min-width: 992px) {
+          .subcategory-dropdown {
+            position: absolute;
+            top: 0;
+            left: 100%;
+            min-width: 800px;
+            margin-top: 0;
+            border-left: none;
+            border-radius: 0 0.5rem 0.5rem 0;
+          }
+
+          .category-list li:hover .subcategory-dropdown {
+            display: block;
+          }
+        }
+
+        /* Click-to-toggle on mobile */
+        @media (max-width: 991.98px) {
+          .category-list li {
+            padding-bottom: 0.5rem;
+          }
+
+          .category-list li.active .subcategory-dropdown {
+            display: block;
+          }
+
+          .category-list li .toggle-icon {
+            float: right;
+            font-size: 1.1rem;
+            color: #666;
+            cursor: pointer;
+          }
+        }
+      </style>
+
+</head>
+<body>
+    <div class="container py-5">
+        <div class="row align-items-start g-4">
+          <!-- Banner Section -->
+           <!-- Category List with Subcategories -->
+          <div class="col-lg-3">
+            <div class="card shadow-sm rounded-4">
+              <div class="card-header bg-white border-0 pb-0">
+                <h5 class="mb-0 fw-bold">Shop by Category</h5>
+              </div>
+              <ul class="list-group list-group-flush category-list">
+                <li class="list-group-item position-relative">
+                  <i class="bi bi-phone me-2 text-primary"></i> Electronics
+                  <span class="badge bg-primary rounded-pill float-end">120</span>
+                  <ul class="subcategory-dropdown">
+                    <div class="row">
+                        <div class="col-4">
+                          <li><a href="#">Mobile Phones</a></li>
+                          <li><a href="#">Laptops</a></li>
+                          <li><a href="#">Tablets</a></li>
+                        </div>
+                        <div class="col-4">
+                          <li><a href="#">Mobile Phones</a></li>
+                          <li><a href="#">Laptops</a></li>
+                          <li><a href="#">Tablets</a></li>
+                        </div>
+                        <div class="col-4">
+                          <li><a href="#">Mobile Phones</a></li>
+                          <li><a href="#">Laptops</a></li>
+                          <li><a href="#">Tablets</a></li>
+                        </div>
+                        <div class="col-6">
+                          <li><a href="#">Mobile Phones</a></li>
+                          <li><a href="#">Laptops</a></li>
+                          <li><a href="#">Tablets</a></li>
+                        </div>
+                    </div>
+                  </ul>
+                </li>
+                <li class="list-group-item position-relative">
+                  <i class="bi bi-watch me-2 text-dark"></i> Fashion
+                  <span class="badge bg-dark rounded-pill float-end">85</span>
+                  <ul class="subcategory-dropdown">
+                    <li><a href="#">Men</a></li>
+                    <li><a href="#">Women</a></li>
+                    <li><a href="#">Kids</a></li>
+                  </ul>
+                </li>
+                <li class="list-group-item position-relative">
+                  <i class="bi bi-house-door me-2 text-success"></i> Home & Living
+                  <span class="badge bg-success rounded-pill float-end">63</span>
+                  <ul class="subcategory-dropdown">
+                    <li><a href="#">Furniture</a></li>
+                    <li><a href="#">Decor</a></li>
+                    <li><a href="#">Kitchen</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-lg-9">
+            <div class="position-relative overflow-hidden rounded-4 shadow-lg" style="background: linear-gradient(135deg, #4e54c8, #8f94fb); min-height: 300px;">
+              <div class="p-5 text-white">
+                <h1 class="display-5 fw-bold">Big Sale is Live!</h1>
+                <p class="lead mb-4">Grab your favorite products with up to <strong>70% off</strong>. Limited time offer!</p>
+                <a href="#" class="btn btn-light btn-lg rounded-pill shadow-sm">
+                  Shop Now <i class="bi bi-arrow-right ms-2"></i>
+                </a>
+              </div>
+              <img src="https://via.placeholder.com/300x300?text=Product+Banner" alt="Banner" class="position-absolute end-0 bottom-0 me-3 mb-3 img-fluid d-none d-md-block" style="max-height: 250px;">
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+
+
+      <!-- Bootstrap Icons -->
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Toggle subcategories on click for mobile
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.innerWidth < 992) {
+        document.querySelectorAll('.category-list li').forEach(item => {
+          item.addEventListener('click', function (e) {
+            // Prevent toggling when clicking inside dropdown
+            if (e.target.closest('.subcategory-dropdown')) return;
+
+            // Close others
+            document.querySelectorAll('.category-list li').forEach(li => {
+              if (li !== item) li.classList.remove('active');
+            });
+
+            // Toggle current
+            item.classList.toggle('active');
+          });
+        });
+      }
+    });
+  </script>
+
+</body>
+</html>

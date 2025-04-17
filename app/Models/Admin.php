@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Restaurant\Restaurant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticable;
@@ -68,7 +69,7 @@ class Admin extends Authenticable
 
         return $this->belongsTo('App\Models\VendorBankDetails','vendor_id');
     }
-  
+
     protected $hidden = [
         'password',
         'remember_token',
@@ -78,4 +79,9 @@ class Admin extends Authenticable
     {
         return $this->hasMany(Hotel::class);
     }
+    public function restaurant()
+    {
+        return $this->hasMany(Restaurant::class);
+    }
+
 }

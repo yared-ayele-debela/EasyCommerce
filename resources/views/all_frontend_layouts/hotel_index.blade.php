@@ -8,8 +8,8 @@
                     Food</a>
                 <a href="{{ url('/hotel') }}" class="custom-switch nav-link fw-bold {{ request()->is('hotel')?' text-white nav-active':'' }}">Reserve
                     Hotel</a>
-                <a href="#" class="custom-switch nav-link text-dark fw-bold">Buy Goods</a>
-            </nav>
+                    <a href="{{ url('/ecommerce') }}" class="custom-switch nav-link text-dark fw-bold {{ request()->is('ecommerce')?' text-white nav-active':'' }}">Buy Goods</a>
+                </nav>
         </div>
     </div>
 </div>
@@ -157,45 +157,7 @@
             @endforeach
         </div>
     </div>
-    {{-- <div class="d-flex justify-content-between align-items-center">
-        <h4 class="mt-2 mb-2"><img width="30" src="{{ asset('restaurant_frontend/location.gif') }}" alt=""> Nearby Hotels</h4>
-    <h5 class="mt-2 mb-2">
-        <form action="{{ url('nearby-hotels') }}" method="GET">
-            @csrf
-            <button type="submit" class="text-dark border-0 bg-white">
-                All
-            </button>
-        </form>
-    </h5>
-</div> --}}
-{{-- <div class="row g-3">
-        <div class="owl-carousel owl-theme hotel mt-4">
-            @foreach ($nearbyHotels as $hotel)
-                    <div class="item my-2">
-                        <div class="offer-card h-100">
-                            <a href="{{ url('hotel/'.$hotel->id.'/detail') }}">
-@if($hotel->banner_image)
-<img class="card-img-top img-fluid" src="{{ asset('storage/'.$hotel->banner_image) }}" alt="{{ $hotel->name }}" style="height: 200px; object-fit: cover;">
-@else
-<img class="card-img-top img-fluid" src="{{ asset('restaurant_frontend/default-image.png') }}" alt="{{ $hotel->name }}" style="height: 200px; object-fit: cover;">
-@endif
-</a>
-<div class="card-body">
-    <span class="badge bg-primary mt-0">{{ $hotel->category->name }}</span>
-    <h5 class="card-title">{{ $hotel->name }}</h5>
-    <p class="card-text">
-        Location: {{ $hotel->state }}, {{ $hotel->city }}, {{ $hotel->location }}<br>
-        Price per Night: <strong>{{ $hotel->price_per_night }} ETB</strong><br>
-        Rating: <strong>{{ $hotel->rating }} <i class="bi bi-star-fill text-primary"></i></strong><br>
-        Distance: {{ round($hotel->distance, 1) }} km
-    </p>
-    <p class="card-text">{{ \Illuminate\Support\Str::limit($hotel->description, 60) }}</p>
-</div>
-</div>
-</div>
-@endforeach
-</div>
-</div> --}}
+    
 <div class="container-fluid p-0">
     <div id="nearby-hotels">
         <p>Loading nearby hotels...</p>
@@ -288,30 +250,8 @@
         @endforeach
     </div>
 </div>
+@include('all_frontend_layouts.partial_index')
 
-<div class="row px-2 py-4 d-flex justify-content-center align-items-center flex-nowrap">
-    <div class="col-md-4 col-4 text-center">
-        <div class="icon-img-bg d-inline-block p-4 bg-primary rounded-circle">
-            <img src="{{ asset('restaurant_frontend/assets/img/icon-delivery.png') }}" style="height: 70px;" alt="Delivery Icon">
-        </div>
-        <h5 class="pt-3 text-primary feature-title">FREE AND FAST DELIVERY</h5>
-        <p class="text-primary feature-text">Free delivery for all orders over $140</p>
-    </div>
-    <div class="col-md-4 col-4 text-center">
-        <div class="icon-img-bg d-inline-block p-4 bg-primary rounded-circle">
-            <img src="{{ asset('restaurant_frontend/assets/img/Icon-Customer service.png') }}" style="height: 50px;" alt="Customer Service Icon">
-        </div>
-        <h5 class="pt-3 text-primary feature-title">24/7 CUSTOMER SUPPORT</h5>
-        <p class="text-primary feature-text">Friendly 24/7 customer support</p>
-    </div>
-    <div class="col-md-4 col-4 text-center">
-        <div class="icon-img-bg d-inline-block p-4 bg-primary rounded-circle">
-            <img src="{{ asset('restaurant_frontend/assets/img/Icon-secure.png') }}" style="height: 50px;" alt="Secure Icon">
-        </div>
-        <h5 class="pt-3 text-primary feature-title">MONEY BACK GUARANTEE</h5>
-        <p class="text-primary feature-text">We return money within 30 days</p>
-    </div>
-</div>
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function() {

@@ -113,6 +113,40 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
 
 <script>
+    // Toggle subcategories on click for mobile
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.innerWidth < 992) {
+            document.querySelectorAll('.category-list li').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    // Prevent toggling when clicking inside dropdown
+                    if (e.target.closest('.subcategory-dropdown')) return;
+
+                    // Close others
+                    document.querySelectorAll('.category-list li').forEach(li => {
+                        if (li !== item) li.classList.remove('active');
+                    });
+
+                    // Toggle current
+                    item.classList.toggle('active');
+                });
+            });
+        }
+    });
+
+</script>
+<script>
+    const toggleIcon = document.querySelector("#categoryToggle i");
+    const categoryList = document.getElementById("categoryList");
+
+    document.getElementById("categoryToggle").addEventListener("click", () => {
+        categoryList.classList.toggle("d-none");
+        toggleIcon.classList.toggle("bi-toggle-on");
+        toggleIcon.classList.toggle("bi-toggle-off");
+    });
+
+</script>
+
+<script>
     function showAlert(type, message) {
         Swal.fire({
             title: type === 'success' ? '🎉 Success!' : '⚠️ Oops!'
@@ -205,6 +239,78 @@
         , responsive: {
             0: {
                 items: 2
+                , nav: false
+            }
+            , 1024: {
+                items: 6
+            }
+        }
+    });
+    $('.ecommerce_products').owlCarousel({
+        loop: true
+        , margin: 30
+        , nav: false
+        , dots: true
+        , autoplay: true
+        , autoplayHoverPause: true // Stops autoplay when hovered
+        , responsiveClass: true
+        , responsive: {
+            0: {
+                items: 2
+                , nav: false
+            }
+            , 1024: {
+                items: 5
+            }
+        }
+    });
+    $('.vendors').owlCarousel({
+        loop: true
+        , margin: 30
+        , nav: false
+        , dots: true
+        , autoplay: true
+        , autoplayHoverPause: true // Stops autoplay when hovered
+        , responsiveClass: true
+        , responsive: {
+            0: {
+                items: 1
+                , nav: false
+            }
+            , 1024: {
+                items: 4
+            }
+        }
+    });
+    $('.ecommerce_sliders').owlCarousel({
+        loop: true
+        , margin: 30
+        , nav: false
+        , dots: true
+        , autoplay: true
+        , autoplayHoverPause: true // Stops autoplay when hovered
+        , responsiveClass: true
+        , responsive: {
+            0: {
+                items: 1
+                , nav: false
+            }
+            , 1024: {
+                items: 1
+            }
+        }
+    });
+    $('.ecommerce_categories').owlCarousel({
+        loop: true
+        , margin: 30
+        , nav: false
+        , dots: true
+        , autoplay: true
+        , autoplayHoverPause: true // Stops autoplay when hovered
+        , responsiveClass: true
+        , responsive: {
+            0: {
+                items: 3
                 , nav: false
             }
             , 1024: {

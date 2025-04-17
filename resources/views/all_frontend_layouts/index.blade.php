@@ -7,7 +7,7 @@
             <nav class="nav justify-content-between custom-nav p-2">
                 <a href="{{ url('/') }}" class="custom-switch nav-link text-white fw-bold {{ request()->is('/')?'nav-active':'' }}">Order Food</a>
                 <a href="{{ url('/hotel') }}" class="custom-switch nav-link text-dark fw-bold {{ request()->is('/hotel')?'nav-active':'' }}">Reserve Hotel</a>
-                <a href="#" class="custom-switch nav-link text-dark fw-bold">Buy Goods</a>
+                <a href="{{ url('/ecommerce') }}" class="custom-switch nav-link text-dark fw-bold {{ request()->is('ecommerce')?' text-white nav-active':'' }}">Buy Goods</a>
             </nav>
         </div>
     </div>
@@ -279,29 +279,7 @@
         </div>
     </div>
 
-    <div class="row px-2 py-4 d-flex justify-content-center align-items-center flex-nowrap">
-        <div class="col-md-4 col-4 text-center">
-            <div class="icon-img-bg d-inline-block p-4 bg-primary rounded-circle">
-                <img src="{{ asset('restaurant_frontend/assets/img/icon-delivery.png') }}" style="height: 70px;" alt="Delivery Icon">
-            </div>
-            <h5 class="pt-3 text-primary feature-title">FREE AND FAST DELIVERY</h5>
-            <p class="text-primary feature-text">Free delivery for all orders over $140</p>
-        </div>
-        <div class="col-md-4 col-4 text-center">
-            <div class="icon-img-bg d-inline-block p-4 bg-primary rounded-circle">
-                <img src="{{ asset('restaurant_frontend/assets/img/Icon-Customer service.png') }}" style="height: 50px;" alt="Customer Service Icon">
-            </div>
-            <h5 class="pt-3 text-primary feature-title">24/7 CUSTOMER SUPPORT</h5>
-            <p class="text-primary feature-text">Friendly 24/7 customer support</p>
-        </div>
-        <div class="col-md-4 col-4 text-center">
-            <div class="icon-img-bg d-inline-block p-4 bg-primary rounded-circle">
-                <img src="{{ asset('restaurant_frontend/assets/img/Icon-secure.png') }}" style="height: 50px;" alt="Secure Icon">
-            </div>
-            <h5 class="pt-3 text-primary feature-title">MONEY BACK GUARANTEE</h5>
-            <p class="text-primary feature-text">We return money within 30 days</p>
-        </div>
-    </div>
+    @include('all_frontend_layouts.partial_index')
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {

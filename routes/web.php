@@ -96,6 +96,10 @@ use App\Http\Controllers\Socail\AuthController;
 use App\Http\Controllers\Admin\VendorController;
 use App\Http\Controllers\Admin\VendorWithdrawRequestController;
 use App\Http\Controllers\Admin\WithdrawSettingController;
+use App\Http\Controllers\Ecommerce\Frontend\CategoriesController as FrontendCategoriesController;
+use App\Http\Controllers\Ecommerce\Frontend\FrontendController as EcommerceFrontendFrontendController;
+use App\Http\Controllers\Ecommerce\Frontend\ProductsController;
+use App\Http\Controllers\Ecommerce\Frontend\VendorController as FrontendVendorController;
 use App\Http\Controllers\Front\AddressController as FrontAddressController;
 use App\Http\Controllers\Front\BlogsController as FrontBlogsController;
 use App\Http\Controllers\Front\ChapaController;
@@ -251,7 +255,7 @@ Route::prefix('admin')->group(function () {
 
     Route::post('login', [AdminController::class, 'loginvalidate'])->name('login_admin');
 
-    Route::group(['middleware' => ['admin']], function () {
+    Route::group(['middleware' => ['admin','check.admin:Ecommerce Manager']], function () {
 
         Route::post('sales-report', [DashboardController::class, 'filterOrders'])->name('sales-report');
 
@@ -1058,10 +1062,10 @@ Route::prefix('admin/restaurant')->group(function () {
     Route::group(['middleware' => ['admin', 'check.admin:Restaurant Manager']], function () {
 
         Route::get('dashboard', [RestaurantDashboardController::class, 'index'])
-        ->name('restaurant.dashboard');
+            ->name('restaurant.dashboard');
         Route::resource('slider-banners', SliderBannerController::class);
         Route::resource('restaurants', RestaurantController::class);
-        Route::get('my-restaurant', [RestaurantController::class, 'show'])->name('my-restaurant');
+        Route::get('my-restaurant/{id}', [RestaurantController::class, 'show'])->name('my-restaurant');
         Route::delete('/restaurant-images/{id}', [RestaurantController::class, 'deleteImage'])->name('restaurants.deleteImage');
         Route::resource('categories', CategoryController::class);
         Route::resource('menus', RestaurantMenuController::class);
@@ -1076,7 +1080,7 @@ Route::prefix('admin/restaurant')->group(function () {
         Route::post('/cities/store', [DashboardCityController::class, 'store'])->name('cities.store');
         Route::post('/cities/update/{id}', [DashboardCityController::class, 'update'])->name('cities.update');
         Route::delete('/cities/destroy/{id}', [DashboardCityController::class, 'destroy'])->name('cities.destroy');
-        
+
         Route::resource('products', DashboardProductController::class);
         Route::get('show-product/{id}', [DashboardProductController::class, 'show'])->name('show.product');
 
@@ -1230,9 +1234,7 @@ Route::prefix('/hotel')->group(function () {
     Route::get('discounted-hotels', [FrontendHotelController::class, 'discounted'])->name('discounted-hotels');
     Route::get('latest-hotels', [FrontendHotelController::class, 'latest'])->name('latest-hotels');
     Route::get('{id}/gallery', [FrontendHotelController::class, 'gallery'])->name('hotel.photo.gallery');
-
     Route::get('select-date/{id}', [FrontendHotelController::class, 'select_date'])->name('select_date');
-
     Route::get('rooms', [FrontendRoomController::class, 'indexs'])->name('room.indexs');
     Route::get('/rooms/filter', [FrontendRoomController::class, 'filter'])->name('rooms.filter');
 
@@ -1244,7 +1246,6 @@ Route::prefix('/hotel')->group(function () {
         Route::post('/reserve', [ReservationController::class, 'store'])->name('reservation.store');
         Route::get('/reservation/confirmation', [ReservationController::class, 'confirmation'])->name('reservation.confirmation');
         // Route::get('my-reservation',[ReservationController::class, 'my_reservation'])->name('my.reservation');
-
         Route::post('/rate-hotel-room', [FrontendRoomController::class, 'room_rating_store'])->name('hotel.room.rate');
     });
     Route::get('/reservations/receipt', [ReservationsController::class, 'receipt'])->name('reservations.receipt');
@@ -1254,3 +1255,27 @@ Route::get('hotels', [FrontendHotelController::class, 'latest'])->name('hotels')
 Route::get('nearby-hotels', [FrontendHotelController::class, 'nearby'])->name('nearby.hotels');
 Route::get('/hotels/filter', [FrontendHotelController::class, 'filter'])->name('hotels.filter');
 Route::get('/get-nearby-hotels', [FrontendHotelController::class, 'getNearbyHotels']);
+
+
+
+// ecommerce
+Route::prefix('/ecommerce')->group(function () {
+    Route::get('/', [EcommerceFrontendFrontendController::class, 'index'])->name('ecommerce.index');
+    Route::get('/categories', [FrontendCategoriesController::class, 'index'])->name('ecommerce.categories.index');
+
+    // All Latest Products
+    Route::get('/products/latest', [ProductsController::class, 'latest'])->name('ecommerce.products.latest');
+
+    // Featured Products
+    Route::get('/products/featured', [ProductsController::class, 'featured'])->name('ecommerce.products.featured');
+
+    Route::get('/product/{id}',[ProductsController::class, 'detail'])->name('ecommerce.product.detail');
+    // Discounted Products
+    Route::get('/products/discounted', [ProductsController::class, 'discounted'])->name('ecommerce.products.discounted');
+
+    // All Vendors
+    Route::get('/vendors', [FrontendVendorController::class, 'index'])->name('ecommerce.vendors.index');
+    Route::middleware('auth')->group(function () {
+
+    });
+});

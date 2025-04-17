@@ -216,7 +216,7 @@
       <div class="col-lg-8">
         <div id="imageSlider" class="carousel slide "  data-ride="carousel">
           <ol class="carousel-indicators">
-            @foreach ($banners as $index => $banner)
+           @foreach ($banners as $index => $banner)
             <li data-target="#imageSlider" class="text-dark" data-slide-to="{{ $index }}" class="{{ $index === 0 ? 'active' : '' }}"></li>
            @endforeach
           </ol>
@@ -465,13 +465,12 @@
                                 <div class="border item  ml-2">
                                     <div class="image-container">
                                         <a class="item-img-wrapper-link" href="{{ url('product/'.$product['id']) }}">
-                                              @if(isset($product['product_image']) || Storage::exists('products/' . $product['product_image']))
+                                            @if(isset($product['product_image']) || Storage::exists('products/' . $product['product_image']))
                                             <img class="img-fluid " src="{{ asset('storage/products/' . $product['product_image']) }}" alt="Product">
                                             @else
                                             <img class="img-fluid " src="{{ asset('new_frontend/images/product/product@3x.jpg') }}" alt="Product">
                                             @endif
                                        </a>
-
                                     </div>
                                     <div class="item-content">
                                         <div class="what-product-is">
@@ -1075,12 +1074,10 @@
 @endsection
 @section('script')
 <script>
-  var pages = 2;
+    var pages = 2;
 
     $(document).ready(function(){
-        // Initial load
         loadMoreData();
-        // Auto-scroll detection
         $(window).scroll(function() {
             if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
                 loadMoreData();

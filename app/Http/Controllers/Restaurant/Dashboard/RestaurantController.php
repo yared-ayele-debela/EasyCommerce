@@ -22,12 +22,12 @@ class RestaurantController extends Controller
         } else {
             $restaurants = RestaurantRestaurant::with(['admin', 'images'])->where('admin_id', Auth::guard('admin')->user()->id)->latest()->get();
         }
-        // $restaurants = RestaurantRestaurant::with(['admin', 'images'])->latest()->get();
         return view('restaurant.dashboard.restaurants.index', compact('restaurants'));
     }
 
-    public function show(){
-        $restaurant = RestaurantRestaurant::with(['admin', 'images'])->where('admin_id',Auth::guard('admin')->user()->id)->first();
+    public function show($Id){
+        $id = decrypt($Id);
+        $restaurant = RestaurantRestaurant::with(['admin', 'images'])->where('id',$id)->where('admin_id',Auth::guard('admin')->user()->id)->first();
         return view('restaurant.dashboard.restaurants.my-restaurants', compact('restaurant'));
     }
     /**
@@ -168,11 +168,7 @@ class RestaurantController extends Controller
     public function deleteImage($id)
     {
         $image = RestaurantImage::findOrFail($id);
-
-        // Delete image from storage
         Storage::disk('public')->delete($image->image_path);
-
-        // Delete from database
         $image->delete();
 
         return back()->with('success', 'Image deleted successfully.');

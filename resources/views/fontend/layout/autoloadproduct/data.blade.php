@@ -3,52 +3,47 @@
 <?php use App\Models\ProductFilter;
 $productFilters=ProductFilter::productFilters();
 ?>
-
-@foreach ($allproduct as $product )
-
-<div class="product-item col-lg-2 col-6  mb-4 all-product-layout">
-    <div class="border item">
-        <div class="image-container">
-            <a class="item-img-wrapper-link" href="{{ url('product/'.$product['id']) }}">
-                @if(isset($product['product_image']) || Storage::exists('products/' . $product['product_image']))
-                <img class="img-fluid " src="{{ asset('storage/products/' . $product['product_image']) }}" alt="Product">
-                @else
-                <img class="img-fluid " src="{{ asset('new_frontend/images/product/product@3x.jpg') }}" alt="Product">
+@foreach ($all_products as $product)
+<div class="product-item col-lg-2 col-6 mb-4 all-product-layout">
+    <div class="offer-card position-relative shadow-sm rounded-4 overflow-hidden h-100">
+        @php
+        $getDiscountPrice = App\Models\Product::getDiscountPrice($product['id']);
+        $hasDiscount = $getDiscountPrice > 0;
+        @endphp
+        @if($hasDiscount)
+        <span class="badge bg-primary position-absolute top-0 start-0 p-2 m-2" style="z-index: 1100;">
+            -{{ round(100 - ($getDiscountPrice / $product['product_price']) * 100) }}%
+        </span>
+        @endif
+        <a href="{{ url('product/'.$product['id']) }}">
+            <img src="{{ asset('storage/products/' . $product['product_image']) }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
+        </a>
+        <div class="card-body p-2">
+            <p class="text-muted small mb-1">{{ $product['product_code'] }} • {{ $product['product_color'] }}</p>
+            <h6 class="fw-semibold mb-2">
+                <a href="{{ url('product/'.$product['id']) }}" class="text-dark text-decoration-none">
+                    {{ Str::limit($product['product_name'], 40) }}
+                </a>
+            </h6>
+            @if($product['is_offer_price'] === "yes")
+            <span class="text-primary fw-bold">Offer Price</span>
+            @else
+            <h5 class="text-primary fw-bold mb-1">
+                {{ App\Helper\Helper::currency_converter($hasDiscount ? $getDiscountPrice : $product['product_price']) }}
+                @if($hasDiscount)
+                <small class="text-muted text-decoration-line-through ms-2">
+                    {{ App\Helper\Helper::currency_converter($product['product_price']) }}
+                </small>
                 @endif
-            </a>
-        </div>
-        <div class="item-content">
-            <div class="what-product-is">
-                <ul class="bread-crumb">
-                    <li class="has-separator">
-                        <a href="javascript:void();">{{ $product['product_code'] }}</a>
-                    </li>
-                    <li class="has-">
-                        <a href="javascript:void();">{{ $product['product_color'] }}</a>
-                    </li>
-                </ul>
-                <h6 class="item-title">
-                    <a href="{{ url('product/'.$product['id']) }}">{{ $product['product_name'] }}</a>
-                </h6>
-
-            </div>
-            <div class="price-template">
-                <?php $getDiscountPrice=Product::getDiscountPrice($product['id']);?>
-                @if($getDiscountPrice>0)
-                <div class="item-new-price">
-                    {{  App\Helper\Helper::currency_converter($getDiscountPrice) }}
-                </div>
-                <div class="item-old-price">
-                    {{  App\Helper\Helper::currency_converter($product['product_price']) }}
-                </div>
-                @else
-
-                {{  App\Helper\Helper::currency_converter($product['product_price']) }}</s></span>
-
-                @endif
+            </h5>
+            @endif
+            <div class="text-warning small">
+                <i class="fas fa-star"></i> <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i> <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+                <small class="text-muted">(88)</small>
             </div>
         </div>
-
     </div>
 </div>
 @endforeach

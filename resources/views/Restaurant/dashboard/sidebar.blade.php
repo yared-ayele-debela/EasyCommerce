@@ -7,7 +7,32 @@
     @endphp
     <ul class="sidebar-nav" id="sidebar-nav">
 
-        <li class="nav-item"> <a class="nav-link" href="{{ url('admin/restaurant/dashboard') }}"> <i class="bi bi-bank "></i> <span>Restaurant Dashboard</span> </a></li>
+        @php
+        $adminType = Auth::guard('admin')->user()->type;
+        @endphp
+        @if ($adminType === "Super Admin")
+        <div class="form-group mb-2">
+            <label for="dashboardSwitcher">Switch Dashboard</label>
+            <select class="form-control" style="background-color: #F6F9FF;color:#4154F1;" id="dashboardSwitcher">
+                <option disabled>-- Choose Dashboard --</option>
+                <option @if(request()->is('admin/ecommerce/dashboard')) selected @endif value="{{ url('admin/dashboard') }}">Ecommerce Dashboard</option>
+                <option @if(request()->is('admin/restaurant/dashboard')) selected @endif value="{{ url('admin/restaurant/dashboard') }}">Restaurant Dashboard</option>
+                <option @if(request()->is('admin/hotel/dashboard')) selected @endif value="{{ url('admin/hotel/dashboard') }}">Hotel Dashboard</option>
+            </select>
+        </div>
+
+        <script>
+            document.getElementById('dashboardSwitcher').addEventListener('change', function() {
+                var url = this.value;
+                if (url) {
+                    window.location.href = url;
+                }
+            });
+
+        </script>
+        <hr>
+        @endif
+
 
            {{-- @if ($user && $user->hasPermissionByRole('view_product')) --}}
             <li class="  {{ request()->is('admin/restaurant/slider-banners')?'nav-item active':'' }}">
@@ -95,7 +120,7 @@
                 </ul>
             </li>
             {{-- @endif --}}
-            
+
               {{-- @if ($user && $user->hasPermissionByRole('view_coupon')) --}}
               <li class=" {{ request()->is('admin/restaurant/order*')?'nav-item active':'' }}">
                 <a class="nav-link  {{request()->is('admin/restaurant/order*')}}" data-bs-target="#order_produts-nav" data-bs-toggle="collapse" href="javascripit:void(0);" aria-expanded="false"> <i class="bi bi-box"></i><span>Orders Managements</span><i class="bi bi-chevron-down ms-auto"></i> </a>
@@ -107,9 +132,7 @@
             </li>
             {{-- @endif --}}
             <br>
-            <li class=" {{ request()->is('admin/restaurant/my-restaurant')?'nav-item active':'' }} " >
-                <a href="{{ url('admin/restaurant/my-restaurant') }}" class="nav-link" > <i class="bi bi-textarea-resize"></i><span>My Restaurant</span></a>
-            </li>
+
 
     </ul>
 </aside>

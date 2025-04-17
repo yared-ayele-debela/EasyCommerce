@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Restaurant\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Mail\Restaurant\OrderStatusUpdateMail;
 use App\Models\Restaurant\Order;
+use App\Models\Restaurant\Restaurant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
@@ -13,8 +15,18 @@ class OrderController extends Controller
     //
     public function index()
     {
-                
-        $orders = Order::with('orderItems.product')->latest()->get();
+        $admin=Auth::guard('admin')->user();
+        $restaurant=Restaurant::where('admin_id',$admin->id)->get();
+        $restaurantId=$restaurant->pluck('id');
+        $adminType = Auth::guard('admin')->user()->type;
+        if ($adminType === "Super Admin") {
+            $orders = Order::with('orderItems.product')->latest()->get();
+        } else {
+            $orders = Order::whereHas('orderItems.product', function ($query) use ($restaurantId) {
+                $query->whereIn('restaurant_id', $restaurantId);
+            })->with('orderItems.product')->latest()->get();
+
+        }
 
         return view('restaurant.dashboard.orders.index', compact('orders'));
     }

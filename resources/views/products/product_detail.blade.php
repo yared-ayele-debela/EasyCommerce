@@ -221,10 +221,10 @@ use App\Models\Wishlist;
                         <div class="availability">
                             <span>Availability:</span>
                             <span class="text-sucess">In Stock</span>
-                            @else
+                        @else
                             <span>Availability:</span>
                             <span class="text-danger">Out Stock</span>
-                            @endif
+                        @endif
                         </div>
                         <div class="left">
                             @if($totalStock>0)

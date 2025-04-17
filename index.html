@@ -5,132 +5,425 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>E-Commerce Slider and Categories</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
 </head>
 <body>
-  <div class="container my-4">
-    <div class="row">
-      <!-- Slider Section -->
-      <div class="col-md-8">
-        <div id="ecommerceSlider" class="carousel slide" data-bs-ride="carousel">
-          <div class="carousel-inner">
-            <div class="carousel-item active">
-              <img src="https://via.placeholder.com/800x400" class="d-block w-100" alt="Banner 1">
-              <div class="carousel-caption d-none d-md-block">
-                <h5>Slide 1</h5>
-                <p>Shop the latest deals.</p>
+    <div class="container py-5">
+        <div class="row align-items-start g-4">
+          <!-- Banner Section -->
+          <div class="col-lg-3">
+            <div class="card border-1 shadow-sm">
+              <div class="card-header bg-white pb-2 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"> <i class="bi bi-list me-2 "></i>Categories</h5>
+                <div id="categoryToggle" role="button">
+                    <i class="bi bi-toggle-on" style="font-size: 20px;"></i>
+                </div>
               </div>
-            </div>
-            <div class="carousel-item">
-              <img src="https://via.placeholder.com/800x400" class="d-block w-100" alt="Banner 2">
-              <div class="carousel-caption d-none d-md-block">
-                <h5>Slide 2</h5>
-                <p>Exclusive offers await you.</p>
-              </div>
-            </div>
-            <div class="carousel-item">
-              <img src="https://via.placeholder.com/800x400" class="d-block w-100" alt="Banner 3">
-              <div class="carousel-caption d-none d-md-block">
-                <h5>Slide 3</h5>
-                <p>Discover new arrivals.</p>
-              </div>
+              <ul class="list-group list-group-flush category-list" id="categoryList">
+                <li class="list-group-item position-relative">
+                  <i class="bi bi-phone me-2 text-primary"></i> Electronics
+                  <span class="badge bg-primary rounded-pill float-end">120</span>
+                  <ul class="subcategory-dropdown">
+                    <div class="row">
+                        <div class="col-4">
+                          <li><a href="#">Mobile Phones</a></li>
+                          <li><a href="#">Laptops</a></li>
+                          <li><a href="#">Tablets</a></li>
+                        </div>
+                        <div class="col-4">
+                          <li><a href="#">Mobile Phones</a></li>
+                          <li><a href="#">Laptops</a></li>
+                          <li><a href="#">Tablets</a></li>
+                        </div>
+                        <div class="col-4">
+                          <li><a href="#">Mobile Phones</a></li>
+                          <li><a href="#">Laptops</a></li>
+                          <li><a href="#">Tablets</a></li>
+                        </div>
+                        <div class="col-6">
+                          <li><a href="#">Mobile Phones</a></li>
+                          <li><a href="#">Laptops</a></li>
+                          <li><a href="#">Tablets</a></li>
+                        </div>
+                    </div>
+                  </ul>
+                </li>
+                <li class="list-group-item position-relative">
+                  <i class="bi bi-watch me-2 text-dark"></i> Fashion
+                  <span class="badge bg-dark rounded-pill float-end">85</span>
+                  <ul class="subcategory-dropdown">
+                    <li><a href="#">Men</a></li>
+                    <li><a href="#">Women</a></li>
+                    <li><a href="#">Kids</a></li>
+                  </ul>
+                </li>
+                <li class="list-group-item position-relative">
+                  <i class="bi bi-house-door me-2 text-success"></i> Home & Living
+                  <span class="badge bg-success rounded-pill float-end">63</span>
+                  <ul class="subcategory-dropdown">
+                    <li><a href="#">Furniture</a></li>
+                    <li><a href="#">Decor</a></li>
+                    <li><a href="#">Kitchen</a></li>
+                  </ul>
+                </li>
+                <li class="list-group-item position-relative">
+                  <i class="bi bi-house-door me-2 text-success"></i> Home & Living
+                  <span class="badge bg-success rounded-pill float-end">63</span>
+                  <ul class="subcategory-dropdown">
+                    <li><a href="#">Furniture</a></li>
+                    <li><a href="#">Decor</a></li>
+                    <li><a href="#">Kitchen</a></li>
+                  </ul>
+                </li>
+                <li class="list-group-item position-relative">
+                  <i class="bi bi-house-door me-2 text-success"></i> Home & Living
+                  <span class="badge bg-success rounded-pill float-end">63</span>
+                  <ul class="subcategory-dropdown">
+                    <li><a href="#">Furniture</a></li>
+                    <li><a href="#">Decor</a></li>
+                    <li><a href="#">Kitchen</a></li>
+                  </ul>
+                </li>
+                <li class="list-group-item position-relative">
+                  <i class="bi bi-house-door me-2 text-success"></i> Home & Living
+                  <span class="badge bg-success rounded-pill float-end">63</span>
+                  <ul class="subcategory-dropdown">
+                    <li><a href="#">Furniture</a></li>
+                    <li><a href="#">Decor</a></li>
+                    <li><a href="#">Kitchen</a></li>
+                  </ul>
+                </li>
+                <li class="list-group-item position-relative">
+                  <i class="bi bi-house-door me-2 text-success"></i> Home & Living
+                  <span class="badge bg-success rounded-pill float-end">63</span>
+                  <ul class="subcategory-dropdown">
+                    <li><a href="#">Furniture</a></li>
+                    <li><a href="#">Decor</a></li>
+                    <li><a href="#">Kitchen</a></li>
+                  </ul>
+                </li>
+                <li class="list-group-item position-relative">
+                  <i class="bi bi-house-door me-2 text-success"></i> Home & Living
+                  <span class="badge bg-success rounded-pill float-end">63</span>
+                  <ul class="subcategory-dropdown">
+                    <li><a href="#">Furniture</a></li>
+                    <li><a href="#">Decor</a></li>
+                    <li><a href="#">Kitchen</a></li>
+                  </ul>
+                </li>
+                <li class="list-group-item position-relative">
+                  <i class="bi bi-house-door me-2 text-success"></i> Home & Living
+                  <span class="badge bg-success rounded-pill float-end">63</span>
+                  <ul class="subcategory-dropdown">
+                    <li><a href="#">Furniture</a></li>
+                    <li><a href="#">Decor</a></li>
+                    <li><a href="#">Kitchen</a></li>
+                  </ul>
+                </li>
+              </ul>
             </div>
           </div>
-          <button class="carousel-control-prev" type="button" data-bs-target="#ecommerceSlider" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-          </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#ecommerceSlider" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-          </button>
+          <div class="col-lg-9">
+            <div id="promoCarousel" class="carousel slide rounded-4 overflow-hidden shadow-sm" data-bs-ride="carousel">
+              <div class="carousel-inner">
+
+                <!-- Slide 1 -->
+                <div class="carousel-item active">
+                  <div class="d-flex align-items-center text-white" style="min-height: 400px; background: url('banner2.png') center center / cover no-repeat;">
+                    <div class="container py-5 px-4">
+                      <h1 class="display-6 fw-bold">Big Sale is Live!</h1>
+                      <p class="lead">Grab your favorite products with up to <strong>70% off</strong>.</p>
+                      <a href="#" class="btn btn-light btn-lg rounded-pill mt-2 shadow-sm">
+                        Shop Now <i class="bi bi-arrow-right ms-2"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Slide 2 -->
+                <div class="carousel-item">
+                  <div class="d-flex align-items-center text-white" style="min-height: 400px; background: url('banner2.png') center center / cover no-repeat;">
+                    <div class="container py-5 px-4">
+                      <h1 class="display-6 fw-bold">New Arrivals</h1>
+                      <p class="lead">Check out the latest tech and fashion gear.</p>
+                      <a href="#" class="btn btn-light btn-lg rounded-pill mt-2 shadow-sm">
+                        Explore <i class="bi bi-arrow-right ms-2"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Slide 3 -->
+                <div class="carousel-item">
+                  <div class="d-flex align-items-center text-dark" style="min-height: 400px; background: url('https://via.placeholder.com/1000x300?text=Limited+Deals') center center / cover no-repeat;">
+                    <div class="container py-5 px-4">
+                      <h1 class="display-6 fw-bold">Limited Time Deals</h1>
+                      <p class="lead">Flash discounts across all categories.</p>
+                      <a href="#" class="btn btn-dark btn-lg rounded-pill mt-2 shadow-sm">
+                        Grab Deals <i class="bi bi-arrow-right ms-2"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Controls -->
+              <button class="carousel-control-prev" type="button" data-bs-target="#promoCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#promoCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-
-      <!-- Categories Section -->
-      <div class="col-md-4">
-        <div class="row g-3">
-          <!-- Category Card 1 -->
-          <div class="col-6">
-            <div class="card py-1">
-              <div class="card-body text-center">
-                <h6 class="card-title">Electronics</h6>
-                <h6>Discount 10%</h6>
-
-              </div>
-            </div>
+      <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h3 class="fw-bold">Flash Sales</h3>
+          <div class="d-flex gap-3 text-center">
+            <div><strong id="days">03</strong><div class="text-muted small">Days</div></div>
+            <div><strong id="hours">23</strong><div class="text-muted small">Hours</div></div>
+            <div><strong id="minutes">19</strong><div class="text-muted small">Minutes</div></div>
+            <div><strong id="seconds">56</strong><div class="text-muted small">Seconds</div></div>
           </div>
-          <!-- Category Card 2 -->
-          <div class="col-6">
-            <div class="card py-1">
-              <div class="card-body text-center">
-                <h6 class="card-title">Fashion</h6>
-                <h6>Discount 10%</h6>
-
-              </div>
-            </div>
-          </div>
-          <!-- Category Card 3 -->
-          <div class="col-6">
-            <div class="card py-1">
-              <div class="card-body text-center">
-                <h6 class="card-title">Home Appliances</h6>
-                <h6>Discount 10%</h6>
-
-              </div>
-            </div>
-          </div>
-          <!-- Category Card 4 -->
-          <div class="col-6">
-            <div class="card py-1">
-              <div class="card-body text-center">
-                <h6 class="card-title">Books</h6>
-                <h6>Discount 10%</h6>
-
-              </div>
-            </div>
-          </div>
-          <!-- Category Card 5 -->
-          <div class="col-6">
-            <div class="card py-1">
-              <div class="card-body text-center">
-                <h6 class="card-title">Sports</h6>
-                <h6>Discount 10%</h6>
-
-              </div>
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="card py-1">
-              <div class="card-body text-center">
-                <h6 class="card-title">Sports</h6>
-                <h6>Discount 10%</h6>
-
-              </div>
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="card py-1">
-              <div class="card-body text-center">
-                <h6 class="card-title">Sports</h6>
-                <h6>Discount 10%</h6>
-
-              </div>
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="card py-1">
-              <div class="card-body text-center">
-                <p class="card-title">Sports</p>
-                <h6>Discount 10%</h6>
-              </div>
-            </div>
-          </div>
-
         </div>
+
+        <div class="row g-4">
+          <!-- Product Card Start -->
+          <div class="col-md-3 col-lg-3">
+            <div class="card position-relative border-0 shadow-sm">
+              <span class="badge bg-success position-absolute top-0 start-0 m-2">-40%</span>
+              <img src="banner2.png" class="card-img-top" alt="...">
+
+              <div class="card-body">
+                <p class="text-muted small">women cloth</p>
+                <h5 class="text-success fw-bold mb-1">$120 <small class="text-muted text-decoration-line-through">$160</small></h5>
+                <div class="text-warning">
+                  <i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i> <i class="fas fa-star-half-alt"></i>
+                  <small class="text-muted">(88)</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-lg-3">
+            <div class="card position-relative border-0 shadow-sm">
+              <span class="badge bg-success position-absolute top-0 start-0 m-2">-40%</span>
+              <img src="banner2.png" class="card-img-top" alt="...">
+
+              <div class="card-body">
+                <p class="text-muted small">women cloth</p>
+                <h5 class="text-success fw-bold mb-1">$120 <small class="text-muted text-decoration-line-through">$160</small></h5>
+                <div class="text-warning">
+                  <i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i> <i class="fas fa-star-half-alt"></i>
+                  <small class="text-muted">(88)</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-lg-3">
+            <div class="card position-relative border-0 shadow-sm">
+              <span class="badge bg-success position-absolute top-0 start-0 m-2">-40%</span>
+              <img src="banner2.png" class="card-img-top" alt="...">
+
+              <div class="card-body">
+                <p class="text-muted small">women cloth</p>
+                <h5 class="text-success fw-bold mb-1">$120 <small class="text-muted text-decoration-line-through">$160</small></h5>
+                <div class="text-warning">
+                  <i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i> <i class="fas fa-star-half-alt"></i>
+                  <small class="text-muted">(88)</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-lg-3">
+            <div class="card position-relative border-0 shadow-sm">
+              <span class="badge bg-success position-absolute top-0 start-0 m-2">-40%</span>
+              <img src="banner2.png" class="card-img-top" alt="...">
+
+              <div class="card-body">
+                <p class="text-muted small">women cloth</p>
+                <h5 class="text-success fw-bold mb-1">$120 <small class="text-muted text-decoration-line-through">$160</small></h5>
+                <div class="text-warning">
+                  <i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i> <i class="fas fa-star-half-alt"></i>
+                  <small class="text-muted">(88)</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="text-center mt-5">
+          <a href="#" class="btn btn-success rounded-pill px-4 py-2">View All Products</a>
+        </div>
+
+        <h5 class="text-success">Categories</h5>
+        <h2><strong>Browse By Category</strong></h2>
+        <div class="row text-center my-3">
+            <div class="col-md-2">
+                <div class="category-box">
+                    <img src="assets/img/Category-CellPhone.png" alt="">
+                    <div>Phones</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="category-box">
+                    <img src="assets/img/Category-CellPhone.png" alt="">
+                    <div>Phones</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="category-box">
+                    <img src="assets/img/Category-CellPhone.png" alt="">
+                    <div>Phones</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="category-box">
+                    <img src="assets/img/Category-CellPhone.png" alt="">
+                    <div>Phones</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="category-box">
+                    <img src="assets/img/Category-CellPhone.png" alt="">
+                    <div>Phones</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="category-box">
+                    <img src="assets/img/Category-CellPhone.png" alt="">
+                    <div>Phones</div>
+                </div>
+            </div>
+        </div>
+
       </div>
-    </div>
-  </div>
+
+      <!-- Custom Styles for Subcategory Dropdown -->
+      <style>
+        .category-list {
+          position: relative;
+        }
+
+        .category-list li {
+          cursor: pointer;
+          position: relative;
+        }
+
+        .subcategory-dropdown {
+          background: #ffffff;
+          border: 1px solid #dee2e6;
+          padding: 10px;
+          display: none;
+          z-index: 1000;
+          border-radius: 0.5rem;
+          margin-top: 10px;
+        }
+
+        .subcategory-dropdown li {
+          list-style: none;
+          padding: 5px 10px;
+        }
+
+        .subcategory-dropdown li a {
+          text-decoration: none;
+          color: #333;
+          display: block;
+        }
+
+        .subcategory-dropdown li a:hover {
+          color: #4e54c8;
+          font-weight: 500;
+        }
+        .list-group-item.active {
+            z-index: 2;
+            color: rgb(63, 62, 62);
+            background-color: #ffffff !important ;
+            border-color: var(--bs-list-group-active-border-color);
+        }
+
+        /* Hover for desktop */
+        @media (min-width: 992px) {
+          .subcategory-dropdown {
+            position: absolute;
+            top: 0;
+            left: 100%;
+            min-width: 800px;
+            margin-top: 0;
+            border-left: none;
+            border-radius: 0 0.5rem 0.5rem 0;
+          }
+
+          .category-list li:hover .subcategory-dropdown {
+            display: block;
+          }
+        }
+
+        /* Click-to-toggle on mobile */
+        @media (max-width: 991.98px) {
+          .category-list li {
+            padding-bottom: 0.5rem;
+          }
+
+          .category-list li.active .subcategory-dropdown {
+            display: block;
+          }
+
+          .category-list li .toggle-icon {
+            float: right;
+            font-size: 1.1rem;
+            color: #666;
+            cursor: pointer;
+          }
+        }
+
+
+      </style>
+
+      <!-- Bootstrap Icons -->
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Toggle subcategories on click for mobile
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.innerWidth < 992) {
+        document.querySelectorAll('.category-list li').forEach(item => {
+          item.addEventListener('click', function (e) {
+            // Prevent toggling when clicking inside dropdown
+            if (e.target.closest('.subcategory-dropdown')) return;
+
+            // Close others
+            document.querySelectorAll('.category-list li').forEach(li => {
+              if (li !== item) li.classList.remove('active');
+            });
+
+            // Toggle current
+            item.classList.toggle('active');
+          });
+        });
+      }
+    });
+  </script>
+  <script>
+    const toggleIcon = document.querySelector("#categoryToggle i");
+    const categoryList = document.getElementById("categoryList");
+
+    document.getElementById("categoryToggle").addEventListener("click", () => {
+      categoryList.classList.toggle("d-none");
+      toggleIcon.classList.toggle("bi-toggle-on");
+      toggleIcon.classList.toggle("bi-toggle-off");
+    });
+  </script>
+
+
 </body>
 </html>

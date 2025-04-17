@@ -49,13 +49,6 @@ class FontendController extends Controller
                 $vendorRatingsCount[$id] = $ratingCount;
             }
 
-            // dd($vendorRatingsCount);
-
-
-
-
-            //display all avalible brands
-            //  dd($allvendor);
             $allbrands = Brand::all()->where('status', 1)->toArray();
             //display all product in main page
             $allproduct = Product::where('status',1)->paginate(20);
@@ -74,67 +67,6 @@ class FontendController extends Controller
             $getCategory = Category::all()->where('parent_id', 0)->where('status', 1)->toArray();
             // dd($getCategory);
             $appsettings = AppSetting::where('id', 1)->get();
-
-
-            $menfashion = Product::with(['group', 'category', 'brand', 'images', 'vendor', 'attributes'])
-                ->where('status', 1)
-                ->whereHas('category', function ($query) {
-                    $query->where('name', 'Men');
-                })
-                ->get()
-                ->toArray();
-            // dd($mobilecategories);
-
-
-            $productbaby = Product::with(['group', 'category', 'brand', 'images', 'vendor', 'attributes'])
-                ->where('status', 1)
-                ->whereHas('category', function ($query) {
-                    $query->where('name', 'baby need');
-                })
-                ->get()
-                ->toArray();
-            $productcoffee = Product::with(['group', 'category', 'brand', 'images', 'vendor', 'attributes'])
-                ->where('status', 1)
-                ->whereHas('category', function ($query) {
-                    $query->where('name', 'coffee');
-                })
-                ->get()
-                ->toArray();
-            $productsnacks = Product::with(['group', 'category', 'brand', 'images', 'vendor', 'attributes'])
-                ->where('status', 1)
-                ->whereHas('category', function ($query) {
-                    $query->where('name', 'snacks');
-                })
-                ->get()
-                ->toArray();
-
-            // dd($productsnacks);
-
-            $producthome = Product::with(['group', 'category', 'brand', 'images', 'vendor', 'attributes'])
-                ->where('status', 1)
-                ->whereHas('category', function ($query) {
-                    $query->where('name', 'Home & Kitchen');
-                })
-                ->get()
-                ->toArray();
-
-            $productbooks = Product::with(['group', 'category', 'brand', 'images', 'vendor', 'attributes'])
-            ->where('status', 1)
-            ->whereHas('category', function ($query) {
-                $query->where('name', 'Books');
-            })
-            ->get()
-            ->toArray();
-
-            $productsmartphones= Product::with(['group', 'category', 'brand', 'images', 'vendor', 'attributes'])
-            ->where('status', 1)
-            ->whereHas('category', function ($query) {
-                $query->where('name', 'Smartphones');
-            })
-            ->get()
-            ->toArray();
-
-            // dd($productsmartphones);
 
             $cms_pages = CmsPage::get()->toArray();
             $new_products = Product::orderBy('id', 'Desc')->where('status', 1)->limit(6)->get()->toArray();

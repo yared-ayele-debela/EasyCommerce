@@ -2,6 +2,7 @@
 
 namespace App\Models\Restaurant;
 
+use App\Models\Admin;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -61,4 +62,10 @@ class Product extends Model
        {
            return $this->hasMany(ProductRating::class);
        }
+
+       public function admin()
+        {
+            return $this->belongsTo(Admin::class);
+        }
+
 }

@@ -8,7 +8,7 @@ $user = Auth::guard('admin')->user();
     <a class="breadcrumb-item active" href="javascript:void(0);">My Restaurant</a>
  </nav>
  <div class="container my-5">
-    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+    <div class="card shadow border-0 rounded-4 overflow-hidden">
         <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, #20c997, #38f9d7);">
             <h3 class="mb-0">
                 <i class="bi bi-shop me-2"></i> <span class="fw-bold">{{ $restaurant->name }}</span> Restaurant
@@ -56,7 +56,7 @@ $user = Auth::guard('admin')->user();
                     <div class="p-3 bg-light rounded shadow-sm">
                         <strong>Description:</strong><br>
                         <p>{{ $restaurant->description }}</p>
-                    </div>   
+                    </div>
                 </div>
             </div>
 

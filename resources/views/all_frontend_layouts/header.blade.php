@@ -181,7 +181,7 @@
                                 <i class="far fa-heart text-primary"></i> My Orders
                             </a>
                         </li>
-                      
+
                         <li class="mb-2">
                             <hr class="dropdown-divider">
                         </li>

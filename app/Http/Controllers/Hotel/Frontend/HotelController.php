@@ -18,7 +18,8 @@ class HotelController extends Controller
     //
     public function index($id){
         try{
-            $hotel=Hotel::findOrFail($id);
+            $hotel=Hotel::with('rooms')->findOrFail($id);
+            // dd($hotel);
             $rooms=$hotel->rooms()->latest()->paginate(10);
 
             return view('Hotel.frontend.pages.hotel.detail',compact('hotel','rooms'));

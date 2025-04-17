@@ -43,16 +43,39 @@ $user = Auth::guard('admin')->user();
                         <td><img src="{{ asset('storage/' . $restaurant->logo) }}" width="50" /></td>
                         <td><img src="{{ asset('storage/' . $restaurant->cover) }}" width="50" /></td>
                         <td>
-                            @foreach($restaurant->images as $image)
-                            <div style="display: inline-block; position: relative;">
-                                <img src="{{ asset('storage/' . $image->image_path) }}" width="50">
-                                <form action="{{ route('restaurants.deleteImage', $image->id) }}" method="POST" style="display: inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm">X</button>
-                                </form>
+                           <!-- Button trigger modal -->
+                           <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#restaurant{{ $restaurant->id }}">
+                             View Images
+                           </button>
+
+                           <!-- Modal -->
+                           <div class="modal fade" id="restaurant{{ $restaurant->id }}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Images</h5>
+                                            <button type="button" class="close btn" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        @foreach($restaurant->images as $image)
+                                        <div style="display: inline-block; position: relative;">
+                                            <img src="{{ asset('storage/' . $image->image_path) }}" width="50">
+                                            <form action="{{ route('restaurants.deleteImage', $image->id) }}" method="POST" style="display: inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm">X</button>
+                                            </form>
+                                        </div>
+                                        @endforeach
+                                      </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
                             </div>
-                            @endforeach
+                           </div>
                         </td>
                         <td>
                             <div class="btn btn-sm {{ $restaurant->is_active ? 'btn-success' : 'btn-warning' }}">
@@ -68,7 +91,7 @@ $user = Auth::guard('admin')->user();
                                     <i class="bi bi-trash-fill"></i>
                                 </button>
                             </form>
-
+                            <a href="{{ url('admin/restaurant/my-restaurant/'.encrypt($restaurant->id)) }}" class="btn btn-info btn-sm text-white"><i class="bi bi-eye-fill"></i></a>
                         </td>
                     </tr>
                     @endforeach
@@ -455,7 +478,7 @@ $user = Auth::guard('admin')->user();
                 }, 200);
             }
         });
-      
+
         // Update coordinates when dragging marker
         marker.on('dragend', function (e) {
             var position = marker.getLatLng();

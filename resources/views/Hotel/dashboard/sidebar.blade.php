@@ -7,7 +7,31 @@
     @endphp
     <ul class="sidebar-nav" id="sidebar-nav">
 
-        <li class="nav-item"> <a class="nav-link" href="{{ url('admin/hotel/dashboard') }}"> <i class="bi bi-bank "></i> <span>Hotel Dashboard</span> </a></li>
+        @php
+        $adminType = Auth::guard('admin')->user()->type;
+        @endphp
+        @if ($adminType === "Super Admin")
+        <div class="form-group mb-2">
+            <label for="dashboardSwitcher">Switch Dashboard</label>
+            <select class="form-control" style="background-color: #F6F9FF;color:#4154F1;" id="dashboardSwitcher">
+                <option disabled>-- Choose Dashboard --</option>
+                <option @if(request()->is('admin/ecommerce/dashboard')) selected @endif value="{{ url('admin/dashboard') }}">Ecommerce Dashboard</option>
+                <option @if(request()->is('admin/restaurant/dashboard')) selected @endif value="{{ url('admin/restaurant/dashboard') }}">Restaurant Dashboard</option>
+                <option @if(request()->is('admin/hotel/dashboard')) selected @endif value="{{ url('admin/hotel/dashboard') }}">Hotel Dashboard</option>
+            </select>
+        </div>
+
+        <script>
+            document.getElementById('dashboardSwitcher').addEventListener('change', function() {
+                var url = this.value;
+                if (url) {
+                    window.location.href = url;
+                }
+            });
+
+        </script>
+        <hr>
+        @endif
 
            {{-- @if ($user && $user->hasPermissionByRole('view_product')) --}}
             <li class="  {{ request()->is('admin/hotel/hotel-slider-banners')?'nav-item active':'' }}">

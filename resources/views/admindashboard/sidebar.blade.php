@@ -31,7 +31,32 @@
            </a>
        </li>
        @endif
-        <li class="nav-item"> <a class="nav-link" href="{{ url('admin/dashboard') }}"> <i class="bi bi-bank "></i> <span>Dashboard</span> </a></li>
+       @php
+       $adminType = Auth::guard('admin')->user()->type;
+       @endphp
+       @if ($adminType === "Super Admin")
+       <div class="form-group mb-2">
+           <label for="dashboardSwitcher">Switch Dashboard</label>
+           <select class="form-control" style="background-color: #F6F9FF;color:#4154F1;" id="dashboardSwitcher">
+               <option disabled>-- Choose Dashboard --</option>
+               <option @if(request()->is('admin/ecommerce/dashboard')) selected @endif value="{{ url('admin/dashboard') }}">Ecommerce Dashboard</option>
+               <option @if(request()->is('admin/restaurant/dashboard')) selected @endif value="{{ url('admin/restaurant/dashboard') }}">Restaurant Dashboard</option>
+               <option @if(request()->is('admin/hotel/dashboard')) selected @endif value="{{ url('admin/hotel/dashboard') }}">Hotel Dashboard</option>
+           </select>
+       </div>
+
+       <script>
+           document.getElementById('dashboardSwitcher').addEventListener('change', function() {
+               var url = this.value;
+               if (url) {
+                   window.location.href = url;
+               }
+           });
+
+       </script>
+       <hr>
+       @endif
+
         @if(Auth::guard('admin')->user()->type=="vendor")
         @if ($user && $user->hasPermissionByRole('view withdrawal request'))
             <li class="{{ request()->is('admin/withdraw-request')?'nav-item active':'' }}">
@@ -60,7 +85,7 @@
                 </ul>
             </li>
             @endif
-        @if ($user && $user->hasPermissionByRole('view_product'))
+             @if ($user && $user->hasPermissionByRole('view_product'))
             <li class="  {{ request()->is('admin/products*')?'nav-item active':'' }}">
                 <a class="nav-link {{request()->is('admin/products*')}}" data-bs-target="#charts-nav" data-bs-toggle="collapse" href="javascripit:void(0);" aria-expanded="false"> <i class="bi bi-bar-chart"></i><span>Catelog Managements</span><i class="bi bi-chevron-down  ms-auto"></i> </a>
                 <ul id="charts-nav" class="nav-content collapse  {{ request()->is('admin/products*')?'show':'' }} " data-bs-parent="" style="">
@@ -115,7 +140,6 @@
                     @if ($user && $user->hasPermissionByRole('view order product reports'))
                     <li> <a href="{{ url('admin/report/order-product-report')}}" class="{{ request()->is('admin/report/order-product-report')?'nav-link active':'' }} "> <i class=" bi bi-circle active "></i><span>Order Product Reports</span></a></li>
                     @endif
-
                 </ul>
             </li>
             @endif
@@ -517,7 +541,7 @@
                 @if($user->hasPermissionByRole('view city'))
                 <li> <a href="{{ url('admin/streets') }}" class="{{ request()->is('admin/streets')?'nav-link active':'' }} {{ request()->is('admin/streets*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Streets</span></a></li>
                 @endif
-               
+
             </ul>
         </li>
         @endif

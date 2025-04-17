@@ -7,6 +7,7 @@ use App\Models\AppSetting;
 use App\Models\FlashDeal;
 use App\Models\FlashDealProduct;
 use App\Models\Product;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -55,10 +56,8 @@ class FlashDealController extends Controller
         $flash_deal = new FlashDeal();
         $flash_deal->title = $request->title;
         $flash_deal->text_color = $request->text_color;
-
-        // $date_var               = explode(" to ", $request->date_range);
-        $flash_deal->start_date = $request->start_date;
-        $flash_deal->end_date   = $request->end_date;
+        $flash_deal->start_date = Carbon::createFromFormat('d-m-Y H:i:s', $request->start_date)->format('Y-m-d H:i:s');
+        $flash_deal->end_date = Carbon::createFromFormat('d-m-Y H:i:s', $request->end_date)->format('Y-m-d H:i:s');
 
         $flash_deal->background_color = $request->background_color;
         $flash_deal->slug = Str::slug($request->title) . '-' . Str::random(5);
@@ -149,8 +148,8 @@ class FlashDealController extends Controller
         $flash_deal->text_color = $request->text_color;
 
         $date_var               = explode(" to ", $request->date_range);
-        $flash_deal->start_date = $request->start_date;
-        $flash_deal->end_date   = $request->end_date;
+        $flash_deal->start_date = Carbon::createFromFormat('d-m-Y H:i:s', $request->start_date)->format('Y-m-d H:i:s');
+        $flash_deal->end_date = Carbon::createFromFormat('d-m-Y H:i:s', $request->end_date)->format('Y-m-d H:i:s');
 
         $flash_deal->background_color = $request->background_color;
 
