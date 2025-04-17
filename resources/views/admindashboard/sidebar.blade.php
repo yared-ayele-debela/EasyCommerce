@@ -39,7 +39,7 @@
            <label for="dashboardSwitcher">Switch Dashboard</label>
            <select class="form-control" style="background-color: #F6F9FF;color:#4154F1;" id="dashboardSwitcher">
                <option disabled>-- Choose Dashboard --</option>
-               <option @if(request()->is('admin/ecommerce/dashboard')) selected @endif value="{{ url('admin/dashboard') }}">Ecommerce Dashboard</option>
+               <option @if(request()->is('admin/dashboard')) selected @endif value="{{ url('admin/dashboard') }}">Ecommerce Dashboard</option>
                <option @if(request()->is('admin/restaurant/dashboard')) selected @endif value="{{ url('admin/restaurant/dashboard') }}">Restaurant Dashboard</option>
                <option @if(request()->is('admin/hotel/dashboard')) selected @endif value="{{ url('admin/hotel/dashboard') }}">Hotel Dashboard</option>
            </select>
