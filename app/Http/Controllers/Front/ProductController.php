@@ -245,6 +245,7 @@ class ProductController extends Controller
                 ->telegram()
                 ->whatsapp()
                 ->reddit();
+                
             $appsettings = AppSetting::all()->toArray();
             $cms_pages = CmsPage::get()->toArray();
 
@@ -708,7 +709,7 @@ class ProductController extends Controller
                 foreach ($getCartItems as $item) {
                     $product_status = Product::getProductStatus($item['product_id']);
                     if ($product_status == 0) {
-                     
+
                         Alert::toast($item['product']['product_name'] . " with " . $item['size'] . " Size is not available. Please remove from cart and choose some other product.", 'error');
 
                         return redirect('/cart');
