@@ -2153,6 +2153,20 @@
                 }
             }
         },
+        "/api/foods/special-offers": {
+            "get": {
+                "tags": [
+                    "Foods"
+                ],
+                "summary": "Get foods with special offers",
+                "operationId": "afcd339f42c7179a94024c5428cfdd10",
+                "responses": {
+                    "200": {
+                        "description": "List of foods with special offers"
+                    }
+                }
+            }
+        },
         "/api/foods/category/{categoryId}": {
             "get": {
                 "tags": [

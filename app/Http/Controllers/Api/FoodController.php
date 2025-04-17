@@ -86,7 +86,23 @@ class FoodController extends Controller
         return response()->json(Food::create($data), 201);
     }
 
-    
+    /**
+     * @OA\Get(
+     *     path="/api/foods/special-offers",
+     *     summary="Get foods with special offers",
+     *     tags={"Foods"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of foods with special offers"
+     *     )
+     * )
+     */
+    public function specialOffers()
+    {
+        $specialOffers = Food::where('is_special_offer', true)->with('category')->get();
+
+        return response()->json($specialOffers);
+    }
 
     /**
      * @OA\Put(
