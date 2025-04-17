@@ -1,0 +1,41 @@
+name: 🚀 Deploy Laravel App via FTP
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
+
+      - name: 🧰 Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+          extensions: mbstring, bcmath, intl, curl, xml, mysql
+          coverage: none
+
+      - name: 🧩 Install dependencies via Composer
+        run: |
+          composer install --no-dev --optimize-autoloader
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: 🧪 Build frontend assets (if using Vite/Laravel Mix)
+        run: |
+          npm install
+          npm run build
+
+      - name: 🚀 Deploy to FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ${{ secrets.FTP_TARGET }}
+          local-dir: public
