@@ -15,7 +15,7 @@ class RestaurantMenuController extends Controller
     public function index()
     {
         $restaurant_menus = RestaurantMenu::all();
-        return view('restaurant.dashboard.menus.index', compact( 'restaurant_menus'));
+        return view('Restaurant.dashboard.menus.index', compact( 'restaurant_menus'));
     }
 
     public function store(Request $request)

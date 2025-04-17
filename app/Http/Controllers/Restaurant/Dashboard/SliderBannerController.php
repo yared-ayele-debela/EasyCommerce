@@ -13,7 +13,7 @@ class SliderBannerController extends Controller
     public function index()
     {
         $banners = SliderBanner::latest()->get();
-        return view('restaurant.dashboard.slider-banners.index', compact('banners'));
+        return view('Restaurant.dashboard.slider-banners.index', compact('banners'));
     }
 
     /**

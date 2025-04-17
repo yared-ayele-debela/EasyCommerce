@@ -31,7 +31,7 @@ class DashboardController extends Controller
         $total_processing_order=Order::where('status','processing')->count();
         $total_completed_order=Order::where('status','completed')->count();
         $total_canceled_order=Order::where('status','canceled')->count();
-        
-        return view('restaurant.dashboard.index', compact('total_restaurant','total_product','total_coupon','total_menu','total_subcategory','total_category','total_slider','total_order', 'total_canceled_order','total_pending_order','total_completed_order','total_processing_order'));
+
+        return view('Restaurant.dashboard.index', compact('total_restaurant','total_product','total_coupon','total_menu','total_subcategory','total_category','total_slider','total_order', 'total_canceled_order','total_pending_order','total_completed_order','total_processing_order'));
     }
 }

@@ -15,7 +15,7 @@ class CategoryController extends Controller
     {
         $categories = Category::latest()->get();
         $restaurants = Restaurant::all();
-        return view('restaurant.dashboard.categories.index', compact('categories', 'restaurants'));
+        return view('Restaurant.dashboard.categories.index', compact('categories', 'restaurants'));
     }
 
     public function store(Request $request)

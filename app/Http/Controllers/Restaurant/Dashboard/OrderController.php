@@ -28,7 +28,7 @@ class OrderController extends Controller
 
         }
 
-        return view('restaurant.dashboard.orders.index', compact('orders'));
+        return view('Restaurant.dashboard.orders.index', compact('orders'));
     }
 
     // Show order details and allow status update
@@ -38,7 +38,7 @@ class OrderController extends Controller
         $order = Order::with('orderItems.product','address')->findOrFail($id);
         // dd($order);
 
-        return view('restaurant.dashboard.orders.show', compact('order'));
+        return view('Restaurant.dashboard.orders.show', compact('order'));
     }
 
     // Update order status and delivery status

@@ -22,13 +22,13 @@ class RestaurantController extends Controller
         } else {
             $restaurants = RestaurantRestaurant::with(['admin', 'images'])->where('admin_id', Auth::guard('admin')->user()->id)->latest()->get();
         }
-        return view('restaurant.dashboard.restaurants.index', compact('restaurants'));
+        return view('Restaurant.dashboard.restaurants.index', compact('restaurants'));
     }
 
     public function show($Id){
         $id = decrypt($Id);
         $restaurant = RestaurantRestaurant::with(['admin', 'images'])->where('id',$id)->where('admin_id',Auth::guard('admin')->user()->id)->first();
-        return view('restaurant.dashboard.restaurants.my-restaurants', compact('restaurant'));
+        return view('Restaurant.dashboard.restaurants.my-restaurants', compact('restaurant'));
     }
     /**
      * Store a newly created restaurant.

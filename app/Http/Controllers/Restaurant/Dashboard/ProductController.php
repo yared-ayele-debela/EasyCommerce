@@ -27,23 +27,23 @@ class ProductController extends Controller
             $restaurantId= $restaurants->pluck('id');
             $products = Product::with('images','city','menu','category','subcategory')->whereIn('restaurant_id',$restaurantId)->latest()->get();
         }
-        
+
         // $products = Product::with('images','city','menu','category','subcategory')->get();
         // dd($products);
         $categories=Category::all();
         $subcategories=Subcategory::all();
         $menus=RestaurantMenu::all();
         $cities=City::all();
-        return view('restaurant.dashboard.products.index', compact('products','categories','menus','cities','subcategories'));
+        return view('Restaurant.dashboard.products.index', compact('products','categories','menus','cities','subcategories'));
     }
 
     public function show($id){
 
         $restaurants=Restaurant::where('admin_id',Auth::guard('admin')->user()->id)->get();
         $restaurantId= $restaurants->pluck('id');
-        
+
         $product = Product::with('images','sizes')->whereIn('restaurant_id',$restaurantId)->findOrFail($id);
-        
+
         return view('Restaurant.dashboard.products.show',compact('product'));
     }
 

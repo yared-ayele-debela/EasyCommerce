@@ -11,7 +11,7 @@ class CityController extends Controller
     public function index()
     {
         $cities = City::all();
-        return view('restaurant.dashboard.cities.index', compact('cities'));
+        return view('Restaurant.dashboard.cities.index', compact('cities'));
     }
 
     public function store(Request $request)
