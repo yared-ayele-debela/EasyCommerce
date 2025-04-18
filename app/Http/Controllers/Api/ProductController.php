@@ -310,12 +310,11 @@ class ProductController extends Controller
             // Fetch all child categories of the parent category
             $childCategoryIds = \App\Models\Category::where('parent_id', $parent_id)->pluck('id');
 
-            if ($childCategoryIds->isEmpty()) {
-                return response()->json(['error' => 'No child categories found for this parent category'], 404);
-            }
+            // Include the parent category ID itself
+            $categoryIds = $childCategoryIds->push($parent_id);
 
-            // Fetch products belonging to the child categories
-            $products = Product::whereIn('category_id', $childCategoryIds)
+            // Fetch products belonging to the parent category and its child categories
+            $products = Product::whereIn('category_id', $categoryIds)
                                ->where('status', 1) // Ensure product is active
                                ->get();
 
