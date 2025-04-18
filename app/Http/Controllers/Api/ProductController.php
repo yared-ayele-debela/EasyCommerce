@@ -246,6 +246,43 @@ class ProductController extends Controller
     }
 
     /**
+     * @OA\Get(
+     *     path="/api/products/category/{category_id}",
+     *     summary="Get products by category",
+     *     tags={"Products"},
+     *     operationId="getProductsByCategory",
+     *     @OA\Parameter(
+     *         name="category_id",
+     *         in="path",
+     *         required=true,
+     *         description="Category ID",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of products in the specified category retrieved successfully"
+     *     ),
+     *     @OA\Response(response=404, description="Category not found"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
+     */
+    public function getProductsByCategory($category_id)
+    {
+        try {
+            $products = Product::where('category_id', $category_id)
+                               ->where('status', 1) // Ensure product is active
+                               ->get();
+
+            if ($products->isEmpty()) {
+                return response()->json(['error' => 'No products found in this category'], 404);
+            }
+
+            return response()->json($products, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to fetch products by category'], 500);
+        }
+    }
+    /**
      * @OA\Post(
      *     path="/api/products/filter",
      *     summary="Filter products by criteria",
@@ -294,6 +331,8 @@ class ProductController extends Controller
 
         return response()->json($products);
     }
+
+
 }
 
 

@@ -98,6 +98,7 @@ Route::prefix('products')->group(function () {
     Route::get('{id}', [ProductController::class, 'detail']);
     Route::get('search', [ProductController::class, 'searchProduct']);
     Route::post('filter', [ProductController::class, 'filterProduct']);
+    Route::get('category/{category_id}', [ProductController::class, 'getProductsByCategory']);
 });
 // Brand routes
 Route::prefix('brands')->group(function () {
