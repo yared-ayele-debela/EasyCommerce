@@ -3771,6 +3771,37 @@
                 }
             }
         },
+        "/api/products/parent-category/{parent_id}": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Get products by parent category",
+                "operationId": "getProductsByParentCategory",
+                "parameters": [
+                    {
+                        "name": "parent_id",
+                        "in": "path",
+                        "description": "Parent Category ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of products under the parent category retrieved successfully"
+                    },
+                    "404": {
+                        "description": "Parent category not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
         "/api/products/filter": {
             "post": {
                 "tags": [

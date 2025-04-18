@@ -282,6 +282,52 @@ class ProductController extends Controller
             return response()->json(['error' => 'Failed to fetch products by category'], 500);
         }
     }
+
+    /**
+     * @OA\Get(
+     *     path="/api/products/parent-category/{parent_id}",
+     *     summary="Get products by parent category",
+     *     tags={"Products"},
+     *     operationId="getProductsByParentCategory",
+     *     @OA\Parameter(
+     *         name="parent_id",
+     *         in="path",
+     *         required=true,
+     *         description="Parent Category ID",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of products under the parent category retrieved successfully"
+     *     ),
+     *     @OA\Response(response=404, description="Parent category not found"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
+     */
+    public function getProductsByParentCategory($parent_id)
+    {
+        try {
+            // Fetch all child categories of the parent category
+            $childCategoryIds = \App\Models\Category::where('parent_id', $parent_id)->pluck('id');
+
+            if ($childCategoryIds->isEmpty()) {
+                return response()->json(['error' => 'No child categories found for this parent category'], 404);
+            }
+
+            // Fetch products belonging to the child categories
+            $products = Product::whereIn('category_id', $childCategoryIds)
+                               ->where('status', 1) // Ensure product is active
+                               ->get();
+
+            if ($products->isEmpty()) {
+                return response()->json(['error' => 'No products found under this parent category'], 404);
+            }
+
+            return response()->json($products, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to fetch products by parent category'], 500);
+        }
+    }
     /**
      * @OA\Post(
      *     path="/api/products/filter",
