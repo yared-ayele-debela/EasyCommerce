@@ -1,18 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Front;
+namespace App\Http\Controllers\Ecommerce\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Models\AppSetting;
-use App\Models\CmsPage;
 use App\Models\Order;
 use App\Models\OrderLog;
 use App\Models\OrderProduct;
 use App\Models\ReturnRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
-use RealRashid\SweetAlert\Facades\Alert;
 
 class OrderController extends Controller
 {
@@ -20,10 +16,7 @@ class OrderController extends Controller
     public function orders($id = null)
     {
         try {
-
-            $appsettings = AppSetting::all()->toArray();
-            $cms_pages = CmsPage::get()->toArray();
-
+            $id=decrypt($id);
             if (empty($id)) {
                 $orders = Order::with('orders_products')->where('user_id', Auth::user()->id)->orderBy('id', 'Desc')->get()->toArray();
                 return view('Ecommerce.orders.orders')->with(compact('cms_pages', 'orders', 'appsettings'));
@@ -31,12 +24,10 @@ class OrderController extends Controller
                 $orderDetails = Order::with('orders_products')->where('id', $id)->first()->toArray();
                 $return_order=ReturnRequest::where('order_id',$id)->get();
                 $check_return_order=ReturnRequest::where('order_id',$id)->first();
-                return view('Ecommerce.orders.orders_details', compact('check_return_order','return_order','cms_pages', 'orderDetails', 'appsettings'));
+                return view('Ecommerce.orders.orders_details', compact('check_return_order','return_order', 'orderDetails'));
             }
         } catch (\Exception $e) {
-            // Log or handle the exception as needed
-            Alert::toast('something is wrong!!', 'error');
-            return redirect()->back();
+            return redirect()->back()->with('error', 'something is wrong!!');
         }
     }
     public function orderCancel($id, Request $request)
@@ -50,7 +41,7 @@ class OrderController extends Controller
                 }
                 $user_id_auth = Auth::user()->id;
                 $user_id_order = Order::select('user_id')->where('id', $id)->first();
-                
+
                 if ($user_id_auth == $user_id_order->user_id) {
                     Order::where('id', $id)->update(
                         ['order_status' => 'Cancelled']
@@ -62,11 +53,10 @@ class OrderController extends Controller
                     $log->updated_by = "User";
                     $log->save();
 
-                    Alert::toast('Order has been cancelled!', 'error');
-                    return redirect()->back();
+
+                    return redirect()->back()->with('success', 'Your Order has been cancelled successfully');
                 } else {
-                    Alert::toast('Your Order cancellation Request is not valid', 'success');
-                    return redirect()->back();
+                   return redirect()->back()->with('error', 'Your Order cancellation Request is not valid');
                 }
             }
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -74,8 +64,7 @@ class OrderController extends Controller
             return redirect()->back()->withErrors($e->validator->errors())->withInput();
         } catch (\Exception $e) {
             // Log or handle the exception as needed
-            Alert::toast('something is wrong!!', 'error');
-            return redirect()->back();
+            return redirect()->back()->with('error', 'something is wrong!!');
         }
     }
 
@@ -113,13 +102,11 @@ class OrderController extends Controller
                     $returnRequests[] = $return; // Store the ReturnRequest instances for further use or reference
 
                     }
-                    Alert::toast('Return request has been placed for the ordered product', 'success');
-                    return redirect()->back();
+                    return redirect()->back()->with('success', 'Return request has been placed for the ordered product');
                   }
 
                 } else {
-                    Alert::toast('Your Order Return Request is not valid', 'error');
-                    return  redirect('orders');
+                    return redirect('orders')->with('error', 'Your Order Return Request is not valid');
                 }
 
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -127,8 +114,7 @@ class OrderController extends Controller
             return redirect()->back()->withErrors($e->validator->errors())->withInput();
         } catch (\Exception $e) {
             // Log or handle the exception as needed
-            Alert::toast('something is wrong!!', 'error');
-            return redirect()->back();
+            return redirect()->back()->with('error', 'something is wrong!!');
         }
     }
 }

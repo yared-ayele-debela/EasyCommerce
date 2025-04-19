@@ -96,8 +96,10 @@ use App\Http\Controllers\Socail\AuthController;
 use App\Http\Controllers\Admin\VendorController;
 use App\Http\Controllers\Admin\VendorWithdrawRequestController;
 use App\Http\Controllers\Admin\WithdrawSettingController;
+use App\Http\Controllers\Ecommerce\Frontend\BlogController;
 use App\Http\Controllers\Ecommerce\Frontend\CategoriesController as FrontendCategoriesController;
 use App\Http\Controllers\Ecommerce\Frontend\FrontendController as EcommerceFrontendFrontendController;
+use App\Http\Controllers\Ecommerce\Frontend\OrderController as EcommerceFrontendOrderController;
 use App\Http\Controllers\Ecommerce\Frontend\ProductsController;
 use App\Http\Controllers\Ecommerce\Frontend\VendorController as FrontendVendorController;
 use App\Http\Controllers\Front\AddressController as FrontAddressController;
@@ -1018,10 +1020,7 @@ Route::get('faq', [FaqController::class, 'index'])->name('faq');
 
 Route::get('product/brand/{id}', [ControllersCategoriesController::class, 'bybrands'])->name('product_by_brands');
 
-Route::get('blogs', [FrontBlogsController::class, 'index'])->name('display-blogs');
-Route::get('blogs/details/{id}', [FrontBlogsController::class, 'details'])->name('blogs-details');
-Route::post('store-blogs', [FrontBlogsController::class, 'store'])->name('store-blogs');
-Route::match(['GET', 'POST'], '/contact', [FrontCmsController::class, 'contact']);
+
 
 //for all vendors
 Route::get('vendors', [ControllersVendorController::class, 'vendors'])->name('all-vendor');
@@ -1263,10 +1262,8 @@ Route::prefix('/ecommerce')->group(function () {
     Route::get('/', [EcommerceFrontendFrontendController::class, 'index'])->name('ecommerce.index');
     Route::get('/categories', [FrontendCategoriesController::class, 'index'])->name('ecommerce.categories.index');
 
-    // All Latest Products
     Route::get('/products/latest', [ProductsController::class, 'latest'])->name('ecommerce.products.latest');
 
-    // Featured Products
     Route::get('/products/featured', [ProductsController::class, 'featured'])->name('ecommerce.products.featured');
 
     Route::get('/product/{id}',[ProductsController::class, 'detail'])->name('ecommerce.product.detail');
@@ -1277,5 +1274,14 @@ Route::prefix('/ecommerce')->group(function () {
     Route::get('/vendors', [FrontendVendorController::class, 'index'])->name('ecommerce.vendors.index');
     Route::middleware('auth')->group(function () {
 
+        Route::match(['GET', 'POST'], '/orders/{id}/cancel', [EcommerceFrontendOrderController::class, 'ordercancel']);
+        Route::match(['GET', 'POST'], '/orders/{id}/return', [EcommerceFrontendOrderController::class, 'orderreturn']);
+        Route::get('/orders/{id?}', [EcommerceFrontendOrderController::class, 'orders'])->name('ecommerce.order.detail');
+
     });
 });
+
+Route::get('blogs', [BlogController::class, 'index'])->name('display-blogs');
+Route::get('blogs/details/{id}', [BlogController::class, 'details'])->name('blogs-details');
+Route::post('store-blogs', [BlogController::class, 'store'])->name('store-blogs');
+Route::match(['GET', 'POST'], '/contact', [FrontCmsController::class, 'contact']);

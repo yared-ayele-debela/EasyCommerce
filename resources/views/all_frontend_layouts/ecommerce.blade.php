@@ -245,6 +245,7 @@
         </div>
     </div>
 </div>
+
 <div class="container-fluid py-2">
     <div class="row align-items-start g-4">
         <div class="col-lg-3">
@@ -355,7 +356,7 @@
                         -{{ round(100 - ($getDiscountPrice / $product['product_price']) * 100) }}%
                     </span>
                     @endif
-                    <a href="{{ url('product/'.$product['id']) }}">
+                    <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
                         <img src="{{ asset('storage/products/' . $product['product_image']) }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
                     </a>
                     <div class="card-body p-3">
@@ -448,7 +449,6 @@
         </div>
     </div>
 
-
     <div class="d-flex justify-content-between align-items-center mt-2 pt-4">
         <h3 class="fw-bold">Featured Products</h3>
         <div class="d-flex gap-3 text-center">
@@ -475,7 +475,7 @@
                         -{{ round(100 - ($getDiscountPrice / $product['product_price']) * 100) }}%
                     </span>
                     @endif
-                    <a href="{{ url('product/'.$product['id']) }}">
+                    <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
                         <img src="{{ asset('storage/products/' . $product['product_image']) }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
                     </a>
                     <div class="card-body p-3">
@@ -543,7 +543,7 @@
                         -{{ round(100 - ($getDiscountPrice / $product['product_price']) * 100) }}%
                     </span>
                     @endif
-                    <a href="{{ url('product/'.$product['id']) }}">
+                    <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
                         <img src="{{ asset('storage/products/' . $product['product_image']) }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
                     </a>
                     <div class="card-body p-3">
@@ -603,7 +603,7 @@
                         -{{ round(100 - ($getDiscountPrice / $product['product_price']) * 100) }}%
                     </span>
                     @endif
-                    <a href="{{ url('product/'.$product['id']) }}">
+                    <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
                         <img src="{{ asset('storage/products/' . $product['product_image']) }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
                     </a>
                     <div class="card-body p-3">
@@ -692,10 +692,9 @@
         </div>
     </div>
 </div>
-
 </div>
 
-<div class="container-fluid pb-4">
+{{-- <div class="container-fluid pb-4">
     <h2 class="fw-bold">New Arrival</h2>
     <div class="row g-4">
         <div class="col-md-6">
@@ -778,8 +777,7 @@
         @include('fontend.layout.autoloadproduct.data')
     </div>
     @include('all_frontend_layouts.partial_index')
-
-</div>
+</div> --}}
 
 <script>
     var pages = 2;

@@ -301,7 +301,7 @@ use App\Models\Order;
                                 </div>
                             </div>
                             <hr>
-                            <a href="{{ url('user/orders/'.$order['id']) }}" class="btn btn-primary btn-sm">
+                            <a href="{{ url('ecommerce/orders/'.encrypt($order['id'])) }}" class="btn btn-primary btn-sm">
                                 <i class="fas fa-eye"></i> View Details
                             </a>
                         </div>
