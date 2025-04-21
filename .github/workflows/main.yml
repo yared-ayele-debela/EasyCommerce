@@ -15,7 +15,13 @@ jobs:
         with:
           ref: main
 
-
+      - name: ⚡ Run Laravel Cache Commands
+        run: |
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+          php artisan optimize
+          
       - name: 🚀 Deploy to FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
