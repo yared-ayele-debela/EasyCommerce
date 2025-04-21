@@ -14,5 +14,14 @@ class CategoriesController extends Controller
 
         return view('Ecommerce.categories.index', compact('categories'));
     }
+    public function show($id)
+    {
+        $ids=decrypt($id);
+        $category = Category::where('id',$ids)->first();
+        $products = $category->products()->where('status', 1)->paginate(12);
+
+        return view('Ecommerce.categories.show', compact('category', 'products'));
+    }
+
 
 }

@@ -24,7 +24,7 @@ use App\Models\Wishlist;
     .custom-size-label {
         border: 1px solid #ddd;
         border-radius: 6px;
-        padding: 7px 12px;
+        padding: 10px 15px;
         margin: 5px;
         cursor: pointer;
         transition: all 0.3s ease;
@@ -33,9 +33,9 @@ use App\Models\Wishlist;
     }
 
     .custom-size-checkbox:checked + .custom-size-label {
-        background-color: #17BE18;
+        background-color: #0d6efd;
         color: white;
-        border-color: #17BE18;
+        border-color: #0d6efd;
     }
     .qty-btn {
       width: 40px;
@@ -92,10 +92,9 @@ use App\Models\Wishlist;
               </div>
               <div class="getAttributePrice mt-3">
                 <div class="price">
-                    <h3 class="dynamic-price fw-bolder">{{ App\Helper\Helper::currency_converter($product->product_price) }}</h3>
+                    <h4>{{ App\Helper\Helper::currency_converter($product->product_price) }}</h4>
                 </div>
             </div>
-
               <p class="text-muted">
                 {!!$product['description'] !!}
               </p>
@@ -137,18 +136,19 @@ use App\Models\Wishlist;
                     </div>
                 </div>
             @endif
-            <form id="addToCartForm">
-                <input type="hidden" id="product_id" name="product_id" value="{{ $product->id }}">
-                <input type="hidden" id="final_price_input" name="final_price" value="{{ $product->product_price }}">
-                <div class="d-flex align-items-center mb-4">
-                    <button type="button" class="btn btn-secondary" id="decrement">−</button>
-                    <input type="number" id="quantity" class="form-control mx-2 text-center" value="1" min="1" style="width: 60px;">
-                    <button type="button" class="btn bg-primary text-white" id="increment">+</button>
-                    <button type="submit" class="btn btn-primary ms-3 px-4" id="addToCartBtn">Add to Cart</button>
-                    <button class="btn btn-outline-primary ms-2"><i class="far fa-heart"></i></button>
-                </div>
-            </form>
+              
+              <!-- Quantity and Buy Buttons -->
+              <div class="d-flex align-items-center mb-4">
+                <button class="btn btn-danger qty-btn">-</button>
+                <div class="mx-2 fw-bold fs-5">2</div>
+                <button class="btn btn-success qty-btn">+</button>
+                <button class="btn btn-success ms-3 px-4">Buy Now</button>
+                <button class="btn btn-outline-secondary ms-2"><i class="far fa-heart"></i></button>
+              </div>
 
+
+
+              <!-- Delivery Info -->
               <div class="border rounded p-3 mb-2">
                 <i class="fas fa-truck me-2"></i><strong>Free Delivery</strong>
                 <p class="mb-0 small text-muted">Enter your postal code for Delivery Availability</p>
@@ -352,95 +352,41 @@ use App\Models\Wishlist;
     </div>
 </div>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let priceDisplay = document.getElementById("dynamic-price'");
-        let quantityInput = document.getElementById("quantity");
-        let incrementBtn = document.getElementById("increment");
-        let decrementBtn = document.getElementById("decrement");
-        let sizeSelectors = document.querySelectorAll(".size-selector");
-        let selectedPrice = document.getElementById("final_price_input").value;
-        let selectedSize = document.querySelector('input[name="product_size"]:checked');
+    $("input[name='product_size']").on("change", function() {
+        var size = $(this).val();
+        var product_id = $(this).attr("product-id");
 
-        function updatePrice() {
-            let quantity = parseInt(quantityInput.value);
-            let totalPrice = selectedPrice * quantity;
-
-            priceDisplay.textContent = totalPrice.toFixed(2) + " ETB";
-        }
-       
-        // Handle increment button
-        incrementBtn.addEventListener("click", function () {
-            quantityInput.value = parseInt(quantityInput.value) + 1;
-            updatePrice();
-        });
-        // Handle decrement button (prevent going below 1)
-        decrementBtn.addEventListener("click", function () {
-            if (quantityInput.value > 1) {
-                quantityInput.value = parseInt(quantityInput.value) - 1;
-                updatePrice();
-            }
-        });
-        // Update price initially
-        updatePrice();
-    });
-    $('#addToCartForm').submit(function (e) {
-       
-        e.preventDefault();
-        let size = $('#sizeSelect').val();
-        if (size === "") {
-            alert("Please select a size.");
-            return;
-        }
         $.ajax({
-            url: '/cart-add',
-            method: 'POST',
+            type: "POST",
+            url: '/get-product-price',
             data: {
-                product_id: $('#product_id').val(),
                 size: size,
-                quantity: $('#quantity').val(),
-                final_price: $('#final_price_input').val(),
-                _token: $('meta[name="csrf-token"]').attr('content')
+                product_id: product_id,
+                _token: '{{ csrf_token() }}'
             },
-            success: function (response) {
-                alert("Product added to cart successfully!");
-            },
-            error: function (xhr) {
-                if (xhr.status === 422) {
-                    let errors = xhr.responseJSON.errors;
-                    alert(Object.values(errors).join("\n"));
+            success: function(resp) {
+                var symbolParagraph = document.getElementById("symbolParagraph");
+                var symbolValue = symbolParagraph.getAttribute("symbol");
+
+                if (resp['discount_product_detail'] > 0) {
+                    $(".getAttributePrice").html(
+                        "<div class='price d-flex align-items-center mb-2'>" +
+                        "<span class='me-2 text-danger fw-bold'>Discount:</span>" +
+                        "<h4 class='text-success fw-bold'>" + resp['final_price_product_detail'] + " " + symbolValue + "</h4>" +
+                        "</div>" +
+                        "<span class='original-price text-muted'>Original Price: <del>" + resp['product_detail_price'] + " " + symbolValue + "</del></span>"
+                    );
                 } else {
-                    alert("Something went wrong while adding to cart.");
+                    $(".getAttributePrice").html(
+                        "<div class='price'><h4>" + resp['final_price_product_detail'] + " " + symbolValue + "</h4></div>"
+                    );
                 }
+            },
+            error: function() {
+                alert("Error fetching price");
             }
         });
     });
-    $(document).ready(function () {
-        $("input[name='product_size']").on("change", function() {
-            var size = $(this).val();
-        var product_id = $('#product_id').val();
-
-        if (size !== "") {
-            $.ajax({
-                url: '/get-product-price', // Update with your correct route
-                type: 'POST',
-                data: {
-                    size: size,
-                    product_id: product_id,
-                    _token: $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function (response) {
-                    $('.dynamic-price').html(response.final_price_product_detail+" ETB");
-                    $('#final_price_input').val(response.final_price_product_detail);
-                    updatePrice();
-                },
-                error: function () {
-                    alert('Error fetching price. Please try again.');
-                }
-            });
-        }
-    });
-});
-
 </script>
 
 <script>

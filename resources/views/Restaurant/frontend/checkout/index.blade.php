@@ -461,26 +461,7 @@ use App\Models\Restaurant\Product;
             $("#placeOrderBtn").prop("disabled", false); // Enable Place Order button
         });
 
-        // Delete address
-        $(document).on('click', '.delete-address', function() {
-            let addressId = $(this).data('id');
-            if (confirm("Are you sure you want to delete this address?")) {
-                $.ajax({
-                    url: `/addresses/${addressId}`
-                    , method: "DELETE"
-                    , data: {
-                        _token: "{{ csrf_token() }}"
-                    }
-                    , success: function(response) {
-                        alert(response.success);
-                        $(`#address-${addressId}`).remove();
-                    }
-                    , error: function() {
-                        alert("Error deleting address.");
-                    }
-                });
-            }
-        });
+       
 
         $('#country').change(function() {
             let countryId = $(this).val();

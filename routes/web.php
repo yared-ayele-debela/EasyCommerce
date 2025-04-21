@@ -98,6 +98,8 @@ use App\Http\Controllers\Admin\VendorWithdrawRequestController;
 use App\Http\Controllers\Admin\WithdrawSettingController;
 use App\Http\Controllers\Ecommerce\Frontend\BlogController;
 use App\Http\Controllers\Ecommerce\Frontend\CategoriesController as FrontendCategoriesController;
+use App\Http\Controllers\Ecommerce\Frontend\CmsController as FrontendCmsController;
+use App\Http\Controllers\Ecommerce\Frontend\DeliveryAddressController;
 use App\Http\Controllers\Ecommerce\Frontend\FrontendController as EcommerceFrontendFrontendController;
 use App\Http\Controllers\Ecommerce\Frontend\OrderController as EcommerceFrontendOrderController;
 use App\Http\Controllers\Ecommerce\Frontend\ProductsController;
@@ -1202,7 +1204,11 @@ Route::prefix('/restaurant')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/addresses', [UserDeliveryAddressController::class, 'store'])->middleware('auth');
     Route::get('/addresses', [UserDeliveryAddressController::class, 'index'])->middleware('auth');
+    
     Route::delete('/addresses/{id}', [UserDeliveryAddressController::class, 'destroy'])->middleware('auth');
+    
+    Route::get('/user-addresses', [DeliveryAddressController::class, 'index'])->name('user.addresses.index');
+    Route::delete('/user-addresses/{id}', [DeliveryAddressController::class, 'destroy'])->name('user.addresses.destroy');
     // account detail
     Route::put('user/account/update', [UserController::class, 'updateAccountDetails'])->name('user.account.update');
     // Route to update password
@@ -1261,6 +1267,7 @@ Route::get('/get-nearby-hotels', [FrontendHotelController::class, 'getNearbyHote
 Route::prefix('/ecommerce')->group(function () {
     Route::get('/', [EcommerceFrontendFrontendController::class, 'index'])->name('ecommerce.index');
     Route::get('/categories', [FrontendCategoriesController::class, 'index'])->name('ecommerce.categories.index');
+    Route::get('/category/{id}', [FrontendCategoriesController::class, 'show'])->name('ecommerce.category.show');
 
     Route::get('/products/latest', [ProductsController::class, 'latest'])->name('ecommerce.products.latest');
 
@@ -1285,3 +1292,5 @@ Route::get('blogs', [BlogController::class, 'index'])->name('display-blogs');
 Route::get('blogs/details/{id}', [BlogController::class, 'details'])->name('blogs-details');
 Route::post('store-blogs', [BlogController::class, 'store'])->name('store-blogs');
 Route::match(['GET', 'POST'], '/contact', [FrontCmsController::class, 'contact']);
+
+Route::get('page/{url}', [FrontendCmsController::class, 'pages'])->name('pages');

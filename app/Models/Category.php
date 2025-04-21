@@ -77,4 +77,7 @@ class Category extends Model
         return $getCategoryStatus->status;
     } 
     
+    public function products(){
+        return $this->hasMany('App\Models\Product', 'category_id')->where('status', 1);
+    }   
 }

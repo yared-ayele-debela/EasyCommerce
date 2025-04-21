@@ -21,11 +21,8 @@ class CheckoutController extends Controller
     public function index()
     {
         $cart = session()->get('cart', []);
-
-        // Calculate subtotal
         $subtotal = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
         session(['cart_subtotal' => $subtotal]);
-
         $countries = Country::all();
 
         return view('Restaurant.frontend.checkout.index', compact('cart', 'subtotal', 'countries'));

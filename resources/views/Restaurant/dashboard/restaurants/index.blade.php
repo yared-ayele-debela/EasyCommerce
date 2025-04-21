@@ -399,7 +399,6 @@ $user = Auth::guard('admin')->user();
 
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
@@ -479,7 +478,6 @@ $user = Auth::guard('admin')->user();
             }
         });
 
-        // Update coordinates when dragging marker
         marker.on('dragend', function (e) {
             var position = marker.getLatLng();
             updateCoordinates(position.lat, position.lng);

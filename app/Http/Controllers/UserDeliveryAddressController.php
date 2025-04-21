@@ -23,8 +23,8 @@ class UserDeliveryAddressController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
-            'city' => 'required|string|max:255',
-            'country' => 'required|string|max:255',
+            'city' => 'nullable|string|max:255',
+            'country' => 'nullable|string|max:255',
             'mobile' => 'required|string|max:15',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
@@ -44,8 +44,8 @@ class UserDeliveryAddressController extends Controller
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
         ]);
+        return redirect()->back()->with('success', 'Address saved successfully!'); 
 
-        return response()->json(['success' => 'Address saved successfully!']);
     }
      // Delete an address
      public function destroy($id)

@@ -306,21 +306,19 @@ class ProductController extends Controller
     {
         if ($request->ajax()) {
             $data = $request->all();
-            // echo "<pre>"; print_r($data);
 
             $getDiscountAttributePrice = Product::getDiscountAttributePrice($data['product_id'], $data['size']);
-
-
             return $getDiscountAttributePrice;
+
         }
     }
 
     public function cartAdd(Request $request)
     {
         // try {
+        
 
             $data = $request->all();
-            //  echo "<pre>"; print_r($data);die;
             $this->validate($request, [
                 'size'=>'required',
             ]);
@@ -331,15 +329,12 @@ class ProductController extends Controller
             if ($data['quantity'] <= 0) {
                 $data['quantity'] = 1;
             }
-            //check product stock is available or not
 
             $getProductStock = ProductAttribute::isStokAvailable($data['product_id'], $data['size']);
-
             if ($getProductStock < $data['quantity']) {
 
                 return redirect()->back()->with('error_message', 'Required Quantity is not available!');
             }
-
             $session_id = Session::get('session_id');
             if (empty($session_id)) {
                 $session_id = Session::getId();

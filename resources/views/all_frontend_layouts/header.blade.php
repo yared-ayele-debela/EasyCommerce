@@ -18,6 +18,7 @@
   <!-- In your Blade file -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<meta name="csrf-token" content="{{ csrf_token() }}">
 
 <style>
 #search-results {
@@ -179,6 +180,11 @@
                         <li class="mb-2">
                             <a class="dropdown-item d-flex align-items-center gap-2" href="{{ url('my-orders') }}">
                                 <i class="far fa-heart text-primary"></i> My Orders
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a class="dropdown-item d-flex align-items-center gap-2" href="{{ url('user-addresses') }}">
+                                <i class="bi bi-pin-map text-primary"></i> My Delivery Address
                             </a>
                         </li>
 

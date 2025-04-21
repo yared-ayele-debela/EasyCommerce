@@ -1,12 +1,13 @@
 @extends('all_frontend_layouts.layouts')
 @section('content')
-<div class="header">
-    <button class="btn btn-link text-dark" onclick="history.back()">
-        <i class="bi bi-arrow-left"></i>
-    </button>
-    <h5 class="my-4 text-dark text-center">Blog detail</h5>
-</div>
-<div class="container-fluid pb-5">
+
+<div class="container pb-5">
+    <div class="header">
+        <button class="btn btn-link text-dark" onclick="history.back()">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+        <h5 class="my-4 text-dark text-center">Blog detail</h5>
+    </div>
     <div class="blog-detail-wrapper">
         <h1 class="h2 mb-3 text-dark fw-bold">{{ $blogs->title }}</h1>
         <div class="mb-3 text-muted small">
