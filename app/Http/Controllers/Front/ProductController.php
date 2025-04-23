@@ -331,7 +331,6 @@ class ProductController extends Controller
 
             $getProductStock = ProductAttribute::isStokAvailable($data['product_id'], $data['size']);
             if ($getProductStock < $data['quantity']) {
-
                 return redirect()->back()->with('error_message', 'Required Quantity is not available!');
             }
             $session_id = Session::get('session_id');

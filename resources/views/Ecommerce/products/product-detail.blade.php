@@ -116,7 +116,7 @@ use App\Models\Wishlist;
                 @endif
                 <!-- Colours -->
                 <div class="mb-3">
-                    <span><strong>Color:  <span class="color-dot selected mb-0" style="background-color: {{ $product->product_color}}"></span> </strong></span>
+                    <span><strong>Color: <span class="color-dot selected mb-0" style="background-color: {{ $product->product_color}}"></span> </strong></span>
                 </div>
                 <!-- Size -->
                 @if($product['attributes'])
@@ -386,68 +386,104 @@ use App\Models\Wishlist;
 
 </script>
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
 
-// Handle Size Change
-$("input[name='product_size']").on("change", function () {
-    var size = $(this).val();
-    var product_id =  $(this).attr("product-id");
-    if (size !== "") {
-        $.ajax({
-            url: '/get-product-price',
-            type: 'POST',
-            data: {
-                size: size,
-                product_id: product_id,
-                _token: $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function (response) {
-                let unitPrice = parseFloat(response.final_price_product_detail);
+        // Handle Size Change
+        $("input[name='product_size']").on("change", function() {
+            var size = $(this).val();
+            var product_id = $(this).attr("product-id");
+            if (size !== "") {
+                $.ajax({
+                    url: '/get-product-price'
+                    , type: 'POST'
+                    , data: {
+                        size: size
+                        , product_id: product_id
+                        , _token: $('meta[name="csrf-token"]').attr('content')
+                    }
+                    , success: function(response) {
+                        let unitPrice = parseFloat(response.final_price_product_detail);
 
-                $('.dynamic-price').html(unitPrice + " ETB");
-                $('#final_price_input').val(unitPrice);
-                $('#unit_price_hidden').val(unitPrice);
+                        $('.dynamic-price').html(unitPrice + " ETB");
+                        $('#final_price_input').val(unitPrice);
+                        $('#unit_price_hidden').val(unitPrice);
 
-                updateFinalPrice();
-            },
-            error: function () {
-                alert('Error fetching price. Please try again.');
+                        updateFinalPrice();
+                    }
+                    , error: function() {
+                        alert('Error fetching price. Please try again.');
+                    }
+                });
             }
         });
-    }
-});
 
-// Quantity Increment
-$('#increment').click(function () {
-    let quantity = parseInt($('#quantity').val()) || 1;
-    $('#quantity').val(quantity + 1);
-    updateFinalPrice();
-});
+        // Quantity Increment
+        $('#increment').click(function() {
+            let quantity = parseInt($('#quantity').val()) || 1;
+            $('#quantity').val(quantity + 1);
+            updateFinalPrice();
+        });
 
-// Quantity Decrement
-$('#decrement').click(function () {
-    let quantity = parseInt($('#quantity').val()) || 1;
-    if (quantity > 1) {
-        $('#quantity').val(quantity - 1);
-        updateFinalPrice();
-    }
-});
+        // Quantity Decrement
+        $('#decrement').click(function() {
+            let quantity = parseInt($('#quantity').val()) || 1;
+            if (quantity > 1) {
+                $('#quantity').val(quantity - 1);
+                updateFinalPrice();
+            }
+        });
 
-// Quantity Manual Input
-$('#quantity').on('input', function () {
-    updateFinalPrice();
-});
+        // Quantity Manual Input
+        $('#quantity').on('input', function() {
+            updateFinalPrice();
+        });
 
-// Update Final Price
-function updateFinalPrice() {
-    let quantity = parseInt($('#quantity').val()) || 1;
-    let unitPrice = parseFloat($('#unit_price_hidden').val()) || 0;
-    let finalPrice = quantity * unitPrice;
-    $('.dynamic-price').html(finalPrice.toFixed(2) + " ETB");
-    $('#final_price_input').val(finalPrice.toFixed(2));
-}
-});
+        // Update Final Price
+        function updateFinalPrice() {
+            let quantity = parseInt($('#quantity').val()) || 1;
+            let unitPrice = parseFloat($('#unit_price_hidden').val()) || 0;
+            let finalPrice = quantity * unitPrice;
+            $('.dynamic-price').html(finalPrice.toFixed(2) + " ETB");
+            $('#final_price_input').val(finalPrice.toFixed(2));
+        }
+    });
+    $('#addToCartBtn').on('click', function(e) {
+        e.preventDefault();
 
+        let product_id = $('#product_id').val();
+        let size = $('input[name="product_size"]:checked').val();
+        let quantity = parseInt($('#quantity').val()) || 1;
+
+        if (!size) {
+            showAlert('error', 'Please select a size.');
+            return;
+        }
+
+        $.ajax({
+            url: '/add-to-cart'
+            , type: 'POST'
+            , data: {
+                _token: $('meta[name="csrf-token"]').attr('content')
+                , product_id: product_id
+                , size: size
+                , quantity: quantity
+            }
+            , success: function(response) {
+                if (response.status === 'success') {
+                    showAlert('success', 'Product added to cart');
+                } else {
+                    showAlert('error', 'Failed to add product to cart.');
+                }
+            }
+            , error: function(xhr) {
+                if (xhr.status === 422) {
+                    showAlert('error', 'Validation failed: ' + xhr.responseJSON.message);
+                } else {
+                    showAlert('error', 'Error adding product to cart.');
+                }
+            }
+        });
+    });
 </script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -460,6 +496,7 @@ function updateFinalPrice() {
             });
         });
     });
+
 </script>
 @endsection
 

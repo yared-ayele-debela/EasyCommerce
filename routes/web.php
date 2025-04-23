@@ -97,6 +97,7 @@ use App\Http\Controllers\Admin\VendorController;
 use App\Http\Controllers\Admin\VendorWithdrawRequestController;
 use App\Http\Controllers\Admin\WithdrawSettingController;
 use App\Http\Controllers\Ecommerce\Frontend\BlogController;
+use App\Http\Controllers\Ecommerce\Frontend\CartController as FrontendCartController;
 use App\Http\Controllers\Ecommerce\Frontend\CategoriesController as FrontendCategoriesController;
 use App\Http\Controllers\Ecommerce\Frontend\CmsController as FrontendCmsController;
 use App\Http\Controllers\Ecommerce\Frontend\DeliveryAddressController;
@@ -1287,11 +1288,9 @@ Route::prefix('/ecommerce')->group(function () {
     // All Vendors
     Route::get('/vendors', [FrontendVendorController::class, 'index'])->name('ecommerce.vendors.index');
     Route::middleware('auth')->group(function () {
-
         Route::match(['GET', 'POST'], '/orders/{id}/cancel', [EcommerceFrontendOrderController::class, 'ordercancel']);
         Route::match(['GET', 'POST'], '/orders/{id}/return', [EcommerceFrontendOrderController::class, 'orderreturn']);
         Route::get('/orders/{id?}', [EcommerceFrontendOrderController::class, 'orders'])->name('ecommerce.order.detail');
-
     });
     Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 
@@ -1305,3 +1304,4 @@ Route::match(['GET', 'POST'], '/contact', [FrontCmsController::class, 'contact']
 Route::get('page/{url}', [FrontendCmsController::class, 'pages'])->name('pages');
 // web.php
 Route::post('/subscribe-newsletter', [NewslettersController::class, 'store']);
+Route::post('/add-to-cart', [FrontendCartController::class, 'addToCart']);

@@ -132,7 +132,6 @@ class UserController extends Controller
             ]);
 
             if ($validator->fails()) {
-
                 return redirect()->back()->withErrors($validator)->withInput();
             } else {
                 if (Auth::attempt(['email' => $data['email'], 'password' => $data['passwords']])) {
@@ -142,14 +141,12 @@ class UserController extends Controller
                         Auth::logout();
                         return redirect()->back()->with('info', 'Your account is not activated. Please confirm your account to activate it.');
                     }
-                    // Update User Cart with user_id
                     if (!empty(Session::get('session_id'))) {
                         $user_id = Auth::user()->id;
                         $session_id = Session::get('session_id');
                         Cart::where('session_id', $session_id)->update(['user_id' => $user_id]);
                     }
 
-                    // Login successful, redirect to the cart or any other desired page
                     return redirect('cart')->with('success', 'Welcome to our website!');
                 } else {
                     // Login failed, redirect back with an error message
