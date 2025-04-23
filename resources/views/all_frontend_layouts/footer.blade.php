@@ -7,14 +7,14 @@
 @endphp
 <footer class="bg-primary pt-5 pb-3 d-none d-md-block">
     <div class="container-fluid">
-        <form class="newsletter-form" action="{{ url('newslettersubscriber') }}" method="POST">
+        <form class="newsletter-form" id="newsletterForm">
             @csrf
             <div class="row d-flex justify-content-center align-items-center mb-4">
                 <div class="col-12 col-md-4 text-center">
                     <h4 class="text-white">Exclusive Subscribe</h4>
                     <p class="text-white">Get 10% off your first order</p>
                     <div class="d-flex justify-content-center align-items-center newsletter-container p-2 rounded">
-                        <input type="email" class="form-control newsletter-input me-2 border-0" name="email" placeholder="Enter your email">
+                        <input type="email" class="form-control newsletter-input me-2 border-0" id="newsletterEmail" name="email" placeholder="Enter your email">
                         <button type="submit" class="btn newsletter-button">SUBMIT</button>
                     </div>
                 </div>
@@ -111,7 +111,35 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{ asset('restaurant_frontend/assets/js/index.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+<script>
+    $(document).ready(function () {
+    $('#newsletterForm').on('submit', function (e) {
+        e.preventDefault();
+        var email = $('#newsletterEmail').val();
+        $.ajax({
+            url: '/subscribe-newsletter',
+            type: 'POST',
+            data: {
+                email: email,
+                status: 1, 
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (response) {
+                showAlert('success', response.message);
+                email = ''; // Clear the input field
+                $('#newsletterEmail').val('');
+            },
+            error: function (xhr) {
+                let message = xhr.responseJSON?.message || 'Subscription failed.';
+                showAlert('info', message);
+                $('#newsletterEmail').val('');
 
+            }
+        });
+    });
+});
+
+</script>
 <script>
     // Toggle subcategories on click for mobile
     document.addEventListener('DOMContentLoaded', function() {

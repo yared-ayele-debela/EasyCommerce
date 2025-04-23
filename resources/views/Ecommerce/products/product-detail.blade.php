@@ -87,14 +87,14 @@ use App\Models\Wishlist;
                     </span>
                     <small class="text-muted">({{$ratings->count() }} Reviews)</small>
                     @if($totalStock>0)
-                    <span class="text-success ms-3">In Stock</span>
+                    <span class="text-primary ms-3">In Stock</span>
                     @else
                     <span class="text-danger ms-3">Out of Stock</span>
                     @endif
                 </div>
                 <div class="getAttributePrice mt-3">
                     <div class="price">
-                        <h3 class="dynamic-price fw-bolder">{{ App\Helper\Helper::currency_converter($product->product_price) }}</h3>
+                        <h3 class="dynamic-price fw-bolder text-dark">{{ App\Helper\Helper::currency_converter($product->product_price) }}</h3>
                     </div>
                 </div>
 

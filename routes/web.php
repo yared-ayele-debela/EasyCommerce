@@ -101,6 +101,7 @@ use App\Http\Controllers\Ecommerce\Frontend\CategoriesController as FrontendCate
 use App\Http\Controllers\Ecommerce\Frontend\CmsController as FrontendCmsController;
 use App\Http\Controllers\Ecommerce\Frontend\DeliveryAddressController;
 use App\Http\Controllers\Ecommerce\Frontend\FrontendController as EcommerceFrontendFrontendController;
+use App\Http\Controllers\Ecommerce\Frontend\NewslettersController;
 use App\Http\Controllers\Ecommerce\Frontend\OrderController as EcommerceFrontendOrderController;
 use App\Http\Controllers\Ecommerce\Frontend\ProductsController;
 use App\Http\Controllers\Ecommerce\Frontend\VendorController as FrontendVendorController;
@@ -176,6 +177,7 @@ use App\Http\Controllers\Restaurant\Frontend\WishController;
 use App\Http\Controllers\UserDeliveryAddressController;
 use App\Models\Hotel\Hotel;
 use App\Models\HotelCategory;
+use App\Models\NewsletterSubscriber;
 use App\Models\Restaurant\Product as RestaurantProduct;
 use App\Models\Restaurant\Restaurant;
 use Illuminate\Support\Facades\Auth;
@@ -1301,3 +1303,5 @@ Route::post('store-blogs', [BlogController::class, 'store'])->name('store-blogs'
 Route::match(['GET', 'POST'], '/contact', [FrontCmsController::class, 'contact']);
 
 Route::get('page/{url}', [FrontendCmsController::class, 'pages'])->name('pages');
+// web.php
+Route::post('/subscribe-newsletter', [NewslettersController::class, 'store']);
