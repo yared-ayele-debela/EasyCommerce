@@ -76,6 +76,21 @@ class WishController extends Controller
 
         return response()->json(['status' => 'error'], 404);
     }
+    public function rremove(Request $request)
+    {
+        $user = auth()->user();
+
+        $wishlist = Wishlist::where('id', $request->id)
+                    ->where('user_id', $user->id)
+                    ->first();
+
+        if ($wishlist) {
+            $wishlist->delete();
+            return response()->json(['status' => 'removed']);
+        }
+
+        return response()->json(['status' => 'error'], 404);
+    }
 
 
 

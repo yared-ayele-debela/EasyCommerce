@@ -1219,6 +1219,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/my-wishlist', [WishController::class, 'index'])->name('restaurant.wishlist.index');
 
     Route::post('/wishlist/remove', [WishController::class, 'remove'])->name('wishlist.remove');
+    Route::post('/restaurant-wishlist/remove', [WishController::class, 'rremove'])->name('restaurant-wishlist/remove');
 
 });
 

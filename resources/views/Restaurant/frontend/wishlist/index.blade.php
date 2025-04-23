@@ -44,12 +44,15 @@
                                     </td>
                                     <td>{{ number_format($product->price, 2) }} ETB</td>
                                     <td>
-                                        <button class="btn btn-danger btn-sm remove-wishlist" data-product="{{ $product->id }}"><i class="bi bi-trash-fill"></i></button>
+                                        <button class="btn btn-danger btn-sm remove-restaurant-wishlist-btn" data-id="{{ $item->id }}"><i class="bi bi-trash-fill"></i></button>
                                     </td>
                                 </tr>
                                 @endforeach
                             </tbody>
                         </table>
+                        @else
+                        <p>Your wishlist is empty.</p>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -80,13 +83,15 @@
                                     <td>{{ number_format($product->product_price, 2) }} ETB</td>
                                     <td>
                                         <button class="btn btn-danger remove-wishlist-btn btn-sm" data-id="{{ $item->id }}">
-                                          <i class="bi bi-trash-fill"></i>
+                                            <i class="bi bi-trash-fill"></i>
                                         </button>
                                     </td>
                                 </tr>
                                 @endforeach
                             </tbody>
                         </table>
+                        @else
+                        <p>Your wishlist is empty.</p>
                         @endif
                     </div>
                 </div>
@@ -94,26 +99,22 @@
         </div>
     </div>
     <a href="{{ url('/') }}" class="btn bg-primary text-white">Return to Shop</a>
-    @else
-    <p>Your wishlist is empty.</p>
-    @endif
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    $(document).ready(function () {
-        $('.remove-wishlist-btn').click(function (e) {
+    $(document).ready(function() {
+        $('.remove-wishlist-btn').click(function(e) {
             e.preventDefault();
             const itemId = $(this).data('id');
 
             $.ajax({
-                url: "{{ route('wishlist.remove') }}",
-                type: "POST",
-                data: {
-                    id: itemId,
-                    _token: "{{ csrf_token() }}"
-                },
-                success: function (response) {
+                url: "{{ route('wishlist.remove') }}"
+                , type: "POST"
+                , data: {
+                    id: itemId
+                    , _token: "{{ csrf_token() }}"
+                }
+                , success: function(response) {
                     if (response.status === 'removed') {
                         $('#wishlist-item-' + itemId).fadeOut();
 
@@ -121,63 +122,38 @@
                         location.reload();
 
                     }
-                },
-                error: function () {
+                }
+                , error: function() {
+                    showAlert('error', 'Something went wrong!');
+                }
+            });
+        });
+        $('.remove-restaurant-wishlist-btn').click(function(e) {
+            e.preventDefault();
+            const itemId = $(this).data('id');
+
+            $.ajax({
+                url: "{{ route('restaurant-wishlist/remove') }}"
+                , type: "POST"
+                , data: {
+                    id: itemId
+                    , _token: "{{ csrf_token() }}"
+                }
+                , success: function(response) {
+                    if (response.status === 'removed') {
+                        $('#wishlist-item-' + itemId).fadeOut();
+                        showAlert('success', 'Item removed from wishlist');
+                        location.reload();
+
+                    }
+                }
+                , error: function() {
                     showAlert('error', 'Something went wrong!');
                 }
             });
         });
     });
-    </script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        document.querySelectorAll(".remove-wishlist").forEach(button => {
-            button.addEventListener("click", function() {
-                let productId = this.getAttribute("data-product");
 
-                // Show Confirmation Alert Before Deletion
-                Swal.fire({
-                    title: "Are you sure?"
-                    , text: "Do you want to remove this item from your wishlist? 💔"
-                    , icon: "warning"
-                    , showCancelButton: true
-                    , confirmButtonColor: "#d33"
-                    , cancelButtonColor: "#3085d6"
-                    , confirmButtonText: "Yes, remove it!"
-                    , cancelButtonText: "Cancel"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        fetch("{{ route('restaurant.wishlist.remove') }}", {
-                                method: "POST"
-                                , headers: {
-                                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                                    , "Content-Type": "application/json"
-                                }
-                                , body: JSON.stringify({
-                                    product_id: productId
-                                })
-                            }).then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    Swal.fire({
-                                        title: "Removed!"
-                                        , text: "The product has been removed from your wishlist. 💔"
-                                        , icon: "success"
-                                        , timer: 2000
-                                        , showConfirmButton: false
-                                    });
-
-                                    // Reload after short delay
-                                    setTimeout(() => {
-                                        location.reload();
-                                    }, 1500);
-                                }
-                            });
-                    }
-                });
-            });
-        });
-    });
 </script>
 @endsection
 

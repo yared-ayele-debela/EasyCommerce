@@ -7,16 +7,18 @@ use App\Models\Wishlist;
 @section('content')
 <style>
     .color-dot {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      display: inline-block;
-      margin-right: 10px;
-      cursor: pointer;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 10px;
+        cursor: pointer;
     }
+
     .color-dot.selected {
-      outline: 2px solid #000;
+        outline: 2px solid #000;
     }
+
     .custom-size-checkbox {
         display: none;
     }
@@ -32,15 +34,17 @@ use App\Models\Wishlist;
         background-color: #f9f9f9;
     }
 
-    .custom-size-checkbox:checked + .custom-size-label {
+    .custom-size-checkbox:checked+.custom-size-label {
         background-color: #17BE18;
         color: white;
         border-color: #17BE18;
     }
+
     .qty-btn {
-      width: 40px;
-      height: 40px;
+        width: 40px;
+        height: 40px;
     }
+
 </style>
 <div class="container-fluid">
     <div class="header">
@@ -52,54 +56,52 @@ use App\Models\Wishlist;
     <div class="row g-4 py-4">
         <div class="row">
             <div class="col-md-1 d-flex flex-column gap-3">
-            @foreach ($product['images'] as $image )
-              <img src="{{ asset('/storage/products/'.$image['image']) }}" class="img-fluid border rounded thumbnail-image" style="cursor: pointer;"  alt="{{ $product->product_name }}" />
-            @endforeach
+                @foreach ($product['images'] as $image )
+                <img src="{{ asset('/storage/products/'.$image['image']) }}" class="img-fluid border rounded thumbnail-image" style="cursor: pointer;" alt="{{ $product->product_name }}" />
+                @endforeach
             </div>
 
             <div class="col-md-5">
-              <img  id="mainProductImage" src="{{ asset('storage/products/' . $product['product_image']) }}" class="img-fluid border-0 rounded w-100" alt="{{ $product->product_name }}" />
+                <img id="mainProductImage" src="{{ asset('storage/products/' . $product['product_image']) }}" class="img-fluid border-0 rounded w-100" alt="{{ $product->product_name }}" />
             </div>
 
             <!-- Product Details -->
             <div class="col-md-6">
-              <!-- Rating -->
-              <div class="mb-2">
-                <span class="text-warning">
-                    @if($avgStarRating > 0)
-                    <div class="product-rating mb-2">
-                        <p>
-                            @for ($i = 1; $i <= 5; $i++)
-                                @if ($i <= round($avgStarRating))
-                                <i class="bi bi-star-fill text-primary"></i>
-                                {{-- Filled Star --}}
-                                @else
-                                <i class="bi bi-star text-primary"></i>
-                                @endif
-                            @endfor
-                            <span class="text-muted">({{ number_format($avgRating, 1) }})</span>
-                        </p>
-                    </div>
-                @endif
+                <!-- Rating -->
+                <div class="mb-2">
+                    <span class="text-warning">
+                        @if($avgStarRating > 0)
+                        <div class="product-rating mb-2">
+                            <p>
+                                @for ($i = 1; $i <= 5; $i++) @if ($i <=round($avgStarRating)) <i class="bi bi-star-fill text-primary"></i>
+                                    {{-- Filled Star --}}
+                                    @else
+                                    <i class="bi bi-star text-primary"></i>
+                                    @endif
+                                    @endfor
+                                    <span class="text-muted">({{ number_format($avgRating, 1) }})</span>
+                            </p>
+                        </div>
+                        @endif
 
-                </span>
-                <small class="text-muted">({{$ratings->count() }} Reviews)</small>
-                @if($totalStock>0)
-                <span class="text-success ms-3">In Stock</span>
-                @else
-                <span class="text-danger ms-3">Out of Stock</span>
-                @endif
-              </div>
-              <div class="getAttributePrice mt-3">
-                <div class="price">
-                    <h3 class="dynamic-price fw-bolder">{{ App\Helper\Helper::currency_converter($product->product_price) }}</h3>
+                    </span>
+                    <small class="text-muted">({{$ratings->count() }} Reviews)</small>
+                    @if($totalStock>0)
+                    <span class="text-success ms-3">In Stock</span>
+                    @else
+                    <span class="text-danger ms-3">Out of Stock</span>
+                    @endif
                 </div>
-            </div>
+                <div class="getAttributePrice mt-3">
+                    <div class="price">
+                        <h3 class="dynamic-price fw-bolder">{{ App\Helper\Helper::currency_converter($product->product_price) }}</h3>
+                    </div>
+                </div>
 
-              <p class="text-muted">
-                {!!$product['description'] !!}
-              </p>
-              <hr>
+                <p class="text-muted">
+                    {!!$product['description'] !!}
+                </p>
+                <hr>
                 <p class="text-muted mb-2">Product Code: <strong>{{ $product->product_code }}</strong></p>
                 <div class="mb-2">
                     @if($totalStock>0)
@@ -112,73 +114,62 @@ use App\Models\Wishlist;
                     <a href="/products/{{ $productDetails['vendor']['id'] }}">{{ $productDetails['vendor']['vendorbusinessdetails']['shop_name'] }}</a>
                 </div>
                 @endif
-
-              <!-- Colours -->
-              <div class="mb-3">
-                <strong>Colours:</strong>
-                <span class="color-dot bg-secondary selected"></span>
-                <span class="color-dot bg-danger"></span>
-              </div>
-
-              <!-- Size -->
+                <!-- Colours -->
+                <div class="mb-3">
+                    <span><strong>Color:  <span class="color-dot selected mb-0" style="background-color: {{ $product->product_color}}"></span> </strong></span>
+                </div>
+                <!-- Size -->
                 @if($product['attributes'])
                 <div class="mb-3">
                     <label class="form-label fw-bold d-block">Select Size:</label>
                     <div id="sizeOptions" class="d-flex flex-wrap">
                         @foreach ($product['attributes'] as $index => $attribute)
-                            <input type="radio"
-                                   class="custom-size-checkbox"
-                                   name="product_size"
-                                   id="size_{{ $index }}"
-                                   value="{{ $attribute['size'] }}"
-                                   product-id="{{ $product->id }}">
-                            <label for="size_{{ $index }}" class="custom-size-label">{{ $attribute['size'] }}</label>
+                        <input type="radio" class="custom-size-checkbox" name="product_size" id="size_{{ $index }}" value="{{ $attribute['size'] }}" product-id="{{ $product->id }}">
+                        <label for="size_{{ $index }}" class="custom-size-label">{{ $attribute['size'] }}</label>
                         @endforeach
                     </div>
                 </div>
-            @endif
-            <form id="addToCartForm">
-                <input type="hidden" id="product_id" name="product_id" value="{{ $product->id }}">
-                <input type="hidden" id="final_price_input" name="final_price" value="{{ $product->product_price }}">
-                <div class="d-flex align-items-center mb-4">
-                    <button type="button" class="btn btn-secondary" id="decrement">−</button>
-                    <input type="number" id="quantity" class="form-control mx-2 text-center" value="1" min="1" style="width: 60px;">
-                    <button type="button" class="btn bg-primary text-white" id="increment">+</button>
-                    <button type="submit" class="btn btn-primary ms-3 px-4" id="addToCartBtn">Add to Cart</button>
-                    <button
-                    class="btn btn-outline-primary ms-2 wishlist-btn"
-                    data-product-id="{{ $product->id }}"
-                    title="Add to Wishlist">
-                    <i class="far fa-heart"></i>
-                    </button>
+                @endif
+                <form id="addToCartForm">
+                    <input type="hidden" id="product_id" name="product_id" value="{{ $product->id }}">
+                    <input type="hidden" id="final_price_input" name="final_price" value="{{ $product->product_price }}">
+                    <input type="hidden" id="unit_price_hidden" value="0">
 
-            </div>
-            </form>
+                    <div class="d-flex align-items-center mb-4">
+                        <button type="button" class="btn btn-secondary" id="decrement">−</button>
+                        <input type="number" id="quantity" class="form-control mx-2 text-center" value="1" min="1" style="width: 60px;">
+                        <button type="button" class="btn bg-primary text-white" id="increment">+</button>
+                        <button type="submit" class="btn btn-primary ms-3 px-4" id="addToCartBtn">Add to Cart</button>
+                        <button class="btn btn-outline-primary ms-2 wishlist-btn" data-product-id="{{ $product->id }}" title="Add to Wishlist">
+                            <i class="far fa-heart"></i>
+                        </button>
+                    </div>
+                </form>
 
-              <div class="border rounded p-3 mb-2">
-                <i class="fas fa-truck me-2"></i><strong>Free Delivery</strong>
-                <p class="mb-0 small text-muted">Enter your postal code for Delivery Availability</p>
-              </div>
+                <div class="border rounded p-3 mb-2">
+                    <i class="fas fa-truck me-2"></i><strong>Free Delivery</strong>
+                    <p class="mb-0 small text-muted">Enter your postal code for Delivery Availability</p>
+                </div>
 
-              <div class="border rounded p-3">
-                <i class="fas fa-undo me-2"></i><strong>Return Delivery</strong>
-                <p class="mb-0 small text-muted">Free 30 Days Delivery Returns. <a href="{{ url('page/delivery_and_return') }}" target="_blank" class="text-primary">Details</a></p>
-              </div>
+                <div class="border rounded p-3">
+                    <i class="fas fa-undo me-2"></i><strong>Return Delivery</strong>
+                    <p class="mb-0 small text-muted">Free 30 Days Delivery Returns. <a href="{{ url('page/delivery_and_return') }}" target="_blank" class="text-primary">Details</a></p>
+                </div>
             </div>
             <div class="col-md-12">
                 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                     <li class="nav-item" role="presentation">
-                      <button class="nav-link active" id="pills-Description-tab" data-bs-toggle="pill" data-bs-target="#pills-Description" type="button" role="tab" aria-controls="pills-Description" aria-selected="true">Description</button>
+                        <button class="nav-link active" id="pills-Description-tab" data-bs-toggle="pill" data-bs-target="#pills-Description" type="button" role="tab" aria-controls="pills-Description" aria-selected="true">Description</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                      <button class="nav-link" id="pills-Specifications-tab" data-bs-toggle="pill" data-bs-target="#pills-Specifications" type="button" role="tab" aria-controls="pills-Specifications" aria-selected="false">Specifications</button>
+                        <button class="nav-link" id="pills-Specifications-tab" data-bs-toggle="pill" data-bs-target="#pills-Specifications" type="button" role="tab" aria-controls="pills-Specifications" aria-selected="false">Specifications</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                      <button class="nav-link" id="pills-Reviews-tab" data-bs-toggle="pill" data-bs-target="#pills-Reviews" type="button" role="tab" aria-controls="pills-Reviews" aria-selected="false">Customer Reviews ({{ $ratings->count() }})</button>
+                        <button class="nav-link" id="pills-Reviews-tab" data-bs-toggle="pill" data-bs-target="#pills-Reviews" type="button" role="tab" aria-controls="pills-Reviews" aria-selected="false">Customer Reviews ({{ $ratings->count() }})</button>
                     </li>
 
-                  </ul>
-                  <div class="tab-content" id="pills-tabContent">
+                </ul>
+                <div class="tab-content" id="pills-tabContent">
                     <div class="tab-pane fade show active" id="pills-Description" role="tabpanel" aria-labelledby="pills-Description-tab" tabindex="0">
                         <p> {!! $product['description'] !!}</p>
                         @if(!empty($product['product_video']))
@@ -191,68 +182,66 @@ use App\Models\Wishlist;
                         <h6 class="text-muted">Product Additional Information</h6>
                         <div class="row row-cols-1 row-cols-md-2 g-3">
                             @foreach ($productFilters as $filter)
-                                @if(isset($product['category_id']))
-                                    @php
-                                        $filterAvailable = ProductFilter::filterAvailable($filter['id'], $product['category_id']);
-                                    @endphp
+                            @if(isset($product['category_id']))
+                            @php
+                            $filterAvailable = ProductFilter::filterAvailable($filter['id'], $product['category_id']);
+                            @endphp
 
-                                    @if($filterAvailable == "Yes")
-                                        @php
-                                            $valueToShow = '';
-                                            foreach ($filter['filter_values'] as $value) {
-                                                if (!empty($product[$filter['filter_column']]) && $value['filter_value'] == $product[$filter['filter_column']]) {
-                                                    $valueToShow = ucwords($value['filter_value']);
-                                                    break;
-                                                }
-                                            }
-                                        @endphp
+                            @if($filterAvailable == "Yes")
+                            @php
+                            $valueToShow = '';
+                            foreach ($filter['filter_values'] as $value) {
+                            if (!empty($product[$filter['filter_column']]) && $value['filter_value'] == $product[$filter['filter_column']]) {
+                            $valueToShow = ucwords($value['filter_value']);
+                            break;
+                            }
+                            }
+                            @endphp
 
-                                        @if($valueToShow)
-                                        <div class="col">
-                                            <div class="border rounded p-3 shadow-sm bg-light d-flex justify-content-between align-items-center">
-                                                <span class="fw-semibold text-muted">{{ $filter['filter_name'] }}</span>
-                                                <span class="fw-bold">{{ $valueToShow }}</span>
-                                            </div>
-                                        </div>
-                                        @endif
-                                    @endif
-                                @endif
+                            @if($valueToShow)
+                            <div class="col">
+                                <div class="border rounded p-3 shadow-sm bg-light d-flex justify-content-between align-items-center">
+                                    <span class="fw-semibold text-muted">{{ $filter['filter_name'] }}</span>
+                                    <span class="fw-bold">{{ $valueToShow }}</span>
+                                </div>
+                            </div>
+                            @endif
+                            @endif
+                            @endif
                             @endforeach
                         </div>
 
                     </div>
                     <div class="tab-pane fade" id="pills-Reviews" role="tabpanel" aria-labelledby="pills-Reviews-tab" tabindex="0">
-              <div class="overflow-auto" style="white-space: nowrap;">
-                <div class="d-flex gap-3" style="overflow-x: auto; scrollbar-width: thin;">
-                    @if(count($ratings)>0)
-                    @foreach($ratings as $rating)
-                    <div class="offer-card shadow p-3 text-left mb-2" style="min-width: 300px; white-space: normal; word-wrap: break-word;">
-                        <span class="font-italic">Name: {{ $rating->user->name }}</span>
-                        <br>
-                        <p class="fst-italic">Comment: {{ $rating->review }}</p>
-                        <span>
-                            @for ($i = 1; $i <= 5; $i++)
-                                @if ($i <= $rating['rating'])
-                                    <i class="bi bi-star-fill text-primary"></i>
-                                @else
-                                    <i class="bi bi-star text-primary"></i>
-                                @endif
-                            @endfor
-                        </span>
-                        <hr>
-                        <span class="text-muted">Date: {{ date("d-m-Y", strtotime($rating->created_at)) }}</span>
-                    </div>
+                        <div class="overflow-auto" style="white-space: nowrap;">
+                            <div class="d-flex gap-3" style="overflow-x: auto; scrollbar-width: thin;">
+                                @if(count($ratings)>0)
+                                @foreach($ratings as $rating)
+                                <div class="offer-card shadow p-3 text-left mb-2" style="min-width: 300px; white-space: normal; word-wrap: break-word;">
+                                    <span class="font-italic">Name: {{ $rating->user->name }}</span>
+                                    <br>
+                                    <p class="fst-italic">Comment: {{ $rating->review }}</p>
+                                    <span>
+                                        @for ($i = 1; $i <= 5; $i++) @if ($i <=$rating['rating']) <i class="bi bi-star-fill text-primary"></i>
+                                            @else
+                                            <i class="bi bi-star text-primary"></i>
+                                            @endif
+                                            @endfor
+                                    </span>
+                                    <hr>
+                                    <span class="text-muted">Date: {{ date("d-m-Y", strtotime($rating->created_at)) }}</span>
+                                </div>
 
-                    @endforeach
-                    @else
-                    <p><b>Reviews are not available for this product!</b></p>
-                    @endif
+                                @endforeach
+                                @else
+                                <p><b>Reviews are not available for this product!</b></p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-                    </div>
-                  </div>
-            </div>
-          </div>
+        </div>
     </div>
     <div class="header">
         <h4 class="my-2 text-dark text-left">Recently Viewed Products</h4>
@@ -261,48 +250,48 @@ use App\Models\Wishlist;
         <div class="owl-carousel owl-theme ecommerce_products mt-4">
             @foreach ($recentlyViewedProducts as $product)
             <div class="item mb-2 h-100">
-            <div class="offer-card position-relative shadow-sm rounded-4 overflow-hidden h-100" style="z-index: 1100;">
-                @php
-                $getDiscountPrice = App\Models\Product::getDiscountPrice($product['id']);
-                $hasDiscount = $getDiscountPrice > 0;
-                @endphp
-                @if($hasDiscount)
-                <span class="badge bg-primary position-absolute top-0 start-0 p-2 m-2" style="z-index: 1100;">
-                    -{{ round(100 - ($getDiscountPrice / $product['product_price']) * 100) }}%
-                </span>
-                @endif
-                <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
-                    <img src="{{ asset('storage/products/' . $product['product_image']) }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
-                </a>
-                <div class="card-body p-3">
-                    <p class="text-muted small mb-1">{{ $product['product_code'] }} • {{ $product['product_color'] }}</p>
-                    <h6 class="fw-semibold mb-2">
-                        <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}" class="text-dark text-decoration-none">
-                            {{ Str::limit($product['product_name'], 40) }}
-                        </a>
-                    </h6>
-                    @if($product['is_offer_price'] === "yes")
-                    <span class="text-primary fw-bold">Offer Price</span>
-                    @else
-                    <h5 class="text-primary fw-bold mb-1">
-                        {{ App\Helper\Helper::currency_converter($hasDiscount ? $getDiscountPrice : $product['product_price']) }}
-                        @if($hasDiscount)
-                        <small class="text-muted text-decoration-line-through ms-2">
-                            {{ App\Helper\Helper::currency_converter($product['product_price']) }}
-                        </small>
-                        @endif
-                    </h5>
+                <div class="offer-card position-relative shadow-sm rounded-4 overflow-hidden h-100" style="z-index: 1100;">
+                    @php
+                    $getDiscountPrice = App\Models\Product::getDiscountPrice($product['id']);
+                    $hasDiscount = $getDiscountPrice > 0;
+                    @endphp
+                    @if($hasDiscount)
+                    <span class="badge bg-primary position-absolute top-0 start-0 p-2 m-2" style="z-index: 1100;">
+                        -{{ round(100 - ($getDiscountPrice / $product['product_price']) * 100) }}%
+                    </span>
                     @endif
-                    <div class="text-warning small">
-                        <i class="fas fa-star"></i> <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i> <i class="fas fa-star"></i>
-                        <i class="fas fa-star-half-alt"></i>
-                        <small class="text-muted">(88)</small>
+                    <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
+                        <img src="{{ asset('storage/products/' . $product['product_image']) }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
+                    </a>
+                    <div class="card-body p-3">
+                        <p class="text-muted small mb-1">{{ $product['product_code'] }} • {{ $product['product_color'] }}</p>
+                        <h6 class="fw-semibold mb-2">
+                            <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}" class="text-dark text-decoration-none">
+                                {{ Str::limit($product['product_name'], 40) }}
+                            </a>
+                        </h6>
+                        @if($product['is_offer_price'] === "yes")
+                        <span class="text-primary fw-bold">Offer Price</span>
+                        @else
+                        <h5 class="text-primary fw-bold mb-1">
+                            {{ App\Helper\Helper::currency_converter($hasDiscount ? $getDiscountPrice : $product['product_price']) }}
+                            @if($hasDiscount)
+                            <small class="text-muted text-decoration-line-through ms-2">
+                                {{ App\Helper\Helper::currency_converter($product['product_price']) }}
+                            </small>
+                            @endif
+                        </h5>
+                        @endif
+                        <div class="text-warning small">
+                            <i class="fas fa-star"></i> <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i> <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                            <small class="text-muted">(88)</small>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        @endforeach
+            @endforeach
         </div>
     </div>
     <div class="header">
@@ -310,50 +299,50 @@ use App\Models\Wishlist;
     </div>
     <div class="row g-4">
         <div class="owl-carousel owl-theme ecommerce_products mt-4">
-        @foreach ($similarProducts as $product)
-        <div class="item mb-2 h-100">
-            <div class="offer-card position-relative shadow-sm rounded-4 overflow-hidden h-100" style="z-index: 1100;">
-                @php
-                $getDiscountPrice = App\Models\Product::getDiscountPrice($product['id']);
-                $hasDiscount = $getDiscountPrice > 0;
-                @endphp
-                @if($hasDiscount)
-                <span class="badge bg-primary position-absolute top-0 start-0 p-2 m-2" style="z-index: 1100;">
-                    -{{ round(100 - ($getDiscountPrice / $product['product_price']) * 100) }}%
-                </span>
-                @endif
-                <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
-                    <img src="{{ asset('storage/products/' . $product['product_image']) }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
-                </a>
-                <div class="card-body p-3">
-                    <p class="text-muted small mb-1">{{ $product['product_code'] }} • {{ $product['product_color'] }}</p>
-                    <h6 class="fw-semibold mb-2">
-                        <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}" class="text-dark text-decoration-none">
-                            {{ Str::limit($product['product_name'], 40) }}
-                        </a>
-                    </h6>
-                    @if($product['is_offer_price'] === "yes")
-                    <span class="text-primary fw-bold">Offer Price</span>
-                    @else
-                    <h5 class="text-primary fw-bold mb-1">
-                        {{ App\Helper\Helper::currency_converter($hasDiscount ? $getDiscountPrice : $product['product_price']) }}
-                        @if($hasDiscount)
-                        <small class="text-muted text-decoration-line-through ms-2">
-                            {{ App\Helper\Helper::currency_converter($product['product_price']) }}
-                        </small>
-                        @endif
-                    </h5>
+            @foreach ($similarProducts as $product)
+            <div class="item mb-2 h-100">
+                <div class="offer-card position-relative shadow-sm rounded-4 overflow-hidden h-100" style="z-index: 1100;">
+                    @php
+                    $getDiscountPrice = App\Models\Product::getDiscountPrice($product['id']);
+                    $hasDiscount = $getDiscountPrice > 0;
+                    @endphp
+                    @if($hasDiscount)
+                    <span class="badge bg-primary position-absolute top-0 start-0 p-2 m-2" style="z-index: 1100;">
+                        -{{ round(100 - ($getDiscountPrice / $product['product_price']) * 100) }}%
+                    </span>
                     @endif
-                    <div class="text-warning small">
-                        <i class="fas fa-star"></i> <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i> <i class="fas fa-star"></i>
-                        <i class="fas fa-star-half-alt"></i>
-                        <small class="text-muted">(88)</small>
+                    <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
+                        <img src="{{ asset('storage/products/' . $product['product_image']) }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
+                    </a>
+                    <div class="card-body p-3">
+                        <p class="text-muted small mb-1">{{ $product['product_code'] }} • {{ $product['product_color'] }}</p>
+                        <h6 class="fw-semibold mb-2">
+                            <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}" class="text-dark text-decoration-none">
+                                {{ Str::limit($product['product_name'], 40) }}
+                            </a>
+                        </h6>
+                        @if($product['is_offer_price'] === "yes")
+                        <span class="text-primary fw-bold">Offer Price</span>
+                        @else
+                        <h5 class="text-primary fw-bold mb-1">
+                            {{ App\Helper\Helper::currency_converter($hasDiscount ? $getDiscountPrice : $product['product_price']) }}
+                            @if($hasDiscount)
+                            <small class="text-muted text-decoration-line-through ms-2">
+                                {{ App\Helper\Helper::currency_converter($product['product_price']) }}
+                            </small>
+                            @endif
+                        </h5>
+                        @endif
+                        <div class="text-warning small">
+                            <i class="fas fa-star"></i> <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i> <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                            <small class="text-muted">(88)</small>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        @endforeach
+            @endforeach
         </div>
     </div>
 </div>
@@ -367,12 +356,12 @@ use App\Models\Wishlist;
 
             $.ajax({
                 url: "{{ route('wishlist.toggle') }}", // Define this route
-                type: "POST",
-                data: {
-                    product_id: productId,
-                    _token: "{{ csrf_token() }}"
-                },
-                success: function(response) {
+                type: "POST"
+                , data: {
+                    product_id: productId
+                    , _token: "{{ csrf_token() }}"
+                }
+                , success: function(response) {
                     if (response.status === 'added') {
                         button.find('i').removeClass('far').addClass('fas text-primary');
                         showAlert('success', 'Product added to wishlist');
@@ -381,8 +370,8 @@ use App\Models\Wishlist;
                         button.find('i').removeClass('fas text-primary').addClass('far');
                         showAlert('success', 'Product removed from wishlist');
                     }
-                },
-                error: function(xhr) {
+                }
+                , error: function(xhr) {
                     if (xhr.status === 401) {
                         // User is not authenticated
                         showAlert('error', 'Please login to manage your wishlist.');
@@ -394,112 +383,83 @@ use App\Models\Wishlist;
             });
         });
     });
-    </script>
 
+</script>
 <script>
+    $(document).ready(function () {
 
-    document.addEventListener("DOMContentLoaded", function () {
-        let priceDisplay = document.getElementById("dynamic-price'");
-        let quantityInput = document.getElementById("quantity");
-        let incrementBtn = document.getElementById("increment");
-        let decrementBtn = document.getElementById("decrement");
-        let sizeSelectors = document.querySelectorAll(".size-selector");
-        let selectedPrice = document.getElementById("final_price_input").value;
-        let selectedSize = document.querySelector('input[name="product_size"]:checked');
-
-        function updatePrice() {
-            let quantity = parseInt(quantityInput.value);
-            let totalPrice = selectedPrice * quantity;
-
-            priceDisplay.textContent = totalPrice.toFixed(2) + " ETB";
-        }
-
-        // Handle increment button
-        incrementBtn.addEventListener("click", function () {
-            quantityInput.value = parseInt(quantityInput.value) + 1;
-            updatePrice();
-        });
-        // Handle decrement button (prevent going below 1)
-        decrementBtn.addEventListener("click", function () {
-            if (quantityInput.value > 1) {
-                quantityInput.value = parseInt(quantityInput.value) - 1;
-                updatePrice();
-            }
-        });
-        // Update price initially
-        updatePrice();
-    });
-    $('#addToCartForm').submit(function (e) {
-        e.preventDefault();
-        let size = $('#sizeSelect').val();
-        if (size === "") {
-            alert("Please select a size.");
-            return;
-        }
+// Handle Size Change
+$("input[name='product_size']").on("change", function () {
+    var size = $(this).val();
+    var product_id =  $(this).attr("product-id");
+    if (size !== "") {
         $.ajax({
-            url: '/cart-add',
-            method: 'POST',
+            url: '/get-product-price',
+            type: 'POST',
             data: {
-                product_id: $('#product_id').val(),
                 size: size,
-                quantity: $('#quantity').val(),
-                final_price: $('#final_price_input').val(),
+                product_id: product_id,
                 _token: $('meta[name="csrf-token"]').attr('content')
             },
             success: function (response) {
-                alert("Product added to cart successfully!");
+                let unitPrice = parseFloat(response.final_price_product_detail);
+
+                $('.dynamic-price').html(unitPrice + " ETB");
+                $('#final_price_input').val(unitPrice);
+                $('#unit_price_hidden').val(unitPrice);
+
+                updateFinalPrice();
             },
-            error: function (xhr) {
-                if (xhr.status === 422) {
-                    let errors = xhr.responseJSON.errors;
-                    alert(Object.values(errors).join("\n"));
-                } else {
-                    alert("Something went wrong while adding to cart.");
-                }
+            error: function () {
+                alert('Error fetching price. Please try again.');
             }
         });
-    });
-    $(document).ready(function () {
-        $("input[name='product_size']").on("change", function() {
-            var size = $(this).val();
-        var product_id = $('#product_id').val();
+    }
+});
 
-        if (size !== "") {
-            $.ajax({
-                url: '/get-product-price', // Update with your correct route
-                type: 'POST',
-                data: {
-                    size: size,
-                    product_id: product_id,
-                    _token: $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function (response) {
-                    $('.dynamic-price').html(response.final_price_product_detail+" ETB");
-                    $('#final_price_input').val(response.final_price_product_detail);
-                    updatePrice();
-                },
-                error: function () {
-                    alert('Error fetching price. Please try again.');
-                }
-            });
-        }
-    });
+// Quantity Increment
+$('#increment').click(function () {
+    let quantity = parseInt($('#quantity').val()) || 1;
+    $('#quantity').val(quantity + 1);
+    updateFinalPrice();
+});
+
+// Quantity Decrement
+$('#decrement').click(function () {
+    let quantity = parseInt($('#quantity').val()) || 1;
+    if (quantity > 1) {
+        $('#quantity').val(quantity - 1);
+        updateFinalPrice();
+    }
+});
+
+// Quantity Manual Input
+$('#quantity').on('input', function () {
+    updateFinalPrice();
+});
+
+// Update Final Price
+function updateFinalPrice() {
+    let quantity = parseInt($('#quantity').val()) || 1;
+    let unitPrice = parseFloat($('#unit_price_hidden').val()) || 0;
+    let finalPrice = quantity * unitPrice;
+    $('.dynamic-price').html(finalPrice.toFixed(2) + " ETB");
+    $('#final_price_input').val(finalPrice.toFixed(2));
+}
 });
 
 </script>
-
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const thumbnails = document.querySelectorAll('.thumbnail-image');
-      const mainImage = document.getElementById('mainProductImage');
+    document.addEventListener("DOMContentLoaded", function() {
+        const thumbnails = document.querySelectorAll('.thumbnail-image');
+        const mainImage = document.getElementById('mainProductImage');
 
-      thumbnails.forEach(thumbnail => {
-        thumbnail.addEventListener('click', function () {
-          mainImage.src = this.src;
+        thumbnails.forEach(thumbnail => {
+            thumbnail.addEventListener('click', function() {
+                mainImage.src = this.src;
+            });
         });
-      });
     });
-  </script>
-
+</script>
 @endsection
 
