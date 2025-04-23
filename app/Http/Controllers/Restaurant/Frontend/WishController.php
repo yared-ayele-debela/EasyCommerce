@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Restaurant\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Restaurant\Wishlist;
+use App\Models\Wishlist as ModelsWishlist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,10 +13,11 @@ class WishController extends Controller
     public function index() {
         if (Auth::check()) {
             $wishlist = Wishlist::where('user_id', Auth::id())->with('product')->get();
+            $ecommerce_wishlist=ModelsWishlist::where('user_id',Auth::id())->with('product')->get();
         } else {
             $wishlist = session()->get('wishlist', []);
         }
-        return view('Restaurant.frontend.wishlist.index', compact('wishlist'));
+        return view('Restaurant.frontend.wishlist.index', compact('wishlist','ecommerce_wishlist'));
     }
 
     // Add to Wishlist
@@ -28,7 +30,7 @@ class WishController extends Controller
         $wishlist = Wishlist::where('user_id', Auth::id())
                         ->where('product_id', $request->product_id)
                         ->first();
-        
+
         if ($wishlist) {
             $wishlist->delete();
             return response()->json(['added' => false]);
@@ -58,5 +60,23 @@ class WishController extends Controller
         return response()->json(['success' => true, 'message' => 'Removed from wishlist']);
     }
 
-   
+
+    public function remove(Request $request)
+    {
+        $user = auth()->user();
+
+        $wishlist = \App\Models\Wishlist::where('id', $request->id)
+                    ->where('user_id', $user->id)
+                    ->first();
+
+        if ($wishlist) {
+            $wishlist->delete();
+            return response()->json(['status' => 'removed']);
+        }
+
+        return response()->json(['status' => 'error'], 404);
+    }
+
+
+
 }

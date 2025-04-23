@@ -104,6 +104,7 @@ use App\Http\Controllers\Ecommerce\Frontend\FrontendController as EcommerceFront
 use App\Http\Controllers\Ecommerce\Frontend\OrderController as EcommerceFrontendOrderController;
 use App\Http\Controllers\Ecommerce\Frontend\ProductsController;
 use App\Http\Controllers\Ecommerce\Frontend\VendorController as FrontendVendorController;
+use App\Http\Controllers\Ecommerce\Frontend\WishlistController;
 use App\Http\Controllers\Front\AddressController as FrontAddressController;
 use App\Http\Controllers\Front\BlogsController as FrontBlogsController;
 use App\Http\Controllers\Front\ChapaController;
@@ -1183,7 +1184,6 @@ Route::prefix('/restaurant')->group(function () {
     // for wishlist
     Route::middleware('auth')->group(function () {
 
-        Route::get('/wishlist', [WishController::class, 'index'])->name('restaurant.wishlist.index');
         Route::post('/wishlist/add', [WishController::class, 'addToWishlist'])->name('restaurant.wishlist.add');
         Route::post('/wishlist/remove', [WishController::class, 'removeFromWishlist'])->name('restaurant.wishlist.remove');
         Route::get('/wishlist/count', function () {
@@ -1204,9 +1204,9 @@ Route::prefix('/restaurant')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/addresses', [UserDeliveryAddressController::class, 'store'])->middleware('auth');
     Route::get('/addresses', [UserDeliveryAddressController::class, 'index'])->middleware('auth');
-    
+
     Route::delete('/addresses/{id}', [UserDeliveryAddressController::class, 'destroy'])->middleware('auth');
-    
+
     Route::get('/user-addresses', [DeliveryAddressController::class, 'index'])->name('user.addresses.index');
     Route::delete('/user-addresses/{id}', [DeliveryAddressController::class, 'destroy'])->name('user.addresses.destroy');
     // account detail
@@ -1216,6 +1216,10 @@ Route::middleware('auth')->group(function () {
     Route::get('user/account/update', [UserController::class, 'createuserAccount'])->name('user.account.update.form');
 
     Route::get('/my-orders', [FrontendOrderController::class, 'index'])->name('user.orders');
+    Route::get('/my-wishlist', [WishController::class, 'index'])->name('restaurant.wishlist.index');
+
+    Route::post('/wishlist/remove', [WishController::class, 'remove'])->name('wishlist.remove');
+
 });
 
 
@@ -1286,6 +1290,8 @@ Route::prefix('/ecommerce')->group(function () {
         Route::get('/orders/{id?}', [EcommerceFrontendOrderController::class, 'orders'])->name('ecommerce.order.detail');
 
     });
+    Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+
 });
 
 Route::get('blogs', [BlogController::class, 'index'])->name('display-blogs');

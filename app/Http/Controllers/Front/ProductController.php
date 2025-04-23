@@ -75,9 +75,9 @@ class ProductController extends Controller
                     if ($_GET['sort'] == "product_latest") {
                         $categoryProducts->orderby('products.id', 'DESC');
                     } elseif ($_GET['sort'] == "price_lowest") {
-                        $categoryProducts->orderby('products.product_selling_price', 'ASC');
+                        $categoryProducts->orderby('products.product_price', 'ASC');
                     } elseif ($_GET['sort'] == "price_heighst") {
-                        $categoryProducts->orderby('products.product_selling_price', 'DESC');
+                        $categoryProducts->orderby('products.product_price', 'DESC');
                     } elseif ($_GET['sort'] == "sort_a_z") {
                         $categoryProducts->orderby('products.product_name', 'ASC');
                     } elseif ($_GET['sort'] == "sort_z_a") {
@@ -131,9 +131,8 @@ class ProductController extends Controller
                     $categoryProducts->whereIn('products.id', $productIds);
                 }
 
-                $categoryProducts = $categoryProducts->Paginate(3);
+                $categoryProducts = $categoryProducts->Paginate(10);
 
-                // dd($categoryDetails);
                 return view('products.ajax_products_listing', compact('cms_pages', 'appsettings', 'url', 'categoryDetails', 'categoryProducts', 'allcategoryProducts'));
             } else {
                 abort(404);
@@ -193,16 +192,16 @@ class ProductController extends Controller
                         if ($_GET['sort'] == "product_latest") {
                             $categoryProducts->orderby('products.id', 'DESC');
                         } elseif ($_GET['sort'] == "price_lowest") {
-                            $categoryProducts->orderby('products.product_selling_price', 'ASC');
+                            $categoryProducts->orderby('products.product_price', 'ASC');
                         } elseif ($_GET['sort'] == "price_heighst") {
-                            $categoryProducts->orderby('products.product_selling_price', 'DESC');
+                            $categoryProducts->orderby('products.product_price', 'DESC');
                         } elseif ($_GET['sort'] == "sort_a_z") {
                             $categoryProducts->orderby('products.product_name', 'ASC');
                         } elseif ($_GET['sort'] == "sort_z_a") {
                             $categoryProducts->orderby('products.product_name', 'DESC');
                         }
                     }
-                    $categoryProducts = $categoryProducts->paginate(3);
+                    $categoryProducts = $categoryProducts->paginate(10);
                     $appsettings = AppSetting::all()->toArray();
                     // dd($categoryDetails);
                     return view('products.listing', compact('cms_pages', 'appsettings', 'url', 'categoryDetails', 'categoryProducts', 'allcategoryProducts'));
@@ -245,7 +244,7 @@ class ProductController extends Controller
                 ->telegram()
                 ->whatsapp()
                 ->reddit();
-                
+
             $appsettings = AppSetting::all()->toArray();
             $cms_pages = CmsPage::get()->toArray();
 
@@ -316,7 +315,7 @@ class ProductController extends Controller
     public function cartAdd(Request $request)
     {
         // try {
-        
+
 
             $data = $request->all();
             $this->validate($request, [

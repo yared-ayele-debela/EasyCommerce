@@ -10,7 +10,7 @@ $getCategory=Category::all()->where('status',1)->toArray();
 $productFilters=ProductFilter::productFilters();
 
 ?>
-<div class="col-lg-3 col-md-3 col-sm-12 filters-category">
+<div class="col-lg-3 col-md-3 col-sm-12 shadow-sm py-3 filters-category">
     <!-- Fetch-Categories-from-Root-Category  -->
     <div class="fetch-categories">
         <h3 class="title-name">Browse Categories</h3>

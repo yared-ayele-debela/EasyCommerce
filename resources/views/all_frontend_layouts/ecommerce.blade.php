@@ -246,8 +246,8 @@
     </div>
 </div>
 
-<div class="container-fluid py-2">
-    <div class="row align-items-start g-4">
+<div class="container-fluid p-4">
+    <div class="row">
         <div class="col-lg-3">
             <div class="card border-1 shadow-sm">
                 <div class="card-header bg-white pb-2 d-flex justify-content-between align-items-center">
@@ -305,7 +305,6 @@
                     </div>
                     @endforeach
                 </div>
-
                 <!-- Controls -->
                 <button class="carousel-control-prev" type="button" data-bs-target="#promoCarousel" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
@@ -316,11 +315,11 @@
                     <span class="visually-hidden">Next</span>
                 </button>
             </div>
-
         </div>
     </div>
 </div>
-<div class="container-fluid py-5">
+
+<div class="container-fluid pb-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold"><i class="bi bi-fire text-primary"></i> Flash Sales</h3>
         <div class="d-flex gap-3 text-center bg-primary p-2 rounded rounded-1 shadow-sm">
@@ -422,8 +421,9 @@
 
     </script>
     @endif
+</div>
 
-
+<div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mt-3">
         <h3 class="fw-bold">Categories</h3>
         <div class="d-flex gap-3 text-center">
@@ -588,7 +588,9 @@
             </form>
         </div>
     </div>
+</div>
 
+<div class="container-fluid">
     <div class="row g-4">
         <div class="owl-carousel owl-theme ecommerce_products mt-4">
             @foreach ($discountedproduct as $product)
@@ -637,12 +639,15 @@
             @endforeach
         </div>
     </div>
+
     @if(isset($fixbanners[1]['image']))
     <a href="{{ $fixbanners[1]['link']}}" target="_blank">
         <div class="hero rounded-3 my-2 p-4" style="background:url({{ asset('/storage/banner/'.$fixbanners[1]['image']) }});height:300px;" class="img-fluid">
         </div>
     </a>
     @endif
+</div>
+<div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mt-2 pt-4">
         <h3 class="fw-bold">Our Vendors</h3>
         <div class="d-flex gap-3 text-center">
@@ -653,7 +658,6 @@
         <div class="owl-carousel owl-theme vendors mt-4">
             @foreach ($allvendor as $vendor)
             <div class="item mb-2 h-100">
-                {{-- <div class="col-md-6 col-lg-4"> --}}
                 <div class="offer-card h-100 rounded-2">
                     <div class="shop-banner-container position-relative">
                         @if(!empty($vendor->vendorbusinessdetails['shop_image']))
@@ -670,7 +674,6 @@
                         </div>
                     </div>
 
-                    {{-- Card Content --}}
                     <div class="card-body pt-4">
                         <h5 class="fw-bold text-primary">{{ $vendor->name }}</h5>
 
@@ -692,59 +695,7 @@
         </div>
     </div>
 </div>
-</div>
-
-{{-- <div class="container-fluid pb-4">
-    <h2 class="fw-bold">New Arrival</h2>
-    <div class="row g-4">
-        <div class="col-md-6">
-            <div class="product-card-banner">
-                <img src="assets/img/ps5-slim-goedkope-playstation_large 1.png" alt="PlayStation 5">
-                <div class="content">
-                    <h4>PlayStation 5</h4>
-                    <p>Black and White version of the PS5 coming out on sale.</p>
-                    <a href="#" class="btn-custom-banner px-2 py-1">Shop Now</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="row g-4">
-                <div class="col-12">
-                    <div class="product-card-banner h-100 d-flex align-items-center">
-                        <div class="w-50 p-3">
-                            <h4>Women’s Collections</h4>
-                            <p>Featured woman collections that give you another vibe.</p>
-                            <a href="#" class="btn-custom-banner px-2 py-1">Shop Now</a>
-                        </div>
-                        <div class="w-50">
-                            <img src="assets/img/womanbanner.png" alt="Women’s Collections">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="product-card-banner h-100">
-                        <img src="assets/img/speker.png" alt="Speakers">
-                        <div class="content">
-                            <h4>Speakers</h4>
-                            <p>Amazon wireless speakers</p>
-                            <a href="#" class="btn-custom-banner px-2 py-1">Shop Now</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="product-card-banner h-100">
-                        <img src="assets/img/shito.png" alt="Perfume">
-                        <div class="content">
-                            <h4>Perfume</h4>
-                            <p>GUCCI INTENSE OUD EDP</p>
-                            <a href="#" class="btn-custom-banner px-2 py-1">Shop Now</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
+<div class="container-fluid pb-4">
     <div class="d-flex justify-content-between align-items-center mt-3">
         <h3 class="fw-bold">Brands</h3>
         <div class="d-flex gap-3 text-center">
@@ -755,11 +706,11 @@
             @foreach ($allbrands as $brand)
             <div class="item mb-2">
                 <div class="category-item">
-                    <a href="{{ url('category/'.$category['id']) }}">
+                    <a href="javascript:void(0);">
                         @if($brand['image'])
-                        <img src="{{ asset('/storage/brand/'.$brand['image']) }}" class="p-2 shadow" style="border:4px solid rgb(162, 159, 159);" alt="{{ $category->name }}">
+                        <img src="{{ asset('/storage/brand/'.$brand['image']) }}" class="p-2 shadow" style="border:4px solid rgb(162, 159, 159);" alt="brand">
                         @else
-                        <img src="{{ asset('new_frontend/images/banners/b1.png') }}" class="p-2 shadow" style="border:4px solid rgb(162, 159, 159);" alt="{{ $category->name }}">
+                        <img src="{{ asset('new_frontend/images/banners/b1.png') }}" class="p-2 shadow" style="border:4px solid rgb(162, 159, 159);" alt="brand">
                         @endif
                     </a>
                 </div>
@@ -777,7 +728,7 @@
         @include('fontend.layout.autoloadproduct.data')
     </div>
     @include('all_frontend_layouts.partial_index')
-</div> --}}
+</div>
 
 <script>
     var pages = 2;
@@ -834,6 +785,4 @@
     document.addEventListener('DOMContentLoaded', initializeFlashCountdowns);
 
 </script>
-
 @endsection
-

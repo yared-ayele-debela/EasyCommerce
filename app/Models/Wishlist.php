@@ -10,6 +10,8 @@ use function PHPUnit\Framework\countOf;
 class Wishlist extends Model
 {
     use HasFactory;
+    protected $fillable = ['user_id', 'product_id'];
+
     public static function countWishlist($product_id){
         $countWishlist=Wishlist::where(['user_id'=>Auth::user()->id,'product_id'=>$product_id])->count();
         return $countWishlist;

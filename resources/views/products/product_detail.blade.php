@@ -634,7 +634,5 @@ use App\Models\Wishlist;
 </script>
 @endsection
 @section('script')
-
-
 @endsection
 

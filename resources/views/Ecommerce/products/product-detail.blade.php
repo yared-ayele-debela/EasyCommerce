@@ -145,8 +145,14 @@ use App\Models\Wishlist;
                     <input type="number" id="quantity" class="form-control mx-2 text-center" value="1" min="1" style="width: 60px;">
                     <button type="button" class="btn bg-primary text-white" id="increment">+</button>
                     <button type="submit" class="btn btn-primary ms-3 px-4" id="addToCartBtn">Add to Cart</button>
-                    <button class="btn btn-outline-primary ms-2"><i class="far fa-heart"></i></button>
-                </div>
+                    <button
+                    class="btn btn-outline-primary ms-2 wishlist-btn"
+                    data-product-id="{{ $product->id }}"
+                    title="Add to Wishlist">
+                    <i class="far fa-heart"></i>
+                    </button>
+
+            </div>
             </form>
 
               <div class="border rounded p-3 mb-2">
@@ -352,6 +358,46 @@ use App\Models\Wishlist;
     </div>
 </div>
 <script>
+    $(document).ready(function() {
+        $('.wishlist-btn').click(function(e) {
+            e.preventDefault();
+
+            let button = $(this);
+            let productId = button.data('product-id');
+
+            $.ajax({
+                url: "{{ route('wishlist.toggle') }}", // Define this route
+                type: "POST",
+                data: {
+                    product_id: productId,
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    if (response.status === 'added') {
+                        button.find('i').removeClass('far').addClass('fas text-primary');
+                        showAlert('success', 'Product added to wishlist');
+
+                    } else if (response.status === 'removed') {
+                        button.find('i').removeClass('fas text-primary').addClass('far');
+                        showAlert('success', 'Product removed from wishlist');
+                    }
+                },
+                error: function(xhr) {
+                    if (xhr.status === 401) {
+                        // User is not authenticated
+                        showAlert('error', 'Please login to manage your wishlist.');
+
+                    } else {
+                        showAlert('error', 'Something went wrong. Please try again.');
+                    }
+                }
+            });
+        });
+    });
+    </script>
+
+<script>
+
     document.addEventListener("DOMContentLoaded", function () {
         let priceDisplay = document.getElementById("dynamic-price'");
         let quantityInput = document.getElementById("quantity");
@@ -367,7 +413,7 @@ use App\Models\Wishlist;
 
             priceDisplay.textContent = totalPrice.toFixed(2) + " ETB";
         }
-       
+
         // Handle increment button
         incrementBtn.addEventListener("click", function () {
             quantityInput.value = parseInt(quantityInput.value) + 1;
@@ -384,7 +430,6 @@ use App\Models\Wishlist;
         updatePrice();
     });
     $('#addToCartForm').submit(function (e) {
-       
         e.preventDefault();
         let size = $('#sizeSelect').val();
         if (size === "") {

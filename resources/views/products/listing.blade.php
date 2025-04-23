@@ -84,7 +84,6 @@ $productFilters=ProductFilter::productFilters();
                     @include('products.ajax_products_listing')
 
                 </div>
-             
 
                 @if(!isset($_REQUEST['search']))
 
