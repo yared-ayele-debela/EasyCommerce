@@ -239,76 +239,63 @@ use App\Models\Order;
         </div>
         <div class="tab-pane fade" id="pills-goods" role="tabpanel" aria-labelledby="pills-goods-tab">
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-2">
-                @foreach ($good_orders as $order)
-                @if($order['orders_products'])
-                <div class="col">
-                    <div class="offer-card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                Order ID:
-                                <a href="{{ url('user/orders/'.$order['id']) }}" class="text-decoration-none text-dark">
-                                    {{ $order['id'] }}
-                                </a>
-                            </h5>
-                            <p class="card-text">
-                                <strong>Ordered Products:</strong><br>
-                                @foreach ($order['orders_products'] as $product)
-                                {{ $product['product_code'] }}<br>
-                                @endforeach
-                            </p>
-                            <p class="card-text">
-                                <strong>Payment Method:</strong> {{ $order['payment_method'] }}
-                            </p>
-                            <p class="card-text">
-                                <strong>Grand Total:</strong>
-                                {{ $order['grand_total'] }}
-                            </p>
-                            <p class="card-text">
-                                <strong>Date:</strong>
-                                {{ $order->created_at }}
-                            </p>
-                            <button class="btn btn-outline-primary btn-sm mt-3" type="button" data-bs-toggle="collapse" data-bs-target="#goodsorderDetails{{ $order->id }}">
-                                View products
-                            </button>
-
-                            <div id="goodsorderDetails{{ $order->id }}" class="collapse mt-3">
-                                <?php
-                                $getOrderStatus=Order::getOrderStatus($order['id']);
-                                $checkorderproductavailable=Order::checkOrderProductAvalible($order['id']);
-                                ?>
-                                <div class="row pb-3">
-                                    @foreach ($order['orders_products'] as $product)
-                                    <div class="col-12">
-                                        <div class="offer-card shadow-none border border-1 rounded rounded-2">
-                                            <div class="card-body">
-                                                <div class="row">
-                                                    <div class="col-md-3">
-                                                        <img src="{{ asset('/storage/products/' . Product::getProductImage($product['product_id'])) }}" class="card-img-top" alt="Product 1" style="max-width: 60px;">
+                    @foreach ($good_orders as $order)
+                        @if($order['orders_products'])
+                            <div class="col-md-4">
+                                <div class="offer-card h-100 rounded-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title mb-3">
+                                            <span class="text-muted">Order ID:</span>
+                                            <a href="{{ url('user/orders/'.$order['id']) }}" class="text-decoration-none text-dark">
+                                                #{{ $order['id'] }}
+                                            </a>
+                                        </h5>
+                
+                                        <p class="mb-2">
+                                            <span class="fw-semibold text-muted">Ordered Products:</span><br>
+                                            @foreach ($order['orders_products'] as $product)
+                                                <span class="badge bg-light text-dark border me-1 mb-1">
+                                                    {{ $product['product_code'] }}
+                                                </span>
+                                            @endforeach
+                                        </p>
+                                        <p class="mb-1"><strong class="text-muted">Payment Method:</strong> {{ $order['payment_method'] }}</p>
+                                        <p class="mb-1"><strong class="text-muted">Grand Total:</strong> {{ $order['grand_total'] }}</p>
+                                        <p class="mb-3"><strong class="text-muted">Date:</strong> {{ $order->created_at->format('d M Y, h:i A') }}</p>
+                                        <button class="btn btn-outline-primary btn-sm " type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#goodsorderDetails{{ $order->id }}">
+                                            View Ordered Products
+                                        </button>
+                
+                                        <div id="goodsorderDetails{{ $order->id }}" class="collapse mt-3">
+                                            <div class="border rounded-2 p-2 bg-light">
+                                                @foreach ($order['orders_products'] as $product)
+                                                    <div class="d-flex align-items-center mb-3">
+                                                        <img src="{{ asset('/storage/products/' . Product::getProductImage($product['product_id'])) }}"
+                                                             alt="Product Image" class="rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                                        <div class="flex-grow-1">
+                                                            <h6 class="mb-1">{{ $product['product_name'] }}</h6>
+                                                            <small class="text-muted">Code: {{ $product['product_code'] }}</small><br>
+                                                            <small class="text-muted">Size: {{ $product['product_size'] }} | Color: {{ $product['product_color'] }}</small>
+                                                        </div>
+                                                        <span class="badge bg-primary-subtle text-dark ms-3">
+                                                            Qty: {{ $product['product_qty'] }}
+                                                        </span>
                                                     </div>
-                                                    <div class="col-md-6">
-                                                        <h6><strong>{{ $product['product_name'] }}</strong></h6>
-                                                        <p class="card-text">
-                                                            <small>Code: {{ $product['product_code'] }}</small><br>
-                                                            <small>Size: {{ $product['product_size'] }}, Color: {{ $product['product_color'] }}</small>
-                                                        </p>
-                                                        <span class="badge badge-pill border" style="background-color:rgb(245,249,255);color:black;">{{ $product['product_qty'] }}</span>
-                                                    </div>
-                                                </div>
+                                                @endforeach
                                             </div>
                                         </div>
+                
+                                        <div class="mt-3 d-flex justify-content-end">
+                                            <a href="{{ url('ecommerce/orders/'.encrypt($order['id'])) }}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-eye me-1"></i> View Full Order
+                                            </a>
+                                        </div>
                                     </div>
-                                    @endforeach
                                 </div>
                             </div>
-                            <hr>
-                            <a href="{{ url('ecommerce/orders/'.encrypt($order['id'])) }}" class="btn btn-primary btn-sm">
-                                <i class="fas fa-eye"></i> View Details
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                @endif
-                @endforeach
+                        @endif
+                    @endforeach                
             </div>
         </div>
     </div>

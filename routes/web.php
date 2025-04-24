@@ -1177,7 +1177,6 @@ Route::prefix('/restaurant')->group(function () {
     Route::get('/search', [FrontendProductController::class, 'search'])->name('search');
 
     Route::post('/cart/add', [CartController::class, 'addToCart'])->name('restaurant.cart.add');
-    Route::get('/cart', [CartController::class, 'viewCart'])->name('restaurant.cart.view');
     Route::get('/cart/update/{key}/{action}', [CartController::class, 'updateCart'])->name('restaurant.cart.update');;
     Route::get('/cart/count', [CartController::class, 'getCartCount'])->name('restaurant.cart.count');
     Route::post('/apply-coupon', [CartController::class, 'applyCoupon'])->name('restaurant.apply.coupon');
@@ -1192,6 +1191,7 @@ Route::prefix('/restaurant')->group(function () {
         Route::get('/wishlist/count', function () {
             return response()->json(['count' => Auth::check() ? \App\Models\Restaurant\Wishlist::where('user_id', Auth::id())->count() : 0]);
         })->name('wishlist.count');
+       
         Route::get('check-out', [CheckoutController::class, 'index'])->name('restaurant.checkout');
         Route::post('/checkout/place-order', [CheckoutController::class, 'placeOrder'])->name('restaurant.checkout.placeOrder');
         Route::get('/order/success/{order}', [FrontendOrderController::class, 'success'])->name('restaurant.order.success');
@@ -1204,7 +1204,11 @@ Route::prefix('/restaurant')->group(function () {
     Route::post('/rate-restaurant-product', [FrontendRatingController::class, 'product_rating_store'])->name('restaurant.product.rate');
 });
 
+
 Route::middleware('auth')->group(function () {
+    Route::get('/count-ecommerce-wishlist', function () {
+        return response()->json(['count' => Auth::check() ? \App\Models\Wishlist::where('user_id', Auth::id())->count() : 0]);
+    })->name('count-ecommerce-wishlist');
     Route::post('/addresses', [UserDeliveryAddressController::class, 'store'])->middleware('auth');
     Route::get('/addresses', [UserDeliveryAddressController::class, 'index'])->middleware('auth');
 
@@ -1224,6 +1228,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/wishlist/remove', [WishController::class, 'remove'])->name('wishlist.remove');
     Route::post('/restaurant-wishlist/remove', [WishController::class, 'rremove'])->name('restaurant-wishlist/remove');
 
+    
 });
 
 
@@ -1305,3 +1310,17 @@ Route::get('page/{url}', [FrontendCmsController::class, 'pages'])->name('pages')
 // web.php
 Route::post('/subscribe-newsletter', [NewslettersController::class, 'store']);
 Route::post('/add-to-cart', [FrontendCartController::class, 'addToCart']);
+
+Route::get('/my-cart', [CartController::class, 'viewCart'])->name('my.cart.view');
+
+// web.php
+Route::get('/cart/count', function () {
+    $sessionCount = count(session('cart', []));
+    $helperCount = \App\Helper\Helper::totalCartItems();
+
+    return response()->json([
+        'session' => $sessionCount,
+        'helper' => $helperCount,
+        'total' => $sessionCount + $helperCount,
+    ]);
+})->name('cart.count');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Restaurant\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cart;
 use App\Models\Country;
 use App\Models\Restaurant\Coupon;
 use App\Models\Restaurant\Product;
@@ -91,7 +92,9 @@ class CartController extends Controller
 
         $countries=Country::all();
 
-        return view('Restaurant.frontend.cart.index', compact('cart', 'subtotal','countries'));
+        $getCartItems = Cart::getCartItems();
+
+        return view('Restaurant.frontend.cart.index', compact('cart', 'subtotal','countries','getCartItems'));
     }
 
     public function getCartCount()

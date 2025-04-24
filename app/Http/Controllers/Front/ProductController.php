@@ -402,7 +402,7 @@ class ProductController extends Controller
                     return response()->json([
                         'status' => false,
                         'message' => 'Product Stock is not available',
-                        'view' => (string)View::make('NewFrontEndPage.products.cart_item')->with(compact('getCartItems'))
+                        'view' => (string)View::make('Restaurant.frontend.cart.cart_item')->with(compact('getCartItems'))
                     ]);
                 }
 
@@ -415,7 +415,7 @@ class ProductController extends Controller
                     return response()->json([
                         'status' => false,
                         'message' => 'Product Size is not available. Please remove this product and choose another one!',
-                        'view' => (string)View::make('NewFrontEndPage.products.cart_item')->with(compact('getCartItems'))
+                        'view' => (string)View::make('Restaurant.frontend.cart.cart_item')->with(compact('getCartItems'))
                     ]);
                 }
 
@@ -427,9 +427,8 @@ class ProductController extends Controller
                 return response()->json([
                     'status' => true,
                     'totalCartItems' => $totalCartItems,
-                    'view' => (string)View::make('NewFrontEndPage.products.cart_item')->with(compact('getCartItems')),
+                    'view' => (string)View::make('Restaurant.frontend.cart.cart_item')->with(compact('getCartItems')),
                     'headerview' => (string)View::make('fontend.layout.min_cart')->with(compact('getCartItems'))
-
                 ]);
             }
 
@@ -458,7 +457,7 @@ class ProductController extends Controller
                  $totalCartItems=Helper::totalCartItems();
 
                 return response()->json([
-                    'totalCartItems' => $totalCartItems, 'view' => (string)View::make('NewFrontEndPage.products.cart_item')->with(compact('getCartItems')),
+                    'totalCartItems' => $totalCartItems, 'view' => (string)View::make('Restaurant.frontend.cart.cart_item')->with(compact('getCartItems')),
                     'headerview' => (string)View::make('fontend.layout.min_cart')->with(compact('getCartItems'))
                 ]);
             }
@@ -490,7 +489,7 @@ class ProductController extends Controller
                     return response()->json([
                         'status' => false,
                         'message' => 'The coupon is not valid',
-                        'totalCartItems' => $totalCartItems, 'view' => (string)View::make('NewFrontEndPage.products.cart_item')->with(compact('getCartItems')),
+                        'totalCartItems' => $totalCartItems, 'view' => (string)View::make('Restaurant.frontend.cart.cart_item')->with(compact('getCartItems')),
                         'headerview' => (string)View::make('fontend.layout.min_cart')->with(compact('getCartItems'))
                     ]);
                 } else {
@@ -554,10 +553,7 @@ class ProductController extends Controller
 
 
                     if ($couponDetails->vendor_id > 0) {
-                        //  echo $couponDetails->vendor_id;die;
                         $productIds = Product::select('id')->where('vendor_id', $couponDetails->vendor_id)->pluck('id')->toArray();
-                        //  echo "<pre>";print_r($productIds);die;
-                        //check if coupon belongs to vendor
                         foreach ($getCartItems as $item) {
                             if (!in_array($item['product']['id'], $productIds)) {
                                 $message = "This coupon code is not for for you. Try with valid coupon code (vendor validation)!";
@@ -569,7 +565,7 @@ class ProductController extends Controller
                         return response()->json([
                             'status' => false,
                             'message' => $message,
-                            'totalCartItems' => $totalCartItems, 'view' => (string)View::make('NewFrontEndPage.products.cart_item')->with(compact('getCartItems')),
+                            'totalCartItems' => $totalCartItems, 'view' => (string)View::make('Restaurant.frontend.cart.cart_item')->with(compact('getCartItems')),
                             'headerview' => (string)View::make('fontend.layout.min_cart')->with(compact('getCartItems'))
                         ]);
                     } else {
@@ -591,7 +587,7 @@ class ProductController extends Controller
                             'totalCartItems' => $totalCartItems,
                             'couponAmount' => $couponAmount,
                             'grand_total' => $grand_total,
-                            'view' => (string)View::make('NewFrontEndPage.products.cart_item')
+                            'view' => (string)View::make('Restaurant.frontend.cart.cart_item')
                                 ->with(compact('getCartItems')),
                             'headerview' => (string)View::make('fontend.layout.min_cart')->with(compact('getCartItems'))
                         ]);
@@ -647,7 +643,6 @@ class ProductController extends Controller
                     if($discount->discount_type==="Discounted Price"){
                         // dd("price");
                         $product_total_price_after_discount = $product_total_price - $discount->amount;
-                        // dd($product_total_price_after_discount);
                     }
                     if($discount->discount_type==="Percentage"){
                             // dd("%");

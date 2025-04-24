@@ -111,6 +111,83 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{ asset('restaurant_frontend/assets/js/index.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+
+<script>
+    function updateCartCount() {
+    fetch("{{ route('cart.count') }}")
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("cart-count").innerText = data.total;
+        })
+        .catch(error => {
+            console.error('Error fetching cart count:', error);
+            document.getElementById("cart-count").innerText = '0';
+        });
+}
+
+    function updateTotalWishlistCount() {
+        Promise.all([
+            fetch("{{ route('count-ecommerce-wishlist') }}").then(res => res.json()),
+            fetch("{{ route('wishlist.count') }}").then(res => res.json())
+        ])
+        .then(([ecommerceData, restaurantData]) => {
+            const totalCount = (ecommerceData.count || 0) + (restaurantData.count || 0);
+            document.getElementById("wishlist-count").innerText = totalCount;
+        })
+        .catch(error => {
+            console.error('Error fetching wishlist counts:', error);
+            document.getElementById("wishlist-count").innerText = '0'; // fallback
+        });
+    }
+
+
+   
+    $(document).ready(function() {
+        $('.wishlist-btn').click(function(e) {
+            e.preventDefault();
+
+            let button = $(this);
+            let productId = button.data('product-id');
+
+            $.ajax({
+                url: "{{ route('wishlist.toggle') }}", // Define this route
+                type: "POST"
+                , data: {
+                    product_id: productId
+                    , _token: "{{ csrf_token() }}"
+                }
+                , success: function(response) {
+                    if (response.status === 'added') {
+                        button.find('i').removeClass('far').addClass('fas text-primary');
+                        showAlert('success', 'Product added to wishlist');
+
+                    } else if (response.status === 'removed') {
+                        button.find('i').removeClass('fas text-primary').addClass('far');
+                        showAlert('success', 'Product removed from wishlist');
+                    }
+                    updateTotalWishlistCount();
+                                }
+                , error: function(xhr) {
+                    if (xhr.status === 401) {
+                        // User is not authenticated
+                        showAlert('error', 'Please login to manage your wishlist.');
+
+                    } else {
+                        showAlert('error', 'Something went wrong. Please try again.');
+                    }
+                }
+            });
+        });
+    });
+
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        updateTotalWishlistCount();
+        updateCartCount();
+    });
+</script>
+
 <script>
     $(document).ready(function () {
     $('#newsletterForm').on('submit', function (e) {
@@ -187,18 +264,6 @@
         });
     }
 
-    function updateWishlistCount() {
-        fetch("{{ route('wishlist.count') }}")
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById("wishlist-count").innerText = data.count;
-            });
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-        updateWishlistCount();
-    });
-
 </script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -236,7 +301,7 @@
                             icon.classList.remove("bi-heart-fill");
                             icon.classList.add("bi-heart");
                         }
-                        updateWishlistCount();
+                        updateTotalWishlistCount();
                     });
             });
         });
@@ -244,17 +309,7 @@
     });
 
 </script>
-<script>
-    function updateCartCount() {
-        fetch('/restaurant/cart/count')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('cartCount').innerText = data.count;
-            })
-            .catch(error => console.error('Error fetching cart count:', error));
-    }
 
-</script>
 <script>
     $('.products').owlCarousel({
         loop: true

@@ -150,11 +150,12 @@ use App\Models\Wishlist;
                     <i class="fas fa-truck me-2"></i><strong>Free Delivery</strong>
                     <p class="mb-0 small text-muted">Enter your postal code for Delivery Availability</p>
                 </div>
-
+                @if($product->is_returnable == "yes")
                 <div class="border rounded p-3">
                     <i class="fas fa-undo me-2"></i><strong>Return Delivery</strong>
                     <p class="mb-0 small text-muted">Free 30 Days Delivery Returns. <a href="{{ url('page/delivery_and_return') }}" target="_blank" class="text-primary">Details</a></p>
                 </div>
+                @endif
             </div>
             <div class="col-md-12">
                 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
@@ -346,49 +347,9 @@ use App\Models\Wishlist;
         </div>
     </div>
 </div>
+
 <script>
     $(document).ready(function() {
-        $('.wishlist-btn').click(function(e) {
-            e.preventDefault();
-
-            let button = $(this);
-            let productId = button.data('product-id');
-
-            $.ajax({
-                url: "{{ route('wishlist.toggle') }}", // Define this route
-                type: "POST"
-                , data: {
-                    product_id: productId
-                    , _token: "{{ csrf_token() }}"
-                }
-                , success: function(response) {
-                    if (response.status === 'added') {
-                        button.find('i').removeClass('far').addClass('fas text-primary');
-                        showAlert('success', 'Product added to wishlist');
-
-                    } else if (response.status === 'removed') {
-                        button.find('i').removeClass('fas text-primary').addClass('far');
-                        showAlert('success', 'Product removed from wishlist');
-                    }
-                }
-                , error: function(xhr) {
-                    if (xhr.status === 401) {
-                        // User is not authenticated
-                        showAlert('error', 'Please login to manage your wishlist.');
-
-                    } else {
-                        showAlert('error', 'Something went wrong. Please try again.');
-                    }
-                }
-            });
-        });
-    });
-
-</script>
-<script>
-    $(document).ready(function() {
-
-        // Handle Size Change
         $("input[name='product_size']").on("change", function() {
             var size = $(this).val();
             var product_id = $(this).attr("product-id");
@@ -474,6 +435,7 @@ use App\Models\Wishlist;
                 } else {
                     showAlert('error', 'Failed to add product to cart.');
                 }
+                updateCartCount();
             }
             , error: function(xhr) {
                 if (xhr.status === 422) {

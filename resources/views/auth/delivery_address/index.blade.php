@@ -22,7 +22,7 @@
         <div class="card-body p-1">
             @if($addresses->isNotEmpty())
             <div class="table-responsive">
-                <table class="table table-bordered table-striped align-middle">
+                <table class="table table-striped align-middle">
                     <thead class="">
                         <tr>
                             <th>#</th>

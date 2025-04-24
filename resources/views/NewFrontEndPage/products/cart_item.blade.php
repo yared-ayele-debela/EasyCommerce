@@ -69,22 +69,7 @@
         </table>
     </div>
 </form>
-
-    <!-- Products-List-Wrapper /- -->
-    <!-- Coupon -->
     <div class="coupon-continue-checkout u-s-m-b-60">
-        {{-- <div class="coupon-area">
-            <h6>Enter your coupon code if you have one.</h6>
-        <form  id="ApplyCoupon" action="javascript:void(0);" method="post"  @if(Auth::check()) user="1" @endif>
-                @csrf
-            <div class="coupon-field">
-                <label class="sr-only" for="coupon-code">Apply Coupon</label>
-                <input id="coupon-code"  type="text" name="code" id="code" class="text-field" placeholder="Coupon Code">
-                <button type="submit" name="submit" class="button">Apply Coupon</button>
-            </div>
-        </form>
-        </div> --}}
-
         <div class="coupon-area">
             <h6>Enter your coupon code if you have one.</h6>
             <div class="flex">

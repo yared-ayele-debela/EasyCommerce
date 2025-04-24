@@ -65,7 +65,6 @@
             if ($(this).hasClass('plus-a')) {
                 var quantity = $(this).data('qty');
                 new_qty = parseInt(quantity) + 1;
-                // alert(new_qty);
             }
             if ($(this).hasClass('minus-a')) {
                 var quantity = $(this).data('qty');
@@ -105,7 +104,6 @@
                     alert("Error");
                 }
             })
-
         });
 
 
@@ -163,7 +161,6 @@
                         }
                     });
                 } else if (result.dismiss === Swal.DismissReason.cancel) {
-                    // Display cancelled message
                     swalWithBootstrapButtons.fire({
                         title: "Cancelled"
                         , text: "Your imaginary file is safe :)"

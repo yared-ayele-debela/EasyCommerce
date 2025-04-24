@@ -10,12 +10,9 @@ $appsettings = AppSetting::all()->toArray();
 
 $groups=Group::groups();
 if(Auth::user()){
-// $totalWishLists=totalWishlistItems();
 }
 
-// $totalCartItems=totalCartItems();
 
-// echo "<pre>"; print_r($groups);
 ?>
 
 <header>
@@ -299,7 +296,8 @@ if(Auth::user()){
                             <li class="u-d-none-lg">
                                 <a href="{{url('wishlist')}}">
                                     <i class="far fa-heart"></i>
-                                    @if(Auth::check()) <span class="item-counter">
+                                    @if(Auth::check())
+                                     <span class="item-counter">
                                         @php $totalWishLists= App\Helper\Helper::totalWishlistItems(); @endphp
                                         {{ $totalWishLists }}
                                     </span>

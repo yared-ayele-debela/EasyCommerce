@@ -6,17 +6,13 @@
 @extends('all_frontend_layouts.layouts')
 @section('content')
 
-<div class="container-fluid my-2">
+<div class="container my-2">
     <div class="header">
         <button class="btn btn-link text-dark" onclick="history.back()">
             <i class="bi bi-arrow-left"></i>
         </button>
         <h5 class="my-4 text-dark text-center">Order detail</h5>
     </div>
-    {{-- Order Actions --}}
-    
-
-    {{-- Return Status Modal --}}
     @if($check_return_order)
         <button type="button" class="btn btn-outline-primary mb-4" data-bs-toggle="modal" data-bs-target="#returnStatusModal">
             View Return Status
@@ -44,132 +40,243 @@
         </div>
     @endif
 
-    {{-- Order Overview --}}
     <div class="row">
         <div class="col-md-6 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white p-3">
+            <div class="card shadow-sm rounded-3">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center p-3">
                     <strong>Order Details</strong>
-                    <span class="float-end">#{{ $orderDetails['order_code'] }}</span>
+                    <span class="badge bg-light text-dark">#{{ $orderDetails['order_code'] }}</span>
                 </div>
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><strong>Date:</strong> {{ $orderDetails['created_at'] }}</li>
-                        <li class="list-group-item"><strong>Status:</strong> {{ $orderDetails['order_status'] }}</li>
-                        <li class="list-group-item"><strong>Total:</strong> {{ App\Helper\Helper::currency_converter($orderDetails['grand_total']) }}</li>
-                        <li class="list-group-item"><strong>Shipping:</strong> {{ App\Helper\Helper::currency_converter($orderDetails['shipping_charges']) }}</li>
-                        <li class="list-group-item"><strong>Tax:</strong> {{ App\Helper\Helper::currency_converter($orderDetails['tax_charge']) }}</li>
-                        @if($orderDetails['coupon_code'])
-                            <li class="list-group-item"><strong>Coupon:</strong> {{ $orderDetails['coupon_code'] }}</li>
-                            <li class="list-group-item"><strong>Discount:</strong> {{ App\Helper\Helper::currency_converter($orderDetails['coupon_amount']) }}</li>
-                        @endif
-                        @if($orderDetails['courier_name'])
-                            <li class="list-group-item"><strong>Courier:</strong> {{ $orderDetails['courier_name'] }}</li>
-                            <li class="list-group-item"><strong>Tracking #:</strong> {{ $orderDetails['tracking_number'] }}</li>
-                        @endif
-                        <li class="list-group-item"><strong>Payment:</strong> {{ $orderDetails['payment_method'] }}</li>
-                    </ul>
+            
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-muted">Date:</span>
+                        <span>{{ \Carbon\Carbon::parse($orderDetails['created_at'])->format('d M Y, h:i A') }}</span>
+                    </div>
+            
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-muted">Status:</span>
+                        <span class="badge bg-secondary text-white">{{ $orderDetails['order_status'] }}</span>
+                    </div>
+            
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-muted">Total:</span>
+                        <span>{{ App\Helper\Helper::currency_converter($orderDetails['grand_total']) }}</span>
+                    </div>
+            
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-muted">Shipping:</span>
+                        <span>{{ App\Helper\Helper::currency_converter($orderDetails['shipping_charges']) }}</span>
+                    </div>
+            
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-muted">Tax:</span>
+                        <span>{{ App\Helper\Helper::currency_converter($orderDetails['tax_charge']) }}</span>
+                    </div>
+            
+                    @if($orderDetails['coupon_code'])
+                        <div class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="text-muted">Coupon:</span>
+                            <span>{{ $orderDetails['coupon_code'] }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="text-muted">Discount:</span>
+                            <span>{{ App\Helper\Helper::currency_converter($orderDetails['coupon_amount']) }}</span>
+                        </div>
+                    @endif
+            
+                    @if($orderDetails['courier_name'])
+                        <div class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="text-muted">Courier:</span>
+                            <span>{{ $orderDetails['courier_name'] }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="text-muted">Tracking #:</span>
+                            <span>{{ $orderDetails['tracking_number'] }}</span>
+                        </div>
+                    @endif
+            
+                    <div class="d-flex justify-content-between py-2">
+                        <span class="text-muted">Payment:</span>
+                        <span>{{ $orderDetails['payment_method'] }}</span>
+                    </div>
                 </div>
             </div>
+            
         </div>
 
         {{-- Delivery Address --}}
         <div class="col-md-6 mb-4">
-            <div class="offer-card">
+            <div class="card shadow-sm rounded-3">
                 <div class="card-header bg-primary text-white p-3">
                     <strong>Delivery Address</strong>
                 </div>
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><strong>Name:</strong> {{ $orderDetails['name'] }}</li>
-                        <li class="list-group-item"><strong>Email:</strong> {{ $orderDetails['email'] }}</li>
-                        <li class="list-group-item"><strong>Address:</strong> {{ $orderDetails['address'] }}</li>
-                        <li class="list-group-item"><strong>City:</strong> {{ $orderDetails['city'] }}</li>
-                        <li class="list-group-item"><strong>State:</strong> {{ $orderDetails['state'] }}</li>
-                        <li class="list-group-item"><strong>Country:</strong> {{ $orderDetails['country'] }}</li>
-                        <li class="list-group-item"><strong>Mobile:</strong> {{ $orderDetails['mobile'] }}</li>
-                    </ul>
+            
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-muted">Name:</span>
+                        <span>{{ $orderDetails['name'] }}</span>
+                    </div>
+            
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-muted">Email:</span>
+                        <span>{{ $orderDetails['email'] }}</span>
+                    </div>
+            
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-muted">Address:</span>
+                        <span>{{ $orderDetails['address'] }}</span>
+                    </div>
+            
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-muted">City:</span>
+                        <span>{{ $orderDetails['city'] }}</span>
+                    </div>
+            
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-muted">State:</span>
+                        <span>{{ $orderDetails['state'] }}</span>
+                    </div>
+            
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-muted">Country:</span>
+                        <span>{{ $orderDetails['country'] }}</span>
+                    </div>
+            
+                    <div class="d-flex justify-content-between py-2">
+                        <span class="text-muted">Mobile:</span>
+                        <span>{{ $orderDetails['mobile'] }}</span>
+                    </div>
                 </div>
             </div>
+            
         </div>
         <div class="col-md-6">
-            @if($checkorderproductavailable)
+        @if($checkorderproductavailable)
             @if($getOrderStatus == "Delivered")
-            <div class="mb-4">
-                <button class="btn btn-success" id="toggleReturnForm">Open Product Return Form</button>
-                <div id="returnForm" class="mt-3 card shadow-sm d-none">
-                    <div class="card-body">
-                        <form method="POST" action="{{ url('admin/orders/'.$orderDetails['id'].'/return') }}">
-                            @csrf
-                            <div class="form-group mb-3">
-                                <label for="returnProduct">Select Product</label>
-                                <select class="form-control select2" name="product_info[]" multiple required>
-                                    @foreach($orderDetails['orders_products'] as $product)
-                                        @php
-                                            $productModel = \App\Models\Product::find($product['product_id']);
-                                            $isReturnable = $productModel?->is_returnable;
-                                            $returnableDate = $productModel?->returnable_time;
-                                            $productStatus = $product['item_status'];
-                                            $deliveryDate = $product['created_at'];
-                                            $daysSinceDelivery = now()->diffInDays($deliveryDate);
-                                        @endphp
+             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#return_request">
+                Return Request
+             </button>
+             <div class="modal fade" id="return_request" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+                 <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+                     <div class="modal-content">
+                         <div class="modal-header">
+                             <h5 class="modal-title" id="modalTitleId">
+                                Return Request
+                             </h5>
+                             <button type="button" class="btn-close btn" data-bs-dismiss="modal" aria-label="Close"></button>
+                         </div>
+                         <div class="modal-body">
+                            <form method="POST" action="{{ url('admin/orders/'.$orderDetails['id'].'/return') }}">
+                                @csrf
+                                <div class="form-group mb-3">
+                                    <label for="returnProduct">Select Product</label>
+                                    <select class="form-control select2" name="product_info[]" multiple required>
+                                        @foreach($orderDetails['orders_products'] as $product)
+                                            @php
+                                                $productModel = \App\Models\Product::find($product['product_id']);
+                                                $isReturnable = $productModel?->is_returnable;
+                                                $returnableDate = $productModel?->returnable_time;
+                                                $productStatus = $product['item_status'];
+                                                $deliveryDate = $product['created_at'];
+                                                $daysSinceDelivery = now()->diffInDays($deliveryDate);
+                                            @endphp
+    
+                                            @if($isReturnable && $daysSinceDelivery <= $returnableDate && $productStatus != "Return Initiated")
+                                                <option value="{{ $product['product_code'] }}--{{ $product['product_size'] }}">
+                                                    {{ $product['product_code'] }} -- {{ $product['product_size'] }}
+                                                </option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="returnReason">Return Reason</label>
+                                    <select name="return_reason" class="form-control" required>
+                                        <option value="">Select Reason</option>
+                                        <option value="Performance or quality not adequate">Performance or quality not adequate</option>
+                                        <option value="Product damaged, but shipping box OK">Product damaged, but shipping box OK</option>
+                                        <option value="Item arrived too late">Item arrived too late</option>
+                                        <option value="Wrong Item was sent">Wrong Item was sent</option>
+                                        <option value="Item defective or doesn't work">Item defective or doesn't work</option>
+                                    </select>
+                                </div>
+    
+                                <div class="form-group mb-3">
+                                    <label for="comment">Comment</label>
+                                    <textarea name="comment" class="form-control" rows="3"></textarea>
+                                </div>
+    
+                                <button type="submit" class="btn btn-primary">Submit Return Request</button>
+                            </form>
+                         </div>
+                         <div class="modal-footer">
+                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                 Close
+                             </button>
+                         </div>
+                     </div>
+                 </div>
+             </div>
 
-                                        @if($isReturnable && $daysSinceDelivery <= $returnableDate && $productStatus != "Return Initiated")
-                                            <option value="{{ $product['product_code'] }}--{{ $product['product_size'] }}">
-                                                {{ $product['product_code'] }} -- {{ $product['product_size'] }}
-                                            </option>
-                                        @endif
-                                    @endforeach
-                                </select>
-                            </div>
+             <!-- Optional: Place to the bottom of scripts -->
+             <script>
+                 const myModal = new bootstrap.Modal(
+                     document.getElementById("modalId")
+                     , options
+                 , );
 
-                            <div class="form-group mb-3">
-                                <label for="returnReason">Return Reason</label>
-                                <select name="return_reason" class="form-control" required>
-                                    <option value="">Select Reason</option>
-                                    <option value="Performance or quality not adequate">Performance or quality not adequate</option>
-                                    <option value="Product damaged, but shipping box OK">Product damaged, but shipping box OK</option>
-                                    <option value="Item arrived too late">Item arrived too late</option>
-                                    <option value="Wrong Item was sent">Wrong Item was sent</option>
-                                    <option value="Item defective or doesn't work">Item defective or doesn't work</option>
-                                </select>
-                            </div>
+             </script>
 
-                            <div class="form-group mb-3">
-                                <label for="comment">Comment</label>
-                                <textarea name="comment" class="form-control" rows="3"></textarea>
-                            </div>
+             
+            @endif
+            @if($getOrderStatus == "New")
+             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#reason">
+                Cancellation Reason
+             </button>        
+             <div class="modal fade" id="reason" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+                 <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+                     <div class="modal-content">
+                         <div class="modal-header">
+                             <h5 class="modal-title" id="modalTitleId">
+                                 Cancellation Reason
+                             </h5>
+                             <button type="button" class="btn-close btn" data-bs-dismiss="modal" aria-label="Close"></button>
+                         </div>
+                         <div class="modal-body">
+                            <form method="POST" action="{{ url('admin/orders/'.$orderDetails['id'].'/cancel') }}">
+                                @csrf
+                                <div class="form-group mb-3">
+                                    <label for="cancelReason" class=" form-label"> Cancellation Reason</label>
+                                    <select name="reason" class="form-control" required>
+                                        <option value="">Select Reason</option>
+                                        <option value="Order Created by Mistake">Order Created by Mistake</option>
+                                        <option value="Item Not Arrive on Time">Item Not Arrive on Time</option>
+                                        <option value="Shipping Cost too High">Shipping Cost too High</option>
+                                        <option value="Found Cheaper Somewhere Else">Found Cheaper Somewhere Else</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-danger rounded rounded-1">Cancel Order</button>
+                            </form> 
+                         </div>
+                         <div class="modal-footer">
+                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                 Close
+                             </button>
+                         </div>
+                     </div>
+                 </div>
+             </div>
 
-                            <button type="submit" class="btn btn-success">Submit Return Request</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        @endif
-
-        @if($getOrderStatus == "New")
-            <div class="mb-4">
-                <div class="offer-card">
-                    <div class="card-body">
-                        <form method="POST" action="{{ url('admin/orders/'.$orderDetails['id'].'/cancel') }}">
-                            @csrf
-                            <div class="form-group mb-3">
-                                <label for="cancelReason" class=" form-label"> Cancellation Reason</label>
-                                <select name="reason" class="form-control" required>
-                                    <option value="">Select Reason</option>
-                                    <option value="Order Created by Mistake">Order Created by Mistake</option>
-                                    <option value="Item Not Arrive on Time">Item Not Arrive on Time</option>
-                                    <option value="Shipping Cost too High">Shipping Cost too High</option>
-                                    <option value="Found Cheaper Somewhere Else">Found Cheaper Somewhere Else</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-danger rounded rounded-1">Cancel Order</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        @endif
+             <!-- Optional: Place to the bottom of scripts -->
+             <script>
+                 const myModal = new bootstrap.Modal(
+                     document.getElementById("modalId")
+                     , options
+                 , );
+             </script>
+            @endif
         @endif
         </div>
     </div>

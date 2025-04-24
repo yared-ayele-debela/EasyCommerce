@@ -140,19 +140,23 @@
         <div class="d-flex align-items-center">
             @php
                 $wishlistCount = Auth::check() ? \App\Models\Restaurant\Wishlist::where('user_id', Auth::id())->count() : 0;
+                $ecommerce_wishlistCount = Auth::check() ? \App\Models\Wishlist::where('user_id', Auth::id())->count() : 0;
+
+                $sessionCount = count(session('cart', []));
+                $helperCount = \App\Helper\Helper::totalCartItems();
+                $cartCount = $sessionCount + $helperCount;
             @endphp
             <a href="{{ route('restaurant.wishlist.index') }}" class="text-decoration-none me-3 text-primary">
                 <i class="bi bi-heart" style="font-size: 20px;">
                 </i>
                 <span id="wishlist-count">
-                    {{ $wishlistCount }}
+                    {{ $wishlistCount+$ecommerce_wishlistCount }}
                 </span>
-
             </a>
-            <a  href="{{ route('restaurant.cart.count') }}"  data-bs-toggle="offcanvas" data-bs-target="#carInfoOffcanvas"  class="text-decoration-none me-3 text-primary">
+            <a  href="{{ url('my-cart') }}"  class="text-decoration-none me-3 text-primary">
                 <i class="bi bi-cart" style="font-size: 20px;"></i>
-                <span class="cart-count" id="cartCount">
-                    {{ count(session('cart', [])) }}
+                <span class="cart-count" id="cart-count">
+                    {{ $cartCount }}
                 </span>
             </a>
             <div class="dropdown">
@@ -294,63 +298,7 @@
     </div>
 </nav>
 
-<div class="offcanvas offcanvas-end" tabindex="-1" id="carInfoOffcanvas" aria-labelledby="carInfoLabel">
-    <div class="offcanvas-header">
-        <h5 id="carInfoLabel">Car Details</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-        <div id="cartDetails">
-            @if(session('cart') && count(session('cart')) > 0)
-            <table class="table table-borderless">
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Price</th>
-                        <th>Qty</th>
-                        <th>Subtotal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @php $subtotal = 0; @endphp
-                    @foreach(session('cart') as $key => $item)
-                        @php
-                        $product=Product::find($item['product_id']);
-                        if (!$product) continue; // Skip if product not found
-                            $itemSubtotal = $item['price'] * $item['quantity'];
-                            $subtotal += $itemSubtotal;
-                        @endphp
-                        <tr>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <img src="{{ asset('storage/' . $product['image']) }}" alt="Product Image" style="width: 50px; height: 50px;">
-                                    <span class="ms-2">{{ $product->name }}</span>
-                                </div>
-                            </td>
-                            <td>{{ number_format($item['price'], 2) }} Birr</td>
-                            <td>
-                               <p>{{ $item['quantity'] }} x</p>
-                            </td>
-                            <td>{{ number_format($itemSubtotal, 2) }} Birr</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-            <hr>
-            <p><strong>Subtotal:</strong> {{ number_format($subtotal, 2) }} Birr</p>
-            <hr>
-            <div class="d-flex justify-content-between">
-                <a href="" class="btn btn-secondary rounded rounded-1  mt-2">Proceed to Checkout</a>
-                <a href="{{ route('restaurant.cart.view') }}" class="btn bg-primary  rounded rounded-1 text-white mt-2">View Cart</a>
-            </div>
-        @else
-            <p class="text-center">Your cart is empty.</p>
-        @endif
-        </div>
-    </div>
-</div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 <script>
     $(document).ready(function () {
         $('#search-box').on('keyup', function () {

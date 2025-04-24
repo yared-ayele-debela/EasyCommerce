@@ -117,7 +117,6 @@
                 , success: function(response) {
                     if (response.status === 'removed') {
                         $('#wishlist-item-' + itemId).fadeOut();
-
                         showAlert('success', 'Item removed from wishlist');
                         location.reload();
 
