@@ -99,6 +99,7 @@ use App\Http\Controllers\Admin\WithdrawSettingController;
 use App\Http\Controllers\Ecommerce\Frontend\BlogController;
 use App\Http\Controllers\Ecommerce\Frontend\CartController as FrontendCartController;
 use App\Http\Controllers\Ecommerce\Frontend\CategoriesController as FrontendCategoriesController;
+use App\Http\Controllers\Ecommerce\Frontend\CheckoutController as FrontendCheckoutController;
 use App\Http\Controllers\Ecommerce\Frontend\CmsController as FrontendCmsController;
 use App\Http\Controllers\Ecommerce\Frontend\DeliveryAddressController;
 use App\Http\Controllers\Ecommerce\Frontend\FrontendController as EcommerceFrontendFrontendController;
@@ -1191,7 +1192,7 @@ Route::prefix('/restaurant')->group(function () {
         Route::get('/wishlist/count', function () {
             return response()->json(['count' => Auth::check() ? \App\Models\Restaurant\Wishlist::where('user_id', Auth::id())->count() : 0]);
         })->name('wishlist.count');
-       
+
         Route::get('check-out', [CheckoutController::class, 'index'])->name('restaurant.checkout');
         Route::post('/checkout/place-order', [CheckoutController::class, 'placeOrder'])->name('restaurant.checkout.placeOrder');
         Route::get('/order/success/{order}', [FrontendOrderController::class, 'success'])->name('restaurant.order.success');
@@ -1228,7 +1229,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/wishlist/remove', [WishController::class, 'remove'])->name('wishlist.remove');
     Route::post('/restaurant-wishlist/remove', [WishController::class, 'rremove'])->name('restaurant-wishlist/remove');
 
-    
+
 });
 
 
@@ -1278,19 +1279,15 @@ Route::get('/get-nearby-hotels', [FrontendHotelController::class, 'getNearbyHote
 
 // ecommerce
 Route::prefix('/ecommerce')->group(function () {
+
     Route::get('/', [EcommerceFrontendFrontendController::class, 'index'])->name('ecommerce.index');
     Route::get('/categories', [FrontendCategoriesController::class, 'index'])->name('ecommerce.categories.index');
     Route::get('/category/{id}', [FrontendCategoriesController::class, 'show'])->name('ecommerce.category.show');
-
     Route::get('/products/latest', [ProductsController::class, 'latest'])->name('ecommerce.products.latest');
-
     Route::get('/products/featured', [ProductsController::class, 'featured'])->name('ecommerce.products.featured');
-
     Route::get('/product/{id}',[ProductsController::class, 'detail'])->name('ecommerce.product.detail');
-    // Discounted Products
     Route::get('/products/discounted', [ProductsController::class, 'discounted'])->name('ecommerce.products.discounted');
 
-    // All Vendors
     Route::get('/vendors', [FrontendVendorController::class, 'index'])->name('ecommerce.vendors.index');
     Route::middleware('auth')->group(function () {
         Route::match(['GET', 'POST'], '/orders/{id}/cancel', [EcommerceFrontendOrderController::class, 'ordercancel']);
@@ -1298,6 +1295,9 @@ Route::prefix('/ecommerce')->group(function () {
         Route::get('/orders/{id?}', [EcommerceFrontendOrderController::class, 'orders'])->name('ecommerce.order.detail');
     });
     Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+    
+    Route::get('/checkout', [FrontendCheckoutController::class, 'showOrderSummary'])->name('ecommerce.checkout.summary');
+    Route::post('/checkout', [FrontendCheckoutController::class, 'placeOrder'])->name('ecommerce.checkout.placeOrder');
 
 });
 
@@ -1307,17 +1307,12 @@ Route::post('store-blogs', [BlogController::class, 'store'])->name('store-blogs'
 Route::match(['GET', 'POST'], '/contact', [FrontCmsController::class, 'contact']);
 
 Route::get('page/{url}', [FrontendCmsController::class, 'pages'])->name('pages');
-// web.php
 Route::post('/subscribe-newsletter', [NewslettersController::class, 'store']);
 Route::post('/add-to-cart', [FrontendCartController::class, 'addToCart']);
-
 Route::get('/my-cart', [CartController::class, 'viewCart'])->name('my.cart.view');
-
-// web.php
 Route::get('/cart/count', function () {
     $sessionCount = count(session('cart', []));
     $helperCount = \App\Helper\Helper::totalCartItems();
-
     return response()->json([
         'session' => $sessionCount,
         'helper' => $helperCount,

@@ -143,10 +143,7 @@ use App\Models\Restaurant\Product;
                 <div class="delivery-location mt-3 p-3">
                     <h6 class="fw-bold text-dark mb-2">Payment Method</h6>
                     <div class="payment-methods">
-                        {{-- <label class="payment-method">
-                            <input type="radio" name="payment_method" value="telebirr" class="d-none">
-                            <img src="{{ asset('restaurant_frontend/assets/img/Telebirr 2.png') }}" alt="Telebirr">
-                        </label> --}}
+                       
                         <label type="button" class="payment-method" data-bs-toggle="modal" data-bs-target="#modalId">
                             <input type="radio" name="payment_method" value="manual" class="d-none">
                             <img src="{{ asset('restaurant_frontend/bill.png') }}" width="40" alt="CBE">

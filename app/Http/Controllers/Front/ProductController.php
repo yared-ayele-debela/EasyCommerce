@@ -603,7 +603,7 @@ class ProductController extends Controller
 
     public function checkout(Request $request)
     {
-        try {
+        // try {
             $appsettings = AppSetting::all()->toArray();
             $cms_pages = CmsPage::get()->toArray();
 
@@ -619,7 +619,6 @@ class ProductController extends Controller
             $totalTax = 0;
 
             foreach ($getCartItems as $item) {
-                // Get product details
                 $getDiscountAttributePrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
                 $product_price = $getDiscountAttributePrice['final_price'];
                 $product_quantity = $item['quantity'];
@@ -641,13 +640,10 @@ class ProductController extends Controller
 
                 if ($discount){
                     if($discount->discount_type==="Discounted Price"){
-                        // dd("price");
                         $product_total_price_after_discount = $product_total_price - $discount->amount;
                     }
                     if($discount->discount_type==="Percentage"){
-                            // dd("%");
                             $discountAmount = $product_total_price * ($discount->amount / 100);
-                            // dd($discountAmount);
                             $product_total_price_after_discount = $product_total_price - $discountAmount;
                     }
                 } else {
@@ -665,35 +661,10 @@ class ProductController extends Controller
                 // Add tax to total tax
                 $totalTax += $tax_amount;
             }
-            // dd($total_price);
-
-            // foreach ($getCartItems as $item) {
-            //     // echo "<pre>"; print_r($item); die;
-            //     $getDiscountAttributePrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
-            //     $total_price = $total_price + ($getDiscountAttributePrice['final_price'] * $item['quantity']);
-            //     $product_weight = $item['product']['product_weight'];
-            //     $total_weight = $total_weight + $product_weight;
-
-            //     $product_total_price = $getDiscountAttributePrice['final_price'] * $item['quantity'];
-            //     $get_tax_percent = Product::select('product_tax')->where('id', $item['product_id'])->first();
-
-            //     $taxpercent = $get_tax_percent->product_tax;
-            //     $getAmount = round($product_total_price * $taxpercent / 100, 2);
-            //     $totalTax = $totalTax + $getAmount;
-            // }
-
-            $deliveryAddresses = DeliveryAddress::deliveryAddresses();
-            foreach ($deliveryAddresses as $key => $value) {
-                $shippingCharges = ShippingCharge::getShippingCharges($total_weight, $value['city']);
-                $deliveryAddresses[$key]['shipping_charges'] = $shippingCharges;
-                $deliveryAddresses[$key]['producttax'] = $totalTax;
-            }
-            // dd($deliveryAddresses);
+            
 
             if ($request->isMethod('post')) {
                 $data = $request->all();
-
-                //Website Security
                 foreach ($getCartItems as $item) {
                     $product_status = Product::getProductStatus($item['product_id']);
                     if ($product_status == 0) {
@@ -746,9 +717,7 @@ class ProductController extends Controller
                     return redirect()->back();
                 }
                 $deliveryAddresses = DeliveryAddress::where('id', $data['address_id'])->first()->toArray();
-                // dd($deliveryAddresses);
 
-                //Set Payment Method as COD if COD is selected from user otherwise set as Prepaid
                 if ($data['payment_gateway'] == "COD") {
                     $payment_method = "COD";
                     $order_status = "New";
@@ -762,7 +731,6 @@ class ProductController extends Controller
 
                 DB::beginTransaction();
 
-                //Calculate Shipping Charges
                 $shipping_charges = 0;
 
                 //get shipping charges
@@ -878,10 +846,7 @@ class ProductController extends Controller
                 }
 
                 Session::forget('referral_token');
-
-                //insert order Id in Session variable
                 Session::put('order_id', $order_id);
-
                 DB::commit();
                 $orderDetails = Order::with('orders_products')->where('id', $order_id)->first()->toArray();
 
@@ -906,10 +871,7 @@ class ProductController extends Controller
                 if ($data['payment_gateway'] == "Paypal") {
                     return redirect()->route('paypal', compact('appsettings'));
                 }
-                //  else
-                // {
-                // echo "Prepaid payment method coming soon";
-                // }
+                
                 Alert::toast('Order successfully placed!', 'success');
                 return redirect()->route('thanks', compact('appsettings'));
             }
@@ -922,27 +884,26 @@ class ProductController extends Controller
                 $state = State::all()->where('status', 1);
             }
 
-            return view('NewFrontEndPage.delivery_address.checkout', compact('city', 'state', 'appsettings', 'cms_pages', 'deliveryAddresses', 'countries', 'getCartItems', 'total_price', 'totalTax'));
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Laravel's built-in validation exception
-            return redirect()->back()->withErrors($e->validator->errors())->withInput();
-        } catch (\Exception $e) {
-            // Log or handle the exception as needed
-            Alert::toast('something is wrong!!', 'error');
-            return redirect()->back();
-        }
+            return view('NewFrontEndPage.delivery_address.checkout', compact('city', 'state', 'appsettings', 'cms_pages',  'countries', 'getCartItems', 'total_price', 'totalTax'));
+        // } catch (\Illuminate\Validation\ValidationException $e) {
+        //     // Laravel's built-in validation exception
+        //     return redirect()->back()->withErrors($e->validator->errors())->withInput();
+        // } catch (\Exception $e) {
+        //     // Log or handle the exception as needed
+        //     Alert::toast('something is wrong!!', 'error');
+        //     return redirect()->back();
+        // }
     }
 
 
     public function thanks()
     {
         try {
-            $appsettings = AppSetting::all()->toArray();
-            $cms_pages = CmsPage::get()->toArray();
+           
 
             if (Session::has('order_id')) {
                 Cart::where('user_id', Auth::user()->id)->delete();
-                return view('NewFrontEndPage.COD.thanks', compact('appsettings', 'cms_pages'));
+                return view('NewFrontEndPage.COD.thanks');
             } else {
                 return redirect('cart', compact('appsettings', 'cms_pages'));
             }

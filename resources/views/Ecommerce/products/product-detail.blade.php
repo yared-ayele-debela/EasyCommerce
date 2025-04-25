@@ -55,18 +55,25 @@ use App\Models\Wishlist;
     </div>
     <div class="row g-4 py-4">
         <div class="row">
-            <div class="col-md-1 d-flex flex-column gap-3">
-                @foreach ($product['images'] as $image )
-                <img src="{{ asset('/storage/products/'.$image['image']) }}" class="img-fluid border rounded thumbnail-image" style="cursor: pointer;" alt="{{ $product->product_name }}" />
-                @endforeach
-            </div>
+           <!-- Main Image -->
+                <div class="col-12 col-md-5 order-1 order-md-2 mb-3 mb-md-0 mb-2">
+                    <img id="mainProductImage" src="{{ asset('storage/products/' . $product['product_image']) }}" class="img-fluid border-0 rounded w-100" alt="{{ $product->product_name }}" />
+                </div>
 
-            <div class="col-md-5">
-                <img id="mainProductImage" src="{{ asset('storage/products/' . $product['product_image']) }}" class="img-fluid border-0 rounded w-100" alt="{{ $product->product_name }}" />
+                <!-- Thumbnails -->
+                <div class="col-12 col-md-1 d-flex flex-md-column gap-3 order-2 order-md-1 mb-2">
+                    @foreach ($product['images'] as $image )
+                    <img
+                        src="{{ asset('/storage/products/'.$image['image']) }}"
+                        class="img-fluid border rounded thumbnail-image"
+                        style="cursor: pointer; max-width: 80px;"
+                        alt="{{ $product->product_name }}"
+                        onclick="document.getElementById('mainProductImage').src = this.src"
+                    />
+                    @endforeach
             </div>
-
             <!-- Product Details -->
-            <div class="col-md-6">
+            <div class="col-md-6 order-md-3 order-3 mb-2">
                 <!-- Rating -->
                 <div class="mb-2">
                     <span class="text-warning">
@@ -150,14 +157,14 @@ use App\Models\Wishlist;
                     <i class="fas fa-truck me-2"></i><strong>Free Delivery</strong>
                     <p class="mb-0 small text-muted">Enter your postal code for Delivery Availability</p>
                 </div>
-                @if($product->is_returnable == "yes")
+                @if($product->is_returnable)
                 <div class="border rounded p-3">
                     <i class="fas fa-undo me-2"></i><strong>Return Delivery</strong>
                     <p class="mb-0 small text-muted">Free 30 Days Delivery Returns. <a href="{{ url('page/delivery_and_return') }}" target="_blank" class="text-primary">Details</a></p>
                 </div>
                 @endif
             </div>
-            <div class="col-md-12">
+            <div class="col-md-12 order-md-4 order-4">
                 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="pills-Description-tab" data-bs-toggle="pill" data-bs-target="#pills-Description" type="button" role="tab" aria-controls="pills-Description" aria-selected="true">Description</button>

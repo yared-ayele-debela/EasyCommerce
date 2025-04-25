@@ -136,12 +136,10 @@
             </form>
         </div>
 
-        <!-- Wishlist, Cart, and Sign-in -->
         <div class="d-flex align-items-center">
             @php
                 $wishlistCount = Auth::check() ? \App\Models\Restaurant\Wishlist::where('user_id', Auth::id())->count() : 0;
                 $ecommerce_wishlistCount = Auth::check() ? \App\Models\Wishlist::where('user_id', Auth::id())->count() : 0;
-
                 $sessionCount = count(session('cart', []));
                 $helperCount = \App\Helper\Helper::totalCartItems();
                 $cartCount = $sessionCount + $helperCount;
@@ -160,7 +158,6 @@
                 </span>
             </a>
             <div class="dropdown">
-
                     @if(Auth::check())
                     <a class="btn text-dark border border-0 p-1 d-flex align-items-center gap-1" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         @if(Auth::user()->profile_photo_path)
@@ -168,7 +165,6 @@
                         @endif
                     </a>
                     @else
-
                     <div class="toggle-btn d-none d-lg-flex">
                         <a href="{{ route('auth.login') }}" class="toggle active" id="login">Login</a>
                         <a href="{{ route('auth.login') }}" class="toggle text-white" id="signup">
@@ -177,8 +173,6 @@
                         <div class="slider"></div>
                     </div>
                     @endif
-
-
                 <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded" aria-labelledby="accountDropdown">
                     @if(Auth::check())
                         <li class="mb-2">
@@ -226,7 +220,6 @@
 <!-- Mobile Navbar (Shown on Small Screens) -->
 <nav class="navbar navbar-light bg-light d-flex d-lg-none p-2">
     <div class="container d-flex justify-content-between align-items-center">
-        <!-- Logo -->
         <a class="navbar-brand" href="{{ url('/') }}">
             <img src="{{ asset('restaurant_frontend/assets/img/logo.png') }}" alt="Logo" style="width: 60px;">
         </a>

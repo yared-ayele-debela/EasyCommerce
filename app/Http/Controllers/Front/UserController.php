@@ -146,12 +146,9 @@ class UserController extends Controller
                         $session_id = Session::get('session_id');
                         Cart::where('session_id', $session_id)->update(['user_id' => $user_id]);
                     }
-
-                    return redirect('cart')->with('success', 'Welcome to our website!');
+                    return redirect('my-cart')->with('success', 'Welcome to our website!');
                 } else {
-                    // Login failed, redirect back with an error message
                     return redirect()->back()->with('error', 'Incorrect username or password');
-                    return redirect()->back();
                 }
             }
         } catch (\Illuminate\Validation\ValidationException $e) {

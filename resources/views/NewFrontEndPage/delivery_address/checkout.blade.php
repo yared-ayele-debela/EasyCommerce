@@ -160,7 +160,7 @@
             <form name="checkoutForm" action="{{ url('/checkout') }}" method="post">
                 @csrf
             <div id="deliveryAddresses">
-                @if(count($deliveryAddresses) > 0)
+                {{-- @if(count($deliveryAddresses) > 0)
                 <h4 class="section-h4">Delivery Address</h4>
                 <!-- Form-Fields /- -->
                 @foreach ($deliveryAddresses as $address)
@@ -198,7 +198,7 @@
                 </div>
                 <br>
                 @endforeach
-                @endif
+                @endif --}}
             </div>
         </div>
         <div class="col-md-6">
@@ -268,7 +268,6 @@
                                      @else
                                      {{  App\Helper\Helper::currency_converter(0) }}
                                      @endif
-
                                 </h3>
                             </td>
                         </tr>
@@ -293,28 +292,7 @@
                         </tr>
                     </tbody>
                 </table>
-                {{-- <div class="row container">
-                    <div class="wrapper">
-                        <div class="container shadow-sm" style="width: 170px; height:70px;">
-                            <input type="radio" name="payment_gateway" class="cod" id="cash-on-delivery" value="COD"/>
-                            <label for="payment-method-1">
-                                <img src="{{ asset('new_frontend/payment_method/codjpg.jpg') }}" />
-                            </label>
-                        </div>
-                        <div class="container shadow-sm" style="width: 170px; height:70px;">
-                            <input type="radio" value="Chapa" class="chapa" name="payment_gateway" id="Chapa"/>
-                            <label for="payment-method-1">
-                                <img src="{{ asset('new_frontend/payment_method/chapa.jpg') }}" />
-                            </label>
-                        </div>
-                        <div class="container shadow-sm"  style="width: 170px; height:70px;">
-                            <input type="radio" name="payment_gateway" class="paypal" id="Paypal" value="Paypal" />
-                            <label for="payment-method-2">
-                                <img src="{{ asset('new_frontend/payment_method/paypal.jpg') }}" />
-                            </label>
-                        </div>
-                    </div>
-                </div> --}}
+                
                 @php
                 App\Helper\Helper::currency_load();
                 $currency_code = session('currency_code');
