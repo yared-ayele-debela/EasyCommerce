@@ -119,9 +119,15 @@
             <div class="item my-2">
                 <div class="offer-card p-3 h-100">
                     <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}">
-                        <a class="bg-warning badge-offer" style="font-size: 12px;">
-                            Most Popular
+                        @php
+                        $off=$product->price-$product->getFinalPrice();
+                        @endphp
+                        @if($off>0)
+                        <a class="bg-danger badge-offer" style="font-size: 12px;">
+                            {{ $off }}
+                         ETB OFF
                         </a>
+                        @endif
                         <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid mb-2" alt="{{ $product->name }}">
                         <h6 class="text-dark">{{ $product->name }}</h6>
                         <p class="mb-0">
@@ -136,6 +142,7 @@
                         <button class="btn-cart add-to-cart" data-product="{{ $product->id }}">
                             <i class="bi bi-cart-check-fill"></i>
                         </button>
+
                         <button class="btn-wishlist add-to-wishlist" data-product="{{ $product->id }}">
                             <i class="bi bi-heart text-white"></i>
                         </button>
@@ -164,9 +171,15 @@
             <div class="item my-2">
                 <div class="offer-card p-3 h-100">
                     <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}">
-                        <a class="bg-info badge-offer" style="font-size: 12px;">
-                            Best Seller
+                        @php
+                        $off=$product->price-$product->getFinalPrice();
+                        @endphp
+                        @if($off>0)
+                        <a class="bg-danger badge-offer" style="font-size: 12px;">
+                            {{ $off }}
+                         ETB OFF
                         </a>
+                        @endif
                         <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid mb-2" alt="{{ $product->name }}">
                         <h6 class="text-dark">{{ $product->name }}</h6>
                         <p class="mb-0">
@@ -181,6 +194,7 @@
                         <button class="btn-cart add-to-cart" data-product="{{ $product->id }}">
                             <i class="bi bi-cart-check-fill"></i>
                         </button>
+
                         <button class="btn-wishlist add-to-wishlist" data-product="{{ $product->id }}">
                             <i class="bi bi-heart text-white"></i>
                         </button>
@@ -209,6 +223,15 @@
             <div class="item my-2">
                 <div class="offer-card p-3 h-100">
                     <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}">
+                        @php
+                        $off=$product->price-$product->getFinalPrice();
+                        @endphp
+                        @if($off>0)
+                        <a class="bg-danger badge-offer" style="font-size: 12px;">
+                            {{ $off }}
+                         ETB OFF
+                        </a>
+                        @endif
                         <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid mb-2" alt="{{ $product->name }}">
                         <h6 class="text-dark">{{ $product->name }}</h6>
                         <p class="mb-0">
@@ -223,6 +246,7 @@
                         <button class="btn-cart add-to-cart" data-product="{{ $product->id }}">
                             <i class="bi bi-cart-check-fill"></i>
                         </button>
+
                         <button class="btn-wishlist add-to-wishlist" data-product="{{ $product->id }}">
                             <i class="bi bi-heart text-white"></i>
                         </button>

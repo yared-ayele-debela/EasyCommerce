@@ -199,7 +199,7 @@
                         </div>
                         <div class="col-md-2">
                             <label class="form-label" for="total_night">Reserved Days</label>
-                            <input type="number" id="total_night" disabled min="0" name="total_night" class="form-control w-100" placeholder="" required>
+                            <input type="number" id="total_night" readonly min="0" name="total_night" class="form-control w-100" placeholder="" required>
                             @error('total_night')
                             <span class="text-danger">{{ $message }}</span>
                             @enderror
