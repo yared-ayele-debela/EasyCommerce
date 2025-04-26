@@ -101,7 +101,7 @@
     <!-- Copyright Section -->
     <div class="row pt-3">
         <div class="col text-center">
-            <p class="text-white">{{ $appsettings[0]['panel_footer_text'] }}</p>
+            <p class="text-white">{{ $appsettings[0]['panel_footer_text'] }} Developed by  <a href="https://www.afroel.com" target="_blank" class="text-white">Afroel Technologies</a></p>
         </div>
     </div>
 </div>
@@ -141,7 +141,7 @@
     }
 
 
-   
+
     $(document).ready(function() {
         $('.wishlist-btn').click(function(e) {
             e.preventDefault();
@@ -198,7 +198,7 @@
             type: 'POST',
             data: {
                 email: email,
-                status: 1, 
+                status: 1,
                 _token: $('meta[name="csrf-token"]').attr('content')
             },
             success: function (response) {
