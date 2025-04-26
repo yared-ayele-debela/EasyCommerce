@@ -47,18 +47,19 @@
         @foreach ($category->products as $product)
             <div class="col-md-2 col-6 my-2 product-item">
                 <div class="offer-card p-3 h-100">
-                    <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}">
+                    <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}" class="text-decoration-none text-dark d-block">
                         @php
                             $off = $product->price - $product->getFinalPrice();
                         @endphp
                         @if($off > 0)
-                            <a class="badge-offer">
+                            <div class="badge-offer">
                                 {{ $off }} ETB OFF
-                            </a>
+                            </div>
                         @endif
                         <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid mb-2" alt="{{ $product->name }}">
                         <h6 class="text-dark">{{ $product->name }}</h6>
-                        <p class="mb-0"><span class="price">{{ $product->getFinalPrice() }} ETB</span>
+                        <p class="mb-0">
+                            <span class="price">{{ $product->getFinalPrice() }} ETB</span>
                             <span class="price-old">{{ $product->price }} ETB</span>
                         </p>
                     </a>
@@ -74,6 +75,7 @@
                         </button>
                     </div>
                 </div>
+
             </div>
         @endforeach
     </div>

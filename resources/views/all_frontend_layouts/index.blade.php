@@ -66,15 +66,14 @@
             @foreach ($products as $product)
             <div class="item my-2">
                 <div class="offer-card p-3 h-100">
-                    <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}">
+                    <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}" class="text-decoration-none text-dark d-block">
                         @php
-                        $off=$product->price-$product->getFinalPrice();
+                            $off = $product->price - $product->getFinalPrice();
                         @endphp
-                        @if($off>0)
-                        <a class="bg-danger badge-offer" style="font-size: 12px;">
-                            {{ $off }}
-                         ETB OFF
-                        </a>
+                        @if($off > 0)
+                            <div class="badge-offer">
+                                {{ $off }} ETB OFF
+                            </div>
                         @endif
                         <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid mb-2" alt="{{ $product->name }}">
                         <h6 class="text-dark">{{ $product->name }}</h6>
@@ -90,12 +89,12 @@
                         <button class="btn-cart add-to-cart" data-product="{{ $product->id }}">
                             <i class="bi bi-cart-check-fill"></i>
                         </button>
-
                         <button class="btn-wishlist add-to-wishlist" data-product="{{ $product->id }}">
                             <i class="bi bi-heart text-white"></i>
                         </button>
                     </div>
                 </div>
+
             </div>
             @endforeach
         </div>
@@ -118,16 +117,11 @@
             @foreach ($most_popular_products as $product)
             <div class="item my-2">
                 <div class="offer-card p-3 h-100">
-                    <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}">
-                        @php
-                        $off=$product->price-$product->getFinalPrice();
-                        @endphp
-                        @if($off>0)
-                        <a class="bg-danger badge-offer" style="font-size: 12px;">
-                            {{ $off }}
-                         ETB OFF
-                        </a>
-                        @endif
+                    <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}" class="text-decoration-none text-dark d-block">
+
+                        <span class="btn btn-sm btn-info text-white">
+                            Popular
+                        </span>
                         <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid mb-2" alt="{{ $product->name }}">
                         <h6 class="text-dark">{{ $product->name }}</h6>
                         <p class="mb-0">
@@ -142,12 +136,12 @@
                         <button class="btn-cart add-to-cart" data-product="{{ $product->id }}">
                             <i class="bi bi-cart-check-fill"></i>
                         </button>
-
                         <button class="btn-wishlist add-to-wishlist" data-product="{{ $product->id }}">
                             <i class="bi bi-heart text-white"></i>
                         </button>
                     </div>
                 </div>
+
             </div>
             @endforeach
         </div>
@@ -170,16 +164,11 @@
             @foreach ($best_seller_products as $product)
             <div class="item my-2">
                 <div class="offer-card p-3 h-100">
-                    <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}">
-                        @php
-                        $off=$product->price-$product->getFinalPrice();
-                        @endphp
-                        @if($off>0)
-                        <a class="bg-danger badge-offer" style="font-size: 12px;">
-                            {{ $off }}
-                         ETB OFF
-                        </a>
-                        @endif
+                    <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}" class="text-decoration-none text-dark d-block">
+
+                            <span class="btn btn-sm btn-warning text-white">
+                                Best seller
+                            </span>
                         <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid mb-2" alt="{{ $product->name }}">
                         <h6 class="text-dark">{{ $product->name }}</h6>
                         <p class="mb-0">
@@ -194,12 +183,12 @@
                         <button class="btn-cart add-to-cart" data-product="{{ $product->id }}">
                             <i class="bi bi-cart-check-fill"></i>
                         </button>
-
                         <button class="btn-wishlist add-to-wishlist" data-product="{{ $product->id }}">
                             <i class="bi bi-heart text-white"></i>
                         </button>
                     </div>
                 </div>
+
             </div>
             @endforeach
         </div>
@@ -222,16 +211,10 @@
             @foreach ($latest_products as $product)
             <div class="item my-2">
                 <div class="offer-card p-3 h-100">
-                    <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}">
-                        @php
-                        $off=$product->price-$product->getFinalPrice();
-                        @endphp
-                        @if($off>0)
-                        <a class="bg-danger badge-offer" style="font-size: 12px;">
-                            {{ $off }}
-                         ETB OFF
-                        </a>
-                        @endif
+                    <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}" class="text-decoration-none text-dark d-block">
+                            <div class="btn btn-sm btn-danger text-white">
+                              Latest
+                            </div>
                         <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid mb-2" alt="{{ $product->name }}">
                         <h6 class="text-dark">{{ $product->name }}</h6>
                         <p class="mb-0">
@@ -246,12 +229,12 @@
                         <button class="btn-cart add-to-cart" data-product="{{ $product->id }}">
                             <i class="bi bi-cart-check-fill"></i>
                         </button>
-
                         <button class="btn-wishlist add-to-wishlist" data-product="{{ $product->id }}">
                             <i class="bi bi-heart text-white"></i>
                         </button>
                     </div>
                 </div>
+
             </div>
             @endforeach
         </div>

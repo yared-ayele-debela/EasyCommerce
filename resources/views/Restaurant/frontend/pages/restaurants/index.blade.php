@@ -13,8 +13,8 @@
             <div class="resturant_card card mb-3 p-2">
                 <div class="row g-0">
                     <div class="col-md-6">
-                        <a href="{{ url('restaurant/${restaurant.id}/detail') }}">
-                            <img src="/storage/${restaurant.cover}" class="img-fluid rounded-start" alt="{{ $restaurant->name }}">
+                        <a href="{{ url('restaurant/'.$restaurant->id.'/detail') }}">
+                            <img src="{{ asset('storage/'.$restaurant->cover) }}" class="img-fluid rounded-start" alt="{{ $restaurant->name }}">
                         </a>
                     </div>
                     <div class="col-md-6">
