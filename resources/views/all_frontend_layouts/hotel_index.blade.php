@@ -108,7 +108,7 @@
             @foreach ($categories as $category)
             <div class="item mb-2">
                 <div class="category-item">
-                    <a href="{{ url('hotel-reservation/categories/'.$category->id) }}">
+                    <a href="{{ url('hotel/categories/'.$category->id) }}">
                         <img src="{{ asset('storage/' . $category->image) }}" class="p-2 shadow" style="border:4px solid rgb(162, 159, 159);" alt="American">
                         <p class="text-dark">{{ $category->name }}</p>
                     </a>
@@ -157,7 +157,7 @@
             @endforeach
         </div>
     </div>
-    
+
 <div class="container-fluid p-0">
     <div id="nearby-hotels">
         <p>Loading nearby hotels...</p>
