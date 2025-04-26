@@ -59,7 +59,7 @@ class ProductController extends Controller
     }
 
 
-    return view('restaurant.frontend.pages.products.filtered_products', compact('products', 'filter'));
+    return view('Restaurant.frontend.pages.products.filtered_products', compact('products', 'filter'));
     }
 
     public function index(Request $request){
