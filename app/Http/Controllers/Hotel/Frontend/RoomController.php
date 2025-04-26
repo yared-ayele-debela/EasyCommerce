@@ -18,10 +18,12 @@ class RoomController extends Controller
 
         $room=Room::with('images','amenities','hotel','rating')->findOrFail($id);
         $is_reserved = false;
+        if(Auth::check()){
         $user= Reservation::where('room_id',$id)->where('user_id',auth()->user()->id)->first();
         if($user){
             $is_reserved = true;
         }
+       }
         // dd($room);
         return view('Hotel.frontend.pages.room.detail',compact('room','is_reserved'));
     }

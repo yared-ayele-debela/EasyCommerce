@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Ecommerce\Frontend;
 
 use App\Helper\Helper;
 use App\Http\Controllers\Controller;
+use App\Mail\OrderPlaced;
 use App\Models\AppSetting;
 use App\Models\Cart;
 use App\Models\Category;
@@ -18,9 +19,11 @@ use App\Models\ProductAttribute;
 use App\Models\SalesCommission;
 use App\Models\SalesMainCommission;
 use App\Models\ShippingCharge;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -87,13 +90,16 @@ class CheckoutController extends Controller
             'payment_gateway' => 'required',
             'accept' => 'required',
         ]);
-        
+
         $data = $request->all();
-        
+
         $getCartItems = Cart::getCartItems();
         if (count($getCartItems) == 0) {
-            Alert::toast('Shopping Cart is empty! Please add products to checkout', 'error');
-            return redirect('my-cart');
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Shopping Cart is empty! Please add products to checkout',
+                'redirect_url' => url('my-cart')
+            ]);
         }
         $total_price = 0;
         $total_weight = 0;
@@ -133,54 +139,51 @@ class CheckoutController extends Controller
             $tax_percent = $get_tax_percent->product_tax;
             $tax_amount = round($product_total_price_after_discount * $tax_percent / 100, 2);
             $totalTax += $tax_amount;
-            
+
         }
         foreach ($getCartItems as $item) {
             $product_status = Product::getProductStatus($item['product_id']);
             if ($product_status == 0) {
-                Alert::toast($item['product']['product_name'] . " with " . $item['size'] . " Size is not available. Please remove from cart and choose some other product.", 'error');
-                return redirect('/my-cart');
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $item['product']['product_name'] . " with " . $item['size'] . " Size is not available. Please remove from cart and choose some other product.",
+                    'redirect_url' => url('my-cart')
+                ]);
+
             }
             //prvent sold out product to order
             $getProductStock = ProductAttribute::isStokAvailable($item['product_id'], $item['size']);
             if ($getProductStock == 0) {
                 // Product::deleteCartProduct($item['product_id']);
                 // notify()->error('One of the product is sold out!','Please try again');
-                Alert::toast($item['product']['product_name'] . " with " . $item['size'] . " Size is not available. Please remove from cart and choose some other product.", 'error');
-                return redirect('/my-cart');
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $item['product']['product_name'] . " with " . $item['size'] . " Size is not available. Please remove from cart and choose some other product.",
+                    'redirect_url' => url('my-cart')
+                ]);
+
             }
             //Prevent Disabled out ProductAttributes to Order
             $getAttributeStatus = ProductAttribute::getAttributeStatus($item['product_id'], $item['size']);
             if ($getAttributeStatus == 0) {
-                // Product::deleteCartProduct($item['product_id']);
-                // notify()->error('One of the product attribute is sold out!','Please try again');
-                Alert::toast($item['product']['product_name'] . " with " . $item['size'] . " Size is not available. Please remove from cart and choose some other product.", 'error');
-                return redirect('/my-cart');
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $item['product']['product_name'] . " with " . $item['size'] . " Size is not available. Please remove from cart and choose some other product.",
+                    'redirect_url' => url('my-cart')
+                ]);
             }
             //Prevent disabled Categories product to order
             $getCategoryStatus = Category::getCategoryStatus($item['product']['category_id']);
             if ($getCategoryStatus == 0) {
-                // Product::deleteCartProduct($item['product_id']);
-                // notify()->error('One of the product category is disabled!','Please try again');
-                Alert::toast($item['product']['product_name'] . " with " . $item['size'] . " Size is not available. Please remove from cart and choose some other product.", 'error');
-                return redirect('/my-cart');
+
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $item['product']['product_name'] . " with " . $item['size'] . " Size is not available. Please remove from cart and choose some other product.",
+                    'redirect_url' => url('my-cart')
+                ]);
             }
         }
 
-        if (empty($data['address_id'])) {
-            Alert::toast('Please select Delivery Address!', 'error');
-            return redirect()->back();
-        }
-
-        if (empty($data['payment_gateway'])) {
-            Alert::toast('Please select Payment Geteway!', 'error');
-            return redirect()->back();
-        }
-
-        if (empty($data['accept'])) {
-            Alert::toast('Please agree to T&C!', 'error');
-            return redirect()->back();
-        }
         $deliveryAddresses = DeliveryAddress::where('id', $data['address_id'])->first()->toArray();
 
         if ($data['payment_gateway'] == "COD") {
@@ -275,10 +278,10 @@ class CheckoutController extends Controller
             if ($discount) {
                 $cartItem->discounted_price = $total_prices;
             }
-            
+
             $cartItem->product_price = $product_total_price;
             $cartItem->product_qty = $item['quantity'];
-            
+
             if ($discount) {
                 $cartItem->discount_type = $discount->discount_type;
                 $cartItem->specail_discount = $discount->amount;
@@ -304,7 +307,14 @@ class CheckoutController extends Controller
         Session::forget('referral_token');
         Session::put('order_id', $order_id);
         DB::commit();
-        $orderDetails = Order::with('orders_products')->where('id', $order_id)->first()->toArray();
+        $order = Order::with('orders_products')->where('id', $order_id)->first();
+
+        $pdf = Pdf::loadView('Ecommerce.order.receipt', ['order' => $order]);
+        $pdfPath = storage_path('app/public/receipts/order_' . $order->order_code . '.pdf');
+        $pdf->save($pdfPath); // Save to storage
+
+
+        Mail::to($order->email)->send(new OrderPlaced($order, $pdfPath));
 
         if ($data['payment_gateway'] == "COD") {
             // $email = Auth::user()->email;
@@ -320,14 +330,13 @@ class CheckoutController extends Controller
             //     $message->to($email)->subject('Order Placed');
             // });
         }
-        if ($data['payment_gateway'] == "Chapa") {
-            return redirect()->route('chapa');
-        }
-        if ($data['payment_gateway'] == "Paypal") {
-            return redirect()->route('paypal');
-        }
 
-        Alert::toast('Order successfully placed!', 'success');
-        return redirect()->route('thanks');
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Order placed successfully!',
+            'redirect_url' => url('/thanks')
+        ]);
+
     }
 }

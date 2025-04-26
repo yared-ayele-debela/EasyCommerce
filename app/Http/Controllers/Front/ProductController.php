@@ -234,16 +234,7 @@ class ProductController extends Controller
     public function detail($id)
     {
         try {
-            $shareComponent = \Share::page(
-                'https://www.positronx.io/create-autocomplete-search-in-laravel-with-typeahead-js/',
-                'Your share text comes here',
-            )
-                ->facebook()
-                ->twitter()
-                ->linkedin()
-                ->telegram()
-                ->whatsapp()
-                ->reddit();
+           
 
             $appsettings = AppSetting::all()->toArray();
             $cms_pages = CmsPage::get()->toArray();
@@ -293,7 +284,7 @@ class ProductController extends Controller
                 $avgRating = 0;
                 $avgStarRating = 0;
             }
-            return view('products.product_detail', compact('shareComponent', 'cms_pages', 'appsettings', 'avgRating', 'avgStarRating', 'ratings', 'productDetails', 'categoryDetails', 'similarProducts', 'recentlyViewedProducts', 'totalStock', 'groupProducts'));
+            return view('products.product_detail', compact('cms_pages', 'appsettings', 'avgRating', 'avgStarRating', 'ratings', 'productDetails', 'categoryDetails', 'similarProducts', 'recentlyViewedProducts', 'totalStock', 'groupProducts'));
         } catch (\Exception $e) {
             // Log or handle the exception as needed
             Alert::toast('something is wrong!!', 'error');

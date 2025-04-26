@@ -614,8 +614,6 @@ use App\Models\Wishlist;
                 }
                 , success: function(resp) {
                     var symbolParagraph = document.getElementById("symbolParagraph");
-
-                    // Get the value of the 'symbol' attribute
                     var symbolValue = symbolParagraph.getAttribute("symbol");
 
                     if (resp['discount_product_detail'] > 0) {

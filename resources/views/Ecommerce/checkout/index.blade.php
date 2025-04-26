@@ -9,7 +9,7 @@
         <h5 class="my-4 text-dark text-center">Checkout</h5>
     </div>
 
-    <form action="{{ route('ecommerce.checkout.placeOrder') }}" method="POST">
+    <form id="placeOrderForm">
         <div class="row">
             <div class="col-md-8">
                 @csrf
@@ -37,7 +37,6 @@
                             <button type="button" class="btn btn-outline-primary fw-bold px-4 py-2 delivery_text" id="loadAddresses">
                                 <i class="bi bi-geo-alt"></i> Load Delivery Addresses
                             </button>
-
                             <a href="#" class="btn btn-primary fw-bold d-flex align-items-center delivery_text px-3 py-2 rounded-3" data-bs-toggle="modal" data-bs-target="#addressModal">
                                 <i class="bi bi-plus-circle me-1"></i> Add New Address
                             </a>
@@ -46,8 +45,9 @@
                     <div class="row" id="addressContainer">
                         <p class="text-muted text-center">Click "Load Addresses" to view your addresses.</p>
                     </div>
-                    <span id="address-error" class="text-danger d-none">Please select a delivery address.</span>
+                    <span id="address-error" class="text-danger" style="display: none;">Please select a delivery address.</span>
                     <input type="hidden" name="address_id" id="selected_address_id">
+
                     @error('address_id')
                     <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -114,7 +114,6 @@
                         <span><strong>Total</strong></span>
                         <span class="grand_total"><strong>{{ App\Helper\Helper::currency_converter($grand_total) }}</strong></span>
                     </div>
-
                     <div class="delivery-location mt-3 p-3">
                         <h6 class="fw-bold text-dark mb-2">Payment Method</h6>
                         <div class="payment-methods">
@@ -126,6 +125,10 @@
                                 <input type="radio" name="payment_gateway" value="cash" class="d-none">
                                 <img src="{{ asset('restaurant_frontend/assets/img/Cash (1).png') }}" alt="Cash on Delivery">
                             </label>
+
+                        </div>
+                        <div class="invalid-feedback text-danger" id="paymentErrors" style="display: none;">
+                            Please select a payment method.
                         </div>
                         @error('payment_gateway')
                         <span class="text-danger">{{ $message }}</span>
@@ -134,9 +137,9 @@
                     </div>
 
                     <div class="form-check mt-2">
-                        <input class="form-check-input" type="checkbox" name="accept" id="accept">
+                        <input class="form-check-input" type="checkbox" name="accept" id="accept" required>
                         <label class="form-check-label" for="accept">
-                            I agree to the <a href="#">Terms & Conditions</a>
+                            I agree to the <a href="#" class="text-primary">Terms & Conditions</a>
                         </label>
                         @error('accept')
                         <span class="text-danger">{{ $message }}</span>
@@ -192,10 +195,10 @@
                         </div>
                     </div>
                     <button type="submit" class="checkout-btn border-0 bg-primary w-100 mt-3 text-white py-2">Place Order</button>
+                    <div id="orderResponse"></div>
+
                 </div>
-
             </div>
-
         </div>
     </form>
 </div>
@@ -315,13 +318,61 @@
         document.getElementById("modalId")
         , options
     , );
-
 </script>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    // JavaScript to handle payment method selection
+      $('#placeOrderForm').on('submit', function(e) {
+        const selected = document.querySelector('input[name="payment_gateway"]:checked');
+        const error = document.getElementById('paymentErrors');
+        const addressError = document.getElementById('address-error');
+
+        const selectedAddress = document.querySelector("input[name='address']:checked");
+        if (!selectedAddress) {
+            e.preventDefault(); // Stop form from submitting
+            addressError.style.display='block';
+        }else{
+            addressError.style.display='none';
+        }
+        if (!selected) {
+            e.preventDefault(); // Stop form from submitting
+            error.style.display = 'block'; // Show custom error
+        } else {
+            error.style.display = 'none'; // Hide error if selected
+        }
+        e.preventDefault();
+        $.ajax({
+            url: "{{ route('ecommerce.checkout.placeOrder') }}", // Replace with your actual route
+            method: "POST",
+            data: $(this).serialize(),
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            beforeSend: function() {
+                $('#orderResponse').text('Processing your order...');
+            },
+            success: function(response) {
+                const { status, data, message, redirect_url } = response;
+                if (status === 'error') {
+                    showAlert('error', data?.message || message || 'An error occurred.');
+                    if (redirect_url) window.location.href = redirect_url;
+                    return;
+                }
+                if (status === 'success') {
+                    showAlert('success', data?.message || message || 'Success!');
+                    if (redirect_url) window.location.href = redirect_url;
+                    return;
+                }
+                showAlert('info', message || 'Unexpected response received.');
+            },
+            error: function(xhr) {
+                
+            }
+        });
+    });
+
     document.querySelectorAll('.payment-method').forEach(method => {
         method.addEventListener('click', function() {
             document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
