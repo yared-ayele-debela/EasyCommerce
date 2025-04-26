@@ -101,7 +101,7 @@
     <!-- Copyright Section -->
     <div class="row pt-3">
         <div class="col text-center">
-            <p class="text-white">{{ $appsettings[0]['panel_footer_text'] }} Developed by  <a href="https://www.afroel.com" target="_blank" class="text-white">Afroel Technologies</a></p>
+            <p class="text-white"> {{ $appsettings[0]['panel_footer_text'] }} Developed by <a href="https://www.afroel.com" target="_blank" class="text-white">Afroel Technologies</a></p>
         </div>
     </div>
 </div>

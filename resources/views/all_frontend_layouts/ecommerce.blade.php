@@ -287,7 +287,7 @@
             </div>
         </div>
         <div class="col-lg-9">
-            <div id="promoCarousel" class="carousel slide rounded-2 shadow-sm" data-bs-ride="carousel">
+            <div id="promoCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
                 <div class="carousel-inner">
                     @foreach ($banners as $index => $banner)
                     <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
