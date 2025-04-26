@@ -87,12 +87,14 @@
     <div class="owl-carousel owl-theme sliders mt-4">
         @foreach ($banners as $banner)
         <div class="item mb-2 position-relative">
+            <a href="{{ $banner->link }}" target="_blank" class="text-decoration-none text-white">
             <img src="{{ asset('storage/' . $banner->image) }}" alt="Product 1" class="img-fluid">
             <div class="overlay-text position-absolute text-white p-3">
                 <h3>{{ $banner->title }}</h3>
                 <p>{{ $banner->description }}</p>
                 <a href="{{ $banner->link }}" class="btn bg-primary text-white" target="_blank">Buy Now</a>
             </div>
+        </a>
         </div>
         @endforeach
     </div>
