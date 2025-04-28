@@ -4,6 +4,7 @@
     use App\Models\Restaurant\Product;
     use App\Models\AppSetting;
     $appsetting = AppSetting::first();
+    use Illuminate\Support\Facades\Storage;
 
 @endphp
 <head>

@@ -87,9 +87,13 @@
     <div class="owl-carousel owl-theme sliders mt-4">
         @foreach ($banners as $banner)
         <div class="item mb-2 position-relative">
-            <a href="{{ $banner->link }}" target="_blank" class="text-decoration-none text-white">
-            <img src="{{ asset('storage/' . $banner->image) }}" alt="Product 1" class="img-fluid">
-            <div class="overlay-text position-absolute text-white p-3">
+            <a href="{{ $banner->link }}" target="_blank" class="text-decoration-none text-white">    
+                    @if ($banner && $banner->image && Storage::exists('public/' . $banner->image))
+                        <img src="{{ asset('storage/' . $banner->image) }}" alt="{{ $banner->link }}" class="img-fluid">
+                    @else
+                        <img src="{{asset('no_banner.png') }}" class="img-fluid" alt="{{ $banner->link }}"> <!-- Optionally display a fallback message or image -->
+                    @endif
+                 <div class="overlay-text position-absolute text-white p-3">
                 <h3>{{ $banner->title }}</h3>
                 <p>{{ $banner->description }}</p>
                 <a href="{{ $banner->link }}" class="btn bg-primary text-white" target="_blank">Buy Now</a>
