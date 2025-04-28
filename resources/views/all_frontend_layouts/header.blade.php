@@ -137,6 +137,11 @@
         </div>
 
         <div class="d-flex align-items-center">
+            <!-- Modal trigger button -->
+            <button type="button" class="btn btn-outline-primary btn-sm mx-2" data-bs-toggle="modal" data-bs-target="#customOrder">
+                Custom Order
+            </button>
+            @include('all_frontend_layouts.custom_order.index')            
             @php
                 $wishlistCount = Auth::check() ? \App\Models\Restaurant\Wishlist::where('user_id', Auth::id())->count() : 0;
                 $ecommerce_wishlistCount = Auth::check() ? \App\Models\Wishlist::where('user_id', Auth::id())->count() : 0;
@@ -226,6 +231,7 @@
 
         <!-- Wishlist, Cart, and Sign-in -->
         <div class="d-flex align-items-center">
+
             <a href="whishlist.html" class="text-decoration-none me-3 text-primary">
                 <i class="bi bi-heart" style="font-size: 18px;"></i>
             </a>

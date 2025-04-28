@@ -101,6 +101,7 @@ use App\Http\Controllers\Ecommerce\Frontend\CartController as FrontendCartContro
 use App\Http\Controllers\Ecommerce\Frontend\CategoriesController as FrontendCategoriesController;
 use App\Http\Controllers\Ecommerce\Frontend\CheckoutController as FrontendCheckoutController;
 use App\Http\Controllers\Ecommerce\Frontend\CmsController as FrontendCmsController;
+use App\Http\Controllers\Ecommerce\Frontend\CustomController;
 use App\Http\Controllers\Ecommerce\Frontend\DeliveryAddressController;
 use App\Http\Controllers\Ecommerce\Frontend\FrontendController as EcommerceFrontendFrontendController;
 use App\Http\Controllers\Ecommerce\Frontend\NewslettersController;
@@ -1000,9 +1001,6 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 
-Route::get('track-custom-order', [CustomOrderController::class, 'index'])->name('track-custom-order');
-Route::match(['GET', 'POST'], 'check-custom-order', [CustomOrderController::class, 'checkcustomorder'])->name('check_custom_order');
-Route::get('/custom-orders/{id}', [CustomOrderController::class, 'showOrderDetails'])->name('create_custom_order');
 
 // Route::get('track-custom-order',[CustomOrderController::class,'findcustomorder'])->name('track_custom_order');
 // Route::post('check-custom-order',[CustomOrderController::class,'checkcustomorder'])->name('check_custom_order');
@@ -1323,3 +1321,7 @@ Route::get('/cart/count', function () {
 })->name('cart.count');
 
 Route::get('/vendor/detail/{vendorid}', [VendorsController::class, 'vendorListing']);
+
+Route::get('track-custom-order', [CustomController::class, 'index'])->name('track-custom-order');
+Route::match(['GET', 'POST'], 'check-custom-order', [CustomController::class, 'checkcustomorder'])->name('check_custom_order');
+Route::get('/custom-orders/{id}', [CustomController::class, 'showOrderDetails'])->name('create_custom_order');
