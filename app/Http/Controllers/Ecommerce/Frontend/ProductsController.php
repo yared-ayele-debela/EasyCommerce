@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Ecommerce\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\FlashDeal;
+use App\Models\FlashDealProduct;
 use App\Models\Product;
 use App\Models\ProductAttribute;
 use App\Models\Rating;
@@ -30,7 +32,6 @@ class ProductsController extends Controller
 
         $productId = $product->id;
 
-        // Category details
         $categoryDetails = Category::categoryDetails($product->category->url);
 
         // Total available stock
@@ -122,5 +123,24 @@ class ProductsController extends Controller
         $name = "Discounted Produts";
 
         return view('Ecommerce.products.index', compact('products', 'name'));
+    }
+
+    public function flash(){
+        $now = \Carbon\Carbon::now('UTC');
+        $featured_flash_deal = FlashDeal::where('status', 1)
+            ->where('start_date', '<=', $now)
+            ->where('end_date', '>=', $now)
+            ->first();
+
+        $flash_deal_products = collect();
+        if ($featured_flash_deal) {
+            $flash_deal_ids = $featured_flash_deal->pluck('id');
+            $flash_deal_products = FlashDealProduct::with('product')
+                ->whereIn('flash_deal_id', $flash_deal_ids)
+                ->inRandomOrder()
+                ->get();
+        }
+        $name = "Flash Deal Products";
+        return view('Ecommerce.products.flash_sales', compact('flash_deal_products', 'name','featured_flash_deal'));
     }
 }

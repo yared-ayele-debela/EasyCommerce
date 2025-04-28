@@ -1285,6 +1285,7 @@ Route::prefix('/ecommerce')->group(function () {
     Route::get('/category/{id}', [FrontendCategoriesController::class, 'show'])->name('ecommerce.category.show');
     Route::get('/products/latest', [ProductsController::class, 'latest'])->name('ecommerce.products.latest');
     Route::get('/products/featured', [ProductsController::class, 'featured'])->name('ecommerce.products.featured');
+    Route::get('/flash-sales/products', [ProductsController::class, 'flash'])->name('ecommerce.products.flash.sales');
     Route::get('/product/{id}',[ProductsController::class, 'detail'])->name('ecommerce.product.detail');
     Route::get('/products/discounted', [ProductsController::class, 'discounted'])->name('ecommerce.products.discounted');
 
@@ -1300,6 +1301,7 @@ Route::prefix('/ecommerce')->group(function () {
     Route::post('/checkout', [FrontendCheckoutController::class, 'placeOrder'])->name('ecommerce.checkout.placeOrder');
 
 });
+
 
 Route::get('blogs', [BlogController::class, 'index'])->name('display-blogs');
 Route::get('blogs/details/{id}', [BlogController::class, 'details'])->name('blogs-details');
