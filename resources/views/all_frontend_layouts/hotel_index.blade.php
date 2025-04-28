@@ -88,7 +88,7 @@
         @foreach ($banners as $banner)
         <div class="item mb-2 position-relative">
             <a href="{{ $banner->link }}" target="_blank" class="text-decoration-none text-white">    
-                    @if ($banner && $banner->image && Storage::exists('public/' . $banner->image))
+                    @if ($banner && $banner->image && Storage::exists('public/' .$banner->image))
                         <img src="{{ asset('storage/' . $banner->image) }}" alt="{{ $banner->link }}" class="img-fluid">
                     @else
                         <img src="{{asset('no_banner.png') }}" class="img-fluid" alt="{{ $banner->link }}"> <!-- Optionally display a fallback message or image -->

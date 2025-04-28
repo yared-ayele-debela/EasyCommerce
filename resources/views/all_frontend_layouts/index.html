@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,274 +5,152 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hotel Filter</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <style>
-
+    /* Your existing styles */
     .filter-card {
-      border-radius: 1rem;
-      box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.1);
-      transition: box-shadow 0.3s ease;
+        border-radius: 1rem;
+        box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s ease;
     }
     .filter-card:hover {
-      box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
-    }
-    .filter-header {
-      font-weight: 600;
-      color: #37474f;
-    }
-    .form-control, .form-select, .form-check-input {
-      border-radius: 0.5rem;
-      transition: all 0.3s ease;
-    }
-    .form-control:focus, .form-select:focus {
-      box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-    }
-    .form-check-input:checked {
-      background-color: #0d6efd;
-      border-color: #0d6efd;
+        box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
     }
     .btn-primary {
-      border-radius: 0.5rem;
-      padding: 0.5rem 2rem;
-      font-weight: 500;
-      background: linear-gradient(45deg, #16d630, #16d630);
-      border: none;
-      transition: background 0.3s ease;
+        border-radius: 0.2rem;
+        padding: 0.2rem 0.5rem;
+        font-weight: 500;
+        background: linear-gradient(45deg, #16d630, #16d630);
+        border: none;
     }
     .btn-primary:hover {
         background: linear-gradient(45deg, #13b929, #0b9e1f);
     }
-    .btn-outline-primary {
-      border-radius: 2rem;
-      transition: background 0.3s ease, color 0.3s ease;
-    }
-    .btn-outline-primary:hover {
-      background-color: #007bff;
-      color: #fff;
-    }
-    label.form-label {
-      margin-bottom: 0.3rem;
+    /* Offcanvas customization */
+    .offcanvas-start {
+      width: 250px;
     }
   </style>
 </head>
+
 <body>
-  <div class="container py-5">
-    <div class="row justify-content-center">
-      <div class="col-lg-10">
-        <div class="card filter-card mb-4">
-          <div class="card-header border-0 bg-white rounded-circle d-flex justify-content-between align-items-center">
-            <h6 class="mb-0">Find Your Perfect Stay Hotel</h6>
-            <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="true" aria-controls="filterCollapse">
-              Toggle Filters
-            </button>
-          </div>
-          <div class="collapse" id="filterCollapse">
-            <div class="card-body p-4">
-              <form>
-                <div class="row g-3">
-                  <div class="col-md-4">
-                    <label for="destination" class="form-label filter-header">Destination</label>
-                    <input type="text" class="form-control" id="destination" placeholder="Enter city or hotel name">
-                  </div>
-
-                  <div class="col-md-4">
-                    <label for="checkin" class="form-label filter-header">Check-in</label>
-                    <input type="date" class="form-control" id="checkin">
-                  </div>
-
-                  <div class="col-md-4">
-                    <label for="checkout" class="form-label filter-header">Check-out</label>
-                    <input type="date" class="form-control" id="checkout">
-                  </div>
-
-                  <div class="col-md-3">
-                    <label for="guests" class="form-label filter-header">Guests</label>
-                    <select class="form-select" id="guests">
-                      <option selected>1 Guest</option>
-                      <option>2 Guests</option>
-                      <option>3 Guests</option>
-                      <option>4+ Guests</option>
-                    </select>
-                  </div>
-
-                  <div class="col-md-3">
-                    <label for="room-type" class="form-label filter-header">Room Type</label>
-                    <select class="form-select" id="room-type">
-                      <option selected>Any</option>
-                      <option>Single</option>
-                      <option>Double</option>
-                      <option>Suite</option>
-                    </select>
-                  </div>
-
-                  <div class="col-md-3">
-                    <label for="price-range" class="form-label filter-header">Price Range</label>
-                    <input type="range" class="form-range" id="price-range" min="50" max="500">
-                  </div>
-
-                  <div class="col-md-3">
-                    <label class="form-label filter-header">Rating</label>
-                    <div class="d-flex gap-2">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="rating1">
-                        <label class="form-check-label" for="rating1">1+</label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="rating2">
-                        <label class="form-check-label" for="rating2">2+</label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="rating3">
-                        <label class="form-check-label" for="rating3">3+</label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="rating4">
-                        <label class="form-check-label" for="rating4">4+</label>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="col-md-12">
-                    <label for="room-filter" class="form-label filter-header">Room Features</label>
-                    <div class="d-flex flex-wrap gap-3">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="feature1">
-                        <label class="form-check-label" for="feature1">Free WiFi</label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="feature2">
-                        <label class="form-check-label" for="feature2">Air Conditioning</label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="feature3">
-                        <label class="form-check-label" for="feature3">Balcony</label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="feature4">
-                        <label class="form-check-label" for="feature4">Kitchenette</label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="feature5">
-                        <label class="form-check-label" for="feature5">Bathtub</label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="d-flex justify-content-end mt-4">
-                  <button type="submit" class="btn btn-primary px-4">Search Hotels</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-        <div class="card filter-card">
-          <div class="card-header border-0 bg-white rounded-circle d-flex justify-content-between align-items-center">
-            <h6 class="mb-0">Find Your Perfect Stay Room</h6>
-            <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapses" aria-expanded="true" aria-controls="filterCollapses">
-              Toggle Filters
-            </button>
-          </div>
-          <div class="collapse" id="filterCollapses">
-            <div class="card-body p-4">
-              <form>
-                <div class="row g-3">
-                  <div class="col-md-4">
-                    <label for="destination" class="form-label filter-header">Destination</label>
-                    <input type="text" class="form-control" id="destination" placeholder="Enter city or hotel name">
-                  </div>
-
-                  <div class="col-md-4">
-                    <label for="checkin" class="form-label filter-header">Check-in</label>
-                    <input type="date" class="form-control" id="checkin">
-                  </div>
-
-                  <div class="col-md-4">
-                    <label for="checkout" class="form-label filter-header">Check-out</label>
-                    <input type="date" class="form-control" id="checkout">
-                  </div>
-
-                  <div class="col-md-3">
-                    <label for="guests" class="form-label filter-header">Guests</label>
-                    <select class="form-select" id="guests">
-                      <option selected>1 Guest</option>
-                      <option>2 Guests</option>
-                      <option>3 Guests</option>
-                      <option>4+ Guests</option>
-                    </select>
-                  </div>
-
-                  <div class="col-md-3">
-                    <label for="room-type" class="form-label filter-header">Room Type</label>
-                    <select class="form-select" id="room-type">
-                      <option selected>Any</option>
-                      <option>Single</option>
-                      <option>Double</option>
-                      <option>Suite</option>
-                    </select>
-                  </div>
-
-                  <div class="col-md-3">
-                    <label for="price-range" class="form-label filter-header">Price Range</label>
-                    <input type="range" class="form-range" id="price-range" min="50" max="500">
-                  </div>
-
-                  <div class="col-md-3">
-                    <label class="form-label filter-header">Rating</label>
-                    <div class="d-flex gap-2">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="rating1">
-                        <label class="form-check-label" for="rating1">1+</label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="rating2">
-                        <label class="form-check-label" for="rating2">2+</label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="rating3">
-                        <label class="form-check-label" for="rating3">3+</label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="rating4">
-                        <label class="form-check-label" for="rating4">4+</label>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="col-md-12">
-                    <label for="room-filter" class="form-label filter-header">Room Features</label>
-                    <div class="d-flex flex-wrap gap-3">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="feature1">
-                        <label class="form-check-label" for="feature1">Free WiFi</label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="feature2">
-                        <label class="form-check-label" for="feature2">Air Conditioning</label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="feature3">
-                        <label class="form-check-label" for="feature3">Balcony</label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="feature4">
-                        <label class="form-check-label" for="feature4">Kitchenette</label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="feature5">
-                        <label class="form-check-label" for="feature5">Bathtub</label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="d-flex justify-content-end mt-4">
-                  <button type="submit" class="btn btn-primary px-4">Search Hotels</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
+<header>
+  <!-- Top Bar -->
+  <div class="bg-light border-bottom py-2">
+    <div class="container d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+        <small class="me-3 text-muted"><i class="bi bi-telephone me-1"></i> +123 456 7890</small>
+        <small class="me-3 text-muted"><i class="bi bi-envelope me-1"></i> support@example.com</small>
+      </div>
+      <div class="d-flex align-items-center">
+        <!-- <div class="dropdown me-3">
+          <a class="text-muted dropdown-toggle text-decoration-none small" href="#" role="button"
+             data-bs-toggle="dropdown" aria-expanded="false">Language</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">English</a></li>
+            <li><a class="dropdown-item" href="#">Amharic</a></li>
+          </ul>
+        </div> -->
+            <a class="nav-link" href="{{ route('custom_order') }}">Custom Order</a>
       </div>
     </div>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Main Header -->
+  <div class="py-3 bg-white shadow-sm">
+    <div class="container d-flex align-items-center justify-content-between">
+      <!-- Logo -->
+      <a href="{{ route('home') }}" class="d-flex align-items-center text-decoration-none">
+        <img src="../../../banner2.png" alt="Logo" height="40">
+        <span class="ms-2 fw-bold text-dark fs-5">MyShop</span>
+      </a>
+
+      <!-- Search Bar -->
+      <form action="{{ route('search') }}" method="GET" class="d-none d-md-flex w-50 mx-4">
+        <div class="input-group">
+          <input type="text" class="form-control" name="query" placeholder="Search products...">
+          <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
+        </div>
+      </form>
+
+      <!-- Icons -->
+      <div class="d-flex align-items-center">
+        <a href="{{ route('wishlist') }}" class="btn btn-light position-relative me-2">
+          <i class="bi bi-heart fs-5"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">2</span>
+        </a>
+        <a href="{{ route('cart') }}" class="btn btn-light position-relative me-2">
+          <i class="bi bi-cart fs-5"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">5</span>
+        </a>
+        <a href="{{ route('profile') }}" class="btn btn-light">
+          <i class="bi bi-person-circle fs-5"></i>
+        </a>
+
+        <!-- Mobile Menu Button -->
+        <button class="btn btn-light d-lg-none ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu" aria-controls="mobileMenu">
+          <i class="bi bi-list fs-2"></i>
+        </button>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- Desktop Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-top shadow-sm d-none d-lg-block">
+    <div class="container">
+      <div class="collapse navbar-collapse show">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ route('blogs') }}">Blog</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ route('about') }}">About Us</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ route('contact') }}">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ route('vendors') }}">All Vendors</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Categories
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Electronics</a></li>
+              <li><a class="dropdown-item" href="#">Fashion</a></li>
+              <li><a class="dropdown-item" href="#">Home Appliances</a></li>
+            </ul>
+          </li>
+          
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Offcanvas Mobile Menu -->
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="mobileMenuLabel">Menu</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ route('blogs') }}">Blog</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ route('about') }}">About Us</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ route('contact') }}">Contact</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ route('vendors') }}">All Vendors</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdownMobile" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Categories
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Electronics</a></li>
+            <li><a class="dropdown-item" href="#">Fashion</a></li>
+            <li><a class="dropdown-item" href="#">Home Appliances</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+</header>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

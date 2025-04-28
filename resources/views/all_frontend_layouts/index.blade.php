@@ -1,6 +1,5 @@
 @extends('all_frontend_layouts.layouts')
 @section('content')
-
 <div class="container py-2">
     <div class="row d-flex justify-content-center align-items-center pt-3">
         <div class="custom-nav-container">
@@ -12,7 +11,6 @@
         </div>
     </div>
 </div>
-
 <div class="container-fluid mb-2">
     <div class="owl-carousel owl-theme sliders mt-4">
         @foreach ($banners as $banner)
@@ -31,6 +29,7 @@
        @endforeach
     </div>
 </div>
+
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center">
         <h4 class="mt-5 mb-2">Categories</h4>
@@ -53,8 +52,8 @@
 
     @include('all_frontend_layouts.add_to_cart_modal')
     <div class="d-flex justify-content-between align-items-center">
-        <h4 class="mt-5 mb-2">Special Offers</h4>
-        <h5 class="mt-5 mb-2">
+        <h4 class="mt-3 mb-2">Special Offers</h4>
+        <h5 class="mt-3 mb-2">
             <form action="{{ route('all-restaurant-products') }}" method="GET">
                 @csrf
                 <input type="hidden" name="type" value="specail_offer">
@@ -64,7 +63,6 @@
             </form>
         </h5>
     </div>
-
     <div class="row g-3">
         <div class="owl-carousel owl-theme products mt-4">
             @foreach ($products as $product)
@@ -75,7 +73,7 @@
                             $off = $product->price - $product->getFinalPrice();
                         @endphp
                         @if($off > 0)
-                            <div class="badge-offer">
+                            <div class="btn btn-sm btn-primary">
                                 {{ $off }} ETB OFF
                             </div>
                         @endif
@@ -107,7 +105,6 @@
         <h4 class="mt-5 mb-2">Most Popular</h4>
         <h5 class="mt-5 mb-2">
             <form action="{{ route('all-restaurant-products') }}" method="GET">
-
                 @csrf
                 <input type="hidden" name="type" value="most_popular">
                 <button type="submit" class="text-dark border-0 bg-white">
