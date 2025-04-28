@@ -107,6 +107,7 @@ use App\Http\Controllers\Ecommerce\Frontend\NewslettersController;
 use App\Http\Controllers\Ecommerce\Frontend\OrderController as EcommerceFrontendOrderController;
 use App\Http\Controllers\Ecommerce\Frontend\ProductsController;
 use App\Http\Controllers\Ecommerce\Frontend\VendorController as FrontendVendorController;
+use App\Http\Controllers\Ecommerce\Frontend\VendorsController;
 use App\Http\Controllers\Ecommerce\Frontend\WishlistController;
 use App\Http\Controllers\Front\AddressController as FrontAddressController;
 use App\Http\Controllers\Front\BlogsController as FrontBlogsController;
@@ -930,7 +931,6 @@ foreach ($catUrls as $key => $url) {
 Route::get('page/{url}', [FrontCmsController::class, 'pages'])->name('pages');
 //Product Details page
 Route::get('/product/{id}', [FrontProductController::class, 'detail'])->name('product_detail');
-Route::get('/products/{vendorid}', [FrontProductController::class, 'vendorListing']);
 Route::get('category/{id}', [FontendController::class, 'category']);
 
 Route::get('all-products', [FontendController::class, 'allproduct']);
@@ -1295,7 +1295,7 @@ Route::prefix('/ecommerce')->group(function () {
         Route::get('/orders/{id?}', [EcommerceFrontendOrderController::class, 'orders'])->name('ecommerce.order.detail');
     });
     Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
-    
+
     Route::get('/checkout', [FrontendCheckoutController::class, 'showOrderSummary'])->name('ecommerce.checkout.summary');
     Route::post('/checkout', [FrontendCheckoutController::class, 'placeOrder'])->name('ecommerce.checkout.placeOrder');
 
@@ -1319,3 +1319,5 @@ Route::get('/cart/count', function () {
         'total' => $sessionCount + $helperCount,
     ]);
 })->name('cart.count');
+
+Route::get('/vendor/detail/{vendorid}', [VendorsController::class, 'vendorListing']);

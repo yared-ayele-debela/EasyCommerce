@@ -356,7 +356,11 @@
                     </span>
                     @endif
                     <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
+                        @if($product['product_image'])
                         <img src="{{ asset('storage/products/' . $product['product_image']) }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
+                        @else
+                        <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
+                        @endif
                     </a>
                     <div class="card-body p-3">
                         <p class="text-muted small mb-1">{{ $product['product_code'] }} • {{ $product['product_color'] }}</p>
@@ -476,8 +480,11 @@
                     </span>
                     @endif
                     <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
+                        @if($product['product_image'])
                         <img src="{{ asset('storage/products/' . $product['product_image']) }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
-                    </a>
+                        @else
+                        <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
+                        @endif                    </a>
                     <div class="card-body p-3">
                         <p class="text-muted small mb-1">{{ $product['product_code'] }} • {{ $product['product_color'] }}</p>
                         <h6 class="fw-semibold mb-2">
@@ -544,7 +551,11 @@
                     </span>
                     @endif
                     <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
+                        @if($product['product_image'])
                         <img src="{{ asset('storage/products/' . $product['product_image']) }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
+                        @else
+                        <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
+                        @endif
                     </a>
                     <div class="card-body p-3">
                         <p class="text-muted small mb-1">{{ $product['product_code'] }} • {{ $product['product_color'] }}</p>
@@ -606,8 +617,11 @@
                     </span>
                     @endif
                     <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
+                        @if($product['product_image'])
                         <img src="{{ asset('storage/products/' . $product['product_image']) }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
-                    </a>
+                        @else
+                        <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
+                        @endif                    </a>
                     <div class="card-body p-3">
                         <p class="text-muted small mb-1">{{ $product['product_code'] }} • {{ $product['product_color'] }}</p>
                         <h6 class="fw-semibold mb-2">
@@ -681,10 +695,10 @@
                             {{ Str::limit($vendor->vendorbusinessdetails['shop_name'] ?? 'Shop Name not available', 40) }}
                         </p>
                         <div class="d-flex flex-wrap gap-2">
-                            <a href='/products/{{ $vendor->id }}' class="btn btn-sm btn-outline-primary ">
+                            <a href="{{ url('/vendor/detail/'.encrypt($vendor->id)) }}" class="btn btn-sm btn-outline-primary ">
                                 Products ({{ $vendor->products_count }})
                             </a>
-                            <a href='/products/{{ $vendor->id }}' class="btn btn-sm btn-outline-secondary ">
+                            <a href="{{ url('/vendor/detail/'.encrypt($vendor->id)) }}" class="btn btn-sm btn-outline-secondary ">
                                 Reviews ({{ $vendorRatingsCount[$vendor->id] ?? 0 }})
                             </a>
                         </div>
