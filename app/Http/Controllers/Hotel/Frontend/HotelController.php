@@ -88,9 +88,10 @@ class HotelController extends Controller
     ->where('is_active', true)
     ->take(8)
     ->get();
+    $check_all=false;
 
     // Render partial blade view and return as HTML
-    $html = view('Hotel.frontend.pages.hotel.partials.nearby-hotels', compact('hotels'))->render();
+    $html = view('Hotel.frontend.pages.hotel.partials.nearby-hotels', compact('hotels','check_all'))->render();
 
     return response()->json(['html' => $html]);
  }

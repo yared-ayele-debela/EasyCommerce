@@ -41,7 +41,6 @@
                 <img src="{{ asset('no-product-found..png') }}" class="img-fluid" style="max-width: 300px;" alt="No Products">
             </div>
             @else
-            {{-- Vendor Products --}}
             <div class="owl-carousel owl-theme ecommerce_products mt-4">
                 @foreach($vendorProducts as $product)
                 <div class="item mb-2 h-100">

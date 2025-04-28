@@ -9,10 +9,11 @@
             </button>
         </form>
     </h5>
-</div><div class="row">
-{{-- <div class="row"> --}}
+</div>
+<div class="row">
+    <div class="owl-carousel owl-theme hotel mt-4">
     @foreach ($hotels as $hotel)
-    <div class="col-md-3 my-2">
+    <div class="item my-2">
         <div class="offer-card h-100">
             <a href="{{ url('hotel/'.$hotel->id.'/detail') }}">
                 @if($hotel->banner_image)
@@ -30,12 +31,13 @@
                     Rating: <strong>{{ $hotel->rating }} <i class="bi bi-star-fill text-primary"></i></strong><br>
                     Distance: {{ round($hotel->distance, 1) }} km
                 </p>
-                <p class="card-text">{{ \Illuminate\Support\Str::limit($hotel->description, 60) }}</p>
+                <p class="card-text">hello{{ \Illuminate\Support\Str::limit($hotel->description, 60) }}</p>
             </div>
         </div>
     </div>
     @endforeach
-{{-- </div> --}}
+    </div>
+</div>
 @else
 <p>No hotels found nearby.</p>
 @endif

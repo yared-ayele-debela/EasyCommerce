@@ -285,7 +285,7 @@
         restaurants.forEach(restaurant => {
             container.innerHTML += `
                 <div class="col-md-6">
-                    <div class=" offer-card mb-3 p-2">
+                    <div class="offer-card mb-3 p-2">
                         <div class="row g-0">
                             <div class="col-md-6">
                             <a href="{{ url('restaurant/${restaurant.id}/detail') }}">
@@ -329,7 +329,23 @@
                     .then(data => {
                         const container = document.getElementById("nearby-hotels");
                         container.innerHTML = data.html; // server will send pre-rendered HTML
-                    });
+                        $('.owl-carousel.hotel').owlCarousel({
+                            loop: true,
+                            margin: 10,
+                            nav: false,
+                            responsive: {
+                                0: {
+                                    items: 1
+                                },
+                                600: {
+                                    items: 2
+                                },
+                                1000: {
+                                    items: 4
+                                }
+                            }
+                        });
+                });
             });
         } else {
             console.log("Geolocation not supported");
