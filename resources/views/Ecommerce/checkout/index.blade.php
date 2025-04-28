@@ -9,7 +9,7 @@
         <h5 class="my-4 text-dark text-center">Checkout</h5>
     </div>
 
-    <form id="placeOrderForm">
+    <form id="placeOrderForm" enctype="multipart/form-data">
         <div class="row">
             <div class="col-md-8">
                 @csrf

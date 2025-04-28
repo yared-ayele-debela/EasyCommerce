@@ -1,4 +1,9 @@
 <?php use App\Models\Product; ?>
+<style>
+    .checkout-btn{
+        width: 100% !important;
+    }
+</style>
 <div class="row g-4">
     <!-- Cart Table Section -->
     <div class="col-lg-8">
@@ -105,7 +110,7 @@
                 <strong>{{ App\Helper\Helper::currency_converter($total) }}</strong>
             </div>
             <div class="mb-2">
-                <button type="submit" class="checkout-btn border-0 bg-primary w-100 mt-3">
+                <button type="button" onclick="window.location='{{ url('ecommerce/checkout') }}'" class="checkout-btn border-0 bg-primary mt-3">
                     CHECKOUT
                 </button>
             </div>

@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class CheckoutController extends Controller
@@ -85,12 +86,27 @@ class CheckoutController extends Controller
     // Place the Order
     public function placeOrder(Request $request)
     {
-        $request->validate([
-            'address_id' => 'required',
-            'payment_gateway' => 'required',
-            'accept' => 'required',
-        ]);
+        dd($request->all());
+        if($request->payment_gateway==="manual"){
+            dd("cash");
+            $validator = Validator::make($request->all(), [
+                'payment_gateway' => 'required|string',
+                'address_id' => 'required|exists:delivery_address,id',
+                'bank_name' => 'nullable|string|max:255',
+                'transaction_number' => 'nullable|string|max:255',
+                'receipt' => 'nullable|file|mimes:jpeg,png,pdf|max:2048',
+                'accept' => 'required',
+            ]);
+        }else{
+            dd("other");
+            $request->validate([
+                'address_id' => 'required',
+                'payment_gateway' => 'required',
+                'accept' => 'required',
+            ]);
+        }        
 
+        dd("helldsf");
         $data = $request->all();
 
         $getCartItems = Cart::getCartItems();
