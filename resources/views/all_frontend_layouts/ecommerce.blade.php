@@ -322,7 +322,6 @@
 <div class="container-fluid pb-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold"><i class="bi bi-fire text-primary"></i> Flash Sales</h3>
-
         <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex gap-3 text-center bg-primary p-2 rounded rounded-1 shadow-sm">
                 <div><strong id="days" class=" text-white">03</strong>
@@ -341,11 +340,8 @@
             &nbsp;
             &nbsp;
             <a href="{{ route('ecommerce.products.flash.sales') }}" class="text-white btn btn-primary"><strong>All</strong></a>
-
         </div>
-
     </div>
-
     @if ($featured_flash_deal && $flash_deal_products->count())
     <div class="row g-4">
         <div class="owl-carousel owl-theme ecommerce_products mt-4">
