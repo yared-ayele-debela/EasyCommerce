@@ -12,7 +12,7 @@ class AmenityController extends Controller
     public function index()
     {
         $amenities = Amenity::latest()->paginate(10);
-        return view('hotel.dashboard.amenities.index', compact('amenities'));
+        return view('Hotel.dashboard.amenities.index', compact('amenities'));
     }
 
     public function store(Request $request)
