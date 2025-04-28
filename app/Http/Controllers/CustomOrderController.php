@@ -117,71 +117,68 @@ class CustomOrderController extends Controller
     }
 
     public function store_fast_order(Request $request)
-    {
-        try {
-            $validatedData = $request->validate([
-                'customer_name' => 'required|string',
-                'phone_number' => 'required|numeric',
-                'productname.*' => 'required|string',
-                'quantity.*' => 'required|string',
-                'description.*' => 'required|string',
-                'delivery_address.*' => 'required|string',
+{
+    try {
+        $validatedData = $request->validate([
+            'customer_name' => 'required|string',
+            'phone_number' => 'required|numeric',
+            'productname.*' => 'required|string',
+            'quantity.*' => 'required|string',
+            'description.*' => 'required|string',
+            'delivery_address.*' => 'required|string',
+        ]);
+
+        $rules = array(
+            'customer_name' => 'required|string',
+            'phone_number' => 'required|numeric',
+            'productname.*' => 'required|string',
+            'quantity.*' => 'required|string',
+            'description.*' => 'required|string',
+            'delivery_address.*' => 'required|string',
+        );
+
+        $error = Validator::make($request->all(), $rules);
+        if ($error->fails()) {
+            return response()->json([
+                'error'  => $error->errors()->all()
             ]);
-
-            $rules = array(
-                'customer_name' => 'required|string',
-                'phone_number' => 'required|numeric',
-                'productname.*' => 'required|string',
-                'quantity.*' => 'required|string',
-                'description.*' => 'required|string',
-                'delivery_address.*' => 'required|string',
-            );
-
-            $error = Validator::make($request->all(), $rules);
-            if ($error->fails()) {
-                return response()->json([
-                    'error'  => $error->errors()->all()
-                ]);
-            }
-
-            $order_number = str_pad(mt_rand(1, 9999), 8, '0', STR_PAD_LEFT);
-            $user_code = str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
-            $vendor_code = str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
-            // dd($user_code);
-            $order = CustomOrder::create([
-                'order_number'=>$order_number,
-                'user_code' => $user_code,
-                'customer_name' => $validatedData['customer_name'],
-                'phone_number' => $validatedData['phone_number'],
-            ]);
-            // dd($order);
-
-            // Iterate through the product details and insert into order_product table
-            foreach ($validatedData['productname'] as $key => $productName) {
-                CustomOrderProduct::create([
-                    'vendor_code' => $vendor_code,
-                    'order_id' => $order->id,
-                    'product_name' => $productName,
-                    'quantity' => $validatedData['quantity'][$key],
-                    'description' => $validatedData['description'][$key],
-                    'delivery_address' => $validatedData['delivery_address'][$key],
-                ]);
-            }
-            // $message = "Hello ";
-            // $messages='hello';
-            // $receiver= +251912651113;
-            // Email::sendSms($receiver,$messages);
-            Alert::toast("Custom Order placed successfully!", 'success');
-            return redirect()->back();
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Laravel's built-in validation exception
-            return redirect()->back()->withErrors($e->validator->errors())->withInput();
-
-        } catch (\Exception $e) {
-            // Log or handle the exception as needed
-            Alert::toast('something is wrong!!', 'error');
-            return redirect()->back();
         }
 
+        $order_number = str_pad(mt_rand(1, 9999), 8, '0', STR_PAD_LEFT);
+        $user_code = str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+        $vendor_code = str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+
+        $order = CustomOrder::create([
+            'order_number' => $order_number,
+            'user_code' => $user_code,
+            'customer_name' => $validatedData['customer_name'],
+            'phone_number' => $validatedData['phone_number'],
+        ]);
+
+        foreach ($validatedData['productname'] as $key => $productName) {
+            CustomOrderProduct::create([
+                'vendor_code' => $vendor_code,
+                'order_id' => $order->id,
+                'product_name' => $productName,
+                'quantity' => $validatedData['quantity'][$key],
+                'description' => $validatedData['description'][$key],
+                'delivery_address' => $validatedData['delivery_address'][$key],
+            ]);
+        }
+
+        return response()->json([
+            'success' => 'Custom Order placed successfully!'
+        ]);
+        
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return response()->json([
+            'error' => $e->validator->errors()->all()
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => 'Something went wrong!'
+        ]);
     }
+}
+
 }

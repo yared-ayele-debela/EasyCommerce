@@ -13,7 +13,7 @@
                 </div>
             </div>
             <div class="modal-body">
-                <form name="fast_orders" action="{{ route('store_custom_order') }}" method="POST" onsubmit="return validateForm()">
+                <form name="fast_orders" id="fast_orders" method="POST">
                     @csrf 
                 <div class="field_wrapper mb-1">
                     <div class="row mb-2">
@@ -59,6 +59,43 @@
     </div>
 </div>
 
+<script>
+    $(document).ready(function () {
+    // Form submission
+    $('#fast_orders').submit(function (e) {
+        e.preventDefault(); // Prevent default form submission
+        
+        $(".text-danger").text("");
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: "{{ route('store_custom_order') }}", // Your route here
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.error) {
+                    for (var i = 0; i < response.error.length; i++) {
+                        var errorMessage = response.error[i];
+                        showAlert('info',errorMessage);
+                    }
+                } else {
+                    showAlert('success',"Custom order placed successfully!");
+                    $('#fast_orders')[0].reset();
+                    $('#customOrder').modal('hide'); // Close the modal
+                    
+                }
+            },
+            error: function (xhr, status, error) {
+                // Display general error
+                showAlert('error',"An error occurred. Please try again.");
+            }
+        });
+    });
+});
+
+</script>
 <!-- Optional: Place to the bottom of scripts -->
 <script>
     const myModal = new bootstrap.Modal(
