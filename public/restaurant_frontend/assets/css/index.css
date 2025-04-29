@@ -299,6 +299,9 @@ input[type="number"] {
   .custom-switch{
     font-size:10px !important;
   }
+  .banner-box {
+    min-height: 200px !important;
+}
   .nav-link {
     text-decoration: none;
     margin: 0 0rem !important;
