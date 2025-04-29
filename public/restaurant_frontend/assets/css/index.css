@@ -299,6 +299,10 @@ input[type="number"] {
   .custom-switch{
     font-size:7px !important;
   }
+  .nav-link {
+    text-decoration: none;
+    margin: 0 0rem;
+  }
   .footer-image{
     width:150px;
   }
