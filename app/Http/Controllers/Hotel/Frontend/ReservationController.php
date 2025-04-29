@@ -59,7 +59,7 @@ class ReservationController extends Controller
             'status' => 'Pending', // Example status
             'payment_status' => 'Pending', // Example payment status
         ]);
-        
+
         if($request->input('discount_amount') > 0){
             $coupon = HotelCoupon::find($request->input('coupon_id'));
             if ($coupon) {
@@ -79,7 +79,7 @@ class ReservationController extends Controller
         Mail::to($reservation->user->email)->send(new ReservationConfirmationMail($reservation));
 
         // Redirect to a confirmation page or the hotel page
-        
+
         return redirect()->route('reservations.receipt', ['id' => encrypt($reservation->id)])
         ->with('success', 'Your reservation has been made successfully!');
 

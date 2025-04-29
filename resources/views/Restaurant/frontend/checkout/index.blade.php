@@ -129,7 +129,7 @@ use App\Models\Restaurant\Product;
                 </div>
                 <div class="d-flex justify-content-between mb-2">
                     <span><strong>Discount</strong></span>
-                    <span id="discount_value"><strong>-{{ $discount }} ETB</strong></span>
+                    <span id="discount_value"><strong> {{ $discount }} ETB</strong></span>
                 </div>
                 <div class="d-flex justify-content-between mb-2">
                     <span><strong>Delivery Fee</strong></span>
@@ -143,7 +143,7 @@ use App\Models\Restaurant\Product;
                 <div class="delivery-location mt-3 p-3">
                     <h6 class="fw-bold text-dark mb-2">Payment Method</h6>
                     <div class="payment-methods">
-                       
+
                         <label type="button" class="payment-method" data-bs-toggle="modal" data-bs-target="#modalId">
                             <input type="radio" name="payment_method" value="manual" class="d-none">
                             <img src="{{ asset('restaurant_frontend/bill.png') }}" width="40" alt="CBE">
@@ -458,7 +458,7 @@ use App\Models\Restaurant\Product;
             $("#placeOrderBtn").prop("disabled", false); // Enable Place Order button
         });
 
-       
+
 
         $('#country').change(function() {
             let countryId = $(this).val();

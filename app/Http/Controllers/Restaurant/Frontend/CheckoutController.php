@@ -31,8 +31,7 @@ class CheckoutController extends Controller
 
     public function placeOrder(Request $request)
     {
-        if($request->payment_method==="manual"){
-            // dd('manual');
+        if ($request->payment_method === "manual") {
             $validator = Validator::make($request->all(), [
                 'payment_method' => 'required|string',
                 'address_id' => 'required|exists:delivery_address,id',
@@ -40,7 +39,7 @@ class CheckoutController extends Controller
                 'transaction_number' => 'nullable|string|max:255',
                 'receipt' => 'nullable|file|mimes:jpeg,png,pdf|max:2048',
             ]);
-        }else{
+        } else {
             // dd("dot");
             $validator = Validator::make($request->all(), [
                 'payment_method' => 'required|string',
@@ -86,23 +85,23 @@ class CheckoutController extends Controller
                 ]);
             }
 
-            $payment= new OrderPaymentInfo();
-            $payment->restaurant_orders_id=$order->id;
-            $payment->user_id=Auth::id();
-            $payment->bank_name=$request->input('bank_name');
-            $payment->transaction_number=$request->input('transaction_number');
-            $payment->receipt=$request->file('receipt')->store('restaurant', 'public');;
-            $payment->amount_paid=$total;
-            $payment->save();
-
-
+            if ($request->payment_method === "manual") {
+                $payment = new OrderPaymentInfo();
+                $payment->restaurant_orders_id = $order->id;
+                $payment->user_id = Auth::id();
+                $payment->bank_name = $request->input('bank_name');
+                $payment->transaction_number = $request->input('transaction_number');
+                $payment->receipt = $request->file('receipt')->store('restaurant', 'public');;
+                $payment->amount_paid = $total;
+                $payment->save();
+            }
             Mail::to(Auth::user()->email)->send(new OrderConfirmationMail($order));
 
             DB::commit();
             session()->forget(['cart', 'cart_subtotal', 'discount']); // Clear cart session after successful order
 
             return redirect()->route('restaurant.order.success', ['order' => $order->id])
-            ->with('success', 'Your order has been placed successfully.');
+                ->with('success', 'Your order has been placed successfully.');
         } catch (\Exception $e) {
             DB::rollBack(); // Rollback transaction on error
             return back()->with('error', 'Something went wrong. Please try again.')->withErrors($e->getMessage());

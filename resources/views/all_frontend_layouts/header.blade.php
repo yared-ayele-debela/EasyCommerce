@@ -216,7 +216,7 @@ use Illuminate\Support\Facades\Storage;
                         <ul class="dropdown-menu dropdown-menu-end shadow">
                             <li><a class="dropdown-item" href="{{ url('user/account/update') }}"><i class="bi bi-gear text-primary"></i> My Profile</a></li>
                             <li><a class="dropdown-item" href="{{ url('my-orders') }}"><i class="bi bi-bag text-primary"></i> My Orders</a></li>
-                            <li><a class="dropdown-item" href="{{ url('user-addresses') }}"><i class="bi bi-geo-alt text-primary"></i> My Addresses</a></li>
+                            <li><a class="dropdown-item" href="{{ url('my-delivery-addresses') }}"><i class="bi bi-geo-alt text-primary"></i> My Addresses</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>

@@ -22,7 +22,7 @@
         <div class="card-body p-1">
             @if($addresses->isNotEmpty())
             <div class="table-responsive">
-                <table class="table table-striped align-middle">
+                <table class="table align-middle">
                     <thead class="">
                         <tr>
                             <th>#</th>
@@ -55,7 +55,7 @@
                                 <span class="badge bg-secondary">Inactive</span>
                                 @endif
                             </td>
-                          
+
                             <td>
                                 <form action="{{ route('user.addresses.destroy', $address->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this address?')">
                                     @csrf
@@ -170,7 +170,7 @@
                                     <label for="latitude" class="form-label">Latitude:</label>
                                     <input type="text" id="latitude" class="form-control" name="latitude" readonly>
                                     </div>
-                            
+
                                     <div class="col-md-6 mb-2">
                                         <label for="longitude" class="form-label">Longitude:</label>
                                        <input type="text" id="longitude" class="form-control" name="longitude" readonly>

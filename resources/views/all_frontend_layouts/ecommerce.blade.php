@@ -698,10 +698,10 @@
                             {{ Str::limit($vendor->vendorbusinessdetails['shop_name'] ?? 'Shop Name not available', 40) }}
                         </p>
                         <div class="d-flex flex-wrap gap-2">
-                            <a href="{{ url('/vendor/detail/'.encrypt($vendor->id)) }}" class="btn btn-sm btn-outline-primary ">
+                            <a href="{{ url('/vendor/detail/'.encrypt($vendor->id)) }}" class="btn btn-sm btn-primary ">
                                 Products ({{ $vendor->products_count }})
                             </a>
-                            <a href="{{ url('/vendor/detail/'.encrypt($vendor->id)) }}" class="btn btn-sm btn-outline-secondary ">
+                            <a href="{{ url('/vendor/detail/'.encrypt($vendor->id)) }}" class="btn btn-sm btn-outline-primary ">
                                 Reviews ({{ $vendorRatingsCount[$vendor->id] ?? 0 }})
                             </a>
                         </div>

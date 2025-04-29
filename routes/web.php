@@ -1214,7 +1214,7 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/addresses/{id}', [UserDeliveryAddressController::class, 'destroy'])->middleware('auth');
 
-    Route::get('/user-addresses', [DeliveryAddressController::class, 'index'])->name('user.addresses.index');
+    Route::get('/my-delivery-addresses', [DeliveryAddressController::class, 'index'])->name('user.addresses.index');
     Route::delete('/user-addresses/{id}', [DeliveryAddressController::class, 'destroy'])->name('user.addresses.destroy');
     // account detail
     Route::put('user/account/update', [UserController::class, 'updateAccountDetails'])->name('user.account.update');
