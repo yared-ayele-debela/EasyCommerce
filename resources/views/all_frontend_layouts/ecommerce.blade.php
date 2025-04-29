@@ -291,7 +291,7 @@
                 <div class="carousel-inner">
                     @foreach ($banners as $index => $banner)
                     <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                        <div class="d-flex align-items-center {{ $index % 2 === 0 ? 'text-white' : 'text-dark' }}" style="min-height: 400px;border-radius:6px; background: url('{{ asset('/storage/banner/' . $banner['image']) }}') center center / cover no-repeat;">
+                        <div class="d-flex align-items-center banner-box {{ $index % 2 === 0 ? 'text-white' : 'text-dark' }}" style="border-radius:6px; background: url('{{ asset('/storage/banner/' . $banner['image']) }}') center center / cover no-repeat;">
                             <div class="container py-5 px-4">
                                 <h1 class="display-6 fw-bold">{{ $banner['title'] ?? 'Promotion' }}</h1>
                                 <p class="lead">{{ $banner['alt'] ?? 'Don’t miss out on our latest offers!' }}</p>
@@ -522,7 +522,7 @@
 
     @if(isset($fixbanners[0]['image']))
     <a href="{{ $fixbanners[0]['link']}}" target="_blank">
-        <div class="hero rounded-3 my-2 p-4" style="background:url({{ asset('/storage/banner/'.$fixbanners[0]['image']) }});height:300px;" class="img-fluid">
+        <div class="hero rounded-3 my-2 p-4 fix-banner-box" style="background:url({{ asset('/storage/banner/'.$fixbanners[0]['image']) }});" class="img-fluid">
         </div>
     </a>
     @endif
@@ -658,7 +658,7 @@
 
     @if(isset($fixbanners[1]['image']))
     <a href="{{ $fixbanners[1]['link']}}" target="_blank">
-        <div class="hero rounded-3 my-2 p-4" style="background:url({{ asset('/storage/banner/'.$fixbanners[1]['image']) }});height:300px;" class="img-fluid">
+        <div class="hero rounded-3 my-2 p-4 fix-banner-box" style="background:url({{ asset('/storage/banner/'.$fixbanners[1]['image']) }});" class="img-fluid">
         </div>
     </a>
     @endif
