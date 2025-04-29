@@ -256,7 +256,7 @@
                         <i class="bi bi-toggle-on text-primary" style="font-size: 20px;"></i>
                     </div>
                 </div>
-                <ul class="list-group list-group-flush category-list " id="categoryList">
+                <ul class="list-group list-group-flush category-list d-none d-lg-block" id="categoryList">
                     @foreach ($group as $group)
                     @if(count($group['categories']) > 0)
                     <li class="list-group-item position-relative">
