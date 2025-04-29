@@ -14,7 +14,7 @@ class FrontendController extends Controller
 {
     //
 
-    public function index()
+    public function index(Request $request)
     {
 
         $banners = SliderBanner::where('is_active', 1)->get();
@@ -27,6 +27,17 @@ class FrontendController extends Controller
         $best_seller_products=Product::where('best_seller',1)->latest()->get();
         $latest_products=Product::latest()->get();
         $restaurants= Restaurant::where('is_active',1)->get();
-        return view('all_frontend_layouts.index', compact('banners', 'categories', 'menus', 'products','restaurants','most_popular_products','best_seller_products','latest_products'));
+
+        $auto_restaurants=Restaurant::where('is_active',1)->latest()->paginate(4);
+
+        $auto_scroll_products = Product::where('is_active', 1)
+            ->latest()
+            ->paginate(12);
+
+        if ($request->ajax()) {
+            return view('all_frontend_layouts.partials.product-cards', compact('auto_scroll_products'))->render();
+        }
+
+        return view('all_frontend_layouts.index', compact('banners', 'categories', 'menus','auto_restaurants', 'products','restaurants','most_popular_products','auto_scroll_products','best_seller_products','latest_products'));
     }
 }

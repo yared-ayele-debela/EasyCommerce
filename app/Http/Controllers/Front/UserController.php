@@ -50,7 +50,7 @@ class UserController extends Controller
                 'name' => 'required|string',
                 'phone' => 'required|string',
                 'emails' => 'required|',
-                'passwords' => 'required|min:8|confirmed',
+                'password' => 'required|min:8|confirmed',
             ]);
 
             $email = $request->input('emails');
@@ -73,7 +73,7 @@ class UserController extends Controller
             $user->name = $request->input('name');
             $user->mobile = $request->input('mobile');
             $user->email = $request->input('emails');
-            $user->password = bcrypt($request->input('passwords'));
+            $user->password = bcrypt($request->input('password'));
             $user->status = 1;
             $user->save();
 

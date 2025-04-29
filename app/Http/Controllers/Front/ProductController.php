@@ -234,7 +234,7 @@ class ProductController extends Controller
     public function detail($id)
     {
         try {
-           
+
 
             $appsettings = AppSetting::all()->toArray();
             $cms_pages = CmsPage::get()->toArray();
@@ -547,7 +547,7 @@ class ProductController extends Controller
                         $productIds = Product::select('id')->where('vendor_id', $couponDetails->vendor_id)->pluck('id')->toArray();
                         foreach ($getCartItems as $item) {
                             if (!in_array($item['product']['id'], $productIds)) {
-                                $message = "This coupon code is not for for you. Try with valid coupon code (vendor validation)!";
+                                $message = "This coupon code is not for you. Try with valid coupon code (vendor validation)!";
                             }
                         }
                     }
@@ -652,7 +652,7 @@ class ProductController extends Controller
                 // Add tax to total tax
                 $totalTax += $tax_amount;
             }
-            
+
 
             if ($request->isMethod('post')) {
                 $data = $request->all();
@@ -862,7 +862,7 @@ class ProductController extends Controller
                 if ($data['payment_gateway'] == "Paypal") {
                     return redirect()->route('paypal', compact('appsettings'));
                 }
-                
+
                 Alert::toast('Order successfully placed!', 'success');
                 return redirect()->route('thanks', compact('appsettings'));
             }
@@ -890,7 +890,7 @@ class ProductController extends Controller
     public function thanks()
     {
         try {
-           
+
 
             if (Session::has('order_id')) {
                 Cart::where('user_id', Auth::user()->id)->delete();

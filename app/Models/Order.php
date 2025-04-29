@@ -11,8 +11,8 @@ use Illuminate\Support\Facades\DB;
 class Order extends Model
 {
     use HasFactory;
-    protected $table='orders';
-    protected $fillable=['order_id','order_item_id','order_status','reason','updated_by'];
+    protected $table = 'orders';
+    protected $fillable = ['order_id', 'order_item_id', 'order_status', 'reason', 'updated_by'];
 
 
     public function deliveryBoy()
@@ -25,40 +25,44 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function orders_products(){
+    public function orders_products()
+    {
 
-      return $this->hasMany('App\Models\OrderProduct','order_id');
+        return $this->hasMany('App\Models\OrderProduct', 'order_id');
     }
 
-    public static function getOrderStatus($order_id){
-        $getOrderStatus=Order::select('order_status')->where('id',$order_id)->first();
+    public static function getOrderStatus($order_id)
+    {
+        $getOrderStatus = Order::select('order_status')->where('id', $order_id)->first();
         return $getOrderStatus->order_status;
     }
 
-    public static function countOrdersForVendor($vendorId) {
+    public static function countOrdersForVendor($vendorId)
+    {
         $ordersCount = DB::table('orders')
-        ->join('orders_products', 'orders.id', '=', 'orders_products.order_id')
-        ->where('orders_products.vendor_id', $vendorId)
-        ->count();
+            ->join('orders_products', 'orders.id', '=', 'orders_products.order_id')
+            ->where('orders_products.vendor_id', $vendorId)
+            ->count();
 
         return $ordersCount;
     }
 
 
     //to count order return request for vendor
-    public static function countReturnRequestForVendor($vendorId){
+    public static function countReturnRequestForVendor($vendorId)
+    {
 
-        $vendor_type=Auth::guard('admin')->user()->type;
+        $vendor_type = Auth::guard('admin')->user()->type;
 
-        if($vendor_type=="vendor"){
+        if ($vendor_type == "vendor") {
             $order = DB::table('orders')
-            ->join('orders_products', 'orders.id', '=', 'orders_products.order_id')
-            ->where('orders_products.vendor_id', $vendorId)->get();
-            $count=0;
+                ->join('orders_products', 'orders.id', '=', 'orders_products.order_id')
+                ->where('orders_products.vendor_id', $vendorId)->get();
+            $count = 0;
             foreach ($order as $order) {
                 // Access each order's order_id here
-                $return_request = ReturnRequest::where('order_id',$order->order_id)->get()->toArray();
-                if($return_request){
+                $return_request = ReturnRequest::where('order_id', $order->order_id)->get()->toArray();
+                if ($return_request) {
                     $count++;
                 }
             }
@@ -66,15 +70,15 @@ class Order extends Model
         }
     }
 
-    public static function checkOrderProductAvalible($id){
+    public static function checkOrderProductAvalible($id)
+    {
         $orderDetails = Order::with('orders_products')->where('id', $id)->first()->toArray();
-        foreach($orderDetails['orders_products'] as $product){
-            if($product['item_status']!="Return Initiated"){
+        foreach ($orderDetails['orders_products'] as $product) {
+            if ($product['item_status'] != "Return Initiated") {
                 return true;
-            }else{
+            } else {
                 continue;
             }
-
         }
         return false;
     }
@@ -111,85 +115,88 @@ class Order extends Model
 
 
     public function calculateProfits()
-     {
+    {
 
-    $orders = Order::all();
-    // Calculate current date and time
-    $now = Carbon::now();
+        $orders = Order::all();
+        // Calculate current date and time
+        $now = Carbon::now();
 
-    // Last week start date and end date
-    $lastWeekStartDate = $now->startOfWeek()->subWeek()->startOfDay();
-    $lastWeekEndDate = $now->startOfWeek()->subDay()->endOfDay();
+        // Last week start date and end date
+        $lastWeekStartDate = $now->startOfWeek()->subWeek()->startOfDay();
+        $lastWeekEndDate = $now->startOfWeek()->subDay()->endOfDay();
 
         // This week start date and end date
-    $thisWeekStartDate = $now->startOfWeek();
-    $thisWeekEndDate = $now->endOfWeek();
+        $thisWeekStartDate = $now->startOfWeek();
+        $thisWeekEndDate = $now->endOfWeek();
 
 
-    // This month start date and end date
-    $thisMonthStartDate = $now->startOfMonth();
-    $thisMonthEndDate = $now->endOfMonth();
+        // This month start date and end date
+        $thisMonthStartDate = $now->startOfMonth();
+        $thisMonthEndDate = $now->endOfMonth();
 
-    // Last month start date and end date
-    $lastMonthStartDate = $now->subMonth()->startOfMonth();
-    $lastMonthEndDate = $now->subMonth()->endOfMonth();
+        // Last month start date and end date
+        $lastMonthStartDate = $now->subMonth()->startOfMonth();
+        $lastMonthEndDate = $now->subMonth()->endOfMonth();
 
-    // This year start date and end date
-    $thisYearStartDate = $now->startOfYear();
-    $thisYearEndDate = $now->endOfYear();
+        // This year start date and end date
+        $thisYearStartDate = $now->startOfYear();
+        $thisYearEndDate = $now->endOfYear();
 
-    // Filter orders for last week
-    $lastWeekOrders = Order::where('created_at', '>', Carbon::now()->startOfWeek()->subWeek()->startOfDay())
-    ->where('created_at', '<', Carbon::now()->startOfWeek()->subDay()->endOfDay())
-    ->get();
-
-
-    $thisWeekOrders = Order::where('created_at', '>', Carbon::now()->startOfWeek())
-    ->where('created_at', '<', Carbon::now()->endOfWeek())
-    ->get();
-
-    // Filter orders for this month
-    $thisMonthOrders =  Order::where('created_at', '>', Carbon::now()->startOfMonth())
-    ->where('created_at', '<', Carbon::now()->endOfMonth())
-    ->get();
+        // Filter orders for last week
+        $lastWeekOrders = Order::where('created_at', '>', Carbon::now()->startOfWeek()->subWeek()->startOfDay())
+            ->where('created_at', '<', Carbon::now()->startOfWeek()->subDay()->endOfDay())
+            ->get();
 
 
-    // Filter orders for last month
-    $lastMonthOrders = Order::where('created_at', '>', Carbon::now()->subMonth()->startOfMonth())
-    ->where('created_at', '<', Carbon::now()->subMonth()->endOfMonth())
-    ->get();
+        $thisWeekOrders = Order::where('created_at', '>', Carbon::now()->startOfWeek())
+            ->where('created_at', '<', Carbon::now()->endOfWeek())
+            ->get();
+
+        // Filter orders for this month
+        $thisMonthOrders =  Order::where('created_at', '>', Carbon::now()->startOfMonth())
+            ->where('created_at', '<', Carbon::now()->endOfMonth())
+            ->get();
+
+
+        // Filter orders for last month
+        $lastMonthOrders = Order::where('created_at', '>', Carbon::now()->subMonth()->startOfMonth())
+            ->where('created_at', '<', Carbon::now()->subMonth()->endOfMonth())
+            ->get();
 
 
 
-    // Filter orders for this year
-    $thisYearOrders =Order::where('created_at', '>', Carbon::now()->startOfYear())
-    ->where('created_at', '<', Carbon::now()->subMonth()->endOfYear())
-    ->get();
+        // Filter orders for this year
+        $thisYearOrders = Order::where('created_at', '>', Carbon::now()->startOfYear())
+            ->where('created_at', '<', Carbon::now()->subMonth()->endOfYear())
+            ->get();
 
 
-    // Calculate profits for each period
-    $profitLastWeek = $this->calculateProfitForOrders($lastWeekOrders);
-    $profitthisWeek = $this->calculateProfitForOrders($thisWeekOrders);
-    $profitThisMonth = $this->calculateProfitForOrders($thisMonthOrders);
-    $profitLastMonth = $this->calculateProfitForOrders($lastMonthOrders);
-    $profitThisYear = $this->calculateProfitForOrders($thisYearOrders);
+        // Calculate profits for each period
+        $profitLastWeek = $this->calculateProfitForOrders($lastWeekOrders);
+        $profitthisWeek = $this->calculateProfitForOrders($thisWeekOrders);
+        $profitThisMonth = $this->calculateProfitForOrders($thisMonthOrders);
+        $profitLastMonth = $this->calculateProfitForOrders($lastMonthOrders);
+        $profitThisYear = $this->calculateProfitForOrders($thisYearOrders);
 
-    return [
-        'profit_this_week' => $profitthisWeek,
-        'profit_last_week' => $profitLastWeek,
-        'profit_this_month' => $profitThisMonth,
-        'profit_last_month' => $profitLastMonth,
-        'profit_this_year' => $profitThisYear,
-    ];
-}
+        return [
+            'profit_this_week' => $profitthisWeek,
+            'profit_last_week' => $profitLastWeek,
+            'profit_this_month' => $profitThisMonth,
+            'profit_last_month' => $profitLastMonth,
+            'profit_this_year' => $profitThisYear,
+        ];
+    }
 
-protected function calculateProfitForOrders($orders)
-{
-    $totalRevenue = $orders->sum('grand_total');
-    $totalCosts = $orders->sum('shipping_charges') + $orders->sum('tax_charge');
-    $profit = $totalRevenue - $totalCosts;
-    return $profit;
-}
+    protected function calculateProfitForOrders($orders)
+    {
+        $totalRevenue = $orders->sum('grand_total');
+        $totalCosts = $orders->sum('shipping_charges') + $orders->sum('tax_charge');
+        $profit = $totalRevenue - $totalCosts;
+        return $profit;
+    }
 
-
+    public function paymentInfo()
+    {
+        return $this->hasOne(EcommerceOrderPaymentInfo::class,'orders_id');
+    }
 }

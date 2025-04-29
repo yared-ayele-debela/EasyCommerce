@@ -16,6 +16,17 @@ class RestaurantController extends Controller
         $restaurants=Restaurant::where('is_active',1)->latest()->paginate(10);
         return view('Restaurant.frontend.pages.restaurants.index',compact('restaurants'));
     }
+    public function fetchRestaurant(Request $request)
+    {
+        $auto_restaurants=Restaurant::where('is_active',1)->latest()->paginate(4);
+
+        if ($request->ajax()) {
+            return view('all_frontend_layouts.partials.restaurant-cards', compact('auto_restaurants'))->render();
+        }
+
+        return view('all_frontend_layouts.index', compact('auto_restaurants'));
+    }
+
     public function detail($id)
     {
         $restaurant = Restaurant::with(['admin', 'images','ratings'])->where('id',$id)->first();

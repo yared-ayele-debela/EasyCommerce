@@ -160,7 +160,7 @@ use App\Models\Restaurant\Product;
                 , success: function(resp) {
                     // alert(resp.couponAmount);
                     if (resp.message != "") {
-                        alert(resp.message);
+                        showAlert('info',resp.message);
                     }
                     $(".totalCartItems").html(resp.totalCartItems);
                     $("#appendCartItems").html(resp.view);
@@ -175,7 +175,7 @@ use App\Models\Restaurant\Product;
                     }
                 }
                 , error: function() {
-                    alert("Error");
+                    showAlert('info','Error');
                 }
 
             })

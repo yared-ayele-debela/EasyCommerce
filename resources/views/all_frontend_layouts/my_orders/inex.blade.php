@@ -250,7 +250,7 @@ use App\Models\Order;
                                                 #{{ $order['id'] }}
                                             </a>
                                         </h5>
-                
+
                                         <p class="mb-2">
                                             <span class="fw-semibold text-muted">Ordered Products:</span><br>
                                             @foreach ($order['orders_products'] as $product)
@@ -266,7 +266,7 @@ use App\Models\Order;
                                                 data-bs-target="#goodsorderDetails{{ $order->id }}">
                                             View Ordered Products
                                         </button>
-                
+
                                         <div id="goodsorderDetails{{ $order->id }}" class="collapse mt-3">
                                             <div class="border rounded-2 p-2 bg-light">
                                                 @foreach ($order['orders_products'] as $product)
@@ -285,9 +285,46 @@ use App\Models\Order;
                                                 @endforeach
                                             </div>
                                         </div>
-                
-                                        <div class="mt-3 d-flex justify-content-end">
-                                            <a href="{{ url('ecommerce/orders/'.encrypt($order['id'])) }}" class="btn btn-sm btn-primary">
+
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="text-start mt-3 d-flex justify-content-between align-items-center">
+                                                @if($order->paymentInfo)
+                                                <div class="d-flex justify-content-around align-items-center">
+                                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#Reservation{{ $order->id }}">
+                                                        <i class="bi bi-eye-fill"></i> Payment information
+                                                    </button> &nbsp;
+                                                </div>
+                                                <div class="modal fade" id="Reservation{{ $order->id }}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-scrollable" role="document">
+                                                        <div class="modal-content ">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Payment Detail</h5>
+                                                                <button type="button" class="close btn" data-bs-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body text-left">
+                                                                <p>Receipt:</p>
+                                                                @if($order->paymentInfo->receipt)
+                                                                <img src="{{ asset('storage/'.$order->paymentInfo->receipt) }}" class="img-fluid" alt="{{ $order->paymentInfo->bank_name }}">
+                                                                @else
+                                                                <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid" alt="{{ $order->paymentInfo->bank_name }}">
+                                                                @endif
+                                                                <p class="card-text"><strong>Bank Name :</strong> {{ $order->paymentInfo->bank_name }}</p>
+                                                                <p class="card-text"><strong>Transaction Number :</strong> <strong>{{ $order->paymentInfo->transaction_number }}</strong></p>
+                                                                <p class="card-text"><strong>Amount Paid :</strong> {{ $order->paymentInfo->amount_paid }} ETB</p>
+                                                                <p class="card-text text-dark"><strong>Payment Status :</strong> <span class="btn btn-sm btn btn-secondary">{{ $order->paymentInfo->payment_status }}</span></p>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                @else
+                                                @endif
+                                            </div>
+                                            <a href="{{ url('ecommerce/orders/'.encrypt($order['id'])) }}" class="btn btn-sm btn-primary mt-3">
                                                 <i class="fas fa-eye me-1"></i> View Full Order
                                             </a>
                                         </div>
@@ -295,7 +332,7 @@ use App\Models\Order;
                                 </div>
                             </div>
                         @endif
-                    @endforeach                
+                    @endforeach
             </div>
         </div>
     </div>

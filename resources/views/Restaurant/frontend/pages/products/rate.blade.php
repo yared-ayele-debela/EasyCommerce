@@ -1,5 +1,5 @@
 <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-dialog modal-dialog-centered ">
         <div class="modal-content shadow-lg border-0 rounded-4">
             <form id="ratingForm">
                 @csrf

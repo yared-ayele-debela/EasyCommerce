@@ -241,6 +241,45 @@
         </div>
     </div>
     <div class="d-flex justify-content-between align-items-center">
+        <h4 class="mt-5 mb-2">All Products</h4>
+    </div>
+
+    <div id="product-container" class="row g-4">
+        @include('all_frontend_layouts.partials.product-cards')
+    </div>
+    <div class="row d-flex justify-content-center align-items-center">
+        <div class="col-md-6 text-center">
+            <button onclick="loadMoreProducts()" class="btn btn-primary my-3 text-center"><i class="bi bi-arrow-counterclockwise"></i> Load More</button>
+        </div>
+    </div>
+
+    <div class="text-center my-1" id="loading" style="display: none;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+
+    <div class="d-flex justify-content-between align-items-center">
+        <h4 class="mt-5 mb-2">All Restaurants</h4>
+    </div>
+
+    <div id="auto-restaurant-container" class="row g-4">
+        @include('all_frontend_layouts.partials.restaurant-cards')
+    </div>
+    <div class="row d-flex justify-content-center align-items-center">
+        <div class="col-md-6 text-center">
+            <button onclick="loadMoreRestaurants()" class="btn btn-primary my-3 text-center"><i class="bi bi-arrow-counterclockwise"></i> Load More</button>
+        </div>
+    </div>
+
+    <div class="text-center my-1" id="restaurant_loading" style="display: none;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center">
         <h4 class="mt-5 mb-3">All Restaurants Nearby</h4>
         <h5 class="mt-5 mb-3"><a href="{{ url('restaurants') }}" class="text-dark">All</a></h5>
     </div>

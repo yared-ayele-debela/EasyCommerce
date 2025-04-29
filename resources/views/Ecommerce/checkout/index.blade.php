@@ -324,54 +324,65 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-      $('#placeOrderForm').on('submit', function(e) {
-        const selected = document.querySelector('input[name="payment_gateway"]:checked');
-        const error = document.getElementById('paymentErrors');
-        const addressError = document.getElementById('address-error');
+     $('#placeOrderForm').on('submit', function(e) {
+    e.preventDefault();
 
-        const selectedAddress = document.querySelector("input[name='address']:checked");
-        if (!selectedAddress) {
-            e.preventDefault(); // Stop form from submitting
-            addressError.style.display='block';
-        }else{
-            addressError.style.display='none';
-        }
-        if (!selected) {
-            e.preventDefault(); // Stop form from submitting
-            error.style.display = 'block'; // Show custom error
-        } else {
-            error.style.display = 'none'; // Hide error if selected
-        }
-        e.preventDefault();
-        $.ajax({
-            url: "{{ route('ecommerce.checkout.placeOrder') }}", // Replace with your actual route
-            method: "POST",
-            data: $(this).serialize(),
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            beforeSend: function() {
-                $('#orderResponse').text('Processing your order...');
-            },
-            success: function(response) {
-                const { status, data, message, redirect_url } = response;
-                if (status === 'error') {
-                    showAlert('error', data?.message || message || 'An error occurred.');
-                    if (redirect_url) window.location.href = redirect_url;
-                    return;
-                }
-                if (status === 'success') {
-                    showAlert('success', data?.message || message || 'Success!');
-                    if (redirect_url) window.location.href = redirect_url;
-                    return;
-                }
-                showAlert('info', message || 'Unexpected response received.');
-            },
-            error: function(xhr) {
-                
+    const form = this;
+
+    const selected = document.querySelector('input[name="payment_gateway"]:checked');
+    const error = document.getElementById('paymentErrors');
+    const addressError = document.getElementById('address-error');
+    const selectedAddress = document.querySelector("input[name='address']:checked");
+
+    if (!selectedAddress) {
+        addressError.style.display = 'block';
+        return;
+    } else {
+        addressError.style.display = 'none';
+    }
+
+    if (!selected) {
+        error.style.display = 'block';
+        return;
+    } else {
+        error.style.display = 'none';
+    }
+
+    // ✅ Use FormData to support file upload
+    const formData = new FormData(form);
+
+    $.ajax({
+        url: "{{ route('ecommerce.checkout.placeOrder') }}",
+        method: "POST",
+        data: formData,
+        processData: false, // Don't process the files
+        contentType: false, // Let the browser set it
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        beforeSend: function() {
+            $('#orderResponse').text('Processing your order...');
+        },
+        success: function(response) {
+            const { status, data, message, redirect_url } = response;
+            if (status === 'error') {
+                showAlert('error', data?.message || message || 'An error occurred.');
+                if (redirect_url) window.location.href = redirect_url;
+                return;
             }
-        });
+            if (status === 'success') {
+                showAlert('success', data?.message || message || 'Success!');
+                if (redirect_url) window.location.href = redirect_url;
+                return;
+            }
+            showAlert('info', message || 'Unexpected response received.');
+        },
+        error: function(xhr) {
+            showAlert('error', 'Something went wrong during order placement.');
+        }
     });
+});
+
 
     document.querySelectorAll('.payment-method').forEach(method => {
         method.addEventListener('click', function() {

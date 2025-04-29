@@ -224,8 +224,8 @@ use Illuminate\Support\Facades\Storage;
                         </ul>
                     </div>
                     @else
-                    <a href="{{ route('auth.login') }}" class="btn btn-light">
-                        <i class="bi bi-person-circle fs-5"></i>
+                    <a href="{{ route('auth.login') }}" class="btn btn-light btn-sm">
+                        <i class="bi bi-person-circle fs-5 text-primary"></i>
                     </a>
                     @endif
                     <button class="btn btn-light d-lg-none btn-sm ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu" aria-controls="mobileMenu">

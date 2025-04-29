@@ -1203,7 +1203,8 @@ Route::prefix('/restaurant')->group(function () {
     Route::post('/rate-restaurant-product', [FrontendRatingController::class, 'product_rating_store'])->name('restaurant.product.rate');
 });
 
-
+Route::get('all-restaurant-products',[FrontendProductController::class,'fetchProducts'])->name('fetch.products');
+Route::get('all-restaurants',[FrontendRestaurantController::class,'fetchRestaurant'])->name('fetch.restaurants');
 Route::middleware('auth')->group(function () {
     Route::get('/count-ecommerce-wishlist', function () {
         return response()->json(['count' => Auth::check() ? \App\Models\Wishlist::where('user_id', Auth::id())->count() : 0]);

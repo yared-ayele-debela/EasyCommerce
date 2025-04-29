@@ -12,10 +12,12 @@ use App\Models\CmsPage;
 use App\Models\Country;
 use App\Models\DeliveryAddress;
 use App\Models\Discount;
+use App\Models\EcommerceOrderPaymentInfo;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
 use App\Models\ProductAttribute;
+use App\Models\Restaurant\OrderPaymentInfo;
 use App\Models\SalesCommission;
 use App\Models\SalesMainCommission;
 use App\Models\ShippingCharge;
@@ -86,9 +88,9 @@ class CheckoutController extends Controller
     // Place the Order
     public function placeOrder(Request $request)
     {
-        dd($request->all());
+        // dd($request->all());
         if($request->payment_gateway==="manual"){
-            dd("cash");
+            // dd("cash");
             $validator = Validator::make($request->all(), [
                 'payment_gateway' => 'required|string',
                 'address_id' => 'required|exists:delivery_address,id',
@@ -98,15 +100,15 @@ class CheckoutController extends Controller
                 'accept' => 'required',
             ]);
         }else{
-            dd("other");
+            // dd("other");
             $request->validate([
                 'address_id' => 'required',
                 'payment_gateway' => 'required',
                 'accept' => 'required',
             ]);
-        }        
+        }
 
-        dd("helldsf");
+        // dd("helldsf");
         $data = $request->all();
 
         $getCartItems = Cart::getCartItems();
@@ -170,8 +172,6 @@ class CheckoutController extends Controller
             //prvent sold out product to order
             $getProductStock = ProductAttribute::isStokAvailable($item['product_id'], $item['size']);
             if ($getProductStock == 0) {
-                // Product::deleteCartProduct($item['product_id']);
-                // notify()->error('One of the product is sold out!','Please try again');
                 return response()->json([
                     'status' => 'error',
                     'message' => $item['product']['product_name'] . " with " . $item['size'] . " Size is not available. Please remove from cart and choose some other product.",
@@ -251,6 +251,17 @@ class CheckoutController extends Controller
         $order->save();
 
         $order_id = DB::getPdo()->lastInsertId();
+
+        if($request->payment_gateway==="manual"){
+        $payment= new EcommerceOrderPaymentInfo();
+        $payment->orders_id=$order_id;
+        $payment->user_id=Auth::id();
+        $payment->bank_name=$request->input('bank_name');
+        $payment->transaction_number=$request->input('transaction_number');
+        $payment->receipt=$request->file('receipt')->store('ecommerce', 'public');;
+        $payment->amount_paid=$grand_total;
+        $payment->save();
+        }
         foreach ($getCartItems as $item) {
             $cartItem = new OrderProduct();
             $cartItem->order_id = $order_id;
@@ -331,22 +342,6 @@ class CheckoutController extends Controller
 
 
         Mail::to($order->email)->send(new OrderPlaced($order, $pdfPath));
-
-        if ($data['payment_gateway'] == "COD") {
-            // $email = Auth::user()->email;
-            // $email_template = EmailTemplate::first();
-            // $messageData = [
-            //     'email_template' => $email_template,
-            //     'email' => $email,
-            //     'name' => Auth::user()->name,
-            //     'order_id' => $order_id,
-            //     'orderDetails' => $orderDetails
-            // ];
-            // Mail::send('emails.order', $messageData, function ($message) use ($email) {
-            //     $message->to($email)->subject('Order Placed');
-            // });
-        }
-
 
         return response()->json([
             'status' => 'success',

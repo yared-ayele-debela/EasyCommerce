@@ -103,6 +103,18 @@ class ProductController extends Controller
 }
 
 
+    public function fetchProducts(Request $request)
+    {
+        $auto_scroll_products = Product::where('is_active', 1)
+            ->latest()
+            ->paginate(12);
+
+        if ($request->ajax()) {
+            return view('all_frontend_layouts.partials.product-cards', compact('auto_scroll_products'))->render();
+        }
+
+        return view('all_frontend_layouts.index', compact('auto_scroll_products'));
+    }
 
     public function detail($id){
         $id=decrypt($id);

@@ -22,7 +22,7 @@ class OrderController extends Controller
         $user = auth()->user()->id;
         $user = User::findOrFail($user);
         $reservations = $user->reservations()->with(['hotel', 'room','hotel_reservation_payment_info'])->latest()->get();
-        $good_orders = ModelsOrder::with('orders_products')->where('user_id', Auth::user()->id)->latest()->get();
+        $good_orders = ModelsOrder::with('orders_products','paymentInfo')->where('user_id', Auth::user()->id)->latest()->get();
 
         return view('all_frontend_layouts.my_orders.inex', compact('orders','reservations','good_orders'));
     }

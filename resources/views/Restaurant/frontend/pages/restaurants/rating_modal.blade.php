@@ -1,5 +1,5 @@
 <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-dialog modal-dialog-centered modal">
         <div class="modal-content shadow-lg border-0 rounded-4">
             <form id="ratingForm">
                 @csrf
@@ -26,7 +26,7 @@
                 </div>
                 <input type="hidden" name="restaurant_id" id="restaurant_id" value="{{ $restaurant->id }}">
             </div>
-            <div class="modal-footer d-flex justify-content-center">
+            <div class="modal-footer d-flex justify-content-between">
                 <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancel</button>
                 <button type="submit" class="btn btn-primary px-4" id="submitRating">Submit</button>
             </div>
