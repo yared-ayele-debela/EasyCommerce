@@ -162,16 +162,15 @@
             @foreach ($related_products as $product)
             <div class="item my-2">
                 <div class="offer-card p-3 h-100">
-                    <a href="{{ url('restaurant/product-detail/'.$product->id) }}">
+                    <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}" class="text-decoration-none text-dark d-block">
                         @php
-                        $off=$product->price-$product->getFinalPrice();
+                            $off = $product->price - $product->getFinalPrice();
                         @endphp
-                        @if($off>0)
-                        <a class="bg-danger badge-offer" style="font-size: 12px;">
-                            {{ $off }}
-                            ETB OFF
-                        </a>
-                        @endif
+                        @if($off > 0)
+                            <div class="btn btn-sm btn-primary">
+                                {{ $off }} ETB OFF
+                            </div>
+                        @endif     
                         <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid mb-2" alt="{{ $product->name }}">
                         <h6 class="text-dark">{{ $product->name }}</h6>
                         <p class="mb-0">
@@ -180,7 +179,7 @@
                         </p>
                     </a>
                     <div class="hover-buttons">
-                        <button onclick="window.location.href='{{ url('restaurant/product-detail/'.$product->id) }}'" class="btn-view">
+                        <button onclick="window.location.href='{{ url('restaurant/product-detail/'.encrypt($product->id)) }}'" class="btn-view">
                             <i class="bi bi-eye-fill"></i>
                         </button>
                         <button class="btn-cart add-to-cart" data-product="{{ $product->id }}">

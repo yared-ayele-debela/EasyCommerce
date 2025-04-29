@@ -2,16 +2,16 @@
 @section('content')
 <div class="container my-4">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="page-lostpassword p-4 rounded shadow-sm">
-                <h2 class="account-h2 mb-3">Forgot Password?</h2>
-                <h6 class="account-h6 mb-4">Enter your email or username below and we will send you a link to reset your password.</h6>
+        <div class="col-lg-6">
+            <div class="offer-card p-4 rounded shadow-sm ">
+                <h2 class="account-h2 mb-3 text-dark text-center">Forgot Password?</h2>
+                <h6 class="account-h6 mb-4 text-dark text-center">Enter your email or username below and we will send you a link to reset your password.</h6>
                 <p id="forget-error" class="text-danger"></p>
                 <p id="forget-success" class="text-success"></p>
                 <form class="needs-validation" method="POST" action="javascript:;" id="forgetForm">
                     @csrf
                     <div class="mb-3">
-                        <label for="email" class="form-label">Username or Email <span class="text-danger">*</span></label>
+                        <label for="email" class="form-label text-left">Username or Email <span class="text-danger">*</span></label>
                         <input type="email" id="email" class="form-control" placeholder="Email" name="email" required>
                         <p id="forget-email" class="text-danger"></p>
                     </div>
