@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Storage;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurant</title>
     <link href="{{ asset('/storage/appsettings/'.$appsetting['favicon']) }}" rel="shortcut icon">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
@@ -49,21 +48,6 @@ use Illuminate\Support\Facades\Storage;
             padding: 5px;
             transition: all 0.3s ease-in-out;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .list-group-item {
-            transition: 0.3s ease-in-out;
-            background: rgba(132, 254, 123, 0.2) !important;
-            /* Semi-transparent */
-            backdrop-filter: blur(10px) !important;
-            /* Apply blur effect */
-            color: rgb(36, 36, 36);
-        }
-
-
-        .list-group-item:hover {
-            background-color: #f8f9fa;
-            cursor: pointer;
         }
 
         .toggle-btn {

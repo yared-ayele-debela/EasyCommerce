@@ -293,27 +293,27 @@ $appsettings=AppSetting::all()->toArray();
 
 </script>
 <script>
-    // Toggle subcategories on click for mobile
-    document.addEventListener('DOMContentLoaded', function() {
-        if (window.innerWidth < 992) {
-            document.querySelectorAll('.category-list li').forEach(item => {
-                item.addEventListener('click', function(e) {
-                    // Prevent toggling when clicking inside dropdown
-                    if (e.target.closest('.subcategory-dropdown')) return;
+    document.addEventListener('DOMContentLoaded', function () {
+      // Only apply on mobile screen sizes
+        const categoryItems = document.querySelectorAll('#categoryList > li');
 
-                    // Close others
-                    document.querySelectorAll('.category-list li').forEach(li => {
-                        if (li !== item) li.classList.remove('active');
-                    });
-
-                    // Toggle current
-                    item.classList.toggle('active');
-                });
+        categoryItems.forEach(function (item) {
+          item.addEventListener('click', function (e) {
+            e.stopPropagation();
+    
+            categoryItems.forEach(function (el) {
+              if (el !== item) {
+                el.classList.remove('active');
+              }
             });
-        }
+    
+            // Toggle current item
+            item.classList.toggle('active');
+          });
+        });
+      
     });
-
-</script>
+    </script>
 <script>
     const toggleIcon = document.querySelector("#categoryToggle i");
     const categoryList = document.getElementById("categoryList");

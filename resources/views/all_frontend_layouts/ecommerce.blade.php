@@ -160,7 +160,7 @@
     }
 
     .subcategory-dropdown {
-        background: #F0F5FA;
+        background: #ffffff;
         border: 1px solid #dee2e6;
         padding: 10px;
         display: none;
@@ -182,7 +182,7 @@
     }
 
     .subcategory-dropdown li a:hover {
-        color: #4e54c8;
+        color: #27b40b;
         font-weight: 500;
     }
 
@@ -232,7 +232,7 @@
     }
 
 </style>
-<div class="container py-2">
+<div class="container pt-2 pb-1">
     <div class="row d-flex justify-content-center align-items-center pt-3">
         <div class="custom-nav-container">
             <nav class="nav justify-content-between custom-nav p-2">
@@ -246,12 +246,12 @@
     </div>
 </div>
 
-<div class="container-fluid p-4">
+<div class="container-fluid p-2 p-md-4">
     <div class="row">
-        <div class="col-lg-3">
-            <div class="card border-1 shadow-sm">
+        <div class="col-lg-3 mb-2">
+            <div class="card border border-1 shadow-sm">
                 <div class="card-header bg-white pb-2 d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"> <i class="bi bi-list me-2 "></i>Categories</h5>
+                    <h5 class="mb-0"> <i class="bi bi-list text-primary me-2 "></i>Categories</h5>
                     <div id="categoryToggle" role="button">
                         <i class="bi bi-toggle-on text-primary" style="font-size: 20px;"></i>
                     </div>
@@ -262,7 +262,7 @@
                     <li class="list-group-item position-relative">
                         <i class="bi bi-phone me-2 text-primary"></i> {{$group['name']}}
                         <span class="badge bg-primary rounded-pill float-end">{{ $group['categories']->count() }}</span>
-                        <ul class="subcategory-dropdown z-3">
+                        <ul class="subcategory-dropdown">
                             <div class="row">
                                 @foreach ($group['categories'] as $category )
                                 <div class="col-4">
@@ -286,12 +286,12 @@
                 </ul>
             </div>
         </div>
-        <div class="col-lg-9">
-            <div id="promoCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+        <div class="col-lg-9 mb-2">
+            <div id="promoCarousel" class="carousel slide carousel-fade card shadow-sm" data-bs-ride="carousel">
                 <div class="carousel-inner">
                     @foreach ($banners as $index => $banner)
                     <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                        <div class="d-flex align-items-center {{ $index % 2 === 0 ? 'text-white' : 'text-dark' }}" style="min-height: 400px; background: url('{{ asset('/storage/banner/' . $banner['image']) }}') center center / cover no-repeat;">
+                        <div class="d-flex align-items-center {{ $index % 2 === 0 ? 'text-white' : 'text-dark' }}" style="min-height: 400px;border-radius:6px; background: url('{{ asset('/storage/banner/' . $banner['image']) }}') center center / cover no-repeat;">
                             <div class="container py-5 px-4">
                                 <h1 class="display-6 fw-bold">{{ $banner['title'] ?? 'Promotion' }}</h1>
                                 <p class="lead">{{ $banner['alt'] ?? 'Don’t miss out on our latest offers!' }}</p>
@@ -538,7 +538,6 @@
             </form>
         </div>
     </div>
-
     <div class="row g-4">
         <div class="owl-carousel owl-theme ecommerce_products mt-4">
             @foreach ($new_products as $product)
@@ -690,7 +689,6 @@
                             @endif
                         </div>
                     </div>
-
                     <div class="card-body pt-4">
                         <h5 class="fw-bold text-primary">{{ $vendor->name }}</h5>
 

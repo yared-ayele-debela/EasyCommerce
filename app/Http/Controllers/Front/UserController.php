@@ -362,7 +362,8 @@ class UserController extends Controller
             'password' => Hash::make($request->new_password),
         ]);
 
-        return redirect()->back()->with(['successs' => true, 'message' => 'Password updated successfully!']);
+        return redirect()->back()->with('success', 'Password updated successfully!');
+
     }
 
     // Update Account Details

@@ -1231,6 +1231,11 @@ Route::middleware('auth')->group(function () {
 
 });
 
+// routes/web.php
+
+Route::get('/test-500', function () {
+    abort(500); // This triggers the 500 error
+});
 
 Route::get('/restaurants/nearby', [FrontendRestaurantController::class, 'getNearbyRestaurants']);
 Route::get('/states/{countryId}', [UserDeliveryAddressController::class, 'getRegions']);

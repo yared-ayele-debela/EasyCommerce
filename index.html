@@ -6,6 +6,86 @@
   <title>E-Commerce Slider and Categories</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<!-- Custom Styles for Subcategory Dropdown -->
+<style>
+    .category-list {
+      position: relative;
+    }
+
+    .category-list li {
+      cursor: pointer;
+      position: relative;
+    }
+
+    .subcategory-dropdown {
+      background: #ffffff;
+      border: 1px solid #dee2e6;
+      padding: 10px;
+      display: none;
+      z-index: 1000;
+      border-radius: 0.5rem;
+      margin-top: 10px;
+    }
+
+    .subcategory-dropdown li {
+      list-style: none;
+      padding: 5px 10px;
+    }
+
+    .subcategory-dropdown li a {
+      text-decoration: none;
+      color: #333;
+      display: block;
+    }
+
+    .subcategory-dropdown li a:hover {
+      color: #4e54c8;
+      font-weight: 500;
+    }
+    .list-group-item.active {
+        z-index: 2;
+        color: rgb(63, 62, 62);
+        background-color: #ffffff !important ;
+        border-color: var(--bs-list-group-active-border-color);
+    }
+
+    /* Hover for desktop */
+    @media (min-width: 992px) {
+      .subcategory-dropdown {
+        position: absolute;
+        top: 0;
+        left: 100%;
+        min-width: 800px;
+        margin-top: 0;
+        border-left: none;
+        border-radius: 0 0.5rem 0.5rem 0;
+      }
+
+      .category-list li:hover .subcategory-dropdown {
+        display: block;
+      }
+    }
+
+    /* Click-to-toggle on mobile */
+    @media (max-width: 991.98px) {
+      .category-list li {
+        padding-bottom: 0.5rem;
+      }
+
+      .category-list li.active .subcategory-dropdown {
+        display: block;
+      }
+
+      .category-list li .toggle-icon {
+        float: right;
+        font-size: 1.1rem;
+        color: #666;
+        cursor: pointer;
+      }
+    }
+
+
+  </style>
 
 </head>
 <body>
@@ -194,7 +274,6 @@
         </div>
 
         <div class="row g-4">
-          <!-- Product Card Start -->
           <div class="col-md-3 col-lg-3">
             <div class="card position-relative border-0 shadow-sm">
               <span class="badge bg-success position-absolute top-0 start-0 m-2">-40%</span>
@@ -307,112 +386,34 @@
 
       </div>
 
-      <!-- Custom Styles for Subcategory Dropdown -->
-      <style>
-        .category-list {
-          position: relative;
-        }
-
-        .category-list li {
-          cursor: pointer;
-          position: relative;
-        }
-
-        .subcategory-dropdown {
-          background: #ffffff;
-          border: 1px solid #dee2e6;
-          padding: 10px;
-          display: none;
-          z-index: 1000;
-          border-radius: 0.5rem;
-          margin-top: 10px;
-        }
-
-        .subcategory-dropdown li {
-          list-style: none;
-          padding: 5px 10px;
-        }
-
-        .subcategory-dropdown li a {
-          text-decoration: none;
-          color: #333;
-          display: block;
-        }
-
-        .subcategory-dropdown li a:hover {
-          color: #4e54c8;
-          font-weight: 500;
-        }
-        .list-group-item.active {
-            z-index: 2;
-            color: rgb(63, 62, 62);
-            background-color: #ffffff !important ;
-            border-color: var(--bs-list-group-active-border-color);
-        }
-
-        /* Hover for desktop */
-        @media (min-width: 992px) {
-          .subcategory-dropdown {
-            position: absolute;
-            top: 0;
-            left: 100%;
-            min-width: 800px;
-            margin-top: 0;
-            border-left: none;
-            border-radius: 0 0.5rem 0.5rem 0;
-          }
-
-          .category-list li:hover .subcategory-dropdown {
-            display: block;
-          }
-        }
-
-        /* Click-to-toggle on mobile */
-        @media (max-width: 991.98px) {
-          .category-list li {
-            padding-bottom: 0.5rem;
-          }
-
-          .category-list li.active .subcategory-dropdown {
-            display: block;
-          }
-
-          .category-list li .toggle-icon {
-            float: right;
-            font-size: 1.1rem;
-            color: #666;
-            cursor: pointer;
-          }
-        }
-
-
-      </style>
 
       <!-- Bootstrap Icons -->
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Toggle subcategories on click for mobile
     document.addEventListener('DOMContentLoaded', function () {
-      if (window.innerWidth < 992) {
-        document.querySelectorAll('.category-list li').forEach(item => {
+      // Only apply on mobile screen sizes
+        const categoryItems = document.querySelectorAll('#categoryList > li');
+
+        categoryItems.forEach(function (item) {
           item.addEventListener('click', function (e) {
-            // Prevent toggling when clicking inside dropdown
-            if (e.target.closest('.subcategory-dropdown')) return;
-
-            // Close others
-            document.querySelectorAll('.category-list li').forEach(li => {
-              if (li !== item) li.classList.remove('active');
+            e.stopPropagation();
+    
+            categoryItems.forEach(function (el) {
+              if (el !== item) {
+                el.classList.remove('active');
+              }
             });
-
-            // Toggle current
+    
+            // Toggle current item
             item.classList.toggle('active');
           });
         });
-      }
+      
     });
-  </script>
+    </script>
+    
   <script>
     const toggleIcon = document.querySelector("#categoryToggle i");
     const categoryList = document.getElementById("categoryList");

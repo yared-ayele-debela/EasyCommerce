@@ -2,16 +2,17 @@
 
 namespace App\Exceptions;
 
+
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Session\TokenMismatchException;
 use Throwable;
+use Illuminate\Http\Response;
 
 class Handler extends ExceptionHandler
 {
-    /**
-     * The list of the inputs that are never flashed to the session on validation exceptions.
-     *
-     * @var array<int, string>
-     */
+    
     protected $dontFlash = [
         'current_password',
         'password',
@@ -27,4 +28,29 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+    public function render($request, Throwable $exception): Response
+    {
+        // 404 Not Found
+        if ($exception instanceof NotFoundHttpException) {
+            return response()->view('errors.404', [], 404);
+        }
+
+        // 419 Page Expired
+        if ($exception instanceof TokenMismatchException) {
+            return response()->view('errors.419', [], 419);
+        }
+
+        // 500 Internal Server Error (fallback for unexpected exceptions)
+        if ($this->isHttpException($exception)) {
+            if ($exception->getStatusCode() == 500) {
+                return response()->view('errors.500', [], 500);
+            }
+        } elseif (app()->environment('production')) {
+            return response()->view('errors.500', [], 500);
+        }
+
+        return parent::render($request, $exception);
+    }
+    
 }
