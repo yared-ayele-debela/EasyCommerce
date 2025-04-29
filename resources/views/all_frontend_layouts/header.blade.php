@@ -128,8 +128,8 @@ use Illuminate\Support\Facades\Storage;
         <div class="bg-light border-bottom py-2">
             <div class="container d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center">
-                    <small class="me-3 text-muted"><i class="bi bi-telephone-fill text-primary me-1"></i>{{ $appsetting['phone_no'] }}</small>
-                    <small class="me-3 text-muted"><i class="bi bi-envelope-fill text-primary me-1"></i>{{ $appsetting['email_address'] }}</small>
+                    <small class="me-3 text-muted"><i class="bi bi-telephone-fill text-primary me-1 text-decoration-none"></i>{{ $appsetting['phone_no'] }}</small>
+                    <small class="me-3 text-muted"><i class="bi bi-envelope-fill text-primary me-1 text-decoration-none"></i>{{ $appsetting['email_address'] }}</small>
                 </div>
                 <div class="d-flex align-items-center">
                     {{-- <div class="dropdown me-3">
