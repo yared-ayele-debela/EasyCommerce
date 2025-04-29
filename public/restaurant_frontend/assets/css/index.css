@@ -1017,10 +1017,9 @@ input[type="number"] {
 
 @media (max-width: 576px) {
     .fix-banner-box {
-        min-height: 150px !important;
+        min-height: 200px !important;
     }
 }
-
 /* rating */
 .rating {
     display: flex;
