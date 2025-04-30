@@ -299,9 +299,7 @@ input[type="number"] {
   .custom-switch{
     font-size:10px !important;
   }
-  .banner-box {
-    min-height: 200px !important;
-}
+
   .nav-link {
     text-decoration: none;
     margin: 0 0rem !important;
@@ -1008,24 +1006,28 @@ input[type="number"] {
     --bs-btn-disabled-border-color: #17BE18 !important
 }
 .banner-box {
-    min-height: 400px !important;
+    width: 100%;
+    height: 400px !important; /* Default height for desktop */
+    background-size: cover;
+    background-position: center;
 }
-/*
-@media (max-width: 576px) {
+
+@media (max-width: 768px) {
     .banner-box {
-        min-height: 200px !important;
+        height: 200px !important; /* Height for mobile */
     }
-}*/
+}
+
 
 .fix-banner-box {
     min-height: 300px !important;
 }
-/*
-@media (max-width: 576px) {
+
+@media (max-width: 768px) {
     .fix-banner-box {
         min-height: 200px !important;
     }
-} */
+}
 /* rating */
 .rating {
     display: flex;
