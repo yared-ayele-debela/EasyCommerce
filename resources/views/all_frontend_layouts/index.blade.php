@@ -19,20 +19,20 @@ use Illuminate\Support\Facades\Storage;
         @foreach ($banners as $banner)
         <div class="item mb-2 position-relative">
             @php
-    // Extract the relative path from full URL
-    $imagePath = $banner->image
-        ? ltrim(parse_url($banner->image, PHP_URL_PATH), '/')
-        : null;
+                // Extract the relative path from full URL
+                $imagePath = $banner->image
+                    ? ltrim(parse_url($banner->image, PHP_URL_PATH), '/')
+                    : null;
 
-    // Remove 'storage/' prefix to match storage/app/public
-    $relativePath = $imagePath ? str_replace('storage/', '', $imagePath) : null;
-@endphp
+                // Remove 'storage/' prefix to match storage/app/public
+                $relativePath = $imagePath ? str_replace('storage/', '', $imagePath) : null;
+            @endphp
 
-@if($relativePath && Storage::disk('public')->exists($relativePath))
-    <img src="{{ $banner->image }}" alt="{{ $banner->link }}" class="img-fluid">
-@else
-    <img src="{{ asset('no_banner.png') }}" class="img-fluid" alt="{{ $banner->link }}">
-@endif
+            @if($relativePath && Storage::disk('public')->exists($relativePath))
+                <img src="{{ $banner->image }}" alt="{{ $banner->link }}" class="img-fluid">
+            @else
+                <img src="{{ asset('no_banner.png') }}" class="img-fluid" alt="{{ $banner->link }}">
+            @endif
 
 
                 <div class="overlay-text position-absolute text-white p-3">
@@ -57,22 +57,23 @@ use Illuminate\Support\Facades\Storage;
                 <div class="category-item">
                     <a href="{{ url('restaurant/category/'.$category->id) }}">
                         @php
-                        $imagePath = $category->image
-                            ? str_replace(asset('storage') . '/', '', $category->image)
-                            : null;
-                      @endphp
+                        // Extract the relative path from the full URL (if provided)
+                        $parsedPath = $category->image ? parse_url($category->image, PHP_URL_PATH) : null;
+                        $relativePath = $parsedPath ? str_replace('storage/', '', ltrim($parsedPath, '/')) : null;
+                    @endphp
 
-                    @if($category->image && Storage::disk('public')->exists($imagePath))
+                    @if($relativePath && Storage::disk('public')->exists($relativePath))
                         <img src="{{ $category->image }}"
                              class="p-2 shadow"
                              style="border:4px solid rgb(162, 159, 159);"
-                             alt="American">
+                             alt="{{ $category->name ?? 'Category' }}">
                     @else
                         <img src="{{ asset('restaurant_frontend/default-image.png') }}"
                              class="p-2 shadow"
                              style="border:4px solid rgb(162, 159, 159);"
                              alt="Default Category">
                     @endif
+
                         <p class="text-dark">{{ $category->name }}</p>
                     </a>
                 </div>
