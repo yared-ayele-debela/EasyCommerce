@@ -8,6 +8,7 @@ use App\Models\Country;
 use App\Models\Restaurant\Order;
 use App\Models\Restaurant\OrderItem;
 use App\Models\Restaurant\OrderPaymentInfo;
+use App\Models\Restaurant\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -106,5 +107,49 @@ class CheckoutController extends Controller
             DB::rollBack(); // Rollback transaction on error
             return back()->with('error', 'Something went wrong. Please try again.')->withErrors($e->getMessage());
         }
+    }
+
+    public function orderNowPage(){
+
+        $countries = Country::all();
+
+        return view('Restaurant.frontend.checkout.order_now.index', compact( 'countries'));
+   }
+
+   public function orderNow(Request $request)
+    {
+        // dd($request->all());
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        $product = Product::findOrFail($request->product_id);
+
+        // Clear existing cart
+        session()->forget(['cart', 'cart_subtotal', 'discount']);
+
+        // Prepare cart session
+        $quantity = $request->quantity;
+        $price = $product->price;
+        $subtotal = $price * $quantity;
+
+        $cart = [
+            $product->id => [
+                'product_id' => $product->id,
+                'quantity' => $quantity,
+                'price' => $price,
+            ],
+        ];
+
+        // Save to session
+        session([
+            'cart' => $cart,
+            'cart_subtotal' => $subtotal,
+            'discount' => 0, // No coupon applied yet
+        ]);
+
+        // Redirect to checkout page after adding the item
+        return redirect()->route('restaurant.checkout.orderNowPage');
     }
 }

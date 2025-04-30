@@ -40,7 +40,7 @@
     <div class="header">
         <button class="btn btn-link text-dark" onclick="history.back()">
             <i class="bi bi-arrow-left"></i>
-         </button>
+        </button>
         <h5 class="my-4 text-dark text-center">Product Detail</h5>
     </div>
     <div class="row align-items-center mb-3">
@@ -107,8 +107,8 @@
                         <span class="text-dark">20min</span>
                     </h4>
                     <p class="card-text text-dark">{{ $product->description }}</p>
-                     <div class="d-flex justify-content-between align-items-center">
-                        <div class="">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
                             <button class="btn bg-primary text-white rounded shadow" id="addToCart" data-product-id="{{ $product->id }}">Add To Cart</button>
                             @php
                             $isInWishlist = Auth::check() && \App\Models\Restaurant\Wishlist::where('user_id', Auth::id())->where('product_id', $product->id)->exists();
@@ -128,7 +128,8 @@
                                 <i class=" bi bi-shop-window"></i> Order Now
                             </button>
                         </form>
-                     </div>
+
+                    </div>
 
                 </div>
             </div>
@@ -138,7 +139,7 @@
                         @php
                         $count= \App\Models\Restaurant\ProductRating::where('product_id', $product->id)->count();
                         @endphp
-                        Customer Reviews  ({{ $count? $count:'0' }})
+                        Customer Reviews ({{ $count? $count:'0' }})
                     </a>
                 </p>
                 <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#ratingModal">
@@ -161,7 +162,7 @@
                                     @else
                                     <i class="bi bi-star text-primary"></i>
                                     @endif
-                                @endfor
+                                    @endfor
                             </span>
                         </div>
                         @endforeach
@@ -180,12 +181,12 @@
                 <div class="offer-card p-3 h-100">
                     <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}" class="text-decoration-none text-dark d-block">
                         @php
-                            $off = $product->price - $product->getFinalPrice();
+                        $off = $product->price - $product->getFinalPrice();
                         @endphp
                         @if($off > 0)
-                            <div class="btn btn-sm btn-primary">
-                                {{ $off }} ETB OFF
-                            </div>
+                        <div class="btn btn-sm btn-primary">
+                            {{ $off }} ETB OFF
+                        </div>
                         @endif
                         <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid mb-2" alt="{{ $product->name }}">
                         <h6 class="text-dark">{{ $product->name }}</h6>
@@ -212,43 +213,38 @@
     </div>
 </div>
 <script>
-
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
         let priceDisplay = document.getElementById("product-price");
         let quantityInput = document.getElementById("quantity");
         let incrementBtn = document.getElementById("increment");
         let decrementBtn = document.getElementById("decrement");
         let sizeSelectors = document.querySelectorAll(".size-selector");
-        let selectedPrice = parseFloat(sizeSelectors[0]?.getAttribute("data-price") || "{{ $product->price }}");
+        let selectedPrice = parseFloat(sizeSelectors[0] ? .getAttribute("data-price") || "{{ $product->original_price }}");
 
         function updatePrice() {
-
-            let selectedSize = document.querySelector('input[name="size"]:checked');
-            let size = selectedSize ? selectedSize.getAttribute('data-size') : '';
-
             let quantity = parseInt(quantityInput.value);
             let totalPrice = selectedPrice * quantity;
             priceDisplay.textContent = totalPrice.toFixed(2) + " Birr";
 
-            document.getElementById('p_size').value = size;
-            document.getElementById('p_qty').value = quantity;
-            document.getElementById('p_price').value = totalPrice.toFixed(2); // Set price to 2 decimal places
+            // document.getElementById('p_qty').value = quantity;
+            // document.getElementById('p_price').value = totalPrice.toFixed(2); // Set price to 2 decimal places
+
 
         }
         // Handle size selection
         sizeSelectors.forEach(button => {
-            button.addEventListener("change", function () {
+            button.addEventListener("change", function() {
                 selectedPrice = parseFloat(this.getAttribute("data-price"));
                 updatePrice();
             });
         });
         // Handle increment button
-        incrementBtn.addEventListener("click", function () {
+        incrementBtn.addEventListener("click", function() {
             quantityInput.value = parseInt(quantityInput.value) + 1;
             updatePrice();
         });
         // Handle decrement button (prevent going below 1)
-        decrementBtn.addEventListener("click", function () {
+        decrementBtn.addEventListener("click", function() {
             if (quantityInput.value > 1) {
                 quantityInput.value = parseInt(quantityInput.value) - 1;
                 updatePrice();
@@ -258,12 +254,12 @@
         updatePrice();
     });
     const mainImage = document.getElementById('mainProductImage');
-       document.querySelectorAll('.thumbnail').forEach(thumbnail => {
-           thumbnail.addEventListener('click', function () {
-               mainImage.src = this.src; // Set main image to clicked thumbnail
-           });
-       });
-document.getElementById('addToCart').addEventListener('click', function () {
+    document.querySelectorAll('.thumbnail').forEach(thumbnail => {
+        thumbnail.addEventListener('click', function() {
+            mainImage.src = this.src; // Set main image to clicked thumbnail
+        });
+    });
+    document.getElementById('addToCart').addEventListener('click', function() {
         let productId = this.getAttribute('data-product-id');
         let selectedSize = document.querySelector('input[name="size"]:checked');
         let quantity = document.getElementById('quantity').value;
@@ -274,25 +270,26 @@ document.getElementById('addToCart').addEventListener('click', function () {
         let price = selectedSize.getAttribute('data-price');
         let size = selectedSize.getAttribute('data-size');
         fetch("{{ route('restaurant.cart.add') }}", {
-            method: "POST",
-            headers: {
-                "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                product_id: productId,
-                size: size,
-                price: price,
-                quantity: quantity
+                method: "POST"
+                , headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                    , "Content-Type": "application/json"
+                }
+                , body: JSON.stringify({
+                    product_id: productId
+                    , size: size
+                    , price: price
+                    , quantity: quantity
+                })
             })
-        })
-        .then(response => response.json())
-        .then(data => {
-            showAlert(data.status, data.message);
-            updateCartCount();
-        })
-        .catch(error => console.error("Error:", error));
+            .then(response => response.json())
+            .then(data => {
+                showAlert(data.status, data.message);
+                updateCartCount();
+            })
+            .catch(error => console.error("Error:", error));
     });
+
 </script>
 @endsection
 

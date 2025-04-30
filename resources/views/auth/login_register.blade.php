@@ -16,7 +16,7 @@
             <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
 
-    
+
         <ul class="nav nav-pills mb-3 d-flex justify-content-center align-items-center" id="pills-tab" role="tablist">
           <li class="nav-item" role="presentation">
             <a class="nav-link active" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Login</a>
@@ -25,21 +25,10 @@
             <a class="nav-link " id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Create Account</a>
           </li>
         </ul>
-        @if(Session::has('success_message'))
-        <div class="alert alert-success alert-dismissible fade show">
-            <strong>Success!</strong> <?php echo Session::get('success_message') ?>
-             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        @endif
-        @if(Session::has('error_message'))
-        <div class="alert alert-danger alert-dismissible fade show">
-            <strong>Error!</strong> <?php echo Session::get('error_message') ?>
-             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        @endif
+
         <div class="tab-content" id="pills-tabContent">
           <div class="tab-pane fade " id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
-            <form action="{{ url('auth/register') }}" method="POST">
+            <form action="{{ route('auth.register') }}" method="POST">
                 @csrf
                 <div class="row">
                     <div class="col-md-6">

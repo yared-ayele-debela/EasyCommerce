@@ -42,10 +42,8 @@ class UserController extends Controller
     public function userRegister(Request $request)
     {
         try {
-            if (!$request->method('post')) {
-                Alert::toast('something is wrong!!', 'error');
-                return redirect()->back();
-            }
+            // dd($request->all());
+
             $data = $this->validate($request, [
                 'name' => 'required|string',
                 'phone' => 'required|string',
@@ -57,17 +55,13 @@ class UserController extends Controller
             $phone = $request->input('phone');
 
             if (strlen($request->input('phone')) !== 10) {
-                Alert::toast('Phone number should be exactly 10  digits', 'error');
-                return redirect()->back();
+                return redirect()->back()->with('error','phone number should be exactly 10 digits');
             }
             if (User::where('mobile', $phone)->exists()) {
-                Alert::toast('Phone Number already exists', 'error');
-                return redirect()->back();
+                return redirect()->back()->with('error','phone number already exists');
             }
-
             if (User::where('email', $email)->exists()) {
-                Alert::toast('Email already exists', 'error');
-                return redirect()->back();
+                return redirect()->back()->with('error','Email already exists','error');
             }
             $user = new User;
             $user->name = $request->input('name');
@@ -90,17 +84,14 @@ class UserController extends Controller
             //     $message->to($email)->subject('Confirm');
             // });
 
-            //redirect back user with success message
-            Alert::toast('Thanks for registering as User. Please confirm your email to activate your account', 'success');
-            // notify()->warning('Thanks for registering as User. Please confirm your email to activate your account','Not Active');
-            return redirect()->back();
+            return redirect()->back()->with('success','Your account has been created successfully! Please log in to continue.');
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Laravel's built-in validation exception
             return redirect()->back()->withErrors($e->validator->errors())->withInput();
         } catch (\Exception $e) {
             // Log or handle the exception as needed
-            Alert::toast('something is wrong!!', 'error');
-            return redirect()->back();
+
+            return redirect()->back()->with('error','something was wrong');
         }
     }
 

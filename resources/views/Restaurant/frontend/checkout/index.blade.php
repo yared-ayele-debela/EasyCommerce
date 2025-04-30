@@ -211,10 +211,7 @@ use App\Models\Restaurant\Product;
                         document.getElementById("modalId")
                         , options
                     , );
-
                 </script>
-
-
               <button type="button" class="checkout-btn border-0 bg-primary w-100 mt-3" id="placeOrder">Place Order</button>
         </form>
     </div>

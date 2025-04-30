@@ -1192,6 +1192,9 @@ Route::prefix('/restaurant')->group(function () {
         })->name('wishlist.count');
 
         Route::get('check-out', [CheckoutController::class, 'index'])->name('restaurant.checkout');
+        Route::get('checkout/order-now',[CheckoutController::class, 'orderNowPage'])->name('restaurant.checkout.orderNowPage');
+        Route::post('/checkout/order-now', [CheckoutController::class, 'orderNow'])->name('restaurant.checkout.orderNow');
+
         Route::post('/checkout/place-order', [CheckoutController::class, 'placeOrder'])->name('restaurant.checkout.placeOrder');
         Route::get('/order/success/{order}', [FrontendOrderController::class, 'success'])->name('restaurant.order.success');
         Route::post('/order-receipt', [FrontendOrderController::class, 'receipt']);
