@@ -143,7 +143,6 @@ class RestaurantController extends Controller
                 $oldCoverPath = str_replace(asset('storage') . '/', '', $restaurant->cover_image);
                 Storage::disk('public')->delete($oldCoverPath);
             }
-
             $coverPath = $request->file('cover_image')->store('restaurants', 'public');
             $restaurant->cover= asset('storage/' . $coverPath);
             $restaurant->save();
