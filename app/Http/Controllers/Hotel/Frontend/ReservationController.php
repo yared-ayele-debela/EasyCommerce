@@ -98,7 +98,7 @@ class ReservationController extends Controller
 
         $room = Room::findOrFail($request->room_id);
 
-        return view('hotel.frontend.pages.reservations.preview', compact('validated', 'room'));
+        return view('Hotel.frontend.pages.reservations.preview', compact('validated', 'room'));
     }
 
 
