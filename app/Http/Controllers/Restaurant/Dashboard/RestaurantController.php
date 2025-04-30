@@ -145,7 +145,7 @@ class RestaurantController extends Controller
             }
 
             $coverPath = $request->file('cover_image')->store('restaurants', 'public');
-            $restaurant->cover_image = asset('storage/' . $coverPath);
+            $restaurant->cover= asset('storage/' . $coverPath);
             $restaurant->save();
         }
 
