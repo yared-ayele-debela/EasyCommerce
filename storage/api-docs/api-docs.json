@@ -1312,7 +1312,7 @@
                                         "type": "array",
                                         "items": {
                                             "properties": {
-                                                "menu_item_id": {
+                                                "food_id": {
                                                     "type": "integer",
                                                     "example": 201
                                                 },
@@ -1328,22 +1328,18 @@
                                         "type": "string",
                                         "example": "FOOD20"
                                     },
-                                    "price": {
+                                    "delivery_address_id": {
                                         "type": "integer",
-                                        "example": 500
+                                        "example": 123
                                     },
-                                    "transaction_id": {
+                                    "payment_method": {
                                         "type": "string",
-                                        "example": "TRX987654"
+                                        "example": "cash_on_delivery"
                                     },
                                     "screenshot": {
                                         "type": "string",
                                         "format": "binary",
                                         "example": "receipt.jpg"
-                                    },
-                                    "payment_method": {
-                                        "type": "string",
-                                        "example": "cash"
                                     }
                                 },
                                 "type": "object"
@@ -1900,6 +1896,20 @@
                 "responses": {
                     "201": {
                         "description": "Food category created successfully"
+                    }
+                }
+            }
+        },
+        "/api/main/food-categories": {
+            "get": {
+                "tags": [
+                    "FoodCategory"
+                ],
+                "summary": "Get list of food main categories",
+                "operationId": "59c77b8a8e86a6b252252d4c4864c0cc",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
                     }
                 }
             }

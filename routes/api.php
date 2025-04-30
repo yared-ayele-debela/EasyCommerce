@@ -278,6 +278,7 @@ Route::post('/banners', [BannerController::class, 'store']);
 Route::get('/foods/parent-category/{parentCatId}', [FoodController::class, 'getByParentCategory']);
 Route::get('/foods/category/{categoryId}', [FoodController::class, 'getByCategory']);
 Route::get('/food-categories/with-parent/{parent_cat_id}', [FoodCategoryController::class, 'getByParentCategory']);
+Route::get('main/food-categories', [FoodCategoryController::class, 'mainCategory']);
 Route::apiResource('foods', FoodController::class);
 
 

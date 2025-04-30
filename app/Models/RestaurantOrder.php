@@ -10,7 +10,18 @@ class RestaurantOrder extends Model
     use HasFactory;
 
     protected $fillable = [
-        'restaurant_id', 'customer_id', 'status', 'total_amount'
+        'restaurant_id', 
+        'customer_id', 
+        'status', 
+        'total_amount', 
+        'user_id', 
+        'subtotal', 
+        'discount', 
+        'delivery_fee', 
+        'total', 
+        'payment_method', 
+        'delivery_address_id', 
+        'screenshot'
     ];
 
     protected $casts = [

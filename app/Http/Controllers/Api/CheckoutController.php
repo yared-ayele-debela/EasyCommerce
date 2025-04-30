@@ -217,14 +217,13 @@ class CheckoutController extends Controller
      *             type="object",
      *             @OA\Property(property="user_id", type="integer", example=1),
      *             @OA\Property(property="items", type="array", @OA\Items(type="object", 
-     *                 @OA\Property(property="menu_item_id", type="integer", example=201),
+     *                 @OA\Property(property="food_id", type="integer", example=201),
      *                 @OA\Property(property="quantity", type="integer", example=2)
      *             )),
      *             @OA\Property(property="coupon_code", type="string", example="FOOD20"),
-     *             @OA\Property(property="price", type="integer", example=500),
-     *             @OA\Property(property="transaction_id", type="string", example="TRX987654"),
-     *             @OA\Property(property="screenshot", type="string", format="binary", example="receipt.jpg"),
-     *             @OA\Property(property="payment_method", type="string", example="cash")
+     *             @OA\Property(property="delivery_address_id", type="integer", example=123),
+     *             @OA\Property(property="payment_method", type="string", example="cash_on_delivery"),
+     *             @OA\Property(property="screenshot", type="string", format="binary", example="receipt.jpg")
      *         )
      *     ),
      *     @OA\Response(response=200, description="Restaurant food order checkout successful"),
@@ -238,13 +237,12 @@ class CheckoutController extends Controller
             $validator = Validator::make($request->all(), [
                 'user_id' => 'required|integer',
                 'items' => 'required|array',
-                'items.*.menu_item_id' => 'required|integer',
+                'items.*.food_id' => 'required|integer|exists:foods,id',
+                'items.*.size' => 'nullable|string',
                 'items.*.quantity' => 'required|integer|min:1',
                 'coupon_code' => 'nullable|string',
-                'price' => 'required|integer',
-                'transaction_id' => 'required|string',
-                'screenshot' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
-                'payment_method' => 'nullable|string'
+                'delivery_address_id' => 'nullable|integer|exists:delivery_address,id',
+                'payment_method' => 'required|string|in:cash_on_delivery,bank_transfer'
             ]);
 
             if ($validator->fails()) {
@@ -255,36 +253,69 @@ class CheckoutController extends Controller
                 ], 400);
             }
 
-            // Logic for processing restaurant food order checkout
-            $order = new \App\Models\RestaurantOrder();
-            $order->user_id = $request->input('user_id');
-            $order->payment_method = $request->input('payment_method');
-            $order->save();
-
-            foreach ($request->input('items') as $item) {
-                $orderItem = new \App\Models\Food();
-                $orderItem->order_id = $order->id;
-                $orderItem->menu_item_id = $item['menu_item_id'];
-                $orderItem->quantity = $item['quantity'];
-                $orderItem->save();
+            if ($request->input('payment_method') === 'bank_transfer' && !$request->hasFile('screenshot')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Screenshot is required for bank transfer payment method'
+                ], 400);
             }
 
-            $couponCode = $request->input('coupon_code');
-            if ($couponCode) {
-                $coupon = \App\Models\Coupon::where('code', $couponCode)->first();
+            $items = $request->input('items');
+            $subtotal = collect($items)->reduce(function ($carry, $item) {
+                $product = \App\Models\Food::find($item['food_id']);
+                if (!$product) {
+                    throw new \Exception('Invalid menu item ID: ' . $item['food_id']);
+                }
+                return $carry + ($product->price * $item['quantity']);
+            }, 0);
+
+            $deliveryFee = 15.00;
+            $discount = 0.00;
+
+            if ($couponCode = $request->input('coupon_code')) {
+                $coupon = \App\Models\Coupon::where('coupon_code', $couponCode)->first();
                 if (!$coupon || ($coupon->expires_at && $coupon->expires_at < now())) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Invalid or expired coupon code'
                     ], 400);
                 }
-                $order->discount = $coupon->discount_amount;
-                $order->save();
+                $discount = $coupon->discount_amount;
+            }
+
+            $total = $subtotal + $deliveryFee - $discount;
+
+            $order = \App\Models\RestaurantOrder::create([
+                'user_id' => $request->input('user_id'),
+                'subtotal' => $subtotal,
+                'discount' => $discount,
+                'delivery_fee' => $deliveryFee,
+                'total' => $total,
+                'payment_method' => $request->input('payment_method'),
+                'delivery_address_id' => $request->input('delivery_address_id'),
+                'screenshot_path' => $request->hasFile('screenshot') 
+                    ? $request->file('screenshot')->store('screenshots', 'public') 
+                    : null
+            ]);
+
+            foreach ($items as $item) {
+                $product = \App\Models\Food::find($item['food_id']);
+                \App\Models\RestaurantOrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $item['food_id'],
+                    'size' => $item['size'] ?? null,
+                    'quantity' => $item['quantity'],
+                    'price' => $product->price,
+                    'total' => $product->price * $item['quantity']
+                ]);
             }
 
             return response()->json([
                 'success' => true,
-                'message' => 'Restaurant food order checkout successful'
+                'message' => 'Restaurant food order checkout successful',
+                'order_id' => $order->id,
+                'total' => $total,
+                'screenshot_path' => $order->screenshot_path
             ], 200);
         } catch (\Exception $e) {
             return response()->json([

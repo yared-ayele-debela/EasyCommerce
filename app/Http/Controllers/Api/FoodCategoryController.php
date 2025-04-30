@@ -32,6 +32,24 @@ class FoodCategoryController extends Controller
 
     /**
      * @OA\Get(
+     *     path="/api/main/food-categories",
+     *     tags={"FoodCategory"},
+     *     summary="Get list of food main categories",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation"
+     *     )
+     * )
+     */
+    public function mainCategory()
+    {
+        return response()->json(FoodCategory::with(['country', 'subCategories'])->whereNull('parent_cat_id')->get());
+    }
+
+    
+
+    /**
+     * @OA\Get(
      *     path="/api/food-categories/{id}",
      *     tags={"FoodCategory"},
      *     summary="Get a specific food category",
