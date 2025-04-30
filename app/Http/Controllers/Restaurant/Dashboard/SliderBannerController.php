@@ -29,7 +29,12 @@ class SliderBannerController extends Controller
             'is_active'   => 'required|boolean'
         ]);
 
-        $imagePath = $request->file('image')->store('banners', 'public');
+        $imagePath = null;
+
+        if ($request->hasFile('image')) {
+            $storedPath = $request->file('image')->store('banners', 'public');
+            $imagePath = asset('storage/' . $storedPath); // Full URL like https://yourdomain.com/storage/banners/filename.jpg
+        }
 
         SliderBanner::create([
             'title'       => $request->title,
@@ -56,12 +61,17 @@ class SliderBannerController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            // Delete old image
-            Storage::disk('public')->delete($sliderBanner->image);
+            // Delete old image (handle both full URL or relative path)
+            if ($sliderBanner->image) {
+                $oldPath = str_replace(asset('storage') . '/', '', $sliderBanner->image);
+                Storage::disk('public')->delete($oldPath);
+            }
+
             // Store new image
-            $imagePath = $request->file('image')->store('banners', 'public');
-            $sliderBanner->image = $imagePath;
+            $storedPath = $request->file('image')->store('banners', 'public');
+            $sliderBanner->image = asset('storage/' . $storedPath); // Save full URL
         }
+
 
         $sliderBanner->update([
             'title'       => $request->title,
@@ -79,8 +89,13 @@ class SliderBannerController extends Controller
     public function destroy(SliderBanner $sliderBanner)
     {
         // Delete the image
-        Storage::disk('public')->delete($sliderBanner->image);
+        if ($sliderBanner->image) {
+            $imagePath = str_replace(asset('storage') . '/', '', $sliderBanner->image);
+            Storage::disk('public')->delete($imagePath);
+        }
+
         $sliderBanner->delete();
+
         return response()->json(['success' => 'Banner deleted successfully!']);
     }
 }

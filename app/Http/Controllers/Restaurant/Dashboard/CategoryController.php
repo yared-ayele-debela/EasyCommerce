@@ -29,8 +29,11 @@ class CategoryController extends Controller
             'discount_type' => 'required|in:fixed,percentage',
         ]);
 
-        $imagePath = $request->file('image') ? $request->file('image')->store('categories', 'public') : null;
-
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('categories', 'public');
+            $imagePath = asset('storage/' . $path); // Full URL like https://yourdomain.com/storage/categories/image.jpg
+        }
         Category::create([
             'name' => $request->name,
             'slug' => Str::slug($request->name),
@@ -55,13 +58,19 @@ class CategoryController extends Controller
         'discount_type' => 'required|in:fixed,percentage',
     ]);
 
-    if ($request->hasFile('image')) {
-        if ($category->image) {
-            Storage::disk('public')->delete($category->image);
-        }
-        $category->image = $request->file('image')->store('categories', 'public');
-    }
 
+    if ($request->hasFile('image')) {
+        // Delete old image if it exists
+        if ($category->image) {
+            // Convert URL to storage path
+            $oldImagePath = str_replace(asset('storage') . '/', '', $category->image);
+            Storage::disk('public')->delete($oldImagePath);
+        }
+
+        // Store new image and save full URL
+        $path = $request->file('image')->store('categories', 'public');
+        $category->image = asset('storage/' . $path);
+    }
     $category->update([
         'name' => $request->name,
         'slug' => Str::slug($request->name),

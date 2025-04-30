@@ -50,11 +50,11 @@ $user = Auth::guard('admin')->user();
                         <td>{{ $product->discount_type }}</td>
                         <td>{{ $product->discount }} Birr</td>
                         <td>
-                            <img src="{{ asset('storage/' . $product->image) }}" width="50">
+                            <img src="{{$product->image}}" width="50">
                         </td>
                         <td>
                             @foreach($product->images as $image)
-                                <img src="{{ asset('storage/' . $image->image_path) }}" width="50">
+                                <img src="{{ $image->image_path }}" width="50">
                             @endforeach
                         </td>
                         <td>
@@ -181,7 +181,7 @@ $user = Auth::guard('admin')->user();
                                                     <label for="cover_image" class="form-label">Cover Images</label>
                                                     <input type="file" class="form-control" id="cover_image" name="cover_image">
                                                     @if($product->image)
-                                                    <img src="{{ asset('storage/' . $product->image) }}" width="50">
+                                                    <img src="{{ $product->image }}" width="50">
                                                     @endif
                                                 </div>
                                             </div>
@@ -190,7 +190,7 @@ $user = Auth::guard('admin')->user();
                                                     <label for="images" class="form-label">Product Images</label>
                                                     <input type="file" class="form-control" id="images" name="images[]" multiple>
                                                     @foreach($product->images as $image)
-                                                    <img src="{{ asset('storage/' . $image->image_path) }}" width="50">
+                                                    <img src="{{ $image->image_path }}" width="50">
                                                     @endforeach
                                                 </div>
                                             </div>
@@ -217,7 +217,7 @@ $user = Auth::guard('admin')->user();
                                                         <option @if($product->is_free=="0") selected @endif value="0">No</option>
                                                       </select>
                                                     </div>
-                                                </div>         
+                                                </div>
                                             </div>
                                             <div class="col-md-6" id="delivery_fee2">
                                                 <div class="mb-3">
@@ -225,7 +225,7 @@ $user = Auth::guard('admin')->user();
                                                       <label for="delivery_fee" class="form-label">Delivery Fee in 1 KM in (ETB)</label>
                                                       <input type="number" name="delivery_fee" class="form-control" id="delivery_fee" value="{{ $product->delivery_fee }}">
                                                     </div>
-                                                </div>    
+                                                </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="mb-3">
@@ -233,7 +233,7 @@ $user = Auth::guard('admin')->user();
                                                       <label for="delivery_time" class="form-label">Delivered estimated Time in 1 KM</label>
                                                       <input type="number" name="delivery_time" class="form-control" id="delivery_time" value="{{ $product->delivery_time }}">
                                                     </div>
-                                                </div>    
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -377,7 +377,7 @@ $user = Auth::guard('admin')->user();
                                     <option value="0">No</option>
                                   </select>
                                 </div>
-                            </div>    
+                            </div>
                         </div>
                         <div class="col-md-6" id="delivery_feeId">
                             <div class="mb-3">
@@ -385,7 +385,7 @@ $user = Auth::guard('admin')->user();
                                   <label for="delivery_fee" class="form-label">Delivery Fee in 1 KM in (ETB)</label>
                                   <input type="number" name="delivery_fee" class="form-control" id="delivery_fee">
                                 </div>
-                            </div>    
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -393,7 +393,7 @@ $user = Auth::guard('admin')->user();
                                   <label for="delivery_time" class="form-label">Delivered estimated Time in 1 KM</label>
                                   <input type="number" name="delivery_time" class="form-control" id="delivery_time">
                                 </div>
-                            </div>    
+                            </div>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Save Product</button>

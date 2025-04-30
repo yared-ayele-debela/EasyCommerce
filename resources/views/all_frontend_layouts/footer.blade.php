@@ -665,38 +665,41 @@ $appsettings=AppSetting::all()->toArray();
             });
     });
 
-    document.getElementById('addToCart').addEventListener('click', function() {
-        let productId = this.getAttribute('data-product-id');
-        let selectedSize = document.querySelector('input[name="size"]:checked');
-        let quantity = document.getElementById('quantity').value;
-        if (!selectedSize) {
-            showAlert('info', 'Please select a size!');
-            return;
-        }
-        let price = selectedSize.getAttribute('data-price');
-        let size = selectedSize.getAttribute('data-size');
+    // document.getElementById('addToCart').addEventListener('click', function() {
+    //     let productId = this.getAttribute('data-product-id');
+    //     let selectedSize = document.querySelector('input[name="size"]:checked');
+    //     let quantity = document.getElementById('quantity').value;
+    //     // if (!selectedSize) {
+    //     //     showAlert('info', 'Please select a size!');
+    //     //     return;
+    //     // }
 
-        fetch("{{ route('restaurant.cart.add') }}", {
-                method: "POST"
-                , headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                    , "Content-Type": "application/json"
-                }
-                , body: JSON.stringify({
-                    product_id: productId
-                    , size: size
-                    , price: price
-                    , quantity: quantity
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                showAlert(data.status, data.message);
-                updateCartCount(); // Update cart count after adding item
 
-            })
-            .catch(error => console.error("Error:", error));
-    });
+    let price = selectedSize ? selectedSize.getAttribute('data-price') :'';
+    // let size = selectedSize ? selectedSize.getAttribute('data-size') : '';
+
+    //     fetch("{{ route('restaurant.cart.add') }}", {
+
+    //             method: "POST"
+    //             , headers: {
+    //                 "X-CSRF-TOKEN": "{{ csrf_token() }}"
+    //                 , "Content-Type": "application/json"
+    //             }
+    //             , body: JSON.stringify({
+    //                 product_id: productId
+    //                 , size: size
+    //                 , price: price
+    //                 , quantity: quantity
+    //             })
+    //         })
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             showAlert(data.status, data.message);
+    //             updateCartCount(); // Update cart count after adding item
+
+    //         })
+    //         .catch(error => console.error("Error:", error));
+    // });
 
 </script>
 </body>

@@ -144,8 +144,18 @@
                         {{ $off }} ETB OFF
                     </a>
                     @endif
-                    <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid mb-2" alt="{{ $product->name }}">
-                    <h6 class="text-dark">{{ $product->name }}</h6>
+                    @php
+                    $imagePath = $product->image
+                      ? str_replace(asset('storage') . '/', '', $product->image)
+                      : null;
+              @endphp
+
+              @if($product->image && Storage::disk('public')->exists($imagePath))
+                  <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
+              @else
+                  <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" alt="No Image">
+              @endif
+                                  <h6 class="text-dark">{{ $product->name }}</h6>
                     <p class="mb-0"><span class="price">{{ $product->getFinalPrice() }} ETB</span>
                         <span class="price-old">{{ $product->price }} ETB</span>
                     </p>

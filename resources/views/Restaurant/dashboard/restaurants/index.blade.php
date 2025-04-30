@@ -40,8 +40,8 @@ $user = Auth::guard('admin')->user();
                         <td>{{ $restaurant->admin->name }}</td>
                         <td>{{ $restaurant->phone }}</td>
                         <td>{{ $restaurant->address }}</td>
-                        <td><img src="{{ asset('storage/' . $restaurant->logo) }}" width="50" /></td>
-                        <td><img src="{{ asset('storage/' . $restaurant->cover) }}" width="50" /></td>
+                        <td><img src="{{ $restaurant->logo }}" width="50" /></td>
+                        <td><img src="{{ $restaurant->cover }}" width="50" /></td>
                         <td>
                            <!-- Button trigger modal -->
                            <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#restaurant{{ $restaurant->id }}">
@@ -61,7 +61,7 @@ $user = Auth::guard('admin')->user();
                                     <div class="modal-body">
                                         @foreach($restaurant->images as $image)
                                         <div style="display: inline-block; position: relative;">
-                                            <img src="{{ asset('storage/' . $image->image_path) }}" width="50">
+                                            <img src="{{$image->image_path}}" width="50">
                                             <form action="{{ route('restaurants.deleteImage', $image->id) }}" method="POST" style="display: inline;">
                                                 @csrf
                                                 @method('DELETE')

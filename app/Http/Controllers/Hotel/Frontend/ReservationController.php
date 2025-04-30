@@ -78,8 +78,6 @@ class ReservationController extends Controller
 
         Mail::to($reservation->user->email)->send(new ReservationConfirmationMail($reservation));
 
-        // Redirect to a confirmation page or the hotel page
-
         return redirect()->route('reservations.receipt', ['id' => encrypt($reservation->id)])
         ->with('success', 'Your reservation has been made successfully!');
 

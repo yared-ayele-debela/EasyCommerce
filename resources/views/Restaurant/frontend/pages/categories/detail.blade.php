@@ -16,7 +16,7 @@
         </button>
         <div class="d-flex align-items-center justify-content-center text-center shadow-sm p-2 mx-auto"
              style="border-radius: 100px; min-width: 200px;">
-            <img src="{{ asset('storage/' . $category->image) }}" alt="Burger" style="width: 30px; height: 30px; border-radius: 50%;">
+            <img src="{{ asset($category->image) }}" alt="Burger" style="width: 30px; height: 30px; border-radius: 50%;">
             <h5 class="ms-2 mb-0">{{ $category->name }}</h5>
         </div>
         <div style="width: 40px;"></div>
@@ -56,8 +56,17 @@
                                 {{ $off }} ETB OFF
                             </div>
                         @endif
-                        <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid mb-2" alt="{{ $product->name }}">
-                        <h6 class="text-dark">{{ $product->name }}</h6>
+                        @php
+                        $imagePath = $product->image
+                          ? str_replace(asset('storage') . '/', '', $product->image)
+                          : null;
+                  @endphp
+
+                  @if($product->image && Storage::disk('public')->exists($imagePath))
+                      <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
+                  @else
+                      <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" alt="No Image">
+                  @endif                        <h6 class="text-dark">{{ $product->name }}</h6>
                         <p class="mb-0">
                             <span class="price">{{ $product->getFinalPrice() }} ETB</span>
                             <span class="price-old">{{ $product->price }} ETB</span>

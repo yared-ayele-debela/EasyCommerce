@@ -52,8 +52,18 @@ class RestaurantController extends Controller
 
 
         // Upload Logo
-        $logoPath = $request->file('logo') ? $request->file('logo')->store('restaurants', 'public') : null;
-        $coverPath = $request->file('cover_image') ? $request->file('cover_image')->store('restaurants', 'public') : null;
+        $logoPath = null;
+        $coverPath = null;
+
+        if ($request->hasFile('logo')) {
+            $logoStoredPath = $request->file('logo')->store('restaurants', 'public');
+            $logoPath = asset('storage/' . $logoStoredPath); // Full URL
+        }
+
+        if ($request->hasFile('cover_image')) {
+            $coverStoredPath = $request->file('cover_image')->store('restaurants', 'public');
+            $coverPath = asset('storage/' . $coverStoredPath); // Full URL
+        }
 
         // Create Restaurant
         $restaurant = RestaurantRestaurant::create([
@@ -73,8 +83,12 @@ class RestaurantController extends Controller
         // Upload and Save Multiple Images
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
-                $imagePath = $image->store('restaurant_images', 'public');
-                $restaurant->images()->create(['image_path' => $imagePath]);
+                $storedPath = $image->store('restaurant_images', 'public');
+                $fullUrl = asset('storage/' . $storedPath);
+
+                $restaurant->images()->create([
+                    'image_path' => $fullUrl
+                ]);
             }
         }
 
@@ -113,32 +127,44 @@ class RestaurantController extends Controller
 
         // Update logo if a new one is uploaded
         if ($request->hasFile('logo')) {
-            // Delete old logo if exists
             if ($restaurant->logo) {
-                Storage::disk('public')->delete($restaurant->logo);
+                // Delete old logo (convert URL to storage path if needed)
+                $oldLogoPath = str_replace(asset('storage') . '/', '', $restaurant->logo);
+                Storage::disk('public')->delete($oldLogoPath);
             }
-            // Store new logo
-            $restaurant->logo = $request->file('logo')->store('restaurants', 'public');
+
+            $logoPath = $request->file('logo')->store('restaurants', 'public');
+            $restaurant->logo = asset('storage/' . $logoPath);
             $restaurant->save();
         }
+        // Update cover image
         if ($request->hasFile('cover_image')) {
-            // Delete old cover_image if exists
             if ($restaurant->cover_image) {
-                Storage::disk('public')->delete($restaurant->cover_image);
+                $oldCoverPath = str_replace(asset('storage') . '/', '', $restaurant->cover_image);
+                Storage::disk('public')->delete($oldCoverPath);
             }
-            // Store new cover_image
-            $restaurant->cover = $request->file('cover_image')->store('restaurants', 'public');
+
+            $coverPath = $request->file('cover_image')->store('restaurants', 'public');
+            $restaurant->cover_image = asset('storage/' . $coverPath);
             $restaurant->save();
         }
 
-        // Upload and Save New Multiple Images
+        // Optionally delete old multiple images before uploading new ones
         if ($request->hasFile('images')) {
+            foreach ($restaurant->images as $image) {
+                $oldImagePath = str_replace(asset('storage') . '/', '', $image->image_path);
+                Storage::disk('public')->delete($oldImagePath);
+                $image->delete();
+            }
+
+            // Upload and Save New Multiple Images
             foreach ($request->file('images') as $image) {
-                $imagePath = $image->store('restaurant_images', 'public');
-                $restaurant->images()->create(['image_path' => $imagePath]);
+                $path = $image->store('restaurant_images', 'public');
+                $restaurant->images()->create([
+                    'image_path' => asset('storage/' . $path)
+                ]);
             }
         }
-
         return redirect()->route('restaurants.index')->with('success', 'Restaurant updated successfully.');
     }
 
@@ -146,31 +172,40 @@ class RestaurantController extends Controller
      * Remove the specified restaurant.
      */
     public function destroy(RestaurantRestaurant $restaurant)
-    {
-        // Delete logo
-        if ($restaurant->logo) {
-            Storage::disk('public')->delete($restaurant->logo);
-        }
-        // Delete logo
-        if ($restaurant->cover_image) {
-            Storage::disk('public')->delete($restaurant->cover_image);
-        }
-        // Delete multiple images
-        foreach ($restaurant->images as $image) {
-            Storage::disk('public')->delete($image->image_path);
-            $image->delete();
-        }
-
-        $restaurant->delete();
-        return redirect()->route('restaurants.index')->with('success', 'Restaurant deleted successfully.');
+{
+    // Delete logo
+    if ($restaurant->logo) {
+        $logoPath = str_replace(asset('storage') . '/', '', $restaurant->logo);
+        Storage::disk('public')->delete($logoPath);
     }
 
-    public function deleteImage($id)
-    {
-        $image = RestaurantImage::findOrFail($id);
-        Storage::disk('public')->delete($image->image_path);
+    // Delete cover image
+    if ($restaurant->cover_image) {
+        $coverPath = str_replace(asset('storage') . '/', '', $restaurant->cover_image);
+        Storage::disk('public')->delete($coverPath);
+    }
+
+    // Delete multiple images
+    foreach ($restaurant->images as $image) {
+        $imagePath = str_replace(asset('storage') . '/', '', $image->image_path);
+        Storage::disk('public')->delete($imagePath);
         $image->delete();
-
-        return back()->with('success', 'Image deleted successfully.');
     }
+
+    $restaurant->delete();
+
+    return redirect()->route('restaurants.index')->with('success', 'Restaurant deleted successfully.');
+}
+
+public function deleteImage($id)
+{
+    $image = RestaurantImage::findOrFail($id);
+
+    $imagePath = str_replace(asset('storage') . '/', '', $image->image_path);
+    Storage::disk('public')->delete($imagePath);
+    $image->delete();
+
+    return back()->with('success', 'Image deleted successfully.');
+}
+
 }

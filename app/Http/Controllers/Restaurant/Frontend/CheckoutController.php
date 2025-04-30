@@ -119,7 +119,7 @@ class CheckoutController extends Controller
 
    public function orderNow(Request $request)
     {
-        // dd($request->all());
+        dd($request->all());
         $request->validate([
             'product_id' => 'required',
             'qty' => 'required|integer|min:1',

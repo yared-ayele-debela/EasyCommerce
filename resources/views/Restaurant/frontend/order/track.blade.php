@@ -56,7 +56,17 @@
                         @foreach($order->orderItems as $item)
                         <li class="list-group-item d-flex justify-content-between">
                             <span>
-                                <img src="{{ asset('storage/' . $item->product->image) }}" style="max-width: 60px; height:auto;" alt="">
+                                @php
+                                      $imagePath = $item->product->image
+                                        ? str_replace(asset('storage') . '/', '', $item->product->image)
+                                        : null;
+                                @endphp
+
+                                @if($item->product->image && Storage::disk('public')->exists($imagePath))
+                                    <img src="{{ $item->product->image }}"style="max-width: 60px; height:auto;">
+                                @else
+                                    <img src="{{ asset('restaurant_frontend/default-image.png') }}" style="max-width: 60px; height:auto;">
+                                @endif
                                 {{ $item->product->name }}
                                 <span class="text-dark">Ordered at {{ $order->created_at->format('M d, Y h:i A') }}</span>
                             </span>

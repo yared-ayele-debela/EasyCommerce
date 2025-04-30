@@ -53,7 +53,17 @@ use App\Models\Restaurant\Product;
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <img src="{{ asset('storage/' . $product['image']) }}" alt="Product Image" class="me-3" style="width: 60px; height: 60px;">
+                                            @php
+                                                $imagePath = $product->image
+                                                    ? str_replace(asset('storage') . '/', '', $product->image)
+                                                    : null;
+                                            @endphp
+
+                                            @if($product->image && Storage::disk('public')->exists($imagePath))
+                                                <img src="{{ $product->image }}" class="me-3" style="width: 60px; height: 60px;">
+                                            @else
+                                                <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="me-3" style="width: 60px; height: 60px;">
+                                            @endif
                                             <span>{{ $product['name'] }}</span>
                                         </div>
                                     </td>

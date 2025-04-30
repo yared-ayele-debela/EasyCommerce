@@ -38,8 +38,18 @@
                                 <tr>
                                     <td>
                                         <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}" class="text-dark">
-                                            <img src="{{ asset('storage/' . $product->image) }}" width="50">
-                                            {{ $product->name }}
+                                            @php
+                                            $imagePath = $product->image
+                                              ? str_replace(asset('storage') . '/', '', $product->image)
+                                              : null;
+                                      @endphp
+
+                                      @if($product->image && Storage::disk('public')->exists($imagePath))
+                                          <img src="{{ $product->image }}" class="img-fluid mb-2" width="50" alt="{{ $product->name }}">
+                                      @else
+                                          <img src="{{ asset('restaurant_frontend/default-image.png') }}" width="50">
+                                      @endif
+                                                                                  {{ $product->name }}
                                         </a>
                                     </td>
                                     <td>{{ number_format($product->price, 2) }} ETB</td>

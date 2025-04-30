@@ -16,6 +16,7 @@ class CartController extends Controller
     public function addToCart(Request $request)
     {
 
+        dd($request->all());
         $cart = session()->get('cart', []);
 
         $cart[] = [
@@ -24,10 +25,7 @@ class CartController extends Controller
             'price' => $request->price,
             'quantity' => $request->quantity
         ];
-
         session()->put('cart', $cart);
-
-
 
         return response()->json(['status' => 'success', 'message' => 'Product added to cart!']);
     }

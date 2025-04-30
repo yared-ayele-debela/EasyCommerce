@@ -84,7 +84,17 @@ use App\Models\Restaurant\Product;
                                             @endphp
                                             <tr>
                                                 <td class="d-flex align-items-center">
-                                                    <img src="{{ asset('storage/' . $product['image']) }}" alt="{{ $product['name'] }}" class="img-fluid rounded shadow-sm border me-3" style="width: 40px; height: 40px;">
+                                                    @php
+                                                    $imagePath = $product->image
+                                                        ? str_replace(asset('storage') . '/', '', $product->image)
+                                                        : null;
+                                                @endphp
+
+                                                @if($product->image && Storage::disk('public')->exists($imagePath))
+                                                    <img src="{{ $product->image }}" class="img-fluid rounded shadow-sm border me-3" style="width: 40px; height: 40px;">
+                                                @else
+                                                    <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid rounded shadow-sm border me-3" style="width: 40px; height: 40px;">
+                                                @endif
                                                     <span class="fw-semibold">{{ $product['name'] }}</span>
                                                 </td>
                                                 <td class="text-center">

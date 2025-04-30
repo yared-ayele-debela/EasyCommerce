@@ -2,8 +2,17 @@
 <div class="col-md-3 col-6 col-lg-2">
     <div class="offer-card p-3 h-100">
         <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}" class="text-decoration-none text-dark d-block">
-            <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid mb-2" alt="{{ $product->name }}">
-            <h6 class="text-dark">{{ $product->name }}</h6>
+            @php
+            $imagePath = $product->image
+              ? str_replace(asset('storage') . '/', '', $product->image)
+              : null;
+                @endphp
+
+                @if($product->image && Storage::disk('public')->exists($imagePath))
+                    <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
+                @else
+                    <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" alt="No Image">
+                @endif            <h6 class="text-dark">{{ $product->name }}</h6>
             <p class="mb-0">
                 <span class="price">{{ $product->getFinalPrice() }} ETB</span>
                 <span class="price-old">{{ $product->price }} ETB</span>

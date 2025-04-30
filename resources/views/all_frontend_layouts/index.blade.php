@@ -1,3 +1,6 @@
+@php
+use Illuminate\Support\Facades\Storage;
+@endphp
 @extends('all_frontend_layouts.layouts')
 @section('content')
 <div class="container py-2">
@@ -15,11 +18,16 @@
     <div class="owl-carousel owl-theme sliders mt-4">
         @foreach ($banners as $banner)
         <div class="item mb-2 position-relative">
-            @if ($banner && $banner->image && Storage::exists('public/' . $banner->image))
-                <img src="{{ asset('storage/' . $banner->image) }}" alt="{{ $banner->link }}" class="img-fluid">
+            @php
+            $imagePath = str_replace(asset('storage') . '/', '', $banner->image);
+            @endphp
+
+            @if($banner->image && Storage::disk('public')->exists($imagePath))
+                <img src="{{ $banner->image }}" alt="{{ $banner->link }}" class="img-fluid">
             @else
-                <img src="{{asset('no_banner.png') }}" class="img-fluid" alt="{{ $banner->link }}"> <!-- Optionally display a fallback message or image -->
+                <img src="{{ asset('no_banner.png') }}" class="img-fluid" alt="{{ $banner->link }}">
             @endif
+
                 <div class="overlay-text position-absolute text-white p-3">
                 <h3>{{ $banner->title }}</h3>
                 <p>{{ $banner->description }}</p>
@@ -41,7 +49,23 @@
             <div class="item mb-2">
                 <div class="category-item">
                     <a href="{{ url('restaurant/category/'.$category->id) }}">
-                        <img src="{{ asset('storage/' . $category->image) }}" class="p-2 shadow" style="border:4px solid rgb(162, 159, 159);" alt="American">
+                        @php
+                        $imagePath = $category->image
+                            ? str_replace(asset('storage') . '/', '', $category->image)
+                            : null;
+                      @endphp
+
+                    @if($category->image && Storage::disk('public')->exists($imagePath))
+                        <img src="{{ $category->image }}"
+                             class="p-2 shadow"
+                             style="border:4px solid rgb(162, 159, 159);"
+                             alt="American">
+                    @else
+                        <img src="{{ asset('restaurant_frontend/default-image.png') }}"
+                             class="p-2 shadow"
+                             style="border:4px solid rgb(162, 159, 159);"
+                             alt="Default Category">
+                    @endif
                         <p class="text-dark">{{ $category->name }}</p>
                     </a>
                 </div>
@@ -77,8 +101,18 @@
                                 {{ $off }} ETB OFF
                             </div>
                         @endif
-                        <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid mb-2" alt="{{ $product->name }}">
-                        <h6 class="text-dark">{{ $product->name }}</h6>
+                        @php
+                        $imagePath = $product->image
+                          ? str_replace(asset('storage') . '/', '', $product->image)
+                          : null;
+                  @endphp
+
+                  @if($product->image && Storage::disk('public')->exists($imagePath))
+                      <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
+                  @else
+                      <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" alt="No Image">
+                  @endif
+                                          <h6 class="text-dark">{{ $product->name }}</h6>
                         <p class="mb-0">
                             <span class="price">{{ $product->getFinalPrice() }} ETB</span>
                             <span class="price-old">{{ $product->price }} ETB</span>
@@ -123,8 +157,18 @@
                         <span class="btn btn-sm btn-info text-white">
                             Popular
                         </span>
-                        <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid mb-2" alt="{{ $product->name }}">
-                        <h6 class="text-dark">{{ $product->name }}</h6>
+                        @php
+                        $imagePath = $product->image
+                          ? str_replace(asset('storage') . '/', '', $product->image)
+                          : null;
+                  @endphp
+
+                  @if($product->image && Storage::disk('public')->exists($imagePath))
+                      <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
+                  @else
+                      <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" alt="No Image">
+                  @endif
+                                          <h6 class="text-dark">{{ $product->name }}</h6>
                         <p class="mb-0">
                             <span class="price">{{ $product->getFinalPrice() }} ETB</span>
                             <span class="price-old">{{ $product->price }} ETB</span>
@@ -170,7 +214,17 @@
                             <span class="btn btn-sm btn-warning text-white">
                                 Best seller
                             </span>
-                        <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid mb-2" alt="{{ $product->name }}">
+                                @php
+                                      $imagePath = $product->image
+                                        ? str_replace(asset('storage') . '/', '', $product->image)
+                                        : null;
+                                @endphp
+
+                                @if($product->image && Storage::disk('public')->exists($imagePath))
+                                    <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
+                                @else
+                                    <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" alt="No Image">
+                                @endif
                         <h6 class="text-dark">{{ $product->name }}</h6>
                         <p class="mb-0">
                             <span class="price">{{ $product->getFinalPrice() }} ETB</span>
@@ -216,8 +270,17 @@
                             <div class="btn btn-sm btn-danger text-white">
                               Latest
                             </div>
-                        <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid mb-2" alt="{{ $product->name }}">
-                        <h6 class="text-dark">{{ $product->name }}</h6>
+                            @php
+                            $imagePath = $product->image
+                              ? str_replace(asset('storage') . '/', '', $product->image)
+                              : null;
+                      @endphp
+
+                      @if($product->image && Storage::disk('public')->exists($imagePath))
+                          <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
+                      @else
+                          <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" alt="No Image">
+                      @endif                        <h6 class="text-dark">{{ $product->name }}</h6>
                         <p class="mb-0">
                             <span class="price">{{ $product->getFinalPrice() }} ETB</span>
                             <span class="price-old">{{ $product->price }} ETB</span>

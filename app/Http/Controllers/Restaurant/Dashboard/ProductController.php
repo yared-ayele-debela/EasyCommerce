@@ -58,7 +58,12 @@ class ProductController extends Controller
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        $imagePath = $request->file('cover_image') ? $request->file('cover_image')->store('product_images', 'public') : null;
+        $imagePath = null;
+
+        if ($request->hasFile('cover_image')) {
+            $path = $request->file('cover_image')->store('product_images', 'public');
+            $imagePath = asset('storage/' . $path); // Full URL: https://yourdomain.com/storage/product_images/filename.jpg
+        }
 
         $product = Product::create([
             'name' => $request->name,
@@ -85,26 +90,35 @@ class ProductController extends Controller
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
                 $path = $image->store('product_images', 'public');
+
                 ProductImage::create([
                     'product_id' => $product->id,
-                    'image_path' => $path
+                    'image_path' => asset('storage/' . $path), // Store full URL
                 ]);
             }
         }
+
 
         return back()->with('success', 'Product added successfully!');
     }
 
     public function update(Request $request, Product $product)
     {
+        // dd($request->all());
         // $product->update($request->all());
 
+        $product= Product::find($product->id);
+        // dd($product);
         if ($request->hasFile('cover_image')) {
-            if ($product->image) {
-                Storage::disk('public')->delete($product->image);
+            // Delete old image if it exists
+            if (!empty($product->cover_image)) {
+                $oldPath = str_replace(asset('storage') . '/', '', $product->cover_image);
+                Storage::disk('public')->delete($oldPath);
             }
-            $product->image = $request->file('cover_image')->store('product_images', 'public');
-            $product->save();
+
+            // Store and get new image URL
+            $path = $request->file('cover_image')->store('product_images', 'public');
+            $product->image = asset('storage/' . $path);
         }
         $product->update([
             'name' => $request->name,
@@ -129,17 +143,25 @@ class ProductController extends Controller
 
          // Delete old images
 
-        if ($request->hasFile('images')) {
+         if ($request->hasFile('images')) {
+            // Delete old images
             $oldImages = ProductImage::where('product_id', $product->id)->get();
+
             foreach ($oldImages as $image) {
-                Storage::disk('public')->delete($image->image_path);
+                // If image_path is full URL, extract relative path
+                $relativePath = str_replace(asset('storage') . '/', '', $image->image_path);
+                Storage::disk('public')->delete($relativePath);
+
                 $image->delete();
             }
-            foreach ($request->file('images') as $image) {
-                $path = $image->store('product_images', 'public');
+
+            // Store new images
+            foreach ($request->file('images') as $imageFile) {
+                $path = $imageFile->store('product_images', 'public');
+
                 ProductImage::create([
                     'product_id' => $product->id,
-                    'image_path' => $path
+                    'image_path' => asset('storage/' . $path) // or just $path if you're storing relative
                 ]);
             }
         }
@@ -148,17 +170,26 @@ class ProductController extends Controller
     }
 
     public function destroy($id)
-    {
-        $product=Product::find($id);
-        $oldImages = ProductImage::where('product_id', $product->id)->get();
-        foreach ($oldImages as $image) {
-            Storage::disk('public')->delete($image->image_path);
-            $image->delete();
-        }
-        if ($product->image) {
-            Storage::disk('public')->delete($product->image);
-        }
-        $product->delete();
-        return response()->json(['success' => 'Product deleted successfully!']);
+{
+    $product = Product::findOrFail($id); // Better to use findOrFail
+
+    // Delete multiple images
+    $oldImages = ProductImage::where('product_id', $product->id)->get();
+    foreach ($oldImages as $image) {
+        $imagePath = str_replace(asset('storage') . '/', '', $image->image_path);
+        Storage::disk('public')->delete($imagePath);
+        $image->delete();
     }
+
+    // Delete main product image
+    if ($product->image) {
+        $mainImagePath = str_replace(asset('storage') . '/', '', $product->image);
+        Storage::disk('public')->delete($mainImagePath);
+    }
+
+    $product->delete();
+
+    return response()->json(['success' => 'Product deleted successfully!']);
+}
+
 }
