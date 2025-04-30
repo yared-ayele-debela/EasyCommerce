@@ -145,16 +145,18 @@
                     </a>
                     @endif
                     @php
-                    $imagePath = $product->image
-                      ? str_replace(asset('storage') . '/', '', $product->image)
-                      : null;
-              @endphp
+                    @php
+                    // Safely extract relative storage path from full URL or asset path
+                    $parsedPath = $product->image ? parse_url($product->image, PHP_URL_PATH) : null;
+                    $relativePath = $parsedPath ? str_replace('storage/', '', ltrim($parsedPath, '/')) : null;
+                @endphp
 
-              @if($product->image && Storage::disk('public')->exists($imagePath))
-                  <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
-              @else
-                  <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" alt="No Image">
-              @endif
+                @if($relativePath && Storage::disk('public')->exists($relativePath))
+                    <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
+                @else
+                    <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" alt="No Image">
+                @endif
+
                                   <h6 class="text-dark">{{ $product->name }}</h6>
                     <p class="mb-0"><span class="price">{{ $product->getFinalPrice() }} ETB</span>
                         <span class="price-old">{{ $product->price }} ETB</span>
