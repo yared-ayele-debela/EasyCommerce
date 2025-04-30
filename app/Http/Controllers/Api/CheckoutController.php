@@ -36,84 +36,94 @@ class CheckoutController extends Controller
     public function process(Request $request)
     {
         try {
-        // Validate the request
-        $validator = Validator::make($request->all(), [
-            'user_id' => 'required|integer',
-            'items' => 'required|array',
-            'items.*.product_id' => 'required|integer',
-            'items.*.quantity' => 'required|integer|min:1',
-            'payment_method' => 'required|string',
-            'coupon_code' => 'nullable|string',
-            'transaction_id' => 'nullable|string',
-            'screenshot' => 'nullable|file|mimes:jpeg,png,jpg|max:2048'
-        ]);
+            // Validate the request
+            $validator = Validator::make($request->all(), [
+                'user_id' => 'required|integer|exists:users,id',
+                'items' => 'required|array',
+                'items.*.product_id' => 'required|integer|exists:products,id',
+                'items.*.quantity' => 'required|integer|min:1',
+                'payment_method' => 'required|string|in:cash_on_delivery,bank_transfer',
+                'coupon_code' => 'nullable|string',
+                'transaction_id' => 'nullable|string',
+                'screenshot' => 'nullable|file|mimes:jpeg,png,jpg|max:2048'
+            ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-            'success' => false,
-            'message' => 'Validation error',
-            'errors' => $validator->errors()
-            ], 400);
-        }
-
-        // Logic for processing checkout
-        $userId = $request->input('user_id');
-        $items = $request->input('items');
-        $paymentMethod = $request->input('payment_method');
-
-        // Example: Save order details to the database
-        $order = new \App\Models\Order();
-        $order->user_id = $userId;
-        $order->payment_method = $paymentMethod;
-        $order->transaction_id = $request->input('transaction_id');
-        $order->coupon_code = $request->input('coupon_code');
-        $order->save();
-
-        // Save order items
-        foreach ($items as $item) {
-            $orderItem = new \App\Models\OrderItem();
-            $orderItem->order_id = $order->id;
-            $orderItem->product_id = $item['product_id'];
-            $orderItem->quantity = $item['quantity'];
-            $orderItem->save();
-        }
-
-        $couponCode = $request->input('coupon_code');
-        if ($couponCode) {
-            // Example: Validate and apply the coupon code
-            $coupon = \App\Models\Coupon::where('code', $couponCode)->first();
-            if (!$coupon) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid coupon code'
-            ], 400);
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors()
+                ], 400);
             }
 
-            // Check if the coupon is expired
-            if ($coupon->expires_at && $coupon->expires_at < now()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Coupon code has expired'
-            ], 400);
+            // Calculate order details
+            $items = $request->input('items');
+            $subtotal = collect($items)->reduce(function ($carry, $item) {
+                $product = \App\Models\Product::find($item['product_id']);
+                return $carry + ($product->price * $item['quantity']);
+            }, 0);
+
+            $shippingCharges = 50.00; // Example shipping charge
+            $couponDiscount = 0.00;
+
+            if ($couponCode = $request->input('coupon_code')) {
+                $coupon = \App\Models\Coupon::where('code', $couponCode)->first();
+                if (!$coupon || ($coupon->expires_at && $coupon->expires_at < now())) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Invalid or expired coupon code'
+                    ], 400);
+                }
+                $couponDiscount = $coupon->discount_amount;
             }
 
-            // Apply the coupon discount (example logic)
-            $order->discount = $coupon->discount_amount;
-            $order->save();
-        }
+            $grandTotal = $subtotal + $shippingCharges - $couponDiscount;
 
-        // Save the screenshot file
-        if ($request->hasFile('screenshot')) {
-            $screenshotPath = $request->file('screenshot')->store('screenshots', 'public');
-        }
+            // Save order details
+            $user = \App\Models\User::find($request->input('user_id'));
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Checkout successful',
-            'transaction_id' => $request->input('transaction_id'),
-            'screenshot_path' => $screenshotPath ?? null
-        ], 200);
-        }  catch (\Exception $e) {
+            $order = \App\Models\Order::create([
+                'user_id' => $user->id,
+                'name' => $user->name,
+                'address' => $user->address,
+                'city' => $user->city,
+                'state' => $user->state,
+                'country' => $user->country,
+                'pincode' => $user->pincode,
+                'mobile' => $user->mobile,
+                'email' => $user->email,
+                'shipping_charges' => $shippingCharges,
+                'coupon_code' => $couponCode,
+                'coupon_amount' => $couponDiscount,
+                'payment_method' => $request->input('payment_method'),
+                'payment_gateway' => $request->input('payment_method'),
+                'transaction_id' => $request->input('transaction_id'),
+                'grand_total' => $grandTotal
+            ]);
+
+            // Save order items
+            foreach ($items as $item) {
+                \App\Models\OrderItem::create([
+                    'order_id' => $order->id,
+                    'menu_item_id' => $item['product_id'],
+                    'quantity' => $item['quantity'],
+                    'price' => \App\Models\Product::find($item['product_id'])->product_price
+                ]);
+            }
+
+            // Save screenshot if provided
+            if ($request->hasFile('screenshot')) {
+                $screenshotPath = $request->file('screenshot')->store('screenshots', 'public');
+                $order->update(['screenshot_path' => $screenshotPath]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Checkout successful',
+                'order_id' => $order->id,
+                'grand_total' => $grandTotal
+            ], 200);
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Internal server error',
@@ -132,11 +142,12 @@ class CheckoutController extends Controller
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="user_id", type="integer", example=1),
+     *             @OA\Property(property="hotel_id", type="integer", example=10),
      *             @OA\Property(property="room_id", type="integer", example=101),
      *             @OA\Property(property="check_in_date", type="string", format="date", example="2023-12-01"),
      *             @OA\Property(property="check_out_date", type="string", format="date", example="2023-12-05"),
      *             @OA\Property(property="coupon_code", type="string", example="HOTEL10"),
-     *             @OA\Property(property="price", type="integer", example=5000),
+     *             @OA\Property(property="price", type="numeric", example=5000),
      *             @OA\Property(property="payment_method", type="string", example="credit_card"),
      *             @OA\Property(property="transaction_id", type="string", example="TRX123456"),
      *             @OA\Property(property="screenshot", type="string", format="binary", example="receipt.jpg")
@@ -151,15 +162,16 @@ class CheckoutController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'user_id' => 'required|integer',
-                'room_id' => 'required|integer',
+                'user_id' => 'required|integer|exists:users,id',
+                'hotel_id' => 'required|integer|exists:hotels,id',
+                'room_id' => 'required|integer|exists:rooms,id',
                 'check_in_date' => 'required|date|after_or_equal:today',
                 'check_out_date' => 'required|date|after:check_in_date',
                 'coupon_code' => 'nullable|string|max:50',
                 'price' => 'required|numeric|min:0',
-                'transaction_id' => 'required|string|max:100',
+                'transaction_id' => 'nullable|string|max:100',
                 'screenshot' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
-                'payment_method' => 'nullable|string'
+                'payment_method' => 'required|string|in:credit_card,cash_on_delivery,bank_transfer'
             ]);
 
             if ($validator->fails()) {
@@ -170,17 +182,15 @@ class CheckoutController extends Controller
                 ], 400);
             }
 
-            // Logic for processing hotel reservation checkout
-            $reservation = new \App\Models\Reservation();
-            $reservation->user_id = $request->input('user_id');
-            $reservation->hotel_id = $request->input('hotel_id');
-            $reservation->room_id = $request->input('room_id');
-            $reservation->check_in_date = $request->input('check_in_date');
-            $reservation->check_out_date = $request->input('check_out_date');
-            $reservation->total_price = $request->input('price');
+            if ($request->input('payment_method') === 'bank_transfer' && !$request->hasFile('screenshot')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Screenshot is required for bank transfer payment method'
+                ], 400);
+            }
 
-            $couponCode = $request->input('coupon_code');
-            if ($couponCode) {
+            $couponDiscount = 0.00;
+            if ($couponCode = $request->input('coupon_code')) {
                 $coupon = \App\Models\Coupon::where('code', $couponCode)->first();
                 if (!$coupon || ($coupon->expires_at && $coupon->expires_at < now())) {
                     return response()->json([
@@ -188,14 +198,32 @@ class CheckoutController extends Controller
                         'message' => 'Invalid or expired coupon code'
                     ], 400);
                 }
-                $reservation->discount = $coupon->discount_amount;
+                $couponDiscount = $coupon->discount_amount;
             }
 
-            $reservation->save();
+            $totalPrice = $request->input('price') - $couponDiscount;
+
+            $reservation = \App\Models\Reservation::create([
+                'user_id' => $request->input('user_id'),
+                'hotel_id' => $request->input('hotel_id'),
+                'room_id' => $request->input('room_id'),
+                'check_in_date' => $request->input('check_in_date'),
+                'check_out_date' => $request->input('check_out_date'),
+                'total_price' => $totalPrice,
+                'coupon_code' => $couponCode,
+                'discount' => $couponDiscount,
+                'payment_method' => $request->input('payment_method'),
+                'transaction_id' => $request->input('transaction_id'),
+                'screenshot_path' => $request->hasFile('screenshot') 
+                    ? $request->file('screenshot')->store('screenshots', 'public') 
+                    : null
+            ]);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Hotel reservation checkout successful'
+                'message' => 'Hotel reservation checkout successful',
+                'reservation_id' => $reservation->id,
+                'total_price' => $totalPrice
             ], 200);
         } catch (\Exception $e) {
             return response()->json([

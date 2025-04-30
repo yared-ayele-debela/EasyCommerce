@@ -1237,6 +1237,10 @@
                                         "type": "integer",
                                         "example": 1
                                     },
+                                    "hotel_id": {
+                                        "type": "integer",
+                                        "example": 10
+                                    },
                                     "room_id": {
                                         "type": "integer",
                                         "example": 101
@@ -1256,7 +1260,7 @@
                                         "example": "HOTEL10"
                                     },
                                     "price": {
-                                        "type": "integer",
+                                        "type": "numeric",
                                         "example": 5000
                                     },
                                     "payment_method": {
