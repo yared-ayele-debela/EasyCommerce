@@ -19,14 +19,21 @@ use Illuminate\Support\Facades\Storage;
         @foreach ($banners as $banner)
         <div class="item mb-2 position-relative">
             @php
-            $imagePath = str_replace(asset('storage') . '/', '', $banner->image);
-            @endphp
+    // Extract the relative path from full URL
+    $imagePath = $banner->image
+        ? ltrim(parse_url($banner->image, PHP_URL_PATH), '/')
+        : null;
 
-            @if($banner->image && Storage::disk('public')->exists($imagePath))
-                <img src="{{ $banner->image }}" alt="{{ $banner->link }}" class="img-fluid">
-            @else
-                <img src="{{ asset('no_banner.png') }}" class="img-fluid" alt="{{ $banner->link }}">
-            @endif
+    // Remove 'storage/' prefix to match storage/app/public
+    $relativePath = $imagePath ? str_replace('storage/', '', $imagePath) : null;
+@endphp
+
+@if($relativePath && Storage::disk('public')->exists($relativePath))
+    <img src="{{ $banner->image }}" alt="{{ $banner->link }}" class="img-fluid">
+@else
+    <img src="{{ asset('no_banner.png') }}" class="img-fluid" alt="{{ $banner->link }}">
+@endif
+
 
                 <div class="overlay-text position-absolute text-white p-3">
                 <h3>{{ $banner->title }}</h3>
