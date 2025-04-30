@@ -12,7 +12,7 @@ use Illuminate\Http\Response;
 
 class Handler extends ExceptionHandler
 {
-    
+
     protected $dontFlash = [
         'current_password',
         'password',
@@ -29,7 +29,7 @@ class Handler extends ExceptionHandler
         });
     }
 
-    public function render($request, Throwable $exception): Response
+    public function render($request, Throwable $exception)
     {
         // 404 Not Found
         if ($exception instanceof NotFoundHttpException) {
@@ -41,9 +41,9 @@ class Handler extends ExceptionHandler
             return response()->view('errors.419', [], 419);
         }
 
-        // 500 Internal Server Error (fallback for unexpected exceptions)
+        // 500 Internal Server Error
         if ($this->isHttpException($exception)) {
-            if ($exception->getStatusCode() == 500) {
+            if ($exception->getStatusCode() === 500) {
                 return response()->view('errors.500', [], 500);
             }
         } elseif (app()->environment('production')) {
@@ -52,5 +52,5 @@ class Handler extends ExceptionHandler
 
         return parent::render($request, $exception);
     }
-    
+
 }
