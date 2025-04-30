@@ -12,7 +12,7 @@ class Order extends Model
 {
     use HasFactory;
     protected $table='orders';
-    protected $fillable=['order_id','order_item_id','order_status','reason','updated_by'];
+    protected $fillable=['order_id','order_item_id','order_status','reason','updated_by','name','transaction_id'];
 
 
     public function deliveryBoy()
