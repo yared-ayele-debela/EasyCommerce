@@ -23,7 +23,7 @@
     <div class="row g-3">
         <div class="col-md-12 col-12">
             <div class="restaurants-card">
-                    <img id="mainProductImage" src="{{ asset('storage/' . $restaurant->cover) }}" alt="Restaurant">
+                    <img id="mainProductImage" src="{{$restaurant->cover }}" alt="Restaurant">
 
                 <div class="info">
                     <h4>{{ $restaurant->name }}</h4>
@@ -45,12 +45,12 @@
             </div>
         </div>
         <div class="d-flex justify-content-start mt-3">
-            <img src="{{ asset('storage/' . $restaurant->cover) }}"  width="100"
+            <img src="{{$restaurant->cover }}"  width="100"
             class="thumbnail mx-2 p-2 border rounded"
             alt="{{ $restaurant->name }}"
             style="cursor: pointer;">
             @foreach($restaurant->images as $key => $image)
-                <img src="{{ asset('storage/' . $image->image_path) }}"
+                <img src="{{$image->image_path}}"
                     width="100"
                     class="thumbnail mx-2 p-2 border rounded"
                     alt="{{ $restaurant->name }}"
@@ -145,17 +145,9 @@
                     </a>
                     @endif
                     @php
-                    @php
-                    // Safely extract relative storage path from full URL or asset path
-                    $parsedPath = $product->image ? parse_url($product->image, PHP_URL_PATH) : null;
-                    $relativePath = $parsedPath ? str_replace('storage/', '', ltrim($parsedPath, '/')) : null;
-                @endphp
 
-                @if($relativePath && Storage::disk('public')->exists($relativePath))
                     <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
-                @else
-                    <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" alt="No Image">
-                @endif
+
 
                                   <h6 class="text-dark">{{ $product->name }}</h6>
                     <p class="mb-0"><span class="price">{{ $product->getFinalPrice() }} ETB</span>

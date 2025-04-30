@@ -58,7 +58,6 @@ use App\Models\Restaurant\Product;
                                                     ? str_replace(asset('storage') . '/', '', $product->image)
                                                     : null;
                                             @endphp
-
                                             @if($product->image && Storage::disk('public')->exists($imagePath))
                                                 <img src="{{ $product->image }}" class="me-3" style="width: 60px; height: 60px;">
                                             @else

@@ -48,12 +48,12 @@
         <div class="col-md-5 text-center">
             <div class="image-container position-relative">
                 @php
-                        $imagePath = $product->image
-                        ? str_replace(asset('storage') . '/', '', $product->image)
-                        : null;
+                $imagePath = $product->image
+                ? str_replace(asset('storage') . '/', '', $product->image)
+                : null;
                 @endphp
                 <img src="{{ asset('restaurant_frontend/assets/img/product_background.png') }}" alt="Background" class="background-image img-fluid">
-                @if($product->image && Storage::disk('public')->exists($imagePath))
+                @if($product->image)
                 <img id="mainProductImage" src="{{ $product->image }}" alt="Product" class="product-image img-fluid position-absolute top-50 start-50 translate-middle">
                 @else
                 <img id="mainProductImage" src="{{ asset('restaurant_frontend/default-image.png') }}" alt="Product" class="product-image img-fluid position-absolute top-50 start-50 translate-middle">
