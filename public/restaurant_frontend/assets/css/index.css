@@ -655,19 +655,20 @@ input[type="number"] {
     display: flex;
     gap: 35px;
     margin-top: 15px;
+    margin-bottom: 10px;
   }
 
   .payment-method {
     width: 190px;
-    height: 90px;
+    height: 100px;
     border: 2px solid #ddd;
     border-radius: 10px;
-    display: flex;
+    /* display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: center; */
     cursor: pointer;
     transition: all 0.3s ease-in-out;
-    position: relative;
+    /* position: relative; */
   }
 
   .payment-method input {

@@ -1,4 +1,4 @@
-<div class="row px-2 py-4 d-flex justify-content-center align-items-center flex-nowrap">
+<div class="row px-2 py-4 d-flex mb-5 mb-md-0 justify-content-center align-items-center flex-nowrap">
     <div class="col-md-4 col-4 text-center">
         <div class="icon-img-bg d-inline-block p-4 bg-primary rounded-circle">
             <img src="{{ asset('restaurant_frontend/assets/img/icon-delivery.png') }}" style="height: 70px;" alt="Delivery Icon">

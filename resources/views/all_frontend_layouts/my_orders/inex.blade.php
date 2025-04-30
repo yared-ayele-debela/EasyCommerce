@@ -79,7 +79,7 @@ use App\Models\Order;
                                                 </p>
                                             </div>
                                         </div>
-                                        <span class="fw-bold">{{ $item->total }} ETB</span>
+                                        <span class="fw-bold">{{ $item->price }} ETB</span>
                                     </li>
                                     @endforeach
                                 </ul>

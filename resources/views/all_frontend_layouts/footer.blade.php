@@ -106,6 +106,54 @@ $appsettings=AppSetting::all()->toArray();
         </div>
     </div>
 </footer>
+<!-- Bottom Navigation Bar -->
+<nav class="bottom-nav d-md-none fixed-bottom bg-white border-top shadow-sm">
+    <div class="d-flex justify-content-around text-center py-2">
+
+        <a href="{{ url('/') }}" class="nav-item {{ request()->is('/')?'text-primary':'text-dark' }}">
+            <i class="fas fa-home fa-lg"></i>
+            <div class="small">Home</div>
+        </a>
+
+
+        <a href="{{ url('my-cart') }}" class="nav-item {{ request()->is('my-cart')?'text-primary':'text-dark' }}">
+            <i class="fas fa-shopping-cart fa-lg"></i>
+            <div class="small">Cart</div>
+            {{-- @if(session('cart') && count(session('cart')) > 0)
+                <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger">
+                    {{ count(session('cart')) }}
+                </span>
+            @endif --}}
+        </a>
+        <a href="{{ url('my-wishlist') }}" class="nav-item {{ request()->is('my-wishlist')?'text-primary':'text-dark' }}">
+            <i class="fas fa-heart fa-lg"></i>
+            <div class="small">Wishlist</div>
+
+        </a>
+
+        <a href="{{ url('my-orders') }}" class="nav-item {{ request()->is('my-orders')?'text-primary':'text-dark' }}">
+            <i class="fas fa-bag-shopping fa-lg"></i>
+            <div class="small">Orders</div>
+        </a>
+
+        @if(Auth::check())
+        <a href="{{ url('user/account/update') }}" class="nav-item text-dark">
+            @if(Auth::user()->profile_photo_path)
+            <img src="{{ asset('storage/' . auth()->user()->profile_photo_path) }}" width="20" class="rounded-circle border shadow-sm">
+            @else
+            <i class="fas fa-user fa-lg"></i>
+            @endif
+            <div class="small">Profile</div>
+        </a>
+        @else
+        <a href="{{ route('auth.login') }}" class="nav-item text-dark">
+            <i class="fas fa-user fa-lg"></i>
+            <div class="small">Profile</div>
+        </a>
+        @endif
+
+    </div>
+</nav>
 
 <!-- Bootstrap 5 JS (Optional) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -300,18 +348,18 @@ $appsettings=AppSetting::all()->toArray();
         categoryItems.forEach(function (item) {
           item.addEventListener('click', function (e) {
             e.stopPropagation();
-    
+
             categoryItems.forEach(function (el) {
               if (el !== item) {
                 el.classList.remove('active');
               }
             });
-    
+
             // Toggle current item
             item.classList.toggle('active');
           });
         });
-      
+
     });
     </script>
 <script>
