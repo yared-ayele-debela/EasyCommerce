@@ -320,28 +320,41 @@
 </div>
 
 <div class="container-fluid pb-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold"><i class="bi bi-fire text-primary"></i> Flash Sales</h3>
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex gap-3 text-center bg-primary p-2 rounded rounded-1 shadow-sm">
-                <div><strong id="days" class=" text-white">03</strong>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+        <h3 class="fw-bold mb-0">
+            <i class="bi bi-fire text-danger me-2"></i> Flash Sales
+        </h3>
+
+        <!-- This wrapper keeps countdown + button in one row -->
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+
+            <!-- All Button -->
+            <a href="{{ route('ecommerce.products.flash.sales') }}" class="btn btn-outline-primary order-2 order-md-1 fw-semibold">
+                View All
+            </a>
+            <!-- Countdown Box -->
+            <div class="d-flex gap-3 text-center bg-primary px-3 py-2 rounded-2 order-1 order-md-2 shadow-sm">
+                <div>
+                    <strong id="days" class="text-white fs-5">03</strong>
                     <div class="small text-white">Days</div>
                 </div>
-                <div><strong id="hours" class=" text-white">23</strong>
+                <div>
+                    <strong id="hours" class="text-white fs-5">23</strong>
                     <div class="small text-white">Hours</div>
                 </div>
-                <div><strong id="minutes" class=" text-white">19</strong>
+                <div>
+                    <strong id="minutes" class="text-white fs-5">19</strong>
                     <div class="small text-white">Minutes</div>
                 </div>
-                <div><strong id="seconds" class=" text-white">56</strong>
+                <div>
+                    <strong id="seconds" class="text-white fs-5">56</strong>
                     <div class="small text-white">Seconds</div>
                 </div>
             </div>
-            &nbsp;
-            &nbsp;
-            <a href="{{ route('ecommerce.products.flash.sales') }}" class="text-white btn btn-primary"><strong>All</strong></a>
+
         </div>
     </div>
+
     @if ($featured_flash_deal && $flash_deal_products->count())
     <div class="row g-4">
         <div class="owl-carousel owl-theme ecommerce_products mt-4">
