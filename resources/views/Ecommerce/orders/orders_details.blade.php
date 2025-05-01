@@ -47,33 +47,33 @@
                     <strong>Order Details</strong>
                     <span class="badge bg-light text-dark">#{{ $orderDetails['order_code'] }}</span>
                 </div>
-            
+
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between py-2 border-bottom">
                         <span class="text-muted">Date:</span>
                         <span>{{ \Carbon\Carbon::parse($orderDetails['created_at'])->format('d M Y, h:i A') }}</span>
                     </div>
-            
+
                     <div class="d-flex justify-content-between py-2 border-bottom">
                         <span class="text-muted">Status:</span>
                         <span class="badge bg-secondary text-white">{{ $orderDetails['order_status'] }}</span>
                     </div>
-            
+
                     <div class="d-flex justify-content-between py-2 border-bottom">
                         <span class="text-muted">Total:</span>
                         <span>{{ App\Helper\Helper::currency_converter($orderDetails['grand_total']) }}</span>
                     </div>
-            
+
                     <div class="d-flex justify-content-between py-2 border-bottom">
                         <span class="text-muted">Shipping:</span>
                         <span>{{ App\Helper\Helper::currency_converter($orderDetails['shipping_charges']) }}</span>
                     </div>
-            
+
                     <div class="d-flex justify-content-between py-2 border-bottom">
                         <span class="text-muted">Tax:</span>
                         <span>{{ App\Helper\Helper::currency_converter($orderDetails['tax_charge']) }}</span>
                     </div>
-            
+
                     @if($orderDetails['coupon_code'])
                         <div class="d-flex justify-content-between py-2 border-bottom">
                             <span class="text-muted">Coupon:</span>
@@ -84,7 +84,7 @@
                             <span>{{ App\Helper\Helper::currency_converter($orderDetails['coupon_amount']) }}</span>
                         </div>
                     @endif
-            
+
                     @if($orderDetails['courier_name'])
                         <div class="d-flex justify-content-between py-2 border-bottom">
                             <span class="text-muted">Courier:</span>
@@ -95,14 +95,14 @@
                             <span>{{ $orderDetails['tracking_number'] }}</span>
                         </div>
                     @endif
-            
+
                     <div class="d-flex justify-content-between py-2">
                         <span class="text-muted">Payment:</span>
                         <span>{{ $orderDetails['payment_method'] }}</span>
                     </div>
                 </div>
             </div>
-            
+
         </div>
 
         {{-- Delivery Address --}}
@@ -111,45 +111,45 @@
                 <div class="card-header bg-primary text-white p-3">
                     <strong>Delivery Address</strong>
                 </div>
-            
+
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between py-2 border-bottom">
                         <span class="text-muted">Name:</span>
                         <span>{{ $orderDetails['name'] }}</span>
                     </div>
-            
+
                     <div class="d-flex justify-content-between py-2 border-bottom">
                         <span class="text-muted">Email:</span>
                         <span>{{ $orderDetails['email'] }}</span>
                     </div>
-            
+
                     <div class="d-flex justify-content-between py-2 border-bottom">
                         <span class="text-muted">Address:</span>
                         <span>{{ $orderDetails['address'] }}</span>
                     </div>
-            
+
                     <div class="d-flex justify-content-between py-2 border-bottom">
                         <span class="text-muted">City:</span>
                         <span>{{ $orderDetails['city'] }}</span>
                     </div>
-            
+
                     <div class="d-flex justify-content-between py-2 border-bottom">
                         <span class="text-muted">State:</span>
                         <span>{{ $orderDetails['state'] }}</span>
                     </div>
-            
+
                     <div class="d-flex justify-content-between py-2 border-bottom">
                         <span class="text-muted">Country:</span>
                         <span>{{ $orderDetails['country'] }}</span>
                     </div>
-            
+
                     <div class="d-flex justify-content-between py-2">
                         <span class="text-muted">Mobile:</span>
                         <span>{{ $orderDetails['mobile'] }}</span>
                     </div>
                 </div>
             </div>
-            
+
         </div>
         <div class="col-md-6">
         @if($checkorderproductavailable)
@@ -181,7 +181,7 @@
                                                 $deliveryDate = $product['created_at'];
                                                 $daysSinceDelivery = now()->diffInDays($deliveryDate);
                                             @endphp
-    
+
                                             @if($isReturnable && $daysSinceDelivery <= $returnableDate && $productStatus != "Return Initiated")
                                                 <option value="{{ $product['product_code'] }}--{{ $product['product_size'] }}">
                                                     {{ $product['product_code'] }} -- {{ $product['product_size'] }}
@@ -201,12 +201,12 @@
                                         <option value="Item defective or doesn't work">Item defective or doesn't work</option>
                                     </select>
                                 </div>
-    
+
                                 <div class="form-group mb-3">
                                     <label for="comment">Comment</label>
                                     <textarea name="comment" class="form-control" rows="3"></textarea>
                                 </div>
-    
+
                                 <button type="submit" class="btn btn-primary">Submit Return Request</button>
                             </form>
                          </div>
@@ -228,12 +228,12 @@
 
              </script>
 
-             
+
             @endif
             @if($getOrderStatus == "New")
              <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#reason">
                 Cancellation Reason
-             </button>        
+             </button>
              <div class="modal fade" id="reason" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
                  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
                      <div class="modal-content">
@@ -258,7 +258,7 @@
                                     </select>
                                 </div>
                                 <button type="submit" class="btn btn-danger rounded rounded-1">Cancel Order</button>
-                            </form> 
+                            </form>
                          </div>
                          <div class="modal-footer">
                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -288,7 +288,7 @@
         <div class="col-md-2 col-6 mb-2">
             <div class="offer-card h-100 text-center">
                 <div class="card-body p-2">
-                    <img src="{{ asset('/storage/products/' . \App\Models\Product::getProductImage($product['product_id'])) }}" class="img-fluid mb-2" style="max-height: 80px;">
+                    <img src="{{ \App\Models\Product::getProductImage($product['product_id']) }}" class="img-fluid mb-2" style="max-height: 80px;">
                     <h6>{{ $product['product_name'] }}</h6>
                     <p class="mb-1">
                         Code: {{ $product['product_code'] }}<br>

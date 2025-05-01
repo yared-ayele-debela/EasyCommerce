@@ -64,7 +64,7 @@
                         <div class="border border-1 card mb-3 shadow-none">
                             <div class="card-body d-flex align-items-center">
                                 <a href="{{ url('product/' . $item['product_id']) }}" class="me-3">
-                                    <img src="{{ asset('/storage/products/' . $item['product']['product_image']) }}" alt="{{ $item['product']['product_name'] }}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
+                                    <img src="{{ $item['product']['product_image']}}" alt="{{ $item['product']['product_name'] }}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
                                 </a>
                                 <div class="flex-grow-1">
                                     <h6 class="mb-1">{{ $item['product']['product_name'] }}</h6>

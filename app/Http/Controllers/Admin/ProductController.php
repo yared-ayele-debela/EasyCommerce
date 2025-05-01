@@ -85,7 +85,6 @@ class ProductController extends Controller
             foreach ($productFilters as $filter) {
                 $filterAvailable = ProductFilter::filterAvailable($filter['id'], $data['category']);
                 if ($filterAvailable == "Yes") {
-                    // dd($data[$filter['filter_column']]);
                     if (isset($filter['filter_column']) && $data[$filter['filter_column']]) {
                         $product->{$filter['filter_column']} = $data[$filter['filter_column']];
                     }
@@ -134,42 +133,42 @@ class ProductController extends Controller
             $product->is_featured = 'Yes';
             if ($request->hasFile('image')) {
 
-                //get file name with ext
+                // Get original file name and extension
                 $fileNameWithExt = $request->file('image')->getClientOriginalName();
-                //get just file name
                 $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                //get just file extenstion
                 $extension = $request->file('image')->getClientOriginalExtension();
-                //file name to store
+
+                // Create unique file name
                 $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                //upload image
-                $path = $request->file('image')->storeAs('public/products', $fileNameToStore);
+                // Store image
+                $request->file('image')->storeAs('public/products', $fileNameToStore);
 
-                // $image = Image::make(public_path('storage/products/' . $fileNameToStore));
+                // Optional resize (requires Intervention Image)
+                // $image = Image::make(public_path('storage/products/' . $fileNameToStore))->resize(488, 488);
+                // $image->save();
 
-                // $image->resize(488, 488)->save(public_path('storage/products/' . $fileNameToStore));
-                $product->product_image = $fileNameToStore;
+                // Save full image URL
+                $product->product_image = asset('storage/products/' . $fileNameToStore);
             }
 
-            //for upload video
+
             if ($request->hasFile('product_video')) {
-                //get file name with ext
+                // Get file name and extension
                 $fileNameWithExt = $request->file('product_video')->getClientOriginalName();
-                //get just file name
                 $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                //get just file extenstion
                 $extension = $request->file('product_video')->getClientOriginalExtension();
-                //file name to store
+
+                // Generate unique file name
                 $fileNameToStorevideo = $fileName . '_' . time() . '.' . $extension;
 
-                //upload image
-                $path = $request->file('product_video')->storeAs('public/products/video', $fileNameToStorevideo);
-                if ($product->product_video) {
-                    Storage::delete('public/products/video' . $product->product_video);
-                }
-                $product->product_video = $fileNameToStorevideo;
+                // Store video in the 'public/products/video' folder
+                $request->file('product_video')->storeAs('public/products/video', $fileNameToStorevideo);
+
+                // Save full URL to DB
+                $product->product_video = asset('storage/products/video/' . $fileNameToStorevideo);
             }
+
             $product->save();
 
             Alert::toast('Product has been created !', 'success');
@@ -258,46 +257,52 @@ class ProductController extends Controller
             $product->description = $data['description'];
 
             if ($request->hasFile('image')) {
-                // dd($request->all());
-                if ($product->product_image) {
-                    Storage::delete('public/products/' . $product->product_image);
+                // Delete old image if updating
+                if (!empty($product->product_image)) {
+                    $oldPath = str_replace(asset('storage') . '/', '', $product->product_image); // Convert full URL back to relative
+                    Storage::disk('public')->delete($oldPath);
                 }
-                //get file name with ext
+
+                // Get original file name and extension
                 $fileNameWithExt = $request->file('image')->getClientOriginalName();
-                //get just file name
                 $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                //get just file extenstion
                 $extension = $request->file('image')->getClientOriginalExtension();
-                //file name to store
+
+                // Create unique file name
                 $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                //upload image
-                $path = $request->file('image')->storeAs('public/products', $fileNameToStore);
+                // Store image
+                $request->file('image')->storeAs('public/products', $fileNameToStore);
 
-                // $image = Image::make(public_path('storage/products/' . $fileNameToStore));
+                // Optional resize (requires Intervention Image)
+                // $image = Image::make(public_path('storage/products/' . $fileNameToStore))->resize(488, 488);
+                // $image->save();
 
-                // $image->resize(488, 488)->save(public_path('storage/products/' . $fileNameToStore));
-
-                $product->product_image = $fileNameToStore;
+                // Save full image URL
+                $product->product_image = asset('storage/products/' . $fileNameToStore);
             }
+
 
             //for upload video
             if ($request->hasFile('product_video')) {
-                //get file name with ext
+                // Delete old video if it exists
+                if (!empty($product->product_video)) {
+                    Storage::disk('public')->delete('products/video/' . basename($product->product_video));
+                }
+
+                // Get file name and extension
                 $fileNameWithExt = $request->file('product_video')->getClientOriginalName();
-                //get just file name
                 $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                //get just file extenstion
                 $extension = $request->file('product_video')->getClientOriginalExtension();
-                //file name to store
+
+                // Generate unique file name
                 $fileNameToStorevideo = $fileName . '_' . time() . '.' . $extension;
 
-                //upload image
-                $path = $request->file('product_video')->storeAs('public/products/video', $fileNameToStorevideo);
-                if ($product->product_video) {
-                    Storage::delete('public/products/video' . $product->product_video);
-                }
-                $product->product_video = $fileNameToStorevideo;
+                // Store video in the 'public/products/video' folder
+                $request->file('product_video')->storeAs('public/products/video', $fileNameToStorevideo);
+
+                // Save full URL to DB
+                $product->product_video = asset('storage/products/video/' . $fileNameToStorevideo);
             }
 
             $product->update();
@@ -524,36 +529,32 @@ class ProductController extends Controller
             $data = $request->all();
             //echo"<pre>";print_r('$images'); die;
             if ($request->hasFile('images')) {
-                $images = $request->file('images');
-                // echo "<pre>";print_r($images); die;
-                foreach ($images as $key => $image) {
-                    //get file name with ext
+                $uploadedImages = $request->file('images');
+
+                foreach ($uploadedImages as $image) {
+                    // Get file name with extension
                     $fileNameWithExt = $image->getClientOriginalName();
-                    //get just file name
                     $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                    //get just file extenstion
                     $extension = $image->getClientOriginalExtension();
-                    //file name to store
                     $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                    //upload image
+                    // Upload image to storage
                     $path = $image->storeAs('public/products', $fileNameToStore);
 
-                    // $image = Image::make(public_path('storage/products/' . $fileNameToStore));
+                    // Save to DB
+                    $productImage = new ProductsImage();
+                    // Option 1: Just the filename
+                    // $productImage->image = $fileNameToStore;
 
-                    // $image->resize(488, 488)->save(public_path('storage/products/' . $fileNameToStore));
+                    // Option 2: Full URL
+                    $productImage->image = asset('storage/products/' . $fileNameToStore);
 
-                    $images = new ProductsImage();
-                    //   if ($images->image ) {
-                    //     Storage::delete('public/products/'.$image->images);
-                    //   }
-
-                    $images->image = $fileNameToStore;
-                    $images->product_id = $data['id'];
-                    $images->status = 1;
-                    $images->save();
+                    $productImage->product_id = $data['id'];
+                    $productImage->status = 1;
+                    $productImage->save();
                 }
             }
+
             Alert::toast('Product image has been created !!', 'success');
             return redirect()->back();
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -613,8 +614,20 @@ class ProductController extends Controller
                 return view('admin.errors.unauthorized');
             }
             $productImage = ProductsImage::find($id);
-            $productImage->delete();
 
+            if ($productImage) {
+                // Delete the image file from storage
+                if ($productImage->image) {
+                    // If stored as just the filename
+                    $imagePath = str_replace(asset('storage') . '/', '', $productImage->image);
+                    Storage::delete('public/' . $imagePath);
+
+                    // OR if only the filename was saved (no asset() used)
+                    // Storage::delete('public/products/' . $productImage->image);
+                }
+                // Delete the DB record
+                $productImage->delete();
+            }
             Alert::toast('Product attribute has been deleted!', 'error');
             return redirect()->back();
         } catch (\Exception $e) {

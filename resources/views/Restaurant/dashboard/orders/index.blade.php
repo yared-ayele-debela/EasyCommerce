@@ -27,6 +27,7 @@ $user = Auth::guard('admin')->user();
                     <th>Payment Method</th>
                     <th>Order Status</th>
                     <th>Delivery Status</th>
+                    <th>Payment Info</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -51,6 +52,44 @@ $user = Auth::guard('admin')->user();
                                 @if($order->delivery_status === 'pending') bg-warning @endif">
                                  {{ ucfirst($order->delivery_status) }}
                              </span>
+                        </td>
+                        <td>
+                              @if($order->paymentInfo)
+                                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#order{{ $order->id }}">
+                                    <i class="bi bi-eye-fill"></i> Payment information
+                                </button>
+
+                                <div class="modal fade" id="order{{ $order->id }}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Payment Detail</h5>
+                                                <button type="button" class="close btn" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Receipt:</p>
+                                                @if($order->paymentInfo->receipt)
+                                                <img src="{{ $order->paymentInfo->receipt }}"  class="img-fluid" alt="{{ $order->paymentInfo->bank_name }}">
+                                                @else
+                                                <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid" alt="{{ $order->paymentInfo->bank_name }}">
+                                                @endif
+                                                {{-- <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid" alt="{{ $order->paymentInfo->bank_name }}"> --}}
+                                                <p class="card-text"><strong>Bank Name :</strong> {{ $order->paymentInfo->bank_name }}</p>
+                                                <p class="card-text"><strong>Transaction Number :</strong> <strong>{{ $order->paymentInfo->transaction_number }}</strong></p>
+                                                <p class="card-text"><strong>Amount Paid :</strong> {{ $order->paymentInfo->amount_paid }} ETB</p>
+                                                <p class="card-text"><strong>Payment Status :</strong> {{ $order->paymentInfo->payment_status }}</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @else
+
+                                @endif
                         </td>
                         <td>
                             <a href="{{ route('restaurant.orders.show', $order->id) }}" class="btn btn-info btn-sm text-white"><i class="bi bi-eye"></i> Details</a>

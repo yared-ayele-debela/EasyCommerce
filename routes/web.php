@@ -265,6 +265,14 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'reset-password', [AdminController::class, 'ResetPasswordStore'])->name('ResetPasswordPost');
 
     Route::post('login', [AdminController::class, 'loginvalidate'])->name('login_admin');
+    Route::group(['middleware' => ['admin']], function () {
+        Route::get('update_admin_password', [AdminController::class, 'updateadminpassword'])->name('update_admin_password');
+        Route::post('updateadminpassword', [AdminController::class, 'update_admin_password'])->name('updateadminpassword');
+
+        Route::get('updateadmindetails', [AdminController::class, 'updateadmindetails'])->name('updateadmindetails');
+        Route::put('update_admin_details', [AdminController::class, 'update_admin_details'])->name('update_admin_details');
+
+});
 
     Route::group(['middleware' => ['admin','check.admin:Ecommerce Manager']], function () {
 
@@ -539,11 +547,6 @@ Route::prefix('admin')->group(function () {
 
         Route::get('dashboard', [DashboardController::class, 'index'])->name('maindashboard');
         Route::get('adminlogout', [AdminController::class, 'logout'])->name('adminlogout');
-        Route::get('update_admin_password', [AdminController::class, 'updateadminpassword'])->name('update_admin_password');
-        Route::post('updateadminpassword', [AdminController::class, 'update_admin_password'])->name('updateadminpassword');
-
-        Route::get('updateadmindetails', [AdminController::class, 'updateadmindetails'])->name('updateadmindetails');
-        Route::put('update_admin_details', [AdminController::class, 'update_admin_details'])->name('update_admin_details');
 
         //for update vendor
         Route::get('updatevendordetails', [AdminController::class, 'updatevendordetails'])->name('updatevendordetails');

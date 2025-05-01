@@ -66,76 +66,38 @@ class AppSettingController extends Controller
             $appsettings->panel_footer_text = $request->input('plane_footer_text');
             $appsettings->whatsapp = $request->input('whatsapp');
 
-            if ($request->hasFile('favicon')) {
-                if ($appsettings->favicon != 'noimage.jpg') {
-                    Storage::delete('public/appsettings/' . $appsettings->favicon);
+            $fields = [
+                'favicon'       => ['width' => 32,  'height' => 32],
+                'footer_image'  => ['width' => 500, 'height' => 86],
+                'panel_icon'    => ['width' => 500, 'height' => 86],
+                'logo'          => ['width' => 500, 'height' => 86],
+            ];
+
+            foreach ($fields as $field => $resize) {
+                if ($request->hasFile($field)) {
+                    // Delete old image if it exists and not 'noimage.jpg'
+                    if (!empty($appsettings->$field) && $appsettings->$field !== 'noimage.jpg') {
+                        $oldFileName = basename($appsettings->$field); // Handle if stored as full URL
+                        Storage::delete('public/appsettings/' . $oldFileName);
+                    }
+
+                    // Store new file
+                    $file = $request->file($field);
+                    $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                    $extension = $file->getClientOriginalExtension();
+                    $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
+                    $file->storeAs('public/appsettings', $fileNameToStore);
+
+                    // Optional resizing (uncomment if using Intervention Image)
+                    // $image = \Image::make(public_path("storage/appsettings/{$fileNameToStore}"))
+                    //     ->resize($resize['width'], $resize['height'])
+                    //     ->save();
+
+                    // Save full URL
+                    $appsettings->$field = asset('storage/appsettings/' . $fileNameToStore);
                 }
-
-                $fileNameWithExt = $request->file('favicon')->getClientOriginalName();
-                $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                $extension = $request->file('favicon')->getClientOriginalExtension();
-                $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
-
-                $path = $request->file('favicon')->storeAs('public/appsettings', $fileNameToStore);
-
-                // $image = Image::make(public_path('storage/appsettings/' . $fileNameToStore));
-                // $image->resize(32, 32)->save(public_path('storage/appsettings/' . $fileNameToStore));
-
-                $appsettings->favicon = $fileNameToStore;
             }
 
-            if ($request->hasFile('footer_image')) {
-                if ($appsettings->footer_image != 'noimage.jpg') {
-                    Storage::delete('public/appsettings/' . $appsettings->favicon);
-                }
-
-                $fileNameWithExt = $request->file('footer_image')->getClientOriginalName();
-                $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                $extension = $request->file('footer_image')->getClientOriginalExtension();
-                $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
-
-                $path = $request->file('footer_image')->storeAs('public/appsettings', $fileNameToStore);
-
-                // $image = Image::make(public_path('storage/appsettings/' . $fileNameToStore));
-                // $image->resize(500, 86)->save(public_path('storage/appsettings/' . $fileNameToStore));
-
-                $appsettings->footer_image = $fileNameToStore;
-            }
-
-            if ($request->hasFile('panel_icon')) {
-                if ($appsettings->panel_icon != 'noimage.jpg') {
-                    Storage::delete('public/appsettings/' . $appsettings->panel_icon);
-                }
-
-                $fileNameWithExt = $request->file('panel_icon')->getClientOriginalName();
-                $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                $extension = $request->file('panel_icon')->getClientOriginalExtension();
-                $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
-
-                $path = $request->file('panel_icon')->storeAs('public/appsettings', $fileNameToStore);
-
-                // $image = Image::make(public_path('storage/appsettings/' . $fileNameToStore));
-                // $image->resize(500, 86)->save(public_path('storage/appsettings/' . $fileNameToStore));
-
-                $appsettings->panel_icon = $fileNameToStore;
-            }
-
-            if ($request->hasFile('logo')) {
-                if ($appsettings->logo != 'noimage.jpg') {
-                    Storage::delete('public/appsettings/' . $appsettings->logo);
-                }
-
-                $fileNameWithExt = $request->file('logo')->getClientOriginalName();
-                $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                $extension = $request->file('logo')->getClientOriginalExtension();
-                $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
-
-                $path = $request->file('logo')->storeAs('public/appsettings', $fileNameToStore);
-                // $image = Image::make(public_path('storage/appsettings/' . $fileNameToStore));
-                // $image->resize(500, 86)->save(public_path('storage/appsettings/' . $fileNameToStore));
-
-                $appsettings->logo = $fileNameToStore;
-            }
 
             $appsettings->language = $request->input('language');
             $appsettings->footer_text = $request->input('footer_text');

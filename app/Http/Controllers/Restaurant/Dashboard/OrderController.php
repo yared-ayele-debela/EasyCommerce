@@ -20,9 +20,9 @@ class OrderController extends Controller
         $restaurantId=$restaurant->pluck('id');
         $adminType = Auth::guard('admin')->user()->type;
         if ($adminType === "Super Admin") {
-            $orders = Order::with('orderItems.product')->latest()->get();
+            $orders = Order::with('orderItems.product','paymentInfo')->latest()->get();
         } else {
-            $orders = Order::whereHas('orderItems.product', function ($query) use ($restaurantId) {
+            $orders = Order::with('paymentInfo')->whereHas('orderItems.product', function ($query) use ($restaurantId) {
                 $query->whereIn('restaurant_id', $restaurantId);
             })->with('orderItems.product')->latest()->get();
 

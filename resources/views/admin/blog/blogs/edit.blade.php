@@ -47,7 +47,7 @@ $user = Auth::guard('admin')->user();
                      @error('image')
                       <small class=" text-danger">{{ $message }}</small>
                       @enderror
-                      <img src="{{ asset('/storage/blog/'.$blogs['image']) }}" style="width: 80px; height:40px; padding-top:3px;" alt="">
+                      <img src="{{ $blogs['image'] }}" style="width: 80px; height:40px; padding-top:3px;" alt="">
                   </div>
                 <div class="col-md-12">
                     <label for="message" class="mb-2 mt-2">Description</label><br>

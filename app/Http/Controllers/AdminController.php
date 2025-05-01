@@ -58,8 +58,6 @@ class AdminController extends Controller
             ]);
             ActivityLogger::log('Change password', "user changed their password");
 
-
-
             Alert::toast('Password Updated Succesfully !', 'success');
             return back();
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -77,6 +75,15 @@ class AdminController extends Controller
             $cms_pages = CmsPage::get()->toArray();
 
             $adminDetails = Admin::where('email', Auth::guard('admin')->user()->email)->first();
+            $admin = Auth::guard('admin')->user();
+
+            if ($admin->type === 'Super Admin') {
+                return view('admin.auth.updateadminpassword', compact('adminDetails'));
+            } elseif ($admin->type === 'Hotel Manager') {
+                return view('Hotel.dashboard.admin.updateadminpassword', compact('adminDetails'));
+            } elseif ($admin->type === 'Restaurant Manager') {
+                return view('Restaurant.dashboard.admin.updateadminpassword', compact('adminDetails'));
+            }
 
             return view('admin.auth.updateadminpassword', compact('adminDetails', 'appsettings', 'cms_pages'));
         } catch (\Exception $e) {
@@ -93,6 +100,17 @@ class AdminController extends Controller
             $appsettings = AppSetting::all()->toArray();
             $cms_pages = CmsPage::get()->toArray();
             $adminDetails = Admin::where('email', Auth::guard('admin')->user()->email)->first();
+
+            $admin = Auth::guard('admin')->user();
+
+            if ($admin->type === 'Super Admin') {
+                return view('admin.auth.updateadmindetails', compact('adminDetails'));
+            } elseif ($admin->type === 'Hotel Manager') {
+                return view('Hotel.dashboard.admin.updateadmindetails', compact('adminDetails'));
+            } elseif ($admin->type === 'Restaurant Manager') {
+                return view('Restaurant.dashboard.admin.updateadmindetails', compact('adminDetails'));
+            }
+
             return view('admin.auth.updateadmindetails', compact('adminDetails', 'appsettings', 'cms_pages'));
         } catch (\Exception $e) {
             Alert::toast('Error', 'Something is wrong!', 'error');
@@ -119,22 +137,24 @@ class AdminController extends Controller
             $admin->name = $request->input('name');
             $admin->mobile = $request->input('mobile');
             if ($request->hasFile('image')) {
-                //get file name with ext
-                $fileNameWithExt = $request->file('image')->getClientOriginalName();
-                //get just file name
-                $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                //get just file extenstion
-                $extension = $request->file('image')->getClientOriginalExtension();
-                //file name to store
+                // Delete old image if not default
+                if (!empty($admin->image) && $admin->image !== 'noimage.jpg') {
+                    Storage::delete('public/admin/image/' . basename($admin->image)); // handles full URLs
+                }
+
+                // Generate new file name
+                $file = $request->file('image');
+                $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension = $file->getClientOriginalExtension();
                 $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                //upload image
-                $path = $request->file('image')->storeAs('public/admin/image', $fileNameToStore);
-                if ($admin->product_image != 'noimage.jpg') {
-                    Storage::delete('public/admin/image' . $admin->image);
-                }
-                $admin->image = $fileNameToStore;
+                // Store image
+                $file->storeAs('public/admin/image', $fileNameToStore);
+
+                // Save full URL
+                $admin->image = asset('storage/admin/image/' . $fileNameToStore);
             }
+
 
             $admin->update();
             ActivityLogger::log('Update detail', "user updated their detail information");
@@ -168,7 +188,7 @@ class AdminController extends Controller
     public function loginvalidate(Request $request)
     {
 
-        try {
+        // try {
             if (!$request->method('post')) {
                 Alert::toast('Error', 'Something is wrong!', 'error');
                 return redirect()->back();
@@ -193,7 +213,7 @@ class AdminController extends Controller
 
                     ActivityLogger::log('User login', "user login at {$formattedDateTime}");
                     Alert::toast('Welcome to Dashboard', 'success');
-                    
+
                     switch (Auth::guard('admin')->user()->type) {
                         case 'Hotel Manager':
                             return redirect('/admin/hotel/dashboard');
@@ -203,23 +223,24 @@ class AdminController extends Controller
                             return redirect('/admin/dashboard');
                         case 'Super Admin':
                             return redirect('/admin/dashboard');
+                        case 'vendor':
+                            return redirect('/admin/dashboard');
                         default:
                             Auth::logout();
                             abort(403);
                     }
-                  
                 }
             } else {
                 Alert::toast('Your email or password is incorrect', 'error');
                 return redirect()->back();
             }
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Laravel's built-in validation exception
-            return redirect()->back()->withErrors($e->validator->errors())->withInput();
-        }  catch (\Exception $e) {
-            Alert::toast('Error', 'Something is wrong!', 'error');
-            return redirect()->back();
-        }
+        // } catch (\Illuminate\Validation\ValidationException $e) {
+        //     // Laravel's built-in validation exception
+        //     return redirect()->back()->withErrors($e->validator->errors())->withInput();
+        // } catch (\Exception $e) {
+        //     Alert::toast('Error', 'Something is wrong!', 'error');
+        //     return redirect()->back();
+        // }
     }
     public function logout()
     {
@@ -267,30 +288,38 @@ class AdminController extends Controller
             }
             $data = $request->all();
             if ($request->hasFile('vendor_image')) {
+                $admin = Auth::guard('admin')->user();
 
-                //get file name with ext
-                $fileNameWithExt = $request->file('vendor_image')->getClientOriginalName();
-                //get just file name
-                $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                //get just file extenstion
-                $extension = $request->file('vendor_image')->getClientOriginalExtension();
-                //file name to store
-                $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
-
-                //upload image
-                $path = $request->file('vendor_image')->storeAs('public/admin/image', $fileNameToStore);
-
-                if ('image') {
-                    Storage::delete('public/admin/image/' . $data['vendor_image']);
+                // Delete old image if not default
+                if (!empty($admin->image) && $admin->image !== 'noimage.jpg') {
+                    Storage::delete('public/admin/image/' . $admin->image);
                 }
 
-                Admin::where('id', Auth::guard('admin')->user()->id)->update([
-                    'image' => $fileNameToStore
+                // Get uploaded file
+                $file = $request->file('vendor_image');
+                $fileNameWithExt = $file->getClientOriginalName();
+                $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+                $extension = $file->getClientOriginalExtension();
+                $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
+
+                // Store the file
+                $file->storeAs('public/admin/image', $fileNameToStore);
+
+                // Option 1: Store just filename
+                // Admin::where('id', $admin->id)->update([
+                //     'image' => $fileNameToStore
+                // ]);
+
+                // ✅ Option 2: Store full image URL
+                Admin::where('id', $admin->id)->update([
+                    'image' => asset('storage/admin/image/' . $fileNameToStore)
                 ]);
             }
 
+
             Admin::where('id', Auth::guard('admin')->user()->id)->update([
-                'name' => $data['vendor_name'], 'mobile' => $data['vendor_mobile']
+                'name' => $data['vendor_name'],
+                'mobile' => $data['vendor_mobile']
             ]);
 
 
@@ -309,7 +338,6 @@ class AdminController extends Controller
 
             Alert::toast('Update vendor details successfully!', 'success');
             return redirect()->back();
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Laravel's built-in validation exception
             return redirect()->back()->withErrors($e->validator->errors())->withInput();
@@ -359,8 +387,7 @@ class AdminController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Laravel's built-in validation exception
             return redirect()->back()->withErrors($e->validator->errors())->withInput();
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             Alert::toast('Error', 'Something is wrong!', 'error');
             return redirect()->back();
         }
@@ -368,175 +395,89 @@ class AdminController extends Controller
 
     public function update_vendor_businessdetails(Request $request)
     {
-        try {
+        // try {
             if (!$request->method('put')) {
                 Alert::toast('something is wrong!!', 'error');
                 return redirect()->back();
             }
 
             $data = $request->all();
-            // dd($data);
-            $vendor=VendorBussinessDetails::where('vendor_id',Auth::guard('admin')->user()->vendor_id)->first();
-            $vendorCount = VendorBussinessDetails::where('vendor_id', Auth::guard('admin')->user()->vendor_id)->count();
+            $vendorId = Auth::guard('admin')->user()->vendor_id;
+            $vendor = VendorBussinessDetails::where('vendor_id', $vendorId)->first();
 
-            if ($vendorCount > 0) {
-                if ($request->hasFile('address_proof_image')) {
+            $addressProofImage = '';
+            $shopImage = '';
 
-                    //get file name with ext
-                    $fileNameWithExt = $request->file('address_proof_image')->getClientOriginalName();
-                    //get just file name
-                    $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                    //get just file extenstion
-                    $extension = $request->file('address_proof_image')->getClientOriginalExtension();
-                    //file name to store
-                    $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
+            // Address Proof Image Handling
+            // Address Proof Image
+if ($request->hasFile('address_proof_image')) {
+    if ($vendor && $vendor->address_proof_image) {
+        Storage::delete('public/admin/image/' . $vendor->address_proof_image);
+    }
 
-                    //upload image
-                    $path = $request->file('address_proof_image')->storeAs('public/admin/image', $fileNameToStore);
+    $file = $request->file('address_proof_image');
+    $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $file->getClientOriginalExtension();
+    $file->storeAs('public/admin/image', $fileName);
 
-                    if ($vendor->address_proof_image) {
-                        Storage::delete('public/admin/image/'.$vendor->address_proof_image);
-                    }
-                } else if (!empty($data['current_address_proof'])) {
-                    $fileNameToStore = $data['current_address_proof'];
-                } else {
-                    $fileNameToStore = "";
-                }
+    // Save full public URL
+    $addressProofImage = Storage::url('admin/image/' . $fileName);
+} elseif (!empty($data['current_address_proof'])) {
+    $addressProofImage = $data['current_address_proof'];
+}
 
-                VendorBussinessDetails::where('vendor_id', Auth::guard('admin')->user()->vendor_id)->update([
-                    'address_proof_image' => $fileNameToStore
-                ]);
+// Shop Image
+if ($request->hasFile('shop_image')) {
+    if ($vendor && $vendor->shop_image) {
+        Storage::delete('public/admin/image/' . $vendor->shop_image);
+    }
 
-                //shoping image
-                if ($request->hasFile('shop_image')) {
-                    // dd('hello');
+    $file = $request->file('shop_image');
+    $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $file->getClientOriginalExtension();
+    $file->storeAs('public/admin/image', $fileName);
 
-                    //get file name with ext
-                    $fileNameWithExt = $request->file('shop_image')->getClientOriginalName();
-                    //get just file name
-                    $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                    //get just file extenstion
-                    $extension = $request->file('shop_image')->getClientOriginalExtension();
-                    //file name to store
-                    $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
+    // Save full public URL
+    $shopImage = Storage::url('admin/image/' . $fileName);
+} elseif (!empty($data['current_shop_image'])) {
+    $shopImage = $data['current_shop_image'];
+}
 
-                    //upload image
-                    $path = $request->file('shop_image')->storeAs('public/admin/image', $fileNameToStore);
 
-                    if ($vendor->shop_image) {
-                        Storage::delete('public/admin/image/'.$vendor->shop_image);
-                    }
+            // Prepare common data
+            $vendorData = [
+                'vendor_id' => $vendorId,
+                'address_proof_image' => $addressProofImage,
+                'shop_image' => $shopImage,
+                'shop_name' => $data['shop_name'],
+                'shop_mobile' => $data['shop_mobile'],
+                'shop_address' => $data['shop_address'],
+                'shop_city' => $data['shop_city'],
+                'shop_state' => $data['shop_state'],
+                'shop_website' => $data['shop_website'],
+                'shop_country' => $data['shop_country'],
+                'business_license_number' => $data['business_license_number'],
+                'shop_email' => $data['shop_email'],
+                'address_proof' => $data['address_proof'],
+                'shop_pincode' => $data['shop_pincode'],
+            ];
 
-                } else if (!empty($data['current_shop_image'])) {
-                    $fileNameToStore = $data['current_shop_image'];
-                } else {
-                    $fileNameToStore = "";
-                }
-
-                VendorBussinessDetails::where('vendor_id', Auth::guard('admin')->user()->vendor_id)->update([
-                    'shop_image' => $fileNameToStore
-                ]);
-
-                VendorBussinessDetails::where('vendor_id', Auth::guard('admin')->user()->vendor_id)->update([
-                    'shop_name' => $data['shop_name'],
-                    'shop_mobile' => $data['shop_mobile'],
-                    'shop_address' => $data['shop_address'],
-                    'shop_city' => $data['shop_city'],
-                    'shop_state' => $data['shop_state'],
-                    'shop_website' => $data['shop_website'],
-                    'shop_country' => $data['shop_country'],
-                    'business_license_number' => $data['business_license_number'],
-                    'shop_email' => $data['shop_email'],
-                    'address_proof' => $data['address_proof'],
-                    'shop_pincode' => $data['shop_pincode'],
-                ]);
+            // Insert or Update
+            if ($vendor) {
+                VendorBussinessDetails::where('vendor_id', $vendorId)->update($vendorData);
             } else {
-
-                if ($request->hasFile('address_proof_image')) {
-
-                    //get file name with ext
-                    $fileNameWithExt = $request->file('address_proof_image')->getClientOriginalName();
-                    //get just file name
-                    $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                    //get just file extenstion
-                    $extension = $request->file('address_proof_image')->getClientOriginalExtension();
-                    //file name to store
-                    $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
-
-                    //upload image
-                    $path = $request->file('address_proof_image')->storeAs('public/admin/image', $fileNameToStore);
-
-                    if ($vendor->address_proof_image) {
-                        Storage::delete('public/admin/image/'.$vendor->address_proof_image);
-                    }
-                } else if (!empty($data['current_address_proof'])) {
-                    $fileNameToStore = $data['current_address_proof'];
-                } else {
-                    $fileNameToStore = "";
-                }
-
-                //shoping image
-                if ($request->hasFile('shop_image')) {
-
-                    // dd("hello");
-                    //get file name with ext
-                    $fileNameWithExt = $request->file('shop_image')->getClientOriginalName();
-                    //get just file name
-                    $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                    //get just file extenstion
-                    $extension = $request->file('shop_image')->getClientOriginalExtension();
-                    //file name to store
-                    $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
-
-                    //upload image
-                    $path = $request->file('shop_image')->storeAs('public/admin/image', $fileNameToStore);
-
-                    if ($vendor->shop_image) {
-                        Storage::delete('public/admin/image/'.$vendor->shop_image);
-                    }
-
-                } else if (!empty($data['shop_image'])) {
-
-                    $fileNameToStores = $data['shop_image'];
-                    VendorBussinessDetails::insert([
-                        'vendor_id', Auth::guard('admin')->user()->vendor_id,
-                        'shop_image' => $fileNameToStores
-                    ]);
-                } else {
-                    $fileNameToStores = "";
-                }
-
-                VendorBussinessDetails::insert([
-                    'vendor_id' => Auth::guard('admin')->user()->vendor_id,
-                    'address_proof_image' => $fileNameToStore
-                ]);
-
-                VendorBussinessDetails::insert([
-                    'vendor_id' => Auth::guard('admin')->user()->vendor_id,
-                    'shop_name' => $data['shop_name'],
-                    'shop_mobile' => $data['shop_mobile'],
-                    'shop_address' => $data['shop_address'],
-                    'shop_city' => $data['shop_city'],
-                    'shop_state' => $data['shop_state'],
-                    'shop_website' => $data['shop_website'],
-                    'shop_country' => $data['shop_country'],
-                    'business_license_number' => $data['business_license_number'],
-                    'shop_email' => $data['shop_email'],
-                    'address_proof' => $data['address_proof'],
-                    'shop_pincode' => $data['shop_pincode'],
-                ]);
+                VendorBussinessDetails::create($vendorData);
             }
-            ActivityLogger::log('Update', "update vendor detail");
+
+            ActivityLogger::log('Update', "Updated vendor business details");
 
             Alert::toast('Upated vendor business details Successfully!', 'success');
             return redirect()->back();
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Laravel's built-in validation exception
-            return redirect()->back()->withErrors($e->validator->errors())->withInput();
-        } catch (\Exception $e) {
-            Alert::toast('something is wrong!!', 'error');
-            return redirect()->back();
-        }
+        // } catch (\Illuminate\Validation\ValidationException $e) {
+        //     // Laravel's built-in validation exception
+        //     return redirect()->back()->withErrors($e->validator->errors())->withInput();
+        // } catch (\Exception $e) {
+        //     Alert::toast('something is wrong!!', 'error');
+        //     return redirect()->back();
+        // }
     }
 
     public function updatevendorbankdetails()
@@ -804,23 +745,17 @@ class AdminController extends Controller
             $admin->mobile = $request->input('mobile');
             $admin->password = Hash::make($request->input('password'));
 
-
             if ($request->hasFile('image')) {
-                //get file name with ext
-                $fileNameWithExt = $request->file('image')->getClientOriginalName();
-                //get just file name
-                $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                //get just file extenstion
-                $extension = $request->file('image')->getClientOriginalExtension();
-                //file name to store
-                $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
+                // Store image and get relative path
+                $path = $request->file('image')->store('admin/image', 'public');
 
-                //upload image
-                $path = $request->file('image')->storeAs('public/admin/image', $fileNameToStore);
-
-                $admin->image = $fileNameToStore;
+                // Convert to full URL
+                $admin->image = asset('storage/' . $path);
             }
+
             $admin->save();
+
+
             ActivityLogger::log('Create', "Create admin user");
 
 
@@ -874,32 +809,28 @@ class AdminController extends Controller
 
 
             $admin = Admin::find($request->input('id'));
+
             $admin->name = $request->input('name');
             $admin->type = $request->input('type');
             $admin->email = $request->input('email');
             $admin->mobile = $request->input('mobile');
 
             if ($request->hasFile('image')) {
-
-                //get file name with ext
-                $fileNameWithExt = $request->file('image')->getClientOriginalName();
-                //get just file name
-                $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                //get just file extenstion
-                $extension = $request->file('image')->getClientOriginalExtension();
-                //file name to store
-                $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
-
-                //upload image
-                $path = $request->file('image')->storeAs('public/admin/image', $fileNameToStore);
-
-                if ('image') {
-                    Storage::delete('public/admin/image/' . $admin['image']);
+                // Delete old image if exists
+                if ($admin->image) {
+                    $oldImagePath = str_replace(asset('storage') . '/', '', $admin->image);
+                    if (Storage::disk('public')->exists($oldImagePath)) {
+                        Storage::disk('public')->delete($oldImagePath);
+                    }
                 }
-                $admin->image = $fileNameToStore;
+
+                // Store new image
+                $path = $request->file('image')->store('admin/image', 'public');
+                $admin->image = asset('storage/' . $path); // Save full URL
             }
 
-            $admin->update();
+            $admin->save();
+
             ActivityLogger::log('Update', "update admin information");
 
 
@@ -980,39 +911,41 @@ class AdminController extends Controller
         ]);
 
         // try {
-            $token = Str::random(64);
+        $token = Str::random(64);
 
-            DB::table('password_resets')->updateOrInsert([
+        DB::table('password_resets')->updateOrInsert(
+            [
                 'email' => $request->email,
             ],
             [
                 'token' => $token,
                 'created_at' => Carbon::now()
-            ]);
+            ]
+        );
 
-            $email_template = EmailTemplate::first();
-            $messageData = [
-                'token' => $token,
-                'email_template' => $email_template,
-            ];
+        $email_template = EmailTemplate::first();
+        $messageData = [
+            'token' => $token,
+            'email_template' => $email_template,
+        ];
 
-            Mail::send('emails.reset-password',$messageData, function($message) use($request){
-                $message->to($request->email);
-                $message->subject('Reset Password');
-            });
-            // Mail::send('emails.order', $messageData, function ($message) use ($email) {
-            //     $message->to($email)->subject('Order Placed - BYT Developers');
-            // });
+        Mail::send('emails.reset-password', $messageData, function ($message) use ($request) {
+            $message->to($request->email);
+            $message->subject('Reset Password');
+        });
+        // Mail::send('emails.order', $messageData, function ($message) use ($email) {
+        //     $message->to($email)->subject('Order Placed - BYT Developers');
+        // });
 
-            // Mail::send('emails.reset-password', $messageData, function ($message) use ($request, $token) {
-            //     $message->to($request->email)
-            //         ->from(env('MAIL_FROM_ADDRESS'), env('APP_NAME'))
-            //         ->subject('Reset Password')
-            //         ->with(['token' => $token]);
-            // });
+        // Mail::send('emails.reset-password', $messageData, function ($message) use ($request, $token) {
+        //     $message->to($request->email)
+        //         ->from(env('MAIL_FROM_ADDRESS'), env('APP_NAME'))
+        //         ->subject('Reset Password')
+        //         ->with(['token' => $token]);
+        // });
 
-            Alert::toast('We have emailed your password reset link', 'success');
-            return back();
+        Alert::toast('We have emailed your password reset link', 'success');
+        return back();
         // } catch (\Exception $e) {
         //     // Log or handle the exception as needed
         //     Alert::toast('something is wrong!!', 'error');
@@ -1024,7 +957,7 @@ class AdminController extends Controller
         try {
 
             $appsettings = AppSetting::all()->toArray();
-            return view('admin.forget_password.forget-password-link',compact('appsettings'), ['token' => $token]);
+            return view('admin.forget_password.forget-password-link', compact('appsettings'), ['token' => $token]);
         } catch (\Exception $e) {
             // Log or handle the exception as needed
             Alert::toast('something is wrong!!', 'error');

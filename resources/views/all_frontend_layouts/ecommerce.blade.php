@@ -260,7 +260,7 @@
                     @foreach ($group as $group)
                     @if(count($group['categories']) > 0)
                     <li class="list-group-item position-relative">
-                        <i class="bi bi-phone me-2 text-primary"></i> {{$group['name']}}
+                        <i class=" bi bi-bag-dash me-2 text-primary"></i> {{$group['name']}}
                         <span class="badge bg-primary rounded-pill float-end">{{ $group['categories']->count() }}</span>
                         <ul class="subcategory-dropdown">
                             <div class="row">
@@ -291,7 +291,7 @@
                 <div class="carousel-inner">
                     @foreach ($banners as $index => $banner)
                     <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                        <div class="d-flex align-items-center banner-box {{ $index % 2 === 0 ? 'text-white' : 'text-dark' }}" style="border-radius:6px; background: url('{{ asset('/storage/banner/' . $banner['image']) }}') center center / cover no-repeat;">
+                        <div class="d-flex align-items-center banner-box {{ $index % 2 === 0 ? 'text-white' : 'text-dark' }}" style="border-radius:6px; background: url('{{$banner['image'] }}') center center / cover no-repeat;">
                             <div class="container py-5 px-4">
                                 <h1 class="display-6 fw-bold">{{ $banner['title'] ?? 'Promotion' }}</h1>
                                 <p class="lead">{{ $banner['alt'] ?? 'Don’t miss out on our latest offers!' }}</p>
@@ -373,7 +373,7 @@
                     @endif
                     <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
                         @if($product['product_image'])
-                        <img src="{{ asset('storage/products/' . $product['product_image']) }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
+                        <img src="{{ $product['product_image'] }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
                         @else
                         <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
                         @endif
@@ -460,7 +460,7 @@
             <div class="item mb-2">
                 <div class="category-item">
                     <a href="{{ url('ecommerce/category/'.encrypt($category['id'])) }}">
-                        <img src="{{ asset('storage/category/' . $category['image']) }}" class="p-2 shadow" style="border:4px solid rgb(162, 159, 159);" alt="{{ $category->name }}">
+                        <img src="{{$category['image'] }}" class="p-2 shadow" style="border:4px solid rgb(162, 159, 159);" alt="{{ $category->name }}">
                         <p class="text-dark">{{ $category->name }}</p>
                     </a>
                 </div>
@@ -497,7 +497,7 @@
                     @endif
                     <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
                         @if($product['product_image'])
-                        <img src="{{ asset('storage/products/' . $product['product_image']) }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
+                        <img src="{{$product['product_image']}}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
                         @else
                         <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
                         @endif                    </a>
@@ -535,7 +535,7 @@
 
     @if(isset($fixbanners[0]['image']))
     <a href="{{ $fixbanners[0]['link']}}" target="_blank">
-        <div class="hero rounded-3 my-2 p-4 fix-banner-box" style="background:url({{ asset('/storage/banner/'.$fixbanners[0]['image']) }});" class="img-fluid">
+        <div class="hero rounded-3 my-2 p-4 fix-banner-box" style="background:url({{ $fixbanners[0]['image'] }});" class="img-fluid">
         </div>
     </a>
     @endif
@@ -567,7 +567,7 @@
                     @endif
                     <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
                         @if($product['product_image'])
-                        <img src="{{ asset('storage/products/' . $product['product_image']) }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
+                        <img src="{{ $product['product_image'] }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
                         @else
                         <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
                         @endif
@@ -632,8 +632,8 @@
                     </span>
                     @endif
                     <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
-                        @if($product['product_image'])
-                        <img src="{{ asset('storage/products/' . $product['product_image']) }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
+                        @if (!empty($product['product_image']))
+                        <img src="{{ $product['product_image'] }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
                         @else
                         <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
                         @endif                    </a>
@@ -671,7 +671,7 @@
 
     @if(isset($fixbanners[1]['image']))
     <a href="{{ $fixbanners[1]['link']}}" target="_blank">
-        <div class="hero rounded-3 my-2 p-4 fix-banner-box" style="background:url({{ asset('/storage/banner/'.$fixbanners[1]['image']) }});" class="img-fluid">
+        <div class="hero rounded-3 my-2 p-4 fix-banner-box" style="background:url({{ $fixbanners[1]['image'] }});" class="img-fluid">
         </div>
     </a>
     @endif
@@ -690,13 +690,13 @@
                 <div class="offer-card h-100 rounded-2">
                     <div class="shop-banner-container position-relative">
                         @if(!empty($vendor->vendorbusinessdetails['shop_image']))
-                        <img src="{{ asset('storage/admin/image/'.$vendor->vendorbusinessdetails['shop_image']) }}" class="w-100 " style="height: 150px; object-fit: cover;" alt="Shop Banner">
+                        <img src="{{ $vendor->vendorbusinessdetails['shop_image'] }}" class="w-100 " style="height: 150px; object-fit: cover;" alt="Shop Banner">
                         @else
                         <img src="{{ asset('banner.png') }}" class="w-100 " style="height: 150px; object-fit: cover;" alt="Shop Banner">
                         @endif
                         <div class="position-absolute bottom-0 start-0 translate-middle-y ms-3 mb-1">
                             @if(!empty($vendor->adminvendor['image']))
-                            <img src="{{ asset('storage/admin/image/'.$vendor->adminvendor['image']) }}" class="rounded-circle border border-2" width="60" height="60" style="object-fit: cover;" alt="Vendor Image">
+                            <img src="{{ $vendor->adminvendor['image'] }}" class="rounded-circle border border-2" width="60" height="60" style="object-fit: cover;" alt="Vendor Image">
                             @else
                             <img src="{{ asset('no_vendor.png') }}" class="rounded-circle border border-2" width="60" height="60" style="object-fit: cover;" alt="Vendor Image">
                             @endif
@@ -736,7 +736,7 @@
                 <div class="category-item">
                     <a href="javascript:void(0);">
                         @if($brand['image'])
-                        <img src="{{ asset('/storage/brand/'.$brand['image']) }}" class="p-2 shadow" style="border:4px solid rgb(162, 159, 159);" alt="brand">
+                        <img src="{{ $brand['image'] }}" class="p-2 shadow" style="border:4px solid rgb(162, 159, 159);" alt="brand">
                         @else
                         <img src="{{ asset('new_frontend/images/banners/b1.png') }}" class="p-2 shadow" style="border:4px solid rgb(162, 159, 159);" alt="brand">
                         @endif

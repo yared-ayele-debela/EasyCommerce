@@ -13,13 +13,13 @@
             <div class="offer-card h-100 rounded-2">
                 <div class="shop-banner-container position-relative">
                     @if(!empty($vendor->vendorbusinessdetails['shop_image']))
-                    <img src="{{ asset('storage/admin/image/'.$vendor->vendorbusinessdetails['shop_image']) }}" class="w-100 " style="height: 150px; object-fit: cover;" alt="Shop Banner">
+                    <img src="{{ $vendor->vendorbusinessdetails['shop_image'] }}" class="w-100 " style="height: 150px; object-fit: cover;" alt="Shop Banner">
                     @else
                     <img src="{{ asset('banner.png') }}" class="w-100 " style="height: 150px; object-fit: cover;" alt="Shop Banner">
                     @endif
                     <div class="position-absolute bottom-0 start-0 translate-middle-y ms-3 mb-1">
                         @if(!empty($vendor->adminvendor['image']))
-                        <img src="{{ asset('storage/admin/image/'.$vendor->adminvendor['image']) }}" class="rounded-circle border border-2" width="60" height="60" style="object-fit: cover;" alt="Vendor Image">
+                        <img src="{{ $vendor->adminvendor['image']}}" class="rounded-circle border border-2" width="60" height="60" style="object-fit: cover;" alt="Vendor Image">
                         @else
                         <img src="{{ asset('no_vendor.png') }}" class="rounded-circle border border-2" width="60" height="60" style="object-fit: cover;" alt="Vendor Image">
                         @endif

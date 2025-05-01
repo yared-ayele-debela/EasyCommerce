@@ -298,7 +298,7 @@
                                             <div class="modal-body">
                                                 <p>Receipt:</p>
                                                 @if($reservation->hotel_reservation_payment_info->receipt)
-                                                <img src="{{ asset('storage/'.$reservation->hotel_reservation_payment_info->receipt) }}"  class="img-fluid" alt="{{ $reservation->hotel_reservation_payment_info->bank_name }}">
+                                                <img src="{{ $reservation->hotel_reservation_payment_info->receipt }}"  class="img-fluid" alt="{{ $reservation->hotel_reservation_payment_info->bank_name }}">
                                                 @else
                                                 <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid" alt="{{ $reservation->hotel_reservation_payment_info->bank_name }}">
                                                 @endif

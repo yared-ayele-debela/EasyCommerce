@@ -57,14 +57,14 @@ use App\Models\Wishlist;
         <div class="row">
            <!-- Main Image -->
                 <div class="col-12 col-md-5 order-1 order-md-2 mb-3 mb-md-0 mb-2">
-                    <img id="mainProductImage" src="{{ asset('storage/products/' . $product['product_image']) }}" class="img-fluid border-0 rounded w-100" alt="{{ $product->product_name }}" />
+                    <img id="mainProductImage" src="{{ $product['product_image'] }}" class="img-fluid border-0 rounded w-100" alt="{{ $product->product_name }}" />
                 </div>
 
                 <!-- Thumbnails -->
                 <div class="col-12 col-md-1 d-flex flex-md-column gap-3 order-2 order-md-1 mb-2">
                     @foreach ($product['images'] as $image )
                     <img
-                        src="{{ asset('/storage/products/'.$image['image']) }}"
+                        src="{{ $image['image'] }}"
                         class="img-fluid border rounded thumbnail-image"
                         style="cursor: pointer; max-width: 80px;"
                         alt="{{ $product->product_name }}"
@@ -181,7 +181,7 @@ use App\Models\Wishlist;
                     <div class="tab-pane fade show active" id="pills-Description" role="tabpanel" aria-labelledby="pills-Description-tab" tabindex="0">
                         <p> {!! $product['description'] !!}</p>
                         @if(!empty($product['product_video']))
-                        <video src="{{ asset('/storage/products/video/'.$product['product_video']) }}" style="width:380px;  box-shadow:1px 1px 2px gray; height:250px" controls></video>
+                        <video src="{{$product['product_video'] }}" style="width:380px;  box-shadow:1px 1px 2px gray; height:250px" controls></video>
                         @else
                         <h6 class="text-muted">Product Video does not exists</h6>
                         @endif
@@ -269,7 +269,7 @@ use App\Models\Wishlist;
                     </span>
                     @endif
                     <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
-                        <img src="{{ asset('storage/products/' . $product['product_image']) }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
+                        <img src="{{ $product['product_image'] }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
                     </a>
                     <div class="card-body p-3">
                         <p class="text-muted small mb-1">{{ $product['product_code'] }} • {{ $product['product_color'] }}</p>
@@ -320,7 +320,7 @@ use App\Models\Wishlist;
                     </span>
                     @endif
                     <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
-                        <img src="{{ asset('storage/products/' . $product['product_image']) }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
+                        <img src="{{ $product['product_image'] }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
                     </a>
                     <div class="card-body p-3">
                         <p class="text-muted small mb-1">{{ $product['product_code'] }} • {{ $product['product_color'] }}</p>

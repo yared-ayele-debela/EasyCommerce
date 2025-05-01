@@ -39,7 +39,7 @@ $user = Auth::guard('admin')->user();
                 <tbody>
                     @foreach ($deliverymen as $deliveryman)
                         <tr>
-                            <td><img src="{{ asset('/storage/delivery_man/'.$deliveryman->delivery_man_image) }}" style="width: 50px; height:50px" alt=""></td>
+                            <td><img src="{{ $deliveryman->delivery_man_image }}" style="width: 50px; height:50px" alt=""></td>
                             <td>{{ $deliveryman->first_name }}</td>
                             <td>{{ $deliveryman->last_name }}</td>
                             <td>{{ $deliveryman->phone }}</td>

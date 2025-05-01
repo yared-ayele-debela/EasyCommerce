@@ -8,8 +8,7 @@ $user = Auth::guard('admin')->user();
     <nav>
         <ol class="breadcrumb p-3">
             <li class="breadcrumb-item"><a href="{{ url('admin/dashboard') }}">Home</a></li>
-            <li class="breadcrumb-item">FlashDeal</li>
-            <li class="breadcrumb-item active">All FlashDeals</li>
+            <li class="breadcrumb-item">FlashDeals</li>
         </ol>
     </nav>
 </div>
@@ -18,22 +17,14 @@ $user = Auth::guard('admin')->user();
         <div class="col-lg-12">
             <div class="card">
 
-                <div class="card-body">
-
-                    <ul class="nav nav-tabs pb-4 align-items-end card-header-tabs w-100">
-                        <li class="nav-item">
-                            <a class="nav-link active" href=""><i class="fa fa-list mr-2"></i>All FlashDeals</a>
-                        </li>
-                        @if ($user && $user->hasPermissionByRole('add_flashdeal'))
-                        <li class="nav-item">
-                            <a class="nav-link active" href="{{ route('flash_deals.create') }}">
+                <div class="card-header">
+                    @if ($user && $user->hasPermissionByRole('add_flashdeal'))
+                            <a class="btn btn-sm btn-primary" href="{{ route('flash_deals.create') }}">
                                 Add new FlashDeals
                             </a>
-                        </li>
                         @endif
-
-                    </ul>
-
+                </div>
+                <div class="card-body">
                     <table id=""  class="table datatable">
                         <thead>
                         <tr>
@@ -53,7 +44,7 @@ $user = Auth::guard('admin')->user();
                             <tr>
                                 <td>{{ ($key+1) + ($flash_deals->currentPage() - 1)*$flash_deals->perPage() }}</td>
                                 <td>{{ $flash_deal->title }}</td>
-                                <td><img src="{{ asset('/storage/banners/'.$flash_deal['banner']) }}" width="100px;" alt="banner" class="h-50px"></td>
+                                <td><img src="{{ $flash_deal['banner'] }}" width="100px;" alt="banner" class="h-50px"></td>
                                 <td>{{ $flash_deal->start_date}}</td>
                                 <td>{{$flash_deal->end_date }}</td>
                                 <td>
@@ -85,7 +76,7 @@ $user = Auth::guard('admin')->user();
                                         <i class="ri-ball-pen-fill"></i>
                                     </a>
                                 @endif
-                                
+
                                 @if ($user && $user->hasPermissionByRole('delete_flashdeal'))
                                     <a href="{{route('flash_deals.destroys', $flash_deal->id)}}" class="btn btn-soft-danger btn-icon btn-circle btn-sm confirm-delete broder-1" title="Delete">
                                         <i class="ri-delete-bin-6-fill"></i>

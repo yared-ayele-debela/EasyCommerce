@@ -59,7 +59,6 @@
         </div>
     </div>
 </div>
-
 <!-- Create Banner Modal -->
 <div class="modal fade" id="createBannerModal" tabindex="-1" aria-labelledby="createBannerModalLabel" aria-hidden="true">
   <div class="modal-dialog">

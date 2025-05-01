@@ -69,21 +69,15 @@ class AdvertisementController extends Controller
             $adver->description = $request->input('description');
             $adver->adv_links = $request->input('adver_links');
             $adver->is_approved = 0;
-
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
-
-                if (!$file->isValid()) {
-                    throw new \Exception('Invalid file upload.');
-                }
-
                 $fileNameWithExt = $file->getClientOriginalName();
                 $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
                 $extension = $file->getClientOriginalExtension();
                 $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                $path = $file->storeAs('public/adver', $fileNameToStore);
-                $adver->image = $fileNameToStore;
+                $file->storeAs('public/adver', $fileNameToStore);
+                $adver->image = asset('storage/adver/' . $fileNameToStore); // Store full URL
             }
 
             $adver->save();
@@ -146,23 +140,33 @@ class AdvertisementController extends Controller
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
 
+                // Check if the file is valid
                 if (!$file->isValid()) {
                     throw new \Exception('Invalid file upload.');
                 }
 
+                // If there's an existing image, delete it
+                if ($adver->image) {
+                    // Extract the file name from the URL
+                    $oldImagePath = str_replace(asset('storage'), 'public', $adver->image);
+
+                    // Delete the old image from storage
+                    Storage::delete($oldImagePath);
+                }
+
+                // Generate a new file name
                 $fileNameWithExt = $file->getClientOriginalName();
                 $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
                 $extension = $file->getClientOriginalExtension();
                 $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                $path = $file->storeAs('public/adver', $fileNameToStore);
-                if ($adver->image) {
-                    Storage::delete('public/adver/' . $adver->image);
-                }
-                $path = $file->storeAs('public/adver/', $fileNameToStore);
+                // Store the new file
+                $file->storeAs('public/adver', $fileNameToStore);
 
-                $adver->image = $fileNameToStore;
+                // Save the full URL of the new image
+                $adver->image = asset('storage/adver/' . $fileNameToStore);
             }
+
 
             $adver->update();
             $appsettings = AppSetting::all()->toArray();

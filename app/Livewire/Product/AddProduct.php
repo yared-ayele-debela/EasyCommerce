@@ -104,12 +104,14 @@ class AddProduct extends Component
         $product->description = $this->description;
         if ($this->product_image) {
             $imagePath = $this->product_image->store('images', 'public');
-            $product->product_image = $imagePath;
+            $product->product_image = asset('storage/' . $imagePath); // store full URL
         }
+
         if ($this->product_video) {
             $videoPath = $this->product_video->store('videos', 'public');
-            $product->product_video = $videoPath;
+            $product->product_video = asset('storage/' . $videoPath); // store full URL
         }
+
         $product->status = 0;
         $product->is_featured = 'Yes';
         $product->returnable_time = $this->returnable_time;

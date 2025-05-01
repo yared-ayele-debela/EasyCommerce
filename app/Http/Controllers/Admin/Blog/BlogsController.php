@@ -71,26 +71,27 @@ class BlogsController extends Controller
             // dd($admin_id);
             // dd($request->all());
             $blog = new Blogs();
+
             if ($request->hasFile('image')) {
                 $fileNameWithExt = $request->file('image')->getClientOriginalName();
                 $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
                 $extension = $request->file('image')->getClientOriginalExtension();
                 $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                $path = $request->file('image')->storeAs('public/blog/', $fileNameToStore);
+                // Store the file in the public disk
+                $path = $request->file('image')->storeAs('blog', $fileNameToStore, 'public');
 
-                //   $image = Image::make(public_path('storage/blog/' . $fileNameToStore));
-
-                //   $image->resize(139, 97)->save(public_path('storage/blog/' . $fileNameToStore));
-                $blog->image = $fileNameToStore;
+                // Save the full URL to the image
+                $blog->image = asset('storage/' . $path);
             }
 
-            $blog->title = $request->input('title');
-            $blog->category_id=$request->input('category_id');
-            $blog->description=$request->input('message');
-            $blog->status = 1;
-            $blog->added_by=$admin_id;
+            $blog->title       = $request->input('title');
+            $blog->category_id = $request->input('category_id');
+            $blog->description = $request->input('message');
+            $blog->status      = 1;
+            $blog->added_by    = $admin_id;
             $blog->save();
+
 
             Alert::toast('Blog has been saved successfully!', 'success');
             return redirect()->route('blogs');
@@ -142,27 +143,36 @@ class BlogsController extends Controller
             ]);
 
             $blog = Blogs::find($request->input('id'));
-            if ($request->hasFile('image')) {
 
+            if ($request->hasFile('image')) {
+                // Check if a previous image exists and delete it
                 if ($blog->image) {
-                    Storage::delete('public/blog/' . $blog->image);
+                    // Extract the relative path from the full URL
+                    $imagePath = str_replace(asset('storage') . '/', '', $blog->image);
+
+                    // Delete the image using the relative path
+                    Storage::disk('public')->delete($imagePath);
                 }
+
+
+                // Get file name with extension
                 $fileNameWithExt = $request->file('image')->getClientOriginalName();
                 $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
                 $extension = $request->file('image')->getClientOriginalExtension();
                 $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                $path = $request->file('image')->storeAs('public/blog/', $fileNameToStore);
+                // Store image and get the path
+                $path = $request->file('image')->storeAs('blog', $fileNameToStore, 'public');
 
-                //   $image = Image::make(public_path('storage/blog/' . $fileNameToStore));
-
-                //   $image->resize(139, 97)->save(public_path('storage/blog/' . $fileNameToStore));
-                $blog->image = $fileNameToStore;
+                // Save the full URL to the image in the database
+                $blog->image = asset('storage/' . $path);
             }
+
             $blog->title = $request->input('title');
-            $blog->category_id=$request->input('category_id');
-            $blog->description=$request->input('message');
+            $blog->category_id = $request->input('category_id');
+            $blog->description = $request->input('message');
             $blog->update();
+
 
             Alert::toast('Blog has been updated successfully!', 'success');
             return redirect()->route('blogs');
@@ -177,26 +187,38 @@ class BlogsController extends Controller
     }
 
     public function delete($id)
-    {
-        try {
-            $user = Auth::guard('admin')->user();
-            if (!$user || !$user->hasPermissionByRole('delete blog')) {
-                return view('admin.errors.unauthorized');
-            }
-            $blog = Blogs::find($id);
-            if ($blog->image) {
-                Storage::delete('public/blog/' . $blog->image);
-            }
-            $blog->delete();
+{
+    try {
+        $user = Auth::guard('admin')->user();
 
-            Alert::toast('Blog  has been deleted successfully!', 'error');
-            return redirect()->route('blogs');
-        } catch (\Exception $e) {
-            // Handle exceptions or errors
-            Alert::toast('something is wrong!!', 'error');
-            return redirect()->back();
+        // Check if the user has permission to delete blog
+        if (!$user || !$user->hasPermissionByRole('delete blog')) {
+            return view('admin.errors.unauthorized');
         }
+
+        $blog = Blogs::find($id);
+
+        // Check if the blog has an image and delete it
+        if ($blog->image) {
+            // Extract the relative path from the full URL
+            $imagePath = str_replace(asset('storage') . '/', '', $blog->image);
+
+            // Delete the image using the relative path
+            Storage::disk('public')->delete($imagePath);
+        }
+
+        // Delete the blog
+        $blog->delete();
+
+        Alert::toast('Blog has been deleted successfully!', 'error');
+        return redirect()->route('blogs');
+    } catch (\Exception $e) {
+        // Handle exceptions or errors
+        Alert::toast('Something went wrong!!', 'error');
+        return redirect()->back();
     }
+}
+
 
     public function active($id)
     {

@@ -16,19 +16,13 @@ $user = Auth::guard('admin')->user();
    <div class="row">
       <div class="col-lg-12">
          <div class="card">
+            <div class="card-header">
+                @if ($user && $user->hasPermissionByRole('create_group'))
+                <a class="btn btn-sm btn-primary" href="{{ route('add_group') }}">Add Group</a>
+                @endif
+            </div>
             <div class="card-body">
                <h5 class="card-title">Groups Data</h5>
-               <ul class="nav nav-tabs pb-4 align-items-end card-header-tabs w-100">
-                <li class="nav-item">
-                  <a class="nav-link active" href=""><i class="fa fa-list mr-2"></i>All Groups</a>
-                </li>
-                @if ($user && $user->hasPermissionByRole('create_group'))
-                  <li class="nav-item border-none">
-                  <a class="nav-link bg-light" href="{{ route('add_group') }}"><i class=" fas fa-plus"></i>Add Group</a>
-                  </li>
-                @endif
-
-               </ul>
 
                <table id="example"  class="table datatable">
                   <thead>

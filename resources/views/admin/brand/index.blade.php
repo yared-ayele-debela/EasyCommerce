@@ -37,6 +37,8 @@ $user = Auth::guard('admin')->user();
                      <tr>
                         <td>{{ $k++ }}</td>
                         <td>{{ $brand->name }}</td>
+                        <td><img src="{{ $brand->image }}" style="width: 25px; height:25px" alt=""></td>
+
                         <td>
                             @if ($user && $user->hasPermissionByRole('edit_brand'))
                             @if($brand->status==1)
@@ -46,7 +48,6 @@ $user = Auth::guard('admin')->user();
                                 @endif
                             @endif
                            </td>
-                        <td><img src="{{ asset('/storage/brand/'.$brand->image) }}" style="width: 25px; height:25px" alt=""></td>
                         <td>
                         @if ($user && $user->hasPermissionByRole('edit_brand'))
                          <a href="{{ url('admin/brands/'.$brand->id.'/edit') }}"  style="background-color:rgb(239, 239, 239) " class=" btn  btn-sm"><i class="ri-ball-pen-fill"></i></a>

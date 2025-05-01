@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class UserController extends Controller
@@ -386,17 +387,24 @@ class UserController extends Controller
         $user->city = $request->city;
         $user->pincode = $request->pincode;
         if ($request->hasFile('profile_image')) {
-        // Get the file from the request
-        $file = $request->file('profile_image');
+            // Delete old image if exists and not default
+            if (!empty($user->profile_photo_path) && $user->profile_photo_path !== 'noimage.jpg') {
+                Storage::delete('public/' . $user->profile_photo_path);
+            }
 
-        // Generate a unique file name
-        $fileName = time() . '.' . $file->getClientOriginalExtension();
+            // Get the file from the request
+            $file = $request->file('profile_image');
 
-        // Store the file in the 'public/profile_images' directory
-        $filePath = $file->storeAs('public/profile_images', $fileName);
-        $user->profile_photo_path= 'profile_images/'.$fileName;
+            // Generate a unique file name
+            $fileName = time() . '.' . $file->getClientOriginalExtension();
 
+            // Store the file in the 'public/profile_images' directory
+            $file->storeAs('public/profile_images', $fileName);
+
+            // Save the full image URL
+            $user->profile_photo_path = asset('storage/profile_images/' . $fileName);
         }
+
         $user->save();
 
         return redirect()->back()->with('success', 'Account details updated successfully!');

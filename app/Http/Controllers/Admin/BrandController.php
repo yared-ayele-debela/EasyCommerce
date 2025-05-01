@@ -64,7 +64,6 @@ class BrandController extends Controller
 
             $this->validate($request, [
                 'name' => 'required|string',
-                // 'image' => 'required|image', // Uncomment this line if you want to validate the image
             ]);
 
             $brand = new Brand();
@@ -75,11 +74,10 @@ class BrandController extends Controller
                 $extension = $request->file('image')->getClientOriginalExtension();
                 $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                $path = $request->file('image')->storeAs('public/brand', $fileNameToStore);
-                // $image = Image::make(public_path('storage/brand/' . $fileNameToStore));
+                $request->file('image')->storeAs('public/brand', $fileNameToStore);
 
-                // $image->resize(139, 97)->save(public_path('storage/brand/' . $fileNameToStore));
-                $brand->image = $fileNameToStore;
+                // Save full URL
+                $brand->image = asset('storage/brand/' . $fileNameToStore);
             }
 
             $brand->name = $request->input('name');
@@ -152,22 +150,24 @@ class BrandController extends Controller
             $brand->name = $request->input('name');
 
             if ($request->hasFile('image')) {
+                // Delete old image if it exists
                 if ($brand->image) {
-                    Storage::delete('public/brand/' . $brand->image);
+                    $oldPath = str_replace(asset('storage') . '/', '', $brand->image); // convert URL to relative path
+                    Storage::disk('public')->delete($oldPath);
                 }
 
+                // Prepare new image
                 $fileNameWithExt = $request->file('image')->getClientOriginalName();
                 $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
                 $extension = $request->file('image')->getClientOriginalExtension();
                 $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                $path = $request->file('image')->storeAs('public/brand/', $fileNameToStore);
+                $request->file('image')->storeAs('public/brand', $fileNameToStore);
 
-                //   $image = Image::make(public_path('storage/brand/' . $fileNameToStore));
-
-                //   $image->resize(139, 97)->save(public_path('storage/brand/' . $fileNameToStore));
-                $brand->image = $fileNameToStore;
+                // Store full URL
+                $brand->image = asset('storage/brand/' . $fileNameToStore);
             }
+
 
             $brand->update();
 
@@ -193,14 +193,9 @@ class BrandController extends Controller
 
             $brand = Brand::find($brand_id);
 
-            if (!$brand) {
-                // Handle the case where the brand is not found
-                notify()->error('Brand not found', 'Error');
-                return redirect('admin/brands');
-            }
-
             if ($brand->image) {
-                Storage::delete('public/brand/' . $brand->image);
+                $oldPath = str_replace(asset('storage') . '/', '', $brand->image); // convert URL to relative path
+                Storage::disk('public')->delete($oldPath);
             }
 
             $brand->delete();

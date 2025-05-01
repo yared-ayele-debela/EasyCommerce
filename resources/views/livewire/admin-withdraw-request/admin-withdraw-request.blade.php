@@ -51,7 +51,7 @@
                                 <td> <a href="{{ url('admin/vendors/details/'.$vendor->id) }}" target="_blank"><i class=" ri ri-eye-line text-white bg-secondary p-1 rounded"></i></a> {{ $request->id }}</td>
                                 <td>{{ $request->vendor->name }}</td>
                                 <td>
-                                    <img src="{{ asset('storage/admin/image/'.$request->vendor->image) }}" width="36px" alt="Profile" class="rounded-circle">
+                                    <img src="{{ $request->vendor->image }}" width="36px" alt="Profile" class="rounded-circle">
                                 </td>
                                 <td>{{ $request->vendor->mobile }}</td>
                                 <td>

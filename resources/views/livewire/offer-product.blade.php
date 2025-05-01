@@ -47,7 +47,7 @@
                             <td class="px-4 py-2">{{ $product->product_name }}</td>
                             <td class="px-4 py-2">{{ $product->product_code }}</td>
                             <td class="px-4 py-2">
-                                <img src="{{ Storage::url($product['product_image']) }}" alt="Product Image" style="max-width: 50px;">
+                                <img src="{{ $product['product_image'] }}" alt="Product Image" style="max-width: 50px;">
                             </td>
                             <td class="px-4 py-2">{{ $product->product_price }}</td>
                             <td class="px-4 py-2">{{ $product->product_discount }}</td>

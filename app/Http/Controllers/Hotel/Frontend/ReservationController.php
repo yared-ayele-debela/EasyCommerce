@@ -72,7 +72,10 @@ class ReservationController extends Controller
         $payment->user_id=$request->user_id;
         $payment->bank_name=$request->bank_name;
         $payment->transaction_number=$request->transaction_number;
-        $payment->receipt=$request->file('receipt')->store('hotel', 'public');;
+        if ($request->hasFile('receipt')) {
+            $path = $request->file('receipt')->store('hotel', 'public');
+            $payment->receipt = asset('storage/' . $path); // Store the full URL
+        }
         $payment->amount_paid=$request->final_price;
         $payment->save();
 

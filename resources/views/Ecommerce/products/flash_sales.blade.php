@@ -43,7 +43,7 @@
                     @endif
                     <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
                         @if($product['product_image'])
-                        <img src="{{ asset('storage/products/' . $product['product_image']) }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
+                        <img src="{{ $product['product_image'] }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
                         @else
                         <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
                         @endif

@@ -126,15 +126,18 @@ class Salesman extends Component
         ]);
 
         if ($this->image) {
-            $imageName = $this->image->store('photos', 'public');
+            $storedPath = $this->image->store('photos', 'public');
+            $imageUrl = asset('storage/' . $storedPath);
+        } else {
+            $imageUrl = $this->image; // fallback if updating without new image
         }
 
         SalesUser::updateOrCreate(['id' => $this->salesUserId], [
-            'name' => $this->name,
-            'image' => $imageName ?? $this->image,
-            'phone' => $this->phone,
-            'address' => $this->address,
-            'email' => $this->email,
+            'name'     => $this->name,
+            'image'    => $imageUrl,
+            'phone'    => $this->phone,
+            'address'  => $this->address,
+            'email'    => $this->email,
             'password' => Hash::make($this->password),
         ]);
 

@@ -15,7 +15,7 @@
             @if(count($blogs) > 0)
                 @foreach ($blogs as $blog)
                     <div class="offer-card mb-4 shadow-sm">
-                        <img src="{{ asset('/storage/blog/'.$blog['image']) }}" class="card-img-top" alt="{{ $blog->title }}">
+                        <img src="{{$blog['image'] }}" class="card-img-top" alt="{{ $blog->title }}">
                         <div class="card-body">
                             <h5 class="card-title">
                                 <a href="{{ url('blogs/details/'.encrypt($blog->id)) }}" class="text-decoration-none text-dark">{{ $blog->title }}</a>
@@ -86,7 +86,7 @@
                 <h5 class="mb-3">Recent Posts</h5>
                 @foreach ($latestFiveBlogs as $blog)
                     <div class="d-flex mb-3">
-                        <img src="{{ asset('/storage/blog/'.$blog['image']) }}" class="me-3 rounded" alt="Recent Post" style="width: 80px; height: 80px; object-fit: cover;">
+                        <img src="{{ $blog['image'] }}" class="me-3 rounded" alt="Recent Post" style="width: 80px; height: 80px; object-fit: cover;">
                         <div>
                             <a href="{{ url('blogs/details/'.$blog->id) }}" class="text-decoration-none d-block text-dark">{{ $blog->title }}</a>
                             <small class="text-muted">{{ $blog->created_at->format('M d, Y') }}</small>

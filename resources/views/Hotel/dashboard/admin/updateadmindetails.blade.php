@@ -1,8 +1,6 @@
 
-
-@extends('admindashboard.maindashboard')
-@section('dashboard')
-
+@extends('Hotel.dashboard.layouts')
+@section('hotel-dashboard')
 <div class="pagetitle bg-light p-3 mb-4 rounded shadow-sm">
     <nav>
         <ol class="breadcrumb mb-0">

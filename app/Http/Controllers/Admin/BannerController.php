@@ -20,13 +20,18 @@ class BannerController extends Controller
     public function banners(Request $request)
     {
         try {
+            $user = Auth::guard('admin')->user();
+            if (!$user || !$user->hasPermissionByRole('view_banners')) {
+                return view('admin.errors.unauthorized');
+            }
+
             $banners = Banner::get()->toArray();
 
             if ($request->isMethod('post')) {
                 $this->validate($request, [
-                    'type'=>'required',
+                    'type' => 'required',
                     'title' => 'required|string',
-                    'image'=>'required|image',
+                    'image' => 'required|image',
                 ]);
 
                 // Validation passed, proceed with creating the banner
@@ -34,46 +39,62 @@ class BannerController extends Controller
                 $banner = new Banner();
 
                 // Image handling based on type (Slider or Fix)
-                if($request->input('type')=="Slider"){
-                    if($request->hasFile('image')){
-                        //get file name with ext
-                        $fileNameWithExt=$request->file('image')->getClientOriginalName();
-                        //get just file name
-                        $fileName=pathinfo($fileNameWithExt,PATHINFO_FILENAME);
-                        //get just file extenstion
-                        $extension=$request->file('image')->getClientOriginalExtension();
-                        //file name to store
-                        $fileNameToStore=$fileName.'_'.time().'.'.$extension;
-                        //upload image
-                        $path=$request->file('image')->storeAs('public/banner',$fileNameToStore);
+                if ($request->input('type') == "Slider") {
+                    if ($request->hasFile('image')) {
+                        // Delete old image if exists
+                        if ($banner->image) {
+                            Storage::delete('public/banner/' . $banner->image);
+                        }
 
+                        // Get file name and extension
+                        $file = $request->file('image');
+                        $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                        $extension = $file->getClientOriginalExtension();
+                        $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
+
+                        // Upload image
+                        $path = $file->storeAs('public/banner', $fileNameToStore);
+
+                        // Optionally resize based on type
                         // $image = Image::make(public_path('storage/banner/' . $fileNameToStore));
+                        // if ($request->input('type') == 'Slider') {
+                        //     $image->resize(1200, 400)->save();
+                        // } elseif ($request->input('type') == 'Fix') {
+                        //     $image->resize(1110, 192)->save();
+                        // }
 
-                        // $image->resize(1200, 400)->save(public_path('storage/banner/' . $fileNameToStore));
-
-                        $banner->image=$fileNameToStore;
-                       }
+                        // Save full URL to DB
+                        $banner->image = asset('storage/banner/' . $fileNameToStore);
+                    }
                 }
-                if($request->input('type')=="Fix"){
-                    if($request->hasFile('image')){
-                        //get file name with ext
-                        $fileNameWithExt=$request->file('image')->getClientOriginalName();
-                        //get just file name
-                        $fileName=pathinfo($fileNameWithExt,PATHINFO_FILENAME);
-                        //get just file extenstion
-                        $extension=$request->file('image')->getClientOriginalExtension();
-                        //file name to store
-                        $fileNameToStore=$fileName.'_'.time().'.'.$extension;
-                        //upload image
-                        $path=$request->file('image')->storeAs('public/banner',$fileNameToStore);
+                if ($request->input('type') == "Fix") {
+                    if ($request->hasFile('image')) {
+                        // Delete old image if exists
+                        if ($banner->image) {
+                            Storage::delete('public/banner/' . $banner->image);
+                        }
 
+                        // Get file name and extension
+                        $file = $request->file('image');
+                        $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                        $extension = $file->getClientOriginalExtension();
+                        $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
+
+                        // Upload image
+                        $path = $file->storeAs('public/banner', $fileNameToStore);
+
+                        // Optionally resize based on type
                         // $image = Image::make(public_path('storage/banner/' . $fileNameToStore));
+                        // if ($request->input('type') == 'Slider') {
+                        //     $image->resize(1200, 400)->save();
+                        // } elseif ($request->input('type') == 'Fix') {
+                        //     $image->resize(1110, 192)->save();
+                        // }
 
-                        // $image->resize(1110, 192)->save(public_path('storage/banner/' . $fileNameToStore));
-
-                        $banner->image=$fileNameToStore;
-                       }
-                  }
+                        // Save full URL to DB
+                        $banner->image = asset('storage/banner/' . $fileNameToStore);
+                    }
+                }
 
                 // Assign other banner properties
                 $banner->link = $request->input('link');
@@ -86,10 +107,6 @@ class BannerController extends Controller
 
                 Alert::toast('Banner has been saved', 'success');
                 return redirect('admin/banners');
-            }
-            $user = Auth::guard('admin')->user();
-            if (!$user || !$user->hasPermissionByRole('view_banners')) {
-                return view('admin.errors.unauthorized');
             }
 
             $appsettings = AppSetting::all()->toArray();
@@ -157,82 +174,90 @@ class BannerController extends Controller
     public function update(Request $request)
     {
         // try {
-            if (!$request->method('put')) {
-                // Handle exceptions or errors
-                Alert::toast('something is wrong!!', 'error');
-                return redirect()->back();
-            }
-            $this->validate($request, [
-                'link' => 'required|string',
-                'title' => 'required|string',
-                'alt' => 'required|string'
-            ]);
+        if (!$request->method('put')) {
+            // Handle exceptions or errors
+            Alert::toast('something is wrong!!', 'error');
+            return redirect()->back();
+        }
+        $this->validate($request, [
+            'link' => 'required|string',
+            'title' => 'required|string',
+            'alt' => 'required|string'
+        ]);
 
-            $banner = Banner::find($request->input('id'));
+        $banner = Banner::find($request->input('id'));
 
-            if (!$banner) {
-                // Handle the case where the banner is not found
-                Alert::toast('Banner not found', 'error');
-                return redirect('admin/banners');
-            }
-
-            $banner->link = $request->input('link');
-            $banner->type = $request->input('type');
-            $banner->title = $request->input('title');
-            $banner->alt = $request->input('alt');
-
-            if($request->input('type')=="Slider"){
-                if($request->hasFile('image')){
-                    if($banner->image) {
-                        Storage::delete('public/banner/'.$banner->image);
-                      }
-                    //get file name with ext
-                    $fileNameWithExt=$request->file('image')->getClientOriginalName();
-                    //get just file name
-                    $fileName=pathinfo($fileNameWithExt,PATHINFO_FILENAME);
-                    //get just file extenstion
-                    $extension=$request->file('image')->getClientOriginalExtension();
-                    //file name to store
-                    $fileNameToStore=$fileName.'_'.time().'.'.$extension;
-                    //upload image
-                    $path=$request->file('image')->storeAs('public/banner',$fileNameToStore);
-
-                    // $image = Image::imagick()->read(public_path('storage/banner/' . $fileNameToStore));
-
-                    // $image->resize(1200, 700)->save(public_path('storage/banner/' . $fileNameToStore));
-
-                    $banner->image=$fileNameToStore;
-                   }
-            }
-            if($request->input('type')=="Fix"){
-                if($request->hasFile('image')){
-                    if($banner->image) {
-                        Storage::delete('public/banner/'.$banner->image);
-                      }
-                    //get file name with ext
-                    $fileNameWithExt=$request->file('image')->getClientOriginalName();
-                    //get just file name
-                    $fileName=pathinfo($fileNameWithExt,PATHINFO_FILENAME);
-                    //get just file extenstion
-                    $extension=$request->file('image')->getClientOriginalExtension();
-                    //file name to store
-                    $fileNameToStore=$fileName.'_'.time().'.'.$extension;
-                    //upload image
-                    $path=$request->file('image')->storeAs('public/banner',$fileNameToStore);
-
-                    // $image = Image::make(public_path('storage/banner/' . $fileNameToStore));
-
-                    // $image->resize(1110, 192)->save(public_path('storage/banner/' . $fileNameToStore));
-
-                    $banner->image=$fileNameToStore;
-                   }
-              }
-
-
-            $banner->update();
-
-            Alert::toast('Banner has been updated', 'success');
+        if (!$banner) {
+            // Handle the case where the banner is not found
+            Alert::toast('Banner not found', 'error');
             return redirect('admin/banners');
+        }
+
+        $banner->link = $request->input('link');
+        $banner->type = $request->input('type');
+        $banner->title = $request->input('title');
+        $banner->alt = $request->input('alt');
+
+        if ($request->input('type') == "Slider") {
+            if ($request->hasFile('image')) {
+                if ($banner->image) {
+                    // Extract file name if stored as full URL
+                    $oldFileName = basename($banner->image);
+                    Storage::delete('public/banner/' . $oldFileName);
+                }
+                $file = $request->file('image');
+                $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension = $file->getClientOriginalExtension();
+                $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
+
+                // Store file
+                $file->storeAs('public/banner', $fileNameToStore);
+
+                // Optional image resizing using Intervention Image
+                // $image = \Image::make(public_path('storage/banner/' . $fileNameToStore));
+                // if ($request->input('type') === 'Slider') {
+                //     $image->resize(1200, 700)->save();
+                // } elseif ($request->input('type') === 'Fix') {
+                //     $image->resize(1110, 192)->save();
+                // }
+
+                // Store full URL in DB
+                $banner->image = asset('storage/banner/' . $fileNameToStore);
+            }
+        }
+        if ($request->input('type') == "Fix") {
+            if ($request->hasFile('image')) {
+                if ($banner->image) {
+                    // Extract file name if stored as full URL
+                    $oldFileName = basename($banner->image);
+                    Storage::delete('public/banner/' . $oldFileName);
+                }
+                $file = $request->file('image');
+                $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension = $file->getClientOriginalExtension();
+                $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
+
+                // Store file
+                $file->storeAs('public/banner', $fileNameToStore);
+
+                // Optional image resizing using Intervention Image
+                // $image = \Image::make(public_path('storage/banner/' . $fileNameToStore));
+                // if ($request->input('type') === 'Slider') {
+                //     $image->resize(1200, 700)->save();
+                // } elseif ($request->input('type') === 'Fix') {
+                //     $image->resize(1110, 192)->save();
+                // }
+
+                // Store full URL in DB
+                $banner->image = asset('storage/banner/' . $fileNameToStore);
+            }
+        }
+
+
+        $banner->update();
+
+        Alert::toast('Banner has been updated', 'success');
+        return redirect('admin/banners');
         // } catch (\Illuminate\Validation\ValidationException $e) {
         //     // Laravel's built-in validation exception
         //     return redirect()->back()->withErrors($e->validator->errors())->withInput();
@@ -253,17 +278,14 @@ class BannerController extends Controller
                 return view('admin.errors.unauthorized');
             }
 
-            $bannercount = Banner::where('status',1)->count();
-            if($bannercount>=6)
-            {
-                Alert::toast('You have already actived 5 banners. Please inactive any one to active more banner','info');
+            $bannercount = Banner::where('status', 1)->count();
+            if ($bannercount >= 6) {
+                Alert::toast('You have already actived 5 banners. Please inactive any one to active more banner', 'info');
                 return redirect()->back();
-            }
-            else
-            {
-            $banner = Banner::find($banner_id);
-            $banner->status = 1;
-            $banner->update();
+            } else {
+                $banner = Banner::find($banner_id);
+                $banner->status = 1;
+                $banner->update();
             }
 
             Alert::toast('Banner Status Acitve', 'success');
@@ -315,7 +337,9 @@ class BannerController extends Controller
             }
 
             if ($banner->image) {
-                Storage::delete('public/banner/' . $banner->image);
+                // Extract file name if stored as full URL
+                $oldFileName = basename($banner->image);
+                Storage::delete('public/banner/' . $oldFileName);
             }
 
             $banner->delete();

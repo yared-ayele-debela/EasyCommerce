@@ -64,7 +64,7 @@
                     <small class=" text-danger">{{ $message }}</small>
                     @enderror
                     @if(!empty($vendorbusiness['shop_image']))
-                    <img src="{{ asset('storage/admin/image/'.$vendorbusiness['shop_image']) }}" style="width: 40px; height:40px;" class="" alt="">
+                    <img src="{{$vendorbusiness['shop_image']}}" style="width: 40px; height:40px;" class="" alt="">
                     <input type="hidden" name="current_shop_image" value="{{ $vendorbusiness['shop_image'] }}">
                     @endif
                 </div>
@@ -125,7 +125,7 @@
                     <small class=" text-danger">{{ $message }}</small>
                     @enderror
                     @if(!empty($vendorbusiness['address_proof_image']))
-                    <img src="{{ asset('storage/admin/image/'.$vendorbusiness['address_proof_image']) }}" style="width: 40px; height:40px;" class="" alt="">
+                    <img src="{{ $vendorbusiness['address_proof_image'] }}" style="width: 40px; height:40px;" class="" alt="">
                     <input type="hidden" name="current_address_proof" value="{{ $vendorbusiness['address_proof_image'] }}">
                     @endif
                 </div>

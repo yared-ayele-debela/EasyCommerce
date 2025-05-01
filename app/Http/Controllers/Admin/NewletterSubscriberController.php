@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use App\Models\Brand;
 use App\Models\Category;

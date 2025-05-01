@@ -22,7 +22,7 @@
                 </span>
                 @endif
                 <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
-                    <img src="{{ asset('storage/products/' . $product['product_image']) }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
+                    <img src="{{ $product['product_image'] }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
                 </a>
                 <div class="card-body p-3">
                     <p class="text-muted small mb-1">{{ $product['product_code'] }} • {{ $product['product_color'] }}</p>

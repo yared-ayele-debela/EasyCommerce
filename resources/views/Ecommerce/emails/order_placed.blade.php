@@ -11,7 +11,7 @@
     <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
         <tr style="background-color: #17BE18;">
             <td style="padding: 20px; text-align: center;">
-                <img src="{{ asset('/storage/appsettings/'.$setting->logo) }}" alt="Company Logo" style="max-width: 100px;">
+                <img src="{{ $setting->logo }}" alt="Company Logo" style="max-width: 100px;">
                 <h4 style="color: white !important;margin:7px !important;">{{ $setting->application_title }}</h4>
             </td>
         </tr>

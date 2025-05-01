@@ -346,7 +346,7 @@ $user = Auth::guard('admin')->user();
                                 <div class="col-md-4">
                                     @php $getProductImage=Product::getProductImage($product['product_id']) @endphp
                                     <a target="_blank" href="{{ url('product/'.$product['product_id']) }}">
-                                    <img src="{{ asset('/storage/products/'.Product::getProductImage($product['product_id'])) }}" style="width:100%;" alt="product image">
+                                    <img src="{{ Product::getProductImage($product['product_id']) }}" style="width:100%;" alt="product image">
                                     </a>
                                     @if(Auth::guard('admin')->user()->type=="vendor")
                                     <p class="text-center"> <b>Order Product Code # {{ $product['order_product_code'] }}</b> </p>

@@ -52,7 +52,7 @@
                             <td>{{ $product['product_code']}}</td>
                             <td>
                                 @if (!empty($product['product_image']))
-                                <img src="{{ asset('storage/products/' . $product['product_image']) }}" alt="Product Image" style="max-width: 50px;">
+                                <img src="{{ $product['product_image'] }}" alt="Product Image" style="max-width: 50px;">
                                 @else
                                 <img class=" rounded-sm border-0" src="{{ asset('/storage/products/no-image.png') }}" style="width: 50px; box-shadow:1px 1px 2px 2px rgb(218, 215, 215); border-radius:3px; border:none; height:50px" alt="">
                                 @endif

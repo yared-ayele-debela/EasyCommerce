@@ -31,7 +31,7 @@
                     <p><strong>Email:</strong> {{ $salesUser->email }}</p>
                     @if($salesUser->image)
                     <p><strong>Image:</strong></p>
-                    <img src="{{ Storage::url($salesUser->image) }}" width="200" alt="{{ $salesUser->name }}">
+                    <img src="{{ $salesUser->image }}" width="200" alt="{{ $salesUser->name }}">
                     @endif
                 </div>
             </div>

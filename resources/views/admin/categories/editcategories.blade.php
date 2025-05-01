@@ -51,7 +51,7 @@ $user = Auth::guard('admin')->user();
                             @enderror
                             <div class="pt-3">
                               <div class="row">
-                                <img src="{{ asset('/storage/category/'.$categories->image) }}" style="width:80px; height:50px" class=" rounded" alt="">
+                                <img src="{{$categories->image }}" style="width:80px; height:50px" class=" rounded" alt="">
                               </div>
                            </div>
                         </div>
@@ -63,7 +63,7 @@ $user = Auth::guard('admin')->user();
                              @enderror
                              <div class="pt-3">
                                 <div class="row">
-                                  <img src="{{ asset('/storage/category/'.$categories->banner_image) }}" style="width:80px; height:50px" class=" rounded" alt="">
+                                  <img src="{{$categories->banner_image }}" style="width:80px; height:50px" class=" rounded" alt="">
                                 </div>
                              </div>
                          </div>

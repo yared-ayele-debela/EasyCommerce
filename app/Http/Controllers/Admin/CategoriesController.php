@@ -92,27 +92,24 @@ class CategoriesController extends Controller
                 $extension = $request->file('image')->getClientOriginalExtension();
                 $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                $path = $request->file('image')->storeAs('public/category', $fileNameToStore);
-                //   $image = Image::make(public_path('storage/category/' . $fileNameToStore));
+                $request->file('image')->storeAs('public/category', $fileNameToStore);
 
-                // $image->resize(139, 97)->save(public_path('storage/category/' . $fileNameToStore));
-
-                $category->image = $fileNameToStore;
+                // Store full URL
+                $category->image = asset('storage/category/' . $fileNameToStore);
             }
+
             if ($request->hasFile('banner_image')) {
                 $fileNameWithExt = $request->file('banner_image')->getClientOriginalName();
                 $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
                 $extension = $request->file('banner_image')->getClientOriginalExtension();
                 $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                $path = $request->file('banner_image')->storeAs('public/category', $fileNameToStore);
+                $request->file('banner_image')->storeAs('public/category', $fileNameToStore);
 
-                // $banner_image = Image::make(public_path('storage/category/' . $fileNameToStore));
-
-                // $banner_image->resize(634, 494)->save(public_path('storage/category/' . $fileNameToStore));
-
-                $category->banner_image = $fileNameToStore;
+                // Store full URL
+                $category->banner_image = asset('storage/category/' . $fileNameToStore);
             }
+
 
             $category->group_id = $request->input('group_id');
             $category->parent_id = $request->input('parent_id');
@@ -170,35 +167,43 @@ class CategoriesController extends Controller
             $category->meta_title = $request->input('meta_title');
 
             if ($request->hasFile('image')) {
+                // Delete old image if it exists (strip URL if previously saved as full URL)
                 if ($category->image) {
-                    Storage::delete('public/category/' . $category->image);
+                    $oldImagePath = str_replace(asset('storage') . '/', '', $category->image);
+                    Storage::delete('public/' . $oldImagePath);
                 }
 
+                // Upload new image
                 $fileNameWithExt = $request->file('image')->getClientOriginalName();
                 $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
                 $extension = $request->file('image')->getClientOriginalExtension();
                 $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                $path = $request->file('image')->storeAs('public/category', $fileNameToStore);
-                //   $image = Image::make(public_path('storage/category/' . $fileNameToStore));
+                $request->file('image')->storeAs('public/category', $fileNameToStore);
 
-                //   $image->resize(139, 97)->save(public_path('storage/category/' . $fileNameToStore));
-
-                $category->image = $fileNameToStore;
+                // Store full URL
+                $category->image = asset('storage/category/' . $fileNameToStore);
             }
+
             if ($request->hasFile('banner_image')) {
+                // Delete old banner if it exists
+                if ($category->banner_image) {
+                    $oldBannerPath = str_replace(asset('storage') . '/', '', $category->banner_image);
+                    Storage::delete('public/' . $oldBannerPath);
+                }
+
+                // Upload new banner
                 $fileNameWithExt = $request->file('banner_image')->getClientOriginalName();
                 $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
                 $extension = $request->file('banner_image')->getClientOriginalExtension();
                 $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                $path = $request->file('banner_image')->storeAs('public/category', $fileNameToStore);
-                //   $banner_image = Image::make(public_path('storage/category/' . $fileNameToStore));
+                $request->file('banner_image')->storeAs('public/category', $fileNameToStore);
 
-                //   $banner_image->resize(139, 97)->save(public_path('storage/category/' . $fileNameToStore));
-
-                $category->banner_image = $fileNameToStore;
+                // Store full URL
+                $category->banner_image = asset('storage/category/' . $fileNameToStore);
             }
+
 
             $category->update();
 
@@ -262,10 +267,13 @@ class CategoriesController extends Controller
 
             $category = Category::find($categories_id);
             if ($category->image) {
-                Storage::delete('public/category/' . $category->image);
+                $oldImagePath = str_replace(asset('storage') . '/', '', $category->image);
+                Storage::delete('public/' . $oldImagePath);
             }
-            if ($category->banner_image){
-                Storage::delete('public/category/' . $category->image);
+
+            if ($category->banner_image) {
+                $oldBannerPath = str_replace(asset('storage') . '/', '', $category->banner_image);
+                Storage::delete('public/' . $oldBannerPath);
             }
 
             $category->delete();

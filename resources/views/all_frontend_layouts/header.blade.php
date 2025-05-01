@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $appsetting['tiltle'] }}</title>
-    <link href="{{ asset('/storage/appsettings/'.$appsetting['favicon']) }}" rel="shortcut icon">
+    <link href="{{ $appsetting['favicon'] }}" rel="shortcut icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
@@ -192,7 +192,7 @@ use Illuminate\Support\Facades\Storage;
                     <div class="dropdown">
                         <a class="btn btn-light btn-sm" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             @if(Auth::user()->profile_photo_path)
-                            <img src="{{ asset('storage/' . auth()->user()->profile_photo_path) }}" width="28" class="rounded-circle border shadow-sm">
+                            <img src="{{ auth()->user()->profile_photo_path }}" width="28" class="rounded-circle border shadow-sm">
                             @else
                             <i class="bi bi-person-circle fs-5"></i>
                             @endif

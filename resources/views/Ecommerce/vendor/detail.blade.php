@@ -11,13 +11,13 @@
         {{-- Vendor Banner --}}
         <div class="position-relative">
             @if(!empty($allvendor->vendorbusinessdetails['shop_image']))
-                <img src="{{ asset('storage/admin/image/'.$allvendor->vendorbusinessdetails['shop_image']) }}" class="w-100 rounded" style="height: 250px; object-fit: cover;" alt="Shop Banner">
+                <img src="{{ $allvendor->vendorbusinessdetails['shop_image'] }}" class="w-100 rounded" style="height: 250px; object-fit: cover;" alt="Shop Banner">
             @else
                 <img src="{{ asset('banner.png') }}" class="w-100 rounded" style="height: 250px; object-fit: cover;" alt="Shop Banner">
             @endif
             <div class="position-absolute bottom-0 start-0 translate-middle-y ms-4 mb-2">
                 @if(!empty($allvendor->adminvendor['image']))
-                    <img src="{{ asset('storage/admin/image/'.$allvendor->adminvendor['image']) }}" class="rounded-circle border border-2 bg-white" width="100" height="100" style="object-fit: cover;" alt="Vendor Image">
+                    <img src="{{ $allvendor->adminvendor['image']}}" class="rounded-circle border border-2 bg-white" width="100" height="100" style="object-fit: cover;" alt="Vendor Image">
                 @else
                     <img src="{{ asset('no_vendor.png') }}" class="rounded-circle border border-2 bg-white" width="100" height="100" style="object-fit: cover;" alt="Vendor Image">
                 @endif
@@ -56,7 +56,7 @@
                         @endif
                         <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
                             @if($product['product_image'])
-                            <img src="{{ asset('storage/products/' . $product['product_image']) }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
+                            <img src="{{ $product['product_image'] }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
                             @else
                             <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
                             @endif

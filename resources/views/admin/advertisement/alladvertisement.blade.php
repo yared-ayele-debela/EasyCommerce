@@ -37,7 +37,7 @@ $user = Auth::guard('admin')->user();
                      <tr>
                         <td>{{ $ad['id'] }}</td>
                         <td>{{ $ad['title'] }}</td>
-                        <td><img src="{{ asset('/storage/adver/'.$ad['image']) }}" style="width: 80px; height:40px; box-shadow:1px 1px 2px 1px gray" alt=""></td>
+                        <td><img src="{{ $ad['image'] }}" style="width: 80px; height:40px; box-shadow:1px 1px 2px 1px gray" alt=""></td>
                         <td>{{ $ad['description'] }}</td>
                         <td>{{ $ad['adv_links'] }}</td>
                         <td>

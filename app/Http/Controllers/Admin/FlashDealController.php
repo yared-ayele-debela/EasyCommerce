@@ -30,10 +30,7 @@ class FlashDealController extends Controller
         $appsettings = AppSetting::all()->toArray();
         // $sort_search = null;
         $flash_deals = FlashDeal::orderBy('created_at', 'desc');
-        // if ($request->has('search')){
-        //     $sort_search = $request->search;
-        //     $flash_deals = $flash_deals->where('title', 'like', '%'.$sort_search.'%');
-        // }
+
         $flash_deals = $flash_deals->paginate(15);
         return view('admin.flashdeal.index', compact('flash_deals', 'appsettings'));
     }
@@ -64,19 +61,19 @@ class FlashDealController extends Controller
 
 
         if ($request->hasFile('banner')) {
-            //get file name with ext
+            // Get original file name with extension
             $fileNameWithExt = $request->file('banner')->getClientOriginalName();
-            //get just file name
             $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-            //get just file extenstion
             $extension = $request->file('banner')->getClientOriginalExtension();
-            //file name to store
             $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-            //upload banner
+            // Store the file
             $path = $request->file('banner')->storeAs('public/banners', $fileNameToStore);
-            $flash_deal->banner = $fileNameToStore;
+
+            // Store the full URL in the database
+            $flash_deal->banner = asset('storage/banners/' . $fileNameToStore);
         }
+
         // $flash_deal->banner = $request->banner;
         if ($flash_deal->save()) {
             foreach ($request->products as $key => $product) {
@@ -156,19 +153,25 @@ class FlashDealController extends Controller
         $flash_deal->title = $request->title;
 
         if ($request->hasFile('banner')) {
-            //get file name with ext
+            // Check if the old banner exists and delete it
+            if ($flash_deal->banner && Storage::disk('public')->exists('banners/' . $flash_deal->banner)) {
+                // Delete the old banner image from storage
+                Storage::disk('public')->delete('banners/' . $flash_deal->banner);
+            }
+
+            // Get original file name with extension
             $fileNameWithExt = $request->file('banner')->getClientOriginalName();
-            //get just file name
             $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-            //get just file extenstion
             $extension = $request->file('banner')->getClientOriginalExtension();
-            //file name to store
             $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-            //upload banner
+            // Store the new banner image
             $path = $request->file('banner')->storeAs('public/banners', $fileNameToStore);
-            $flash_deal->banner = $fileNameToStore;
+
+            // Save the new banner URL to the DB
+            $flash_deal->banner = asset('storage/banners/' . $fileNameToStore);
         }
+
         foreach ($flash_deal->flash_deal_products as $key => $flash_deal_product) {
             $flash_deal_product->delete();
         }

@@ -67,7 +67,7 @@ use App\Models\Order;
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         <div class="d-flex align-items-center">
                                             <!-- Product Image -->
-                                            <img src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->product->name }}" class="img-thumbnail me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                            <img src="{{ $item->product->image }}" alt="{{ $item->product->name }}" class="img-thumbnail me-3" style="width: 50px; height: 50px; object-fit: cover;">
 
                                             <div>
                                                 <strong>{{ $item->product->name }}</strong> (x{{ $item->quantity }})
@@ -105,7 +105,7 @@ use App\Models\Order;
                                             <div class="modal-body text-left">
                                                 <p>Receipt:</p>
                                                 @if($order->paymentInfo->receipt)
-                                                <img src="{{ asset('storage/'.$order->paymentInfo->receipt) }}" class="img-fluid" alt="{{ $order->paymentInfo->bank_name }}">
+                                                <img src="{{ $order->paymentInfo->receipt }}" class="img-fluid" alt="{{ $order->paymentInfo->bank_name }}">
                                                 @else
                                                 <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid" alt="{{ $order->paymentInfo->bank_name }}">
                                                 @endif
@@ -208,7 +208,7 @@ use App\Models\Order;
                                         <div class="modal-body">
                                             <p>Receipt:</p>
                                             @if($reservation->hotel_reservation_payment_info->receipt)
-                                            <img src="{{ asset('storage/'.$reservation->hotel_reservation_payment_info->receipt) }}" class="img-fluid" alt="{{ $reservation->hotel_reservation_payment_info->bank_name }}">
+                                            <img src="{{ $reservation->hotel_reservation_payment_info->receipt }}" class="img-fluid" alt="{{ $reservation->hotel_reservation_payment_info->bank_name }}">
                                             @else
                                             <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid" alt="{{ $reservation->hotel_reservation_payment_info->bank_name }}">
                                             @endif

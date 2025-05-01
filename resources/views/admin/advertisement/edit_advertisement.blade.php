@@ -37,7 +37,7 @@ $user = Auth::guard('admin')->user();
                              <small class=" text-danger">{{ $message }}</small>
                              @enderror
                              <br>
-                             <img src="{{ asset('/storage/adver/'.$adver['image']) }}" style="width: 80px; height:40px; box-shadow:1px 1px 2px 1px gray" alt="">
+                             <img src="{{$adver['image'] }}" style="width: 80px; height:40px; box-shadow:1px 1px 2px 1px gray" alt="">
                          </div>
 
                         <div class="col-md-6">

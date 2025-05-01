@@ -120,49 +120,32 @@ class DeliveryManController extends Controller
 
 
             if ($request->hasFile('delivery_man_image')) {
-                //get file name with ext
-                $fileNameWithExt = $request->file('delivery_man_image')->getClientOriginalName();
-                //get just file name
-                $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                //get just file extenstion
-                $extension = $request->file('delivery_man_image')->getClientOriginalExtension();
-                //file name to store
+                $file = $request->file('delivery_man_image');
+                $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension = $file->getClientOriginalExtension();
                 $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
-
-                //upload image
-                $path = $request->file('delivery_man_image')->storeAs('public/delivery_man', $fileNameToStore);
-                $deliveryBoy->delivery_man_image = $fileNameToStore;
+                $path = $file->storeAs('public/delivery_man', $fileNameToStore);
+                $deliveryBoy->delivery_man_image = asset('storage/delivery_man/' . $fileNameToStore);
             }
 
             if ($request->hasFile('identity_image')) {
-                //get file name with ext
-                $fileNameWithExt = $request->file('identity_image')->getClientOriginalName();
-                //get just file name
-                $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                //get just file extenstion
-                $extension = $request->file('identity_image')->getClientOriginalExtension();
-                //file name to store
+                $file = $request->file('identity_image');
+                $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension = $file->getClientOriginalExtension();
                 $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
-
-                //upload image
-                $path = $request->file('identity_image')->storeAs('public/delivery_man', $fileNameToStore);
-                $deliveryBoy->identity_image = $fileNameToStore;
+                $path = $file->storeAs('public/delivery_man', $fileNameToStore);
+                $deliveryBoy->identity_image = asset('storage/delivery_man/' . $fileNameToStore);
             }
 
             if ($request->hasFile('driving_license_image')) {
-                //get file name with ext
-                $fileNameWithExt = $request->file('driving_license_image')->getClientOriginalName();
-                //get just file name
-                $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                //get just file extenstion
-                $extension = $request->file('driving_license_image')->getClientOriginalExtension();
-                //file name to store
+                $file = $request->file('driving_license_image');
+                $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension = $file->getClientOriginalExtension();
                 $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
-
-                //upload image
-                $path = $request->file('driving_license_image')->storeAs('public/delivery_man', $fileNameToStore);
-                $deliveryBoy->driving_license_image = $fileNameToStore;
+                $path = $file->storeAs('public/delivery_man', $fileNameToStore);
+                $deliveryBoy->driving_license_image = asset('storage/delivery_man/' . $fileNameToStore);
             }
+
 
             // Save the deliveryman to the database
             $deliveryBoy->save();
@@ -226,9 +209,6 @@ class DeliveryManController extends Controller
                 'identity_number' => 'required',
                 'address' => 'required',
                 'email' => 'required|email',
-
-                // 'delivery_man_image' => 'required',
-                // 'identity_image' => 'required',
             ]);
             // dd($validatedData);
 
@@ -256,57 +236,40 @@ class DeliveryManController extends Controller
 
             if ($request->hasFile('delivery_man_image')) {
                 if ($deliveryBoy->delivery_man_image) {
-                    Storage::delete('public/delivery_man/' . $deliveryBoy->delivery_man_image);
+                    $oldFileName = basename($deliveryBoy->delivery_man_image);
+                    Storage::delete('public/delivery_man/' . $oldFileName);
                 }
-                //get file name with ext
-                $fileNameWithExt = $request->file('delivery_man_image')->getClientOriginalName();
-                //get just file name
-                $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                //get just file extenstion
-                $extension = $request->file('delivery_man_image')->getClientOriginalExtension();
-                //file name to store
-                $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                //upload image
-                $path = $request->file('delivery_man_image')->storeAs('public/delivery_man', $fileNameToStore);
-                $deliveryBoy->delivery_man_image = $fileNameToStore;
+                $file = $request->file('delivery_man_image');
+                $fileNameToStore = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $file->storeAs('public/delivery_man', $fileNameToStore);
+                $deliveryBoy->delivery_man_image = asset('storage/delivery_man/' . $fileNameToStore);
             }
 
             if ($request->hasFile('identity_image')) {
-                //get file name with ext
                 if ($deliveryBoy->identity_image) {
-                    Storage::delete('public/delivery_man/' . $deliveryBoy->identity_image);
+                    $oldFileName = basename($deliveryBoy->identity_image);
+                    Storage::delete('public/delivery_man/' . $oldFileName);
                 }
-                $fileNameWithExt = $request->file('identity_image')->getClientOriginalName();
-                //get just file name
-                $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                //get just file extenstion
-                $extension = $request->file('identity_image')->getClientOriginalExtension();
-                //file name to store
-                $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                //upload image
-                $path = $request->file('identity_image')->storeAs('public/delivery_man', $fileNameToStore);
-                $deliveryBoy->identity_image = $fileNameToStore;
+                $file = $request->file('identity_image');
+                $fileNameToStore = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $file->storeAs('public/delivery_man', $fileNameToStore);
+                $deliveryBoy->identity_image = asset('storage/delivery_man/' . $fileNameToStore);
             }
 
             if ($request->hasFile('driving_license_image')) {
                 if ($deliveryBoy->driving_license_image) {
-                    Storage::delete('public/delivery_man/' . $deliveryBoy->driving_license_image);
+                    $oldFileName = basename($deliveryBoy->driving_license_image);
+                    Storage::delete('public/delivery_man/' . $oldFileName);
                 }
-                //get file name with ext
-                $fileNameWithExt = $request->file('driving_license_image')->getClientOriginalName();
-                //get just file name
-                $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                //get just file extenstion
-                $extension = $request->file('driving_license_image')->getClientOriginalExtension();
-                //file name to store
-                $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                //upload image
-                $path = $request->file('driving_license_image')->storeAs('public/delivery_man', $fileNameToStore);
-                $deliveryBoy->driving_license_image = $fileNameToStore;
+                $file = $request->file('driving_license_image');
+                $fileNameToStore = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $file->storeAs('public/delivery_man', $fileNameToStore);
+                $deliveryBoy->driving_license_image = asset('storage/delivery_man/' . $fileNameToStore);
             }
+
             // Save the deliveryman to the database
             $deliveryBoy->save();
 
@@ -330,15 +293,21 @@ class DeliveryManController extends Controller
                 return view('admin.errors.unauthorized');
             }
             $deliveryman = DeliveryMan::findOrFail($id);
+
             if ($deliveryman->delivery_man_image) {
-                Storage::delete('public/delivery_man/' . $deliveryman->delivery_man_image);
+                $oldFileName = basename($deliveryman->delivery_man_image);
+                Storage::delete('public/delivery_man/' . $oldFileName);
             }
+
             if ($deliveryman->identity_image) {
-                Storage::delete('public/delivery_man/' . $deliveryman->identity_image);
+                $oldFileName = basename($deliveryman->identity_image);
+                Storage::delete('public/delivery_man/' . $oldFileName);
             }
             if ($deliveryman->driving_license_image) {
-                Storage::delete('public/delivery_man/' . $deliveryman->driving_license_image);
+                $oldFileName = basename($deliveryman->driving_license_image);
+                Storage::delete('public/delivery_man/' . $oldFileName);
             }
+
 
             $deliveryman->delete();
             Alert::toast('DeliveryMan has beeb deleted!', 'error');

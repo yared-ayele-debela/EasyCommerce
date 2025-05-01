@@ -41,13 +41,14 @@
     </style>
 </head>
 <body>
+    @include('sweetalert::alert')
 
 <div class="container vh-100 d-flex justify-content-center align-items-center">
     <div class="col-lg-5 col-md-6">
         <div class="card p-4">
             <div class="card-body">
                 <div class="pb-3 text-center">
-                    <img src="{{ asset('/storage/appsettings/'.$appsettings[0]['logo']) }}" class="app-brand-logo">
+                    <img src="{{ $appsettings[0]['logo'] }}" class="app-brand-logo">
                 </div>
                 <h4 class="font-weight-bold text-dark text-center">Admin Login</h4>
                 <p class="text-muted text-center">Enter your credentials to access your account</p>
@@ -57,13 +58,17 @@
                     <div class="form-group text-left">
                         <label for="email">Email</label>
                         <input type="email" name="email" class="form-control" id="email" required>
-                        <div class="invalid-feedback">Please enter a valid email address!</div>
+                        @error('email')
+                        <span class="text-danger">{{ $message }}</span>
+                        @enderror
                     </div>
                     <div class="form-group text-left">
                         <label for="yourPassword">Password</label>
                         <input type="password" name="password" class="form-control" id="yourPassword" pattern=".{8,}" title="At least 8 characters required" required>
-                        <div class="invalid-feedback">Please enter your password!</div>
-                    </div>
+                        @error('password')
+                        <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                                        </div>
                     <button class="btn btn-primary btn-block" type="submit">Login</button>
                 </form>
                 <div class="mt-3">

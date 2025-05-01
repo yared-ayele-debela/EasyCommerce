@@ -25,7 +25,8 @@
                 </div>
                 <div class="col-md-12">
                     <label for="message" class="mb-2 mt-2">Message</label>
-                    <textarea name="message" id="description" cols="30" rows="10"></textarea>
+                    <br>
+                    <textarea name="message" id="description" cols="130" rows="10"></textarea>
                 </div>
                 <div class="form-group pt-3 ">
                     <input type="submit" class=" btn btn-primary pt-2 pb-2 shadow" value="Send Email">

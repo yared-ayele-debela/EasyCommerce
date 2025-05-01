@@ -66,7 +66,7 @@ $user = Auth::guard('admin')->user();
                              @enderror
                              <div class="pt-3">
                                 <div class="row">
-                                  <img src="{{ asset('/storage/banner/'.$banner['image']) }}" style="width:80px; height:40px" class=" rounded" alt="">
+                                  <img src="{{ $banner['image'] }}" style="width:80px; height:40px" class=" rounded" alt="">
                                 </div>
                              </div>
                          </div>

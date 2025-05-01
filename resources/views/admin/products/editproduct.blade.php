@@ -110,7 +110,7 @@ $user = Auth::guard('admin')->user();
                         @enderror
                         <div class="pt-3">
                             <div class="row">
-                                <img src="{{ asset('/storage/products/'.$product->product_image) }}" style="width:80px; margin-left:15px;  box-shadow:1px 1px 2px gray; height:50px" class=" rounded" alt="">
+                                <img src="{{ $product->product_image}}" style="width:80px; margin-left:15px;  box-shadow:1px 1px 2px gray; height:50px" class=" rounded" alt="">
                             </div>
                         </div>
                     </div>

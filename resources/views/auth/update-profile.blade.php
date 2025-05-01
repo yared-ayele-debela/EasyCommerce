@@ -34,7 +34,7 @@
 
                             <div class="col-12 mb-3">
                                 @if(Auth::user()->profile_photo_path)
-                                    <img src="{{ asset('storage/' . auth()->user()->profile_photo_path) }}" alt="Profile Image" class="profile-image border border-2 offer-card">
+                                    <img src="{{ auth()->user()->profile_photo_path }}" alt="Profile Image" class="profile-image border border-2 offer-card">
                                   @endif
                             </div>
                             <div class="col-md-6">

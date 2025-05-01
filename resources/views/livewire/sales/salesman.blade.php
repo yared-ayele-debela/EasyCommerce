@@ -46,7 +46,7 @@
                             <tr>
                                 <td>{{ $salesUser->id }}</td>
                                 <td>{{ $salesUser->name }}</td>
-                                <td><img src="{{ Storage::url($salesUser->image) }}" width="50" alt="{{ $salesUser->name }}"></td>
+                                <td><img src="{{ $salesUser->image }}" width="50" alt="{{ $salesUser->name }}"></td>
                                 <td>{{ $salesUser->phone }}</td>
                                 {{-- <td>{{ $salesUser->address }}</td> --}}
                                 <td><!-- Button trigger modal -->
@@ -129,7 +129,7 @@
                                     <input type="file" class="form-control" id="image" wire:model="image">
                                     @if($currentImage)
                                     <div class="mb-2 mt-2">
-                                        <img src="{{ Storage::url($currentImage) }}" width="100" alt="Current Image">
+                                        <img src="{{ $currentImage }}" width="100" alt="Current Image">
                                     </div>
                                     @endif
                                     @error('image') <span class="text-danger">{{ $message }}</span> @enderror

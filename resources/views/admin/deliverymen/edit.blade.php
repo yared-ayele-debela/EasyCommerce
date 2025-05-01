@@ -45,7 +45,7 @@ $user = Auth::guard('admin')->user();
                             @error('delivery_man_image')
                             <small class=" text-danger">{{ $message }}</small>
                             @enderror
-                            <img src="{{ asset('/storage/delivery_man/'.$deliveryman->delivery_man_image) }}" style="width: 50px; height:50px" alt="">
+                            <img src="{{ $deliveryman->delivery_man_image }}" style="width: 50px; height:50px" alt="">
                         </div>
                         <div class="form-group m-3">
                             <label for="address">Address</label>
@@ -106,7 +106,7 @@ $user = Auth::guard('admin')->user();
                         <small class=" text-danger">{{ $message }}</small>
                         @enderror
                         @if($deliveryman->identity_image)
-                        <img src="{{ asset('/storage/delivery_man/'.$deliveryman->identity_image) }}" style="width: 50px; height:50px" alt="">
+                        <img src="{{ $deliveryman->identity_image }}" style="width: 50px; height:50px" alt="">
                         @endif
                     </div>
                 </div>
@@ -223,7 +223,7 @@ $user = Auth::guard('admin')->user();
                     <small class=" text-danger">{{ $message }}</small>
                     @enderror
                     @if($deliveryman->driving_license_image)
-                    <img src="{{ asset('/storage/delivery_man/'.$deliveryman->driving_license_image) }}" style="width: 50px; height:50px" alt="">
+                    <img src="{{ $deliveryman->driving_license_image }}" style="width: 50px; height:50px" alt="">
                     @endif
                 </div>
 

@@ -47,7 +47,7 @@ $user = Auth::guard('admin')->user();
                         <td>{{ $all['email']}}</td>
                         <td>
                            @if(!empty($all['image']))
-                           <img src="{{ asset('storage/admin/image/'.$all['image']) }}" style=" box-shadow:1px 1px 3px gray; border-radius:2rem;width: 40px; height:40px;" class="" alt="">
+                           <img src="{{$all['image'] }}" style=" box-shadow:1px 1px 3px gray; border-radius:2rem;width: 40px; height:40px;" class="" alt="">
                            @else
                            <img  src="{{ asset('/storage/products/noimagefile.png') }}" style="box-shadow:1px 1px 3px gray;  border-radius:2rem; width: 40px; height:40px;" class="" alt="">
                            @endif

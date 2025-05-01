@@ -104,7 +104,7 @@ $settings = AppSetting::first();
         <div id="receipt">
             <div class="header d-flex justify-content-between align-items-center">
                 <div>
-                    <img src="{{ asset('/storage/appsettings/'.$settings->logo) }}" alt="Logo" class="logo">
+                    <img src="{{ $settings->logo }}" alt="Logo" class="logo">
                     <h6 class="text-dark">{{ $settings->application_title }}</h6>
                 </div>
                 <div>

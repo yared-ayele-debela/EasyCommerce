@@ -111,7 +111,7 @@
 
                              <input type="file" class="form-control" name="favicon">
                              <div class="image">
-                                <img src="{{ asset('/storage/appsettings/'.$appsetting->favicon) }}" style="width: 50px; height:50px" alt="">
+                                <img src="{{ $appsetting->favicon }}" style="width: 50px; height:50px" alt="">
 
                              </div>
                              @error('favicon')
@@ -124,7 +124,7 @@
                             <label for="logo" class="form-label">Logo</label>
                              <input type="file" class="form-control" name="logo">
                              <div class="image">
-                                <img src="{{ asset('/storage/appsettings/'.$appsetting->logo) }}" style="width: 50px; height:50px" alt="">
+                                <img src="{{ $appsetting->logo }}" style="width: 50px; height:50px" alt="">
                              </div>
                              @error('logo')
                              <small class=" text-danger">{{ $message }}</small>
@@ -135,7 +135,7 @@
                             <label for="footer_image" class="form-label">Footer Logo</label>
                              <input type="file" class="form-control" name="footer_image">
                              <div class="image">
-                                <img src="{{ asset('/storage/appsettings/'.$appsetting->footer_image) }}" style="width: 50px; height:50px" alt="">
+                                <img src="{{ $appsetting->footer_image }}" style="width: 50px; height:50px" alt="">
                              </div>
                              @error('logo')
                              <small class=" text-danger">{{ $message }}</small>
@@ -145,7 +145,7 @@
                             <label for="panel_icon" class="form-label">Dashbaord Header Icon Recomended size (500 x 86)</label>
                              <input type="file" class="form-control" name="panel_icon">
                              <div class="image">
-                                <img src="{{ asset('/storage/appsettings/'.$appsetting->panel_icon) }}" style="width: 50px; height:50px" alt="">
+                                <img src="{{ $appsetting->panel_icon }}" style="width: 50px; height:50px" alt="">
                              </div>
                              @error('panel_icon')
                              <small class=" text-danger">{{ $message }}</small>

@@ -16,7 +16,7 @@ class GroupController extends Controller
     //
     public function index()
     {
-        try {
+        // try {
             $user = Auth::guard('admin')->user();
             if (!$user || !$user->hasPermissionByRole('view_group')) {
                 return view('admin.errors.unauthorized');
@@ -24,11 +24,11 @@ class GroupController extends Controller
 
             $appsettings = AppSetting::all()->toArray();
             $group = Group::all();
-            return view('group.allgroup', compact('group', 'appsettings'));
-        } catch (\Exception $e) {
-            Alert::toast('something is wrong!!', 'error');
-            return redirect()->back();
-        }
+            return view('admin.group.allgroup', compact('group', 'appsettings'));
+        // } catch (\Exception $e) {
+        //     Alert::toast('something is wrong!!', 'error');
+        //     return redirect()->back();
+        // }
     }
 
     public function create()
@@ -40,29 +40,24 @@ class GroupController extends Controller
             }
 
             $appsettings = AppSetting::all()->toArray();
-            return view('group.addgroup', compact('appsettings'));
+            return view('admin.group.addgroup', compact('appsettings'));
         } catch (\Exception $e) {
             Alert::toast('something is wrong!!', 'error');
             return redirect()->back();
         }
     }
 
-    public function store(GroupFormRequest $request)
+    public function store(Request $request)
     {
         try {
             $user = Auth::guard('admin')->user();
             if (!$user || !$user->hasPermissionByRole('create_group')) {
                 return view('admin.errors.unauthorized');
             }
-            if (!$request->isMethod('post')) {
-                // Handle the error - Method not allowed
-                Alert::toast('Method not allowed', 'error');
-                return redirect()->back();
-            }
-            $validatedata = $request->validated();
+
             $group = new Group();
-            $group->name = $validatedata['name'];
-            $group->description = $validatedata['description'];
+            $group->name = $request['name'];
+            $group->description = $request['description'];
 
             $group->save();
             Alert::toast('Group has been created!', 'success');
@@ -77,7 +72,7 @@ class GroupController extends Controller
         }
     }
 
-    public function update(GroupFormRequest $request, $group_id)
+    public function update(Request $request, $group_id)
     {
         try {
             $user = Auth::guard('admin')->user();
@@ -90,10 +85,9 @@ class GroupController extends Controller
                 return redirect()->back();
             }
 
-            $validatedata = $request->validated();
             $group = Group::findOrFail($group_id);
-            $group->name = $validatedata['name'];
-            $group->description = $validatedata['description'];
+            $group->name = $request['name'];
+            $group->description = $request['description'];
 
             $group->update();
             Alert::toast('Group has been updated!', 'success');
@@ -118,7 +112,7 @@ class GroupController extends Controller
 
             $appsettings = AppSetting::all()->toArray();
             $group = Group::find($group_id);
-            return view('group.editgroup', compact('group', 'appsettings'));
+            return view('admin.group.editgroup', compact('group', 'appsettings'));
         } catch (\Exception $e) {
             Alert::toast('something is wrong!!', 'error');
             return redirect()->back();
