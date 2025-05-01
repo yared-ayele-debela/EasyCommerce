@@ -99,7 +99,7 @@
                                             <div class="modal-body">
                                                 @if($reservation->hotel)
                                                 @if($reservation->hotel->banner_image)
-                                                <img src="{{ asset('storage/'.$reservation->hotel->banner_image) }}" alt="Profile Image" class=" img-fluid -bottom-3 mb-2" >
+                                                <img src="{{ $reservation->hotel->banner_image }}" alt="Profile Image" class=" img-fluid -bottom-3 mb-2" >
                                                 @else
                                                 <img src="{{ asset('restaurant_frontend/no-image.jpg') }}" alt="Profile Image" class=" img-fluid -bottom-3 mb-2" >
                                                 @endif

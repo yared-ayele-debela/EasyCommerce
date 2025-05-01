@@ -40,7 +40,7 @@
         </div>
         @foreach($room->images as $img)
         <div class="col-md-4 offer-card py-2 mr-1">
-            <img src="{{ asset('storage/'.$img->image_path) }}" class=" img-fluid rounded rounded-3">
+            <img src="{{ $img->image_path }}" class=" img-fluid rounded rounded-3">
         </div>
         @endforeach
         <br>
@@ -71,8 +71,8 @@
                     <div class="offer-card p-2 text-center border rounded shadow-sm amenity-box h-100">
                         @php $icon = optional($am)->icon; @endphp
                         <img
-                            src="{{ $icon && Storage::exists('public/' . $icon)
-                                ? asset('storage/' . $icon)
+                            src="{{ $icon
+                                ? $icon
                                 : asset('restaurant_frontend/default-image.png')
                             }}"
                             alt="{{ $am->name }}"

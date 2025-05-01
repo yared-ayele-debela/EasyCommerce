@@ -23,14 +23,17 @@ class AmenityController extends Controller
         ]);
 
         $iconPath = null;
+
         if ($request->hasFile('icon')) {
-            $iconPath = $request->file('icon')->store('icons', 'public');
+            $storedPath = $request->file('icon')->store('icons', 'public');
+            $iconPath = asset('storage/' . $storedPath); // Convert to full URL
         }
 
         Amenity::create([
             'name' => $request->name,
             'icon' => $iconPath,
         ]);
+
 
         return redirect()->back()->with('success', 'Amenity created successfully.');
     }
@@ -45,14 +48,20 @@ class AmenityController extends Controller
         ]);
 
         if ($request->hasFile('icon')) {
-             if($amenity->icon && Storage::disk('public')->exists($amenity->icon)) {
-                Storage::disk('public')->delete($amenity->icon);
+            // Delete old icon if it exists (even if stored as full URL)
+            if ($amenity->icon) {
+                $oldIconPath = str_replace(asset('storage') . '/', '', $amenity->icon);
+                Storage::disk('public')->delete($oldIconPath);
             }
-            $iconPath = $request->file('icon')->store('icons', 'public');
-            $amenity->icon = $iconPath;
+
+            // Store new icon and save full URL
+            $storedPath = $request->file('icon')->store('icons', 'public');
+            $amenity->icon = asset('storage/' . $storedPath);
         }
+
         $amenity->name = $request->name;
         $amenity->save();
+
 
         return redirect()->back()->with('success', 'Amenity updated successfully.');
     }
@@ -60,9 +69,12 @@ class AmenityController extends Controller
     public function destroy($id)
     {
         $amenity = Amenity::findOrFail($id);
-        if ($amenity->icon && Storage::disk('public')->exists($amenity->icon)) {
-            Storage::disk('public')->delete($amenity->icon);
+
+        if ($amenity->icon) {
+            $iconPath = str_replace(asset('storage') . '/', '', $amenity->icon);
+            Storage::disk('public')->delete($iconPath);
         }
+
         $amenity->delete();
 
         return redirect()->back()->with('success', 'Amenity deleted.');

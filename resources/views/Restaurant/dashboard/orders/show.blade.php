@@ -39,7 +39,7 @@ $user = Auth::guard('admin')->user();
                         @foreach ($order->orderItems as $item)
                         <div class="card mt-2 shadow-none p-0 m-0">
                             <div class="card-body">
-                                <img src="{{ asset('storage/' . $item->product->image) }}" width="50">
+                                <img src="{{ $item->product->image }}" width="50">
                                 <strong>{{ $item->product->name }}</strong> ({{ $item->quantity }} x {{ $item->product->price }} ETB)
 
                             </div>

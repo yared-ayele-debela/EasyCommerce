@@ -55,7 +55,7 @@
                             <td>{{ $hotel->location }}</td>
                             <td>
                                 @if($hotel->banner_image)
-                                <img src="{{ asset('storage/'.$hotel->banner_image) }}" width="40">
+                                <img src="{{ $hotel->banner_image }}" width="40">
                                 @endif
                             </td>
                             <td>
@@ -79,7 +79,7 @@
                                                     @foreach($hotel->photos as $photo)
                                                 <div class="col-md-3">
                                                     <div class="card mb-3">
-                                                        <img src="{{ asset('storage/' . $photo->photo_url) }}"  class=" img-fluid" alt="Photo">
+                                                        <img src="{{$photo->photo_url }}"  class=" img-fluid" alt="Photo">
                                                         <div class="card-body p-2">
                                                             <form action="{{ route('hotel_photos.destroy', $photo->id) }}" method="POST">
                                                                 @csrf
@@ -220,7 +220,7 @@
                                                     <label class="form-label">Banner Image</label>
                                                     <input type="file" name="banner_image" class="form-control">
                                                     @if($hotel && $hotel->banner_image)
-                                                    <img src="{{ asset('storage/'.$hotel->banner_image) }}" class="mt-2" width="60">
+                                                    <img src="{{ $hotel->banner_image }}" class="mt-2" width="60">
                                                     @endif
                                                 </div>
                                             </div>
@@ -532,7 +532,7 @@
             }
         });
 
-       
+
         // Update coordinates when dragging marker
         marker.on('dragend', function(e) {
             var position = marker.getLatLng();

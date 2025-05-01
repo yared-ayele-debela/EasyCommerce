@@ -147,8 +147,6 @@
                     @php
 
                     <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
-
-
                                   <h6 class="text-dark">{{ $product->name }}</h6>
                     <p class="mb-0"><span class="price">{{ $product->getFinalPrice() }} ETB</span>
                         <span class="price-old">{{ $product->price }} ETB</span>
@@ -225,7 +223,7 @@
                             <div class="offer-card p-3 h-100">
                                 <a href="/restaurant/product-detail/${product.encrypted_id}">
                                     ${discount > 0 ? `<span class="badge-offer">${discount} ETB OFF</span>` : ""}
-                                    <img src="/storage/${product.image}" class="img-fluid mb-2" alt="${product.name}">
+                                    <img src="${product.image}" class="img-fluid mb-2" alt="${product.name}">
                                     <h6 class="text-dark">${product.name}</h6>
                                     <p class="mb-0">
                                         <span class="price">${product.final_price} ETB</span>

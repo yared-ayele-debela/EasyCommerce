@@ -322,7 +322,7 @@ $user = Auth::guard('admin')->user();
                                 <label for="logo" class="form-label">Restaurant Logo</label>
                                 <input type="file" id="logo" name="logo" class="form-control">
                                 @if($restaurant->logo)
-                                <img src="{{ asset('storage/' . $restaurant->logo) }}" width="50" />
+                                <img src="{{ $restaurant->logo }}" width="50" />
                                 @endif
                                 @error('logo')
                                     <small class="text-danger">{{ $message }}</small>
@@ -335,7 +335,7 @@ $user = Auth::guard('admin')->user();
                                 <label for="cover_image" class="form-label">Restaurant Cover Image</label>
                                 <input type="file" id="cover_image" name="cover_image" class="form-control">
                                 @if($restaurant->cover_image)
-                                <img src="{{ asset('storage/' . $restaurant->cover_image) }}" width="50" />
+                                <img src="{{$restaurant->cover_image}}" width="50" />
                                 @endif
                                 @error('cover_image')
                                     <small class="text-danger">{{ $message }}</small>
@@ -354,7 +354,7 @@ $user = Auth::guard('admin')->user();
                             <input type="hidden" name="admin_id" value="{{ $user->id }}">
                             <br>
                             @foreach($restaurant->images as $image)
-                            <img src="{{ asset('storage/' . $image->image_path) }}" width="50">
+                            <img src="{{ $image->image_path }}" width="50">
                            @endforeach
                         </div>
                         <div class="col-md-6">

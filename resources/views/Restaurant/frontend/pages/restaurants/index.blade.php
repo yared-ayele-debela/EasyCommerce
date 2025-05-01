@@ -14,7 +14,7 @@
                 <div class="row g-0">
                     <div class="col-md-6">
                         <a href="{{ url('restaurant/'.$restaurant->id.'/detail') }}">
-                            <img src="{{ asset('storage/'.$restaurant->cover) }}" class="img-fluid rounded-start" alt="{{ $restaurant->name }}">
+                            <img src="{{ $restaurant->cover }}" class="img-fluid rounded-start" alt="{{ $restaurant->name }}">
                         </a>
                     </div>
                     <div class="col-md-6">

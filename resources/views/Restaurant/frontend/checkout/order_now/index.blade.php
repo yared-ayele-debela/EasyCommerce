@@ -85,7 +85,7 @@ use App\Models\Restaurant\Product;
                                                 @endphp
                                                 <tr>
                                                     <td class="d-flex align-items-center">
-                                                        <img src="{{ asset('storage/' . $product['image']) }}" alt="{{ $product['name'] }}" class="img-fluid rounded shadow-sm border me-3" style="width: 40px; height: 40px;">
+                                                        <img src="{{ $product['image'] }}" alt="{{ $product['name'] }}" class="img-fluid rounded shadow-sm border me-3" style="width: 40px; height: 40px;">
                                                         <span class="fw-semibold">{{ $product['name'] }}</span>
                                                     </td>
                                                     <td class="text-center">

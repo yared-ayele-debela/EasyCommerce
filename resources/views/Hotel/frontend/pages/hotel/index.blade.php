@@ -13,7 +13,7 @@
             <div class="card">
                 <a href="{{ url('hotel/'.$hotel->id.'/detail') }}">
                     @if($hotel->banner_image)
-                    <img class="card-img-top img-fluid" src="{{ asset('storage/'.$hotel->banner_image) }}" alt="{{ $hotel->name }}" style="height: 200px; object-fit: cover;">
+                    <img class="card-img-top img-fluid" src="{{ $hotel->banner_image }}" alt="{{ $hotel->name }}" style="height: 200px; object-fit: cover;">
                     @else
                     <img class="card-img-top img-fluid" src="{{ asset('restaurant_frontend/default-image.png') }}" alt="{{ $hotel->name }}" style="height: 200px; object-fit: cover;">
                     @endif

@@ -96,7 +96,7 @@
                         </td>
                         <td>
                             @if($room->cover_image)
-                            <img src="{{ asset('storage/'.$room->cover_image) }}" width="50" height="50">
+                            <img src="{{ $room->cover_image }}" width="50" height="50">
                             @endif
                         </td>
                         <td>
@@ -117,7 +117,7 @@
                                         </div>
                                         <div class="modal-body">
                                             @foreach($room->images as $img)
-                                             <img src="{{ asset('storage/'.$img->image_path) }}" width="50" height="50" class="mb-2">
+                                             <img src="{{ $img->image_path}}" width="50" height="50" class="mb-2">
                                             @endforeach
                                         </div>
                                         <div class="modal-footer">
@@ -244,7 +244,7 @@
                                                         <span class="alert alert-danger">{{ $message }}</span>
                                                         @enderror
                                                         @if($room->cover_image)
-                                                        <img src="{{ asset('storage/'.$room->cover_image) }}" width="50" height="50">
+                                                        <img src="{{ $room->cover_image }}" width="50" height="50">
                                                         @endif
                                                     </div>
                                                 </div>
@@ -257,7 +257,7 @@
                                                         @enderror
                                                         @if($room->images)
                                                         @foreach($room->images as $img)
-                                                        <img src="{{ asset('storage/'.$img->image_path) }}" width="50" height="50">
+                                                        <img src="{{$img->image_path }}" width="50" height="50">
                                                         @endforeach
                                                         @endif
                                                     </div>

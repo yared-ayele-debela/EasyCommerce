@@ -23,11 +23,12 @@ class HotelCategoryController extends Controller
             'image' => 'required|image|mimes:jpg,jpeg,png,svg|max:2048'
         ]);
 
-        $path = $request->file('image')->store('hotel_categories', 'public');
+        $storedPath = $request->file('image')->store('hotel_categories', 'public');
+        $fullImageUrl = asset('storage/' . $storedPath);
 
         HotelCategory::create([
             'name' => $request->name,
-            'image' => $path,
+            'image' => $fullImageUrl,
         ]);
 
         return redirect()->back()->with('success', 'Hotel category added!');
@@ -43,8 +44,15 @@ class HotelCategoryController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
+            // Delete old image if it exists
+            if ($category->image) {
+                $oldImagePath = str_replace(asset('storage') . '/', '', $category->image);
+                Storage::disk('public')->delete($oldImagePath);
+            }
+
+            // Store new image with URL
             $path = $request->file('image')->store('hotel_categories', 'public');
-            $category->image = $path;
+            $category->image = asset('storage/' . $path);
         }
 
         $category->name = $request->name;
@@ -53,12 +61,16 @@ class HotelCategoryController extends Controller
         return redirect()->back()->with('success', 'Hotel category updated!');
     }
 
+
     public function destroy($id)
     {
         $category = HotelCategory::findOrFail($id);
-            // Delete the image file if it exists
-        if ($category->image && Storage::disk('public')->exists($category->image)) {
-            Storage::disk('public')->delete($category->image);
+
+        if ($category->image) {
+            $imagePath = str_replace(asset('storage') . '/', '', $category->image);
+            if (Storage::disk('public')->exists($imagePath)) {
+                Storage::disk('public')->delete($imagePath);
+            }
         }
 
         $category->delete();

@@ -19,21 +19,30 @@ class HotelPhotoController extends Controller
 
         if ($request->hasFile('photo_url')) {
             $path = $request->file('photo_url')->store('hotel_photos', 'public');
+
+            $fullUrl = asset('storage/' . $path); // generate full URL
+
             HotelPhoto::create([
                 'hotel_id' => $request->hotel_id,
-                'photo_url' => $path, // only path, not full URL
+                'photo_url' => $fullUrl, // store full URL
             ]);
         }
+
         return redirect()->back()->with('success', 'Photo uploaded successfully!');
     }
 
     public function destroy($id)
     {
         $photo = HotelPhoto::findOrFail($id);
-        if (Storage::disk('public')->exists($photo->photo_url)) {
-            Storage::disk('public')->delete($photo->photo_url);
+        // Extract the relative path from the full URL
+        $relativePath = str_replace(asset('storage') . '/', '', $photo->photo_url);
+
+        if (Storage::disk('public')->exists($relativePath)) {
+            Storage::disk('public')->delete($relativePath);
         }
+
         $photo->delete();
+
 
         return redirect()->back()->with('success', 'Photo deleted successfully!');
     }

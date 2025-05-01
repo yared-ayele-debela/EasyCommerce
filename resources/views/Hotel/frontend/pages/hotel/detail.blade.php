@@ -10,7 +10,7 @@
     <div class="row">
         <div class="col-md-6">
             @if($hotel->banner_image)
-                <img id="mainImage"   class="img-fluid rounded" src="{{ asset('storage/'.$hotel->banner_image) }}" alt="{{ $hotel->name }}" >
+                <img id="mainImage"   class="img-fluid rounded" src="{{ $hotel->banner_image }}" alt="{{ $hotel->name }}" >
             @else
                 <img  class="img-fluid rounded" src="{{ asset('restaurant_frontend/default-image.png') }}" alt="{{ $hotel->name }}" >
             @endif
@@ -73,7 +73,7 @@
         <div class="row d-flex photo-gallery">
             @foreach($hotel->photos as $photo)
             <div class="col-3 col-sm-4 col-md-1 mb-1">
-                <img loading="lazy" src="{{ asset('storage/' . $photo->photo_url) }}" alt="{{ $hotel->name }}" class="gallery-image img-fluid rounded rounded-2">
+                <img loading="lazy" src="{{ $photo->photo_url }}" alt="{{ $hotel->name }}" class="gallery-image img-fluid rounded rounded-2">
             </div>
             @endforeach
         </div>
@@ -154,7 +154,7 @@
                     <div class="offer-card h-100">
                         @if($room->cover_image)
                             <a href="{{ url('hotel/room/'.$room->id.'/detail') }}">
-                                <img class="card-img-top" src="{{ asset('storage/'.$room->cover_image) }}"
+                                <img class="card-img-top" src="{{$room->cover_image }}"
                                     alt="{{ $room->room_type }}">
                         @else
                             <img class="card-img-top" src="{{ asset('restaurant_frontend/default-image.png')}}"

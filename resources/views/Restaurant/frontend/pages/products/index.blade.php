@@ -68,7 +68,7 @@ input[type="range"] {
                                     <span class="input-group-text"><i class="bi bi-search"></i></span>
                                 </div>
                             </div>
-                        
+
                             <!-- Restaurant Dropdown -->
                             <div class="col-md-12 mb-3">
                                 <select id="restaurant_id" class="form-select">
@@ -78,7 +78,7 @@ input[type="range"] {
                                     @endforeach
                                 </select>
                             </div>
-                        
+
                             <!-- Category Dropdown -->
                             <div class="col-md-12 mb-3">
                                 <select id="category_id" class="form-select">
@@ -88,7 +88,7 @@ input[type="range"] {
                                     @endforeach
                                 </select>
                             </div>
-                        
+
                             <!-- Subcategory Dropdown -->
                             <div class="col-md-12 mb-3">
                                 <select id="subcategory_id" class="form-select">
@@ -98,7 +98,7 @@ input[type="range"] {
                                     @endforeach
                                 </select>
                             </div>
-                        
+
                             <!-- City Dropdown -->
                             <div class="col-md-12 mb-3">
                                 <select id="city_id" class="form-select">
@@ -108,7 +108,7 @@ input[type="range"] {
                                     @endforeach
                                 </select>
                             </div>
-                        
+
                             <!-- Discount Type -->
                             <div class="col-md-12 mb-3">
                                 <select id="discount_type" class="form-select">
@@ -117,7 +117,7 @@ input[type="range"] {
                                     <option value="fixed">Fixed Amount</option>
                                 </select>
                             </div>
-                        
+
                             <!-- Free Delivery -->
                             <div class="col-md-12 mb-3">
                                 <select id="is_free" class="form-select">
@@ -126,25 +126,25 @@ input[type="range"] {
                                     <option value="0">No</option>
                                 </select>
                             </div>
-                        
+
                             <!-- Max Delivery Fee -->
                             <div class="col-md-12 mb-3">
                                 <label for="delivery_fee" class="form-label">Max Delivery Fee: <span id="deliveryFeeValue">150</span> ETB</label>
                                 <input type="range" id="delivery_fee" class="form-range" min="0" max="300" value="0" oninput="updateValue('delivery_fee', 'deliveryFeeValue')">
                             </div>
-                        
+
                             <!-- Max Delivery Time -->
                             <div class="col-md-12 mb-3">
                                 <label for="delivery_time" class="form-label">Max Delivery Time: <span id="deliveryTimeValue">50</span> min</label>
                                 <input type="range" id="delivery_time" class="form-range" min="0" max="100" value="0" oninput="updateValue('delivery_time', 'deliveryTimeValue')">
                             </div>
-                        
+
                             <!-- Most Popular -->
                             <div class="col-md-12 mb-3 form-check">
                                 <input type="checkbox" id="most_popular" value="1" class="form-check-input">
                                 <label class="form-check-label"  for="most_popular">Most Popular</label>
                             </div>
-                        
+
                             <!-- Best Seller -->
                             <div class="col-md-12 mb-3 form-check">
                                 <input type="checkbox" id="best_seller" value="1" class="form-check-input">
@@ -156,9 +156,9 @@ input[type="range"] {
                                 <label class="form-check-label" for="discounted">Discounted</label>
                             </div>
                         </div>
-                        
-                        
-                        
+
+
+
                        </div>
                     </div>
                 </div>
@@ -180,7 +180,7 @@ input[type="range"] {
                                                 {{ $off }} ETB OFF
                                             </span>
                                         @endif
-                                        <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid mb-2" alt="{{ $product->name }}">
+                                        <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
                                         <h6 class="text-dark">{{ $product->name }}</h6>
                                         <p class="mb-0">
                                             <span class="price">{{ $product->getFinalPrice() }} ETB</span>

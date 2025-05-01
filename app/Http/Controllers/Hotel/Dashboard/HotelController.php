@@ -58,8 +58,10 @@ class HotelController extends Controller
         // dd($request->all());
 
         if ($request->hasFile('banner_image')) {
-            $validated['banner_image'] = $request->file('banner_image')->store('hotels', 'public');
+            $path = $request->file('banner_image')->store('hotels', 'public');
+            $validated['banner_image'] = asset('storage/' . $path);
         }
+
         $validated['admin_id'] = Auth::guard('admin')->user()->id;
 
 
@@ -91,11 +93,17 @@ class HotelController extends Controller
         ]);
 
         if ($request->hasFile('banner_image')) {
-            if ($hotel->banner_image && Storage::disk('public')->exists($hotel->banner_image)) {
-                Storage::disk('public')->delete($hotel->banner_image);
+            // Remove the old image file if it exists
+            $oldPath = str_replace(asset('storage/') . '/', '', $hotel->banner_image);
+            if ($hotel->banner_image && Storage::disk('public')->exists($oldPath)) {
+                Storage::disk('public')->delete($oldPath);
             }
-            $validated['banner_image'] = $request->file('banner_image')->store('hotels', 'public');
+
+            // Store the new file and save its full URL
+            $path = $request->file('banner_image')->store('hotels', 'public');
+            $validated['banner_image'] = asset('storage/' . $path);
         }
+
 
 
 
@@ -107,10 +115,18 @@ class HotelController extends Controller
     public function destroy($id)
     {
         $hotel = Hotel::findOrFail($id);
-        if ($hotel->banner_image && Storage::disk('public')->exists($hotel->banner_image)) {
-            Storage::disk('public')->delete($hotel->banner_image);
+        // Extract relative path from full URL
+        $bannerImagePath = $hotel->banner_image
+            ? str_replace(asset('storage') . '/', '', $hotel->banner_image)
+            : null;
+        // Delete image if it exists in storage
+        if ($bannerImagePath && Storage::disk('public')->exists($bannerImagePath)) {
+            Storage::disk('public')->delete($bannerImagePath);
         }
+
+        // Delete hotel record
         $hotel->delete();
+
         return redirect()->back()->with('success', 'Hotel deleted!');
     }
 

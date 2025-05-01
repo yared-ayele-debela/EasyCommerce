@@ -33,7 +33,7 @@
                         @foreach($categories as $category)
                         <tr>
                             <td>
-                                <img src="{{ asset('storage/' . $category->image) }}" width="40" height="40">
+                                <img src="{{ $category->image }}" width="40" height="40">
                             </td>
                             <td>{{ $category->name }}</td>
                             <td>
@@ -45,7 +45,7 @@
                                 </form>
                             </td>
                         </tr>
-    
+
                         <!-- Edit Modal -->
                         <div class="modal fade" id="editModal{{ $category->id }}" tabindex="-1">
                           <div class="modal-dialog">
@@ -65,7 +65,7 @@
                                       <div class="mb-3">
                                           <label>Image</label>
                                           <input type="file" class="form-control" name="image">
-                                          <img src="{{ asset('storage/' . $category->image) }}" width="60" height="60" class="mt-2">
+                                          <img src="{{ $category->image }}" width="60" height="60" class="mt-2">
                                       </div>
                                   </div>
                                   <div class="modal-footer">

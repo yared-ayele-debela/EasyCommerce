@@ -29,7 +29,7 @@
         @foreach($banners as $banner)
         <tr>
             <td>{{ $banner->id }}</td>
-            <td><img src="{{ asset('storage/' . $banner->image) }}" width="100"></td>
+            <td><img src="{{ $banner->image }}" width="100"></td>
             <td>{{ $banner->title }}</td>
             <td>
                 <div class="btn btn-sm {{ $banner->is_active ? 'btn-success' : 'btn-warning' }}">
@@ -44,7 +44,7 @@
                         data-title="{{ $banner->title }}"
                         data-description="{{ $banner->description }}"
                         data-link="{{ $banner->link }}"
-                        data-image="{{ asset('storage/' . $banner->image) }}"
+                        data-image="{{ $banner->image }}"
                         data-is_active={{ $banner->is_active }}
                         >
                     <i class="bi bi-pencil-fill"></i>

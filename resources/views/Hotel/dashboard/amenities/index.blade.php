@@ -34,7 +34,7 @@
                         <tr>
                             <td>
                                 @if($amenity->icon)
-                                <img src="{{ asset('storage/' . $amenity->icon) }}" width="40" height="40" alt="icon">
+                                <img src="{{ $amenity->icon }}" width="40" height="40" alt="icon">
                                 @else
                                 <img src="{{ asset('restaurant_frontend/default-image.png') }}" width="40" height="40" alt="">
                                 @endif
@@ -43,7 +43,7 @@
                             <td>
                                 <!-- Edit -->
                                 <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#editAmenityModal{{ $amenity->id }}"><i class="bi bi-pencil-fill"></i></button>
-    
+
                                 <!-- Delete -->
                                 <form action="{{ route('amenities.destroy', $amenity->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure?')">
                                     @csrf
@@ -52,7 +52,7 @@
                                 </form>
                             </td>
                         </tr>
-    
+
                         <!-- Update Modal -->
                         <div class="modal fade" id="editAmenityModal{{ $amenity->id }}" tabindex="-1" aria-labelledby="editAmenityLabel{{ $amenity->id }}" aria-hidden="true">
                             <div class="modal-dialog">
@@ -73,7 +73,7 @@
                                                 <label>Icon (optional)</label>
                                                 <input type="file" class="form-control" name="icon">
                                                 @if($amenity->icon)
-                                                <img src="{{ asset('storage/' . $amenity->icon) }}" class="mt-2" width="60" height="60">
+                                                <img src="{{ $amenity->icon }}" class="mt-2" width="60" height="60">
                                                 @endif
                                             </div>
                                         </div>

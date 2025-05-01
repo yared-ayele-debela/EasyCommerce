@@ -12,7 +12,7 @@
                     <div class="row">
                         <div class="col-md-4">
                             @if($room->cover_image)
-                            <img src="{{ asset('storage/'.$room->cover_image) }}" class="w-100 rounded-img" height="170" alt="{{ $room->hotel->name }}">
+                            <img src="{{ $room->cover_image }}" class="w-100 rounded-img" height="170" alt="{{ $room->hotel->name }}">
                             @endif
                         </div>
                         <div class="col-md-8">

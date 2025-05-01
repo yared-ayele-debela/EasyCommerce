@@ -31,11 +31,14 @@ class SliderBannerController extends Controller
 
         $imagePath = $request->file('image')->store('banners', 'public');
 
+        // Get full URL to the stored image
+        $imageUrl = asset('storage/' . $imagePath);
+
         HotelSlider::create([
             'title'       => $request->title,
             'description' => $request->description,
             'link'        => $request->link,
-            'image'       => $imagePath,
+            'image'       => $imageUrl, // Store the full URL instead of just the path
             'is_active'   => $request->is_active
         ]);
 
@@ -55,21 +58,29 @@ class SliderBannerController extends Controller
         //     'is_active'   => 'required'
         // ]);
 
-        $slider=HotelSlider::findOrFail($id);
+        $slider = HotelSlider::findOrFail($id);
+
         if ($request->hasFile('image')) {
-            // Delete old image
-            Storage::disk('public')->delete($slider->image);
-            // Store new image
-            $imagePath = $request->file('image')->store('banners', 'public');
-            $slider->image = $imagePath;
+            // Extract relative path and delete old image
+            if ($slider->image) {
+                $oldImagePath = str_replace(asset('storage') . '/', '', $slider->image);
+                Storage::disk('public')->delete($oldImagePath);
+            }
+
+            // Store new image and get its full URL
+            $newImagePath = $request->file('image')->store('banners', 'public');
+            $slider->image = asset('storage/' . $newImagePath);
         }
 
+        // Update the rest of the fields
         $slider->update([
             'title'       => $request->title,
             'description' => $request->description,
             'link'        => $request->link,
-            'is_active'   => $request->is_active
+            'is_active'   => $request->is_active,
+            'image'       => $slider->image, // ensure image is included in update
         ]);
+
 
         return redirect()->route('hotel-slider-banners.index')->with('success', 'Banner updated successfully.');
     }
@@ -78,11 +89,18 @@ class SliderBannerController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy($id)
-    {
-        $sliderBanner=HotelSlider::findOrFail($id);
+{
+    $sliderBanner = HotelSlider::findOrFail($id);
 
-        Storage::disk('public')->delete($sliderBanner->image);
-        $sliderBanner->delete();
-        return response()->json(['success' => 'Banner deleted successfully!']);
+    // Safely extract relative path if image is stored as full URL
+    if ($sliderBanner->image) {
+        $imagePath = str_replace(asset('storage') . '/', '', $sliderBanner->image);
+        Storage::disk('public')->delete($imagePath);
     }
+
+    $sliderBanner->delete();
+
+    return response()->json(['success' => 'Banner deleted successfully!']);
+}
+
 }

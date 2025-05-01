@@ -169,7 +169,7 @@
                 @foreach ($order->orderItems as $item)
                 <tr>
                     <td>
-                        <img src="{{ asset('storage/' . $item->product->image) }}" class="product-img" alt="Product">
+                        <img src="{{ $item->product->image }}" class="product-img" alt="Product">
                     </td>
                     <td>{{ $item->product->name }}</td>
                     <td>{{ $item->quantity }}</td>

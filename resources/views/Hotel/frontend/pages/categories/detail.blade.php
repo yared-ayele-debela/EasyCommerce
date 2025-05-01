@@ -8,14 +8,14 @@
          </button>
         <h5 class="my-4 text-dark text-center">{{ $category->name }}</h5>
     </div>
-    
+
         <div class="row g-3">
             {{-- <div class="owl-carousel owl-theme hotel mt-4"> --}}
                 @foreach ($hotels as $hotel)
                 <div class="col-md-3 mt-2 mb-4">
                     <div class="card h-100">
                         @if($hotel->banner_image)
-                            <img class="card-img-top img-fluid" src="{{ asset('storage/'.$hotel->banner_image) }}" alt="{{ $hotel->name }}"style="height: 200px; object-fit: cover;">
+                            <img class="card-img-top img-fluid" src="{{ $hotel->banner_image }}" alt="{{ $hotel->name }}"style="height: 200px; object-fit: cover;">
                         @else
                             <img class="card-img-top img-fluid" src="{{ asset('restaurant_frontend/default-image.png') }}" alt="{{ $hotel->name }}" style="height: 200px; object-fit: cover;">
                         @endif

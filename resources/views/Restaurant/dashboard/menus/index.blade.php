@@ -27,7 +27,7 @@ $user = Auth::guard('admin')->user();
                     @foreach ($restaurant_menus as $Menu)
                     <tr>
                         <td>{{ $Menu->name }}</td>
-                        <td><img src="{{ asset('storage/' . $Menu->image) }}" width="50"></td>
+                        <td><img src="{{ $Menu->image }}" width="50"></td>
                         <td>
                             <div class="btn btn-sm {{ $Menu->is_active ? 'btn-success' : 'btn-danger' }}">
                                 {{ $Menu->is_active ? 'Active' : 'Inactive' }}
@@ -66,7 +66,7 @@ $user = Auth::guard('admin')->user();
                                             <label class="form-label">Upload Image</label>
                                             <input type="file" name="image" class="form-control">
                                             @if($Menu->image)
-                                            <img src="{{ asset('storage/' . $Menu->image) }}" width="50">
+                                            <img src="{{ $Menu->image }}" width="50">
                                             @endif
                                         </div>
                                         <!-- Status -->

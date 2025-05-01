@@ -47,7 +47,6 @@
         <!-- Product Image -->
         <div class="col-md-5 text-center">
             <div class="image-container position-relative">
-
                 <img src="{{ asset('restaurant_frontend/assets/img/product_background.png') }}" alt="Background" class="background-image img-fluid">
                 @if($product->image)
                 <img id="mainProductImage" src="{{ $product->image }}" alt="Product" class="product-image img-fluid position-absolute top-50 start-50 translate-middle">
@@ -57,7 +56,7 @@
             </div>
             <div class="d-flex justify-content-center mt-3">
                 @foreach($product->images as $key => $image)
-                <img src="{{ asset($image->image_path)}}" width="50" class="thumbnail mx-2 p-2 border rounded" alt="Product Image" style="cursor: pointer;">
+                <img src="{{ $image->image_path}}" width="50" class="thumbnail mx-2 p-2 border rounded" alt="Product Image" style="cursor: pointer;">
                 @endforeach
             </div>
             @if($product->sizes->count() > 0)
@@ -193,16 +192,16 @@
                         </div>
                         @endif
                         @php
-    // Safely extract relative storage path from full URL or asset path
-    $parsedPath = $product->image ? parse_url($product->image, PHP_URL_PATH) : null;
-    $relativePath = $parsedPath ? str_replace('storage/', '', ltrim($parsedPath, '/')) : null;
-@endphp
+                            // Safely extract relative storage path from full URL or asset path
+                            $parsedPath = $product->image ? parse_url($product->image, PHP_URL_PATH) : null;
+                            $relativePath = $parsedPath ? str_replace('storage/', '', ltrim($parsedPath, '/')) : null;
+                        @endphp
 
-@if($relativePath && Storage::disk('public')->exists($relativePath))
-    <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
-@else
-    <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" alt="No Image">
-@endif
+                        @if($relativePath && Storage::disk('public')->exists($relativePath))
+                            <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
+                        @else
+                            <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" alt="No Image">
+                        @endif
 
                         <h6 class="text-dark">{{ $product->name }}</h6>
                         <p class="mb-0">

@@ -17,19 +17,19 @@ class RoomController extends Controller
     public function index()
     {
         $adminType = Auth::guard('admin')->user()->type;
-        $hotels = Hotel::where('admin_id',Auth::guard('admin')->user()->id)->latest()->get();
+        $hotels = Hotel::where('admin_id', Auth::guard('admin')->user()->id)->latest()->get();
 
-        if($adminType==="Super Admin"){
-            $rooms = Room::with('images','amenities')->latest()->get();
-        }else{
-            $hotelId= $hotels->pluck('id');
-            $rooms = Room::with('images','amenities')->whereIn('hotel_id',$hotelId)->latest()->get();
+        if ($adminType === "Super Admin") {
+            $rooms = Room::with('images', 'amenities')->latest()->get();
+        } else {
+            $hotelId = $hotels->pluck('id');
+            $rooms = Room::with('images', 'amenities')->whereIn('hotel_id', $hotelId)->latest()->get();
             // dd($rooms);
         }
 
         // dd($hotels);
         $amenities = Amenity::all();
-        return view('Hotel.dashboard.room.index', compact('rooms','hotels','amenities'));
+        return view('Hotel.dashboard.room.index', compact('rooms', 'hotels', 'amenities'));
     }
 
     public function create()
@@ -60,11 +60,11 @@ class RoomController extends Controller
         // dd($request->all());
 
 
-        $data = $request->only(['hotel_id', 'room_type','total_adult','total_child','total_infant','room_number','floor', 'capacity', 'price', 'is_available','description']);
+        $data = $request->only(['hotel_id', 'room_type', 'total_adult', 'total_child', 'total_infant', 'room_number', 'floor', 'capacity', 'price', 'is_available', 'description']);
 
         if ($request->hasFile('cover_image')) {
             $path = $request->file('cover_image')->store('room_images', 'public');
-            $data['cover_image'] = $path;
+            $data['cover_image'] = asset('storage/' . $path); // Store full URL
         }
 
         $room = Room::create($data);
@@ -72,9 +72,12 @@ class RoomController extends Controller
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
                 $path = $image->store('room_images', 'public');
-                $room->images()->create(['image_path' => $path]);
+                $room->images()->create([
+                    'image_path' => asset('storage/' . $path) // Store full URL
+                ]);
             }
         }
+
 
         if ($request->has('amenities')) {
             foreach ($request->amenities as $amenity_id) {
@@ -112,26 +115,36 @@ class RoomController extends Controller
             'amenities' => 'array', // should be an array of amenity_ids
         ]);
 
-        $data = $request->only(['room_type','total_adult','total_child','total_infant','room_number','floor', 'capacity', 'price', 'is_available','description']);
+        $data = $request->only(['room_type', 'total_adult', 'total_child', 'total_infant', 'room_number', 'floor', 'capacity', 'price', 'is_available', 'description']);
         if ($request->hasFile('cover_image')) {
             if ($room->cover_image) {
-                Storage::delete('public/' . $room->cover_image);
+                // Remove full URL to get storage path
+                $oldCoverPath = str_replace(asset('storage') . '/', '', $room->cover_image);
+                Storage::disk('public')->delete($oldCoverPath);
             }
-            $data['cover_image'] = $request->file('cover_image')->store('room_images', 'public');
+            $coverPath = $request->file('cover_image')->store('room_images', 'public');
+            $data['cover_image'] = asset('storage/' . $coverPath);
         }
 
         $room->update($data);
 
         if ($request->hasFile('images')) {
+            // Delete old images
             foreach ($room->images as $oldImage) {
-                Storage::delete('public/' . $oldImage->image_path);
+                $oldImagePath = str_replace(asset('storage') . '/', '', $oldImage->image_path);
+                Storage::disk('public')->delete($oldImagePath);
                 $oldImage->delete();
             }
+
+            // Upload new images with full URLs
             foreach ($request->file('images') as $image) {
                 $path = $image->store('room_images', 'public');
-                $room->images()->create(['image_path' => $path]);
+                $room->images()->create([
+                    'image_path' => asset('storage/' . $path)
+                ]);
             }
         }
+
 
         if ($request->has('amenities')) {
             $room->amenities()->sync($request->amenities);
@@ -146,13 +159,23 @@ class RoomController extends Controller
     {
         // Delete room images
         foreach ($room->images as $image) {
-            Storage::delete('public/' . $image->image_path);
+            // Convert full URL to storage path
+            $imagePath = str_replace(asset('storage') . '/', '', $image->image_path);
+            if (Storage::disk('public')->exists($imagePath)) {
+                Storage::disk('public')->delete($imagePath);
+            }
             $image->delete();
         }
+        // Delete cover image if stored as a full URL
+        if ($room->cover_image) {
+            $coverImagePath = str_replace(asset('storage') . '/', '', $room->cover_image);
 
-        // Delete room
+            if (Storage::disk('public')->exists($coverImagePath)) {
+                Storage::disk('public')->delete($coverImagePath);
+            }
+        }
+        // Delete the room itself
         $room->delete();
-
         return redirect()->route('rooms.index')->with('success', 'Room deleted successfully.');
     }
 }

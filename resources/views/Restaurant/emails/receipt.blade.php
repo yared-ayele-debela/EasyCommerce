@@ -1,16 +1,13 @@
-
 @php
-   use App\Models\AppSetting;
-   $setting = AppSetting::first();
+use App\Models\AppSetting;
+$setting = AppSetting::first();
 @endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Add this in your <head> -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <title>Order Receipt</title>
     <style>
         body {
@@ -170,7 +167,7 @@
                 @foreach ($order->orderItems as $item)
                 <tr>
                     <td>
-                        <img src="{{ asset('storage/' . $item->product->image) }}" class="product-img" alt="Product">
+                        <img src="{{$item->product->image }}" class="product-img" alt="Product">
                     </td>
                     <td>{{ $item->product->name }}</td>
                     <td>{{ $item->quantity }}</td>

@@ -18,12 +18,12 @@ $user = Auth::guard('admin')->user();
         <div class="card-body p-4">
             {{-- Cover Image --}}
             <div class="mb-4">
-                <img src="{{ asset('storage/' . $restaurant->cover) }}" class="img-fluid rounded-3 shadow-sm w-100" alt="Cover Image" style="max-height: 350px; object-fit: cover;">
+                <img src="{{ $restaurant->cover }}" class="img-fluid rounded-3 shadow-sm w-100" alt="Cover Image" style="max-height: 350px; object-fit: cover;">
             </div>
 
             {{-- Logo & Basic Info --}}
             <div class="d-flex align-items-center gap-3 mb-4">
-                <img src="{{ asset('storage/' . $restaurant->logo) }}" class="rounded-circle shadow p-2" width="50" height="50" alt="Logo">
+                <img src="{{ $restaurant->logo }}" class="rounded-circle shadow p-2" width="50" height="50" alt="Logo">
                 <div>
                     <h4 class="mb-1">{{ $restaurant->name }}</h4>
                     <p class="text-muted mb-0"><i class="bi bi-envelope me-1"></i>{{ $restaurant->email }}</p>
@@ -67,7 +67,7 @@ $user = Auth::guard('admin')->user();
                     <div class="carousel-inner">
                         @foreach ($restaurant->images as $index => $image)
                             <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
-                                <img src="{{ asset('storage/' . $image->image_path) }}" class="d-block w-100 rounded" alt="Gallery Image" style="max-height: 500px; object-fit: cover;">
+                                <img src="{{$image->image_path}}" class="d-block w-100 rounded" alt="Gallery Image" style="max-height: 500px; object-fit: cover;">
                             </div>
                         @endforeach
                     </div>

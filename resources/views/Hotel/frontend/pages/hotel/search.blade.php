@@ -146,7 +146,7 @@
                     <div class="col-md-3 mb-4">
                         <div class="offer-card h-100">
                              <a href="{{ url('hotel/${hotel.id}/detail') }}">
-                            <img src="/storage/${hotel.banner_image}" class="card-img-top" alt="Hotel Image" style="height:200px; object-fit:cover;">
+                            <img src="${hotel.banner_image}" class="card-img-top" alt="Hotel Image" style="height:200px; object-fit:cover;">
                             </a>
                             <div class="card-body">
                                 <span class="badge bg-primary mt-0">${hotel.category.name}</span>

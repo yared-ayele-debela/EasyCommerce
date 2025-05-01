@@ -10,11 +10,11 @@ $user = Auth::guard('admin')->user();
 <div class="container">
     <div class="card">
         <div class="card-header">
-           
+
             <h4>{{ $product->name }}</h4>
         </div>
         <div class="card-body">
-            <img src="{{ asset('storage/' . $product->image) }}" class=" pt-3" style="width: 200px">
+            <img src="{{ $product->image }}" class=" pt-3" style="width: 200px">
 
             <p>Description: {{ $product->description }}</p>
             <p>Price: {{ $product->getFinalPrice() }} ETB</p>
@@ -76,13 +76,13 @@ $user = Auth::guard('admin')->user();
                                                     <option value="large">Large</option>
                                                 </select>
                                             </div>
-                    
+
                                             <div class="mb-3">
                                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                                                 <label for="price" class="form-label">Price</label>
                                                 <input type="number" class="form-control" value="{{ $size->price }}" name="price" id="price" required>
                                             </div>
-                    
+
                                             <div class="mb-3">
                                                 <label for="stock" class="form-label">Stock</label>
                                                 <input type="number" class="form-control" name="stock" value="{{ $size->stock }}" id="stock" required>

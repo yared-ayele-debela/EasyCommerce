@@ -87,9 +87,9 @@
     <div class="owl-carousel owl-theme sliders mt-4">
         @foreach ($banners as $banner)
         <div class="item mb-2 position-relative">
-                   <a href="{{ $banner->link }}" target="_blank" class="text-decoration-none text-white">    
+                   <a href="{{ $banner->link }}" target="_blank" class="text-decoration-none text-white">
                     {{-- @if ($banner && $banner->image && Storage::exists('public/' .$banner->image)) --}}
-                        <img src="{{ asset('storage/' . $banner->image) }}" alt="{{ $banner->link }}" class="img-fluid">
+                        <img src="{{ $banner->image}}" alt="{{ $banner->link }}" class="img-fluid">
                     {{-- @else
                         <img src="{{asset('no_banner.png') }}" class="img-fluid" alt="{{ $banner->link }}"> <!-- Optionally display a fallback message or image -->
                     @endif --}}
@@ -115,7 +115,7 @@
             <div class="item mb-2">
                 <div class="category-item">
                     <a href="{{ url('hotel/categories/'.$category->id) }}">
-                        <img src="{{ asset('storage/' . $category->image) }}" class="p-2 shadow" style="border:4px solid rgb(162, 159, 159);" alt="American">
+                        <img src="{{ $category->image }}" class="p-2 shadow" style="border:4px solid rgb(162, 159, 159);" alt="American">
                         <p class="text-dark">{{ $category->name }}</p>
                     </a>
                 </div>
@@ -143,7 +143,7 @@
                 <div class="offer-card h-100">
                     <a href="{{ url('hotel/'.$hotel->id.'/detail') }}">
                         @if($hotel->banner_image)
-                        <img class="card-img-top img-fluid" src="{{ asset('storage/'.$hotel->banner_image) }}" alt="{{ $hotel->name }}" style="height: 200px; object-fit: cover;">
+                        <img class="card-img-top img-fluid" src="{{ $hotel->banner_image }}" alt="{{ $hotel->name }}" style="height: 200px; object-fit: cover;">
                         @else
                         <img class="card-img-top img-fluid" src="{{ asset('restaurant_frontend/default-image.png') }}" alt="{{ $hotel->name }}" style="height: 200px; object-fit: cover;">
                         @endif
@@ -188,7 +188,7 @@
             <div class="offer-card h-100">
                 <a href="{{ url('hotel/'.$hotel->id.'/detail') }}">
                     @if($hotel->banner_image)
-                    <img class="card-img-top img-fluid" src="{{ asset('storage/'.$hotel->banner_image) }}" alt="{{ $hotel->name }}" style="height: 200px; object-fit: cover;">
+                    <img class="card-img-top img-fluid" src="{{$hotel->banner_image}}" alt="{{ $hotel->name }}" style="height: 200px; object-fit: cover;">
                     @else
                     <img class="card-img-top img-fluid" src="{{ asset('restaurant_frontend/default-image.png') }}" alt="{{ $hotel->name }}" style="height: 200px; object-fit: cover;">
                     @endif
@@ -228,7 +228,7 @@
             <div class="offer-card h-100">
                 @if($room->cover_image)
                 <a href="{{ url('hotel/room/'.$room->id.'/detail') }}">
-                    <img class="card-img-top" src="{{ asset('storage/'.$room->cover_image) }}" alt="{{ $room->room_type }}">
+                    <img class="card-img-top" src="{{ $room->cover_image }}" alt="{{ $room->room_type }}">
                     @else
                     <img class="card-img-top" src="{{ asset('restaurant_frontend/default-image.png')}}" alt="{{ $room->room_type }}">
                     @endif
