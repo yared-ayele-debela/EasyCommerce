@@ -83,6 +83,63 @@ class OrderController extends Controller
 
     /**
      * @OA\Post(
+     *     path="/api/orders/myorder",
+     *     tags={"Orders"},
+     *     summary="Create a new order for food, hotel reservation, or e-commerce product",
+     *     security={{"sanctum":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="type", type="string", enum={"food", "hotel", "ecommerce"}, description="Type of order"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Order created successfully"
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid input"
+     *     )
+     * )
+     */
+    public function getUserOrders(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'type' => 'required|string|in:food,hotel,ecommerce',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        try {
+            $user = $request->user();
+
+            switch ($request->type) {
+                case 'food':
+                    $orders = \App\Models\RestaurantOrder::where('user_id', $user->id)->get();
+                    break;
+                case 'hotel':
+                    $orders = \App\Models\Reservation::where('user_id', $user->id)->get();
+                    break;
+                case 'ecommerce':
+                    $orders = \App\Models\Order::where('user_id', $user->id)->get();
+                    break;
+                default:
+                    return response()->json(['success' => false, 'message' => 'Invalid order type'], 400);
+            }
+
+            return response()->json(['success' => true, 'data' => $orders], 200);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    
+    /**
+     * @OA\Post(
      *     path="/api/orders/cancel/{id}",
      *     tags={"Orders"},
      *     summary="Cancel an order",

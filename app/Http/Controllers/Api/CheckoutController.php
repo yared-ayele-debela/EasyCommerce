@@ -39,7 +39,7 @@ class CheckoutController extends Controller
             // Validate the request
             $validator = Validator::make($request->all(), [
                 'user_id' => 'required|integer|exists:users,id',
-                'items' => 'required|array',
+                'items' => 'required',
                 'items.*.product_id' => 'required|integer|exists:products,id',
                 'items.*.quantity' => 'required|integer|min:1',
                 'payment_method' => 'required|string|in:cash_on_delivery,bank_transfer',
@@ -57,7 +57,7 @@ class CheckoutController extends Controller
             }
 
             // Calculate order details
-            $items = $request->input('items');
+            $items = json_decode($request->input('items'), true);
             $subtotal = collect($items)->reduce(function ($carry, $item) {
                 $product = \App\Models\Product::find($item['product_id']);
                 return $carry + ($product->price * $item['quantity']);
@@ -115,6 +115,7 @@ class CheckoutController extends Controller
             if ($request->hasFile('screenshot')) {
                 $screenshotPath = $request->file('screenshot')->store('screenshots', 'public');
                 $order->update(['screenshot_path' => $screenshotPath]);
+                $screenshotUrl = asset('storage/' . $screenshotPath);
             }
 
             return response()->json([
@@ -264,7 +265,7 @@ class CheckoutController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'user_id' => 'required|integer',
-                'items' => 'required|array',
+                'items' => 'required',
                 'items.*.food_id' => 'required|integer|exists:foods,id',
                 'items.*.size' => 'nullable|string',
                 'items.*.quantity' => 'required|integer|min:1',
@@ -288,7 +289,7 @@ class CheckoutController extends Controller
                 ], 400);
             }
 
-            $items = $request->input('items');
+            $items = json_decode($request->input('items'),true);
             $subtotal = collect($items)->reduce(function ($carry, $item) {
                 $product = \App\Models\Food::find($item['food_id']);
                 if (!$product) {
@@ -321,7 +322,7 @@ class CheckoutController extends Controller
                 'total' => $total,
                 'payment_method' => $request->input('payment_method'),
                 'delivery_address_id' => $request->input('delivery_address_id'),
-                'screenshot_path' => $request->hasFile('screenshot') 
+                'screenshot' => $request->hasFile('screenshot') 
                     ? $request->file('screenshot')->store('screenshots', 'public') 
                     : null
             ]);

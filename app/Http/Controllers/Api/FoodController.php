@@ -243,4 +243,118 @@ class FoodController extends Controller
 
         return response()->json($foods);
     }
+
+    /**
+     * @OA\Get(
+     *     path="/api/foods/search",
+     *     summary="Search foods by name or description",
+     *     tags={"Foods"},
+     *     @OA\Parameter(
+     *         name="query",
+     *         in="query",
+     *         required=true,
+     *         description="Search query",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of foods matching the search query"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No foods found"
+     *     )
+     * )
+     */
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+
+        $foods = Food::where('name', 'LIKE', "%{$query}%")
+            ->orWhere('description', 'LIKE', "%{$query}%")
+            ->with('category')
+            ->get();
+
+        if ($foods->isEmpty()) {
+            return response()->json(['message' => 'No foods found'], 404);
+        }
+
+        return response()->json($foods);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/foods/filter",
+     *     summary="Filter foods by price range, availability, and delivery time",
+     *     tags={"Foods"},
+     *     @OA\Parameter(
+     *         name="min_price",
+     *         in="query",
+     *         required=false,
+     *         description="Minimum price",
+     *         @OA\Schema(type="number")
+     *     ),
+     *     @OA\Parameter(
+     *         name="max_price",
+     *         in="query",
+     *         required=false,
+     *         description="Maximum price",
+     *         @OA\Schema(type="number")
+     *     ),
+     *     @OA\Parameter(
+     *         name="delivery_time",
+     *         in="query",
+     *         required=false,
+     *         description="Maximum delivery time in minutes",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of foods matching the filter criteria"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No foods found"
+     *     )
+     * )
+     */
+    public function filter(Request $request)
+    {
+        $query = Food::query();
+
+        if ($request->has('min_price')) {
+            $query->where('price', '>=', $request->input('min_price'));
+        }
+
+        if ($request->has('max_price')) {
+            $query->where('price', '<=', $request->input('max_price'));
+        }
+
+        if ($request->has('delivery_time')) {
+            $deliveryTime = $request->input('delivery_time');
+            
+            // Convert delivery time to minutes if it's in '1h 30m' or '0:30' format
+            if (preg_match('/(\d+)h\s*(\d+)?m?/', $deliveryTime, $matches)) {
+            $hours = (int) $matches[1];
+            $minutes = isset($matches[2]) ? (int) $matches[2] : 0;
+            $deliveryTimeInMinutes = ($hours * 60) + $minutes;
+            } elseif (preg_match('/(\d+):(\d+)/', $deliveryTime, $matches)) {
+            $hours = (int) $matches[1];
+            $minutes = (int) $matches[2];
+            $deliveryTimeInMinutes = ($hours * 60) + $minutes;
+            } else {
+            $deliveryTimeInMinutes = (int) $deliveryTime; // Assume it's already in minutes
+            }
+
+            $query->where('delivery_time', '<=', $deliveryTimeInMinutes);
+        }
+
+        $foods = $query->with('category')->get();
+
+        if ($foods->isEmpty()) {
+            return response()->json(['message' => 'No foods found'], 404);
+        }
+
+        return response()->json($foods);
+    }
 }

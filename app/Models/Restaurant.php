@@ -25,6 +25,10 @@ class Restaurant extends Model
     {
         return $this->hasMany(RestaurantWorkingHour::class);
     }
+    public function images()
+    {
+        return $this->hasMany(RestaurantImage::class);
+    }
 
     public function menus()
     {

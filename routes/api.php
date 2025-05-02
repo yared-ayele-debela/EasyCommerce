@@ -275,13 +275,30 @@ Route::get('/banners/restaurant', [BannerController::class, 'getRestaurantBanner
 Route::get('/banners/hotel', [BannerController::class, 'getHotelBanners']);
 Route::post('/banners', [BannerController::class, 'store']);
 
+Route::get('/foods/filter', [FoodController::class, 'filter']);
+Route::get('/foods/search', [FoodController::class, 'search']);
+
 Route::get('/foods/parent-category/{parentCatId}', [FoodController::class, 'getByParentCategory']);
 Route::get('/foods/category/{categoryId}', [FoodController::class, 'getByCategory']);
 Route::get('/food-categories/with-parent/{parent_cat_id}', [FoodCategoryController::class, 'getByParentCategory']);
 Route::get('main/food-categories', [FoodCategoryController::class, 'mainCategory']);
 Route::apiResource('foods', FoodController::class);
 
+// User-specific orders
+Route::get('/orders/myorder', [OrderController::class, 'getUserOrders'])->middleware('auth:sanctum');
 
+// Favorites routes
+Route::prefix('favorites')->middleware('auth:sanctum')->group(function () {
+    Route::get('/', [RestaurantController::class, 'index']);
+    Route::post('add', [RestaurantController::class, 'add']);
+    Route::post('remove', [RestaurantController::class, 'remove']);
+});
+
+// Restaurant-specific food categories
+Route::get('/restaurants/{id}/food-category', [RestaurantController::class, 'getFoodCategoriesByRestaurant']);
+
+// Restaurant gallery
+Route::get('/restaurants/{id}/gallery', [RestaurantController::class, 'getGallery']);
 Route::apiResource('countries', CountryController::class);
 Route::apiResource('food-categories', FoodCategoryController::class);
 // Route::apiResource('foods', FoodController::class);

@@ -2237,6 +2237,80 @@
                 }
             }
         },
+        "/api/foods/search": {
+            "get": {
+                "tags": [
+                    "Foods"
+                ],
+                "summary": "Search foods by name or description",
+                "operationId": "b91f750f37a899770251e8f2a5bdbed3",
+                "parameters": [
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "description": "Search query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of foods matching the search query"
+                    },
+                    "404": {
+                        "description": "No foods found"
+                    }
+                }
+            }
+        },
+        "/api/foods/filter": {
+            "get": {
+                "tags": [
+                    "Foods"
+                ],
+                "summary": "Filter foods by price range, availability, and delivery time",
+                "operationId": "e947b7b08a4661ae26c56123e7fbcc71",
+                "parameters": [
+                    {
+                        "name": "min_price",
+                        "in": "query",
+                        "description": "Minimum price",
+                        "required": false,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "max_price",
+                        "in": "query",
+                        "description": "Maximum price",
+                        "required": false,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "delivery_time",
+                        "in": "query",
+                        "description": "Maximum delivery time in minutes",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of foods matching the filter criteria"
+                    },
+                    "404": {
+                        "description": "No foods found"
+                    }
+                }
+            }
+        },
         "/api/hotels": {
             "get": {
                 "tags": [
@@ -3500,6 +3574,49 @@
                 ]
             }
         },
+        "/api/orders/myorder": {
+            "post": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Create a new order for food, hotel reservation, or e-commerce product",
+                "operationId": "56754d760ce29414404ed1f25a4167c0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "type": {
+                                        "description": "Type of order",
+                                        "type": "string",
+                                        "enum": [
+                                            "food",
+                                            "hotel",
+                                            "ecommerce"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Order created successfully"
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/orders/cancel/{id}": {
             "post": {
                 "tags": [
@@ -3935,6 +4052,326 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/api/restaurants/{id}/gallery": {
+            "get": {
+                "tags": [
+                    "Restaurants"
+                ],
+                "summary": "Get restaurant gallery images",
+                "description": "Retrieve a list of gallery images for a specific restaurant by its ID.",
+                "operationId": "getRestaurantGallery",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the restaurant to retrieve gallery images for",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response with a list of gallery images",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "description": "Image ID",
+                                                "type": "integer"
+                                            },
+                                            "image_path": {
+                                                "description": "Image path",
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Restaurant not found"
+                    }
+                }
+            }
+        },
+        "/api/restaurants/{id}/food-category": {
+            "get": {
+                "tags": [
+                    "Restaurants"
+                ],
+                "summary": "Get food categories and first category foods by restaurant ID",
+                "description": "Retrieve a list of food categories for a specific restaurant and the foods under the first category.",
+                "operationId": "getFoodCategoryAndFirstCategoryFoods",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the restaurant to retrieve food categories and foods for",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response with food categories and first category foods",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "food_categories": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "description": "Food category ID",
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "description": "Food category name",
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "first_category_foods": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "description": "Food ID",
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "description": "Food name",
+                                                        "type": "string"
+                                                    },
+                                                    "price": {
+                                                        "description": "Food price",
+                                                        "type": "number",
+                                                        "format": "float"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Restaurant not found"
+                    }
+                }
+            }
+        },
+        "/api/favorites": {
+            "get": {
+                "tags": [
+                    "Favorites"
+                ],
+                "summary": "Get user's favorites",
+                "description": "Retrieve the list of the user's favorite items (restaurants, foods, hotels, and products).",
+                "operationId": "getFavorites",
+                "responses": {
+                    "200": {
+                        "description": "Successful response with a list of favorites",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "restaurants": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "description": "Restaurant ID",
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "description": "Restaurant name",
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "foods": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "description": "Food ID",
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "description": "Food name",
+                                                        "type": "string"
+                                                    },
+                                                    "price": {
+                                                        "description": "Food price",
+                                                        "type": "number",
+                                                        "format": "float"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "hotels": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "description": "Hotel ID",
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "description": "Hotel name",
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "products": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "description": "Product ID",
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "description": "Product name",
+                                                        "type": "string"
+                                                    },
+                                                    "price": {
+                                                        "description": "Product price",
+                                                        "type": "number",
+                                                        "format": "float"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Favorites"
+                ],
+                "summary": "Add an item to favorites",
+                "description": "Add a restaurant, food, hotel, or e-commerce product to the user's favorites.",
+                "operationId": "addToFavorites",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "favoritable_id": {
+                                        "description": "ID of the item to add to favorites",
+                                        "type": "integer"
+                                    },
+                                    "favoritable_type": {
+                                        "description": "Type of the item (e.g., 'restaurant', 'food', 'hotel', 'product')",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully added to favorites",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Success message",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Favorites"
+                ],
+                "summary": "Remove an item from favorites",
+                "description": "Remove a restaurant, food, hotel, or e-commerce product from the user's favorites.",
+                "operationId": "removeFromFavorites",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "favoritable_id": {
+                                        "description": "ID of the item to remove from favorites",
+                                        "type": "integer"
+                                    },
+                                    "favoritable_type": {
+                                        "description": "Type of the item (e.g., 'restaurant', 'food', 'hotel', 'product')",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully removed from favorites",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Success message",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
                     }
                 }
             }
@@ -4590,6 +5027,10 @@
         {
             "name": "Restaurants",
             "description": "Restaurants"
+        },
+        {
+            "name": "Favorites",
+            "description": "Favorites"
         }
     ]
 }

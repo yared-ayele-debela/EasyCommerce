@@ -17,7 +17,7 @@ class Order extends Model
         'country', 'pincode', 'latitude', 'longitude', 'mobile', 'email', 
         'shipping_charges', 'tax_charge', 'coupon_code', 'coupon_amount', 
         'order_status', 'payment_method', 'payment_gateway', 'grand_total', 
-        'transaction_id', 'payment_currency', 'courier_name', 'tracking_number'
+        'transaction_id', 'payment_currency', 'courier_name', 'tracking_number','screenshot_path'
     ];
 
 

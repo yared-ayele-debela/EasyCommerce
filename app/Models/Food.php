@@ -19,7 +19,7 @@ class Food extends Model
         'price' => 'decimal:2',
         'discount' => 'decimal:2',
         'is_special_offer' => 'boolean',
-        'available' => 'boolean',
+        'available' => 'boolean','delivery_time'
     ];
 
     public function restaurant()
