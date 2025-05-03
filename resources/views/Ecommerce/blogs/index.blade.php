@@ -44,12 +44,13 @@
 
         <!-- Sidebar -->
         <div class="col-lg-3">
-            <!-- Search -->
+            <div class="offer-card px-3 py-4">
+                <!-- Search -->
             <div class="mb-4">
-                <h5 class="mb-3">Search</h5>
+                <h5 class="mb-2">Search</h5>
                 <form action="{{ route('display-blogs') }}" method="GET" class="d-flex">
                     <input type="text" name="search" class="form-control me-2" placeholder="Search by title...">
-                    <button type="submit" class="btn btn-outline-primary"><i class="fas fa-search"></i></button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i></button>
                 </form>
             </div>
 
@@ -58,7 +59,7 @@
                 <h5 class="mb-3">Categories</h5>
                 <ul class="list-group">
                     @foreach ($blog_category as $category)
-                        <li class="list-group-item">
+                        <li class="list-group-item border border-0">
                             <a href="#" class="text-decoration-none text-dark">{{ $category->name }}</a>
                         </li>
                     @endforeach
@@ -71,8 +72,7 @@
                 <ul class="list-group">
                     @foreach($blogCounts as $blogCount)
                         <li class="list-group-item">
-                            <a href="#" class="text-decoration-none" class="text-dark">
-                                {{-- Displaying month and year --}}
+                            <a href="#" class="text-decoration-none text-dark" class="text-dark">
                                 {{ \Carbon\Carbon::createFromDate($blogCount->year, $blogCount->month, 1)->format('F Y') }}
                                 ({{ $blogCount->post_count }})
                             </a>
@@ -88,11 +88,12 @@
                     <div class="d-flex mb-3">
                         <img src="{{ $blog['image'] }}" class="me-3 rounded" alt="Recent Post" style="width: 80px; height: 80px; object-fit: cover;">
                         <div>
-                            <a href="{{ url('blogs/details/'.$blog->id) }}" class="text-decoration-none d-block text-dark">{{ $blog->title }}</a>
+                            <a href="{{ url('blogs/details/'.encrypt($blog->id)) }}" class="text-decoration-none d-block text-dark">{{ $blog->title }}</a>
                             <small class="text-muted">{{ $blog->created_at->format('M d, Y') }}</small>
                         </div>
                     </div>
                 @endforeach
+            </div>
             </div>
         </div>
     </div>

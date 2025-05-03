@@ -174,16 +174,15 @@ use Illuminate\Support\Facades\Storage;
                     $helperCount = \App\Helper\Helper::totalCartItems();
                     $cartCount = $sessionCount + $helperCount;
                     @endphp
-
                     <a href="{{ route('restaurant.wishlist.index') }}" class="btn btn-light btn-sm position-relative me-2">
                         <i class="bi bi-heart text-primary fs-5"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary" id="whishlist-count">
                             {{ $wishlistCount + $ecommerce_wishlistCount }}
                         </span>
                     </a>
                     <a href="{{ url('my-cart') }}" class="btn btn-light btn-sm position-relative me-2">
                         <i class="bi bi-cart text-primary fs-5"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary" id="cart-count">
                             {{ $cartCount }}
                         </span>
                     </a>

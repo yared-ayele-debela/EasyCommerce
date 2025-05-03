@@ -189,51 +189,51 @@ class AdminController extends Controller
     {
 
         // try {
-            if (!$request->method('post')) {
-                Alert::toast('Error', 'Something is wrong!', 'error');
+        if (!$request->method('post')) {
+            Alert::toast('Error', 'Something is wrong!', 'error');
+            return redirect()->back();
+        }
+
+        $data = $request->all();
+        $validateData = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:8',
+        ]);
+
+        if (Auth::guard('admin')->attempt(['email' => $data['email'], 'password' => $data['password'], 'status' => 1])) {
+            if (Auth::guard('admin')->user()->type == "vendor" & Auth::guard('admin')->user()->confirm == "No") {
+                Alert::toast('Please confirm your email to active your Vendor Account', 'error');
                 return redirect()->back();
-            }
-
-            $data = $request->all();
-            $validateData = $request->validate([
-                'email' => 'required|email',
-                'password' => 'required|min:8',
-            ]);
-
-            if (Auth::guard('admin')->attempt(['email' => $data['email'], 'password' => $data['password'], 'status' => 1])) {
-                if (Auth::guard('admin')->user()->type == "vendor" & Auth::guard('admin')->user()->confirm == "No") {
-                    Alert::toast('Please confirm your email to active your Vendor Account', 'error');
-                    return redirect()->back();
-                } else if (Auth::guard('admin')->user()->type != "vendor" && Auth::guard('admin')->user()->status = "0") {
-                    Alert::toast('Your account is not acitve', 'error');
-                    return redirect()->back();
-                } else {
-                    $currentDateTime = Carbon::now();
-                    $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
-
-                    ActivityLogger::log('User login', "user login at {$formattedDateTime}");
-                    Alert::toast('Welcome to Dashboard', 'success');
-
-                    switch (Auth::guard('admin')->user()->type) {
-                        case 'Hotel Manager':
-                            return redirect('/admin/hotel/dashboard');
-                        case 'Restaurant Manager':
-                            return redirect('/admin/restaurant/dashboard');
-                        case 'Ecommerce Manager':
-                            return redirect('/admin/dashboard');
-                        case 'Super Admin':
-                            return redirect('/admin/dashboard');
-                        case 'vendor':
-                            return redirect('/admin/dashboard');
-                        default:
-                            Auth::logout();
-                            abort(403);
-                    }
-                }
+            } else if (Auth::guard('admin')->user()->type != "vendor" && Auth::guard('admin')->user()->status = "0") {
+                Alert::toast('Your account is not acitve', 'error');
+                return redirect()->back();
             } else {
-                Alert::toast('Your email or password is incorrect', 'error');
-                return redirect()->back();
+                $currentDateTime = Carbon::now();
+                $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+
+                ActivityLogger::log('User login', "user login at {$formattedDateTime}");
+                Alert::toast('Welcome to Dashboard', 'success');
+
+                switch (Auth::guard('admin')->user()->type) {
+                    case 'Hotel Manager':
+                        return redirect('/admin/hotel/dashboard');
+                    case 'Restaurant Manager':
+                        return redirect('/admin/restaurant/dashboard');
+                    case 'Ecommerce Manager':
+                        return redirect('/admin/dashboard');
+                    case 'Super Admin':
+                        return redirect('/admin/dashboard');
+                    case 'vendor':
+                        return redirect('/admin/dashboard');
+                    default:
+                        Auth::logout();
+                        abort(403);
+                }
             }
+        } else {
+            Alert::toast('Your email or password is incorrect', 'error');
+            return redirect()->back();
+        }
         // } catch (\Illuminate\Validation\ValidationException $e) {
         //     // Laravel's built-in validation exception
         //     return redirect()->back()->withErrors($e->validator->errors())->withInput();
@@ -396,81 +396,81 @@ class AdminController extends Controller
     public function update_vendor_businessdetails(Request $request)
     {
         // try {
-            if (!$request->method('put')) {
-                Alert::toast('something is wrong!!', 'error');
-                return redirect()->back();
-            }
-
-            $data = $request->all();
-            $vendorId = Auth::guard('admin')->user()->vendor_id;
-            $vendor = VendorBussinessDetails::where('vendor_id', $vendorId)->first();
-
-            $addressProofImage = '';
-            $shopImage = '';
-
-            // Address Proof Image Handling
-            // Address Proof Image
-if ($request->hasFile('address_proof_image')) {
-    if ($vendor && $vendor->address_proof_image) {
-        Storage::delete('public/admin/image/' . $vendor->address_proof_image);
-    }
-
-    $file = $request->file('address_proof_image');
-    $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $file->getClientOriginalExtension();
-    $file->storeAs('public/admin/image', $fileName);
-
-    // Save full public URL
-    $addressProofImage = Storage::url('admin/image/' . $fileName);
-} elseif (!empty($data['current_address_proof'])) {
-    $addressProofImage = $data['current_address_proof'];
-}
-
-// Shop Image
-if ($request->hasFile('shop_image')) {
-    if ($vendor && $vendor->shop_image) {
-        Storage::delete('public/admin/image/' . $vendor->shop_image);
-    }
-
-    $file = $request->file('shop_image');
-    $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $file->getClientOriginalExtension();
-    $file->storeAs('public/admin/image', $fileName);
-
-    // Save full public URL
-    $shopImage = Storage::url('admin/image/' . $fileName);
-} elseif (!empty($data['current_shop_image'])) {
-    $shopImage = $data['current_shop_image'];
-}
-
-
-            // Prepare common data
-            $vendorData = [
-                'vendor_id' => $vendorId,
-                'address_proof_image' => $addressProofImage,
-                'shop_image' => $shopImage,
-                'shop_name' => $data['shop_name'],
-                'shop_mobile' => $data['shop_mobile'],
-                'shop_address' => $data['shop_address'],
-                'shop_city' => $data['shop_city'],
-                'shop_state' => $data['shop_state'],
-                'shop_website' => $data['shop_website'],
-                'shop_country' => $data['shop_country'],
-                'business_license_number' => $data['business_license_number'],
-                'shop_email' => $data['shop_email'],
-                'address_proof' => $data['address_proof'],
-                'shop_pincode' => $data['shop_pincode'],
-            ];
-
-            // Insert or Update
-            if ($vendor) {
-                VendorBussinessDetails::where('vendor_id', $vendorId)->update($vendorData);
-            } else {
-                VendorBussinessDetails::create($vendorData);
-            }
-
-            ActivityLogger::log('Update', "Updated vendor business details");
-
-            Alert::toast('Upated vendor business details Successfully!', 'success');
+        if (!$request->method('put')) {
+            Alert::toast('something is wrong!!', 'error');
             return redirect()->back();
+        }
+
+        $data = $request->all();
+        $vendorId = Auth::guard('admin')->user()->vendor_id;
+        $vendor = VendorBussinessDetails::where('vendor_id', $vendorId)->first();
+
+        $addressProofImage = '';
+        $shopImage = '';
+
+        // Address Proof Image Handling
+        // Address Proof Image
+        if ($request->hasFile('address_proof_image')) {
+            if ($vendor && $vendor->address_proof_image) {
+                Storage::delete('public/admin/image/' . $vendor->address_proof_image);
+            }
+
+            $file = $request->file('address_proof_image');
+            $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('public/admin/image', $fileName);
+
+            // Save full public URL
+            $addressProofImage = Storage::url('admin/image/' . $fileName);
+        } elseif (!empty($data['current_address_proof'])) {
+            $addressProofImage = $data['current_address_proof'];
+        }
+
+        // Shop Image
+        if ($request->hasFile('shop_image')) {
+            if ($vendor && $vendor->shop_image) {
+                Storage::delete('public/admin/image/' . $vendor->shop_image);
+            }
+
+            $file = $request->file('shop_image');
+            $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('public/admin/image', $fileName);
+
+            // Save full public URL
+            $shopImage = Storage::url('admin/image/' . $fileName);
+        } elseif (!empty($data['current_shop_image'])) {
+            $shopImage = $data['current_shop_image'];
+        }
+
+
+        // Prepare common data
+        $vendorData = [
+            'vendor_id' => $vendorId,
+            'address_proof_image' => $addressProofImage,
+            'shop_image' => $shopImage,
+            'shop_name' => $data['shop_name'],
+            'shop_mobile' => $data['shop_mobile'],
+            'shop_address' => $data['shop_address'],
+            'shop_city' => $data['shop_city'],
+            'shop_state' => $data['shop_state'],
+            'shop_website' => $data['shop_website'],
+            'shop_country' => $data['shop_country'],
+            'business_license_number' => $data['business_license_number'],
+            'shop_email' => $data['shop_email'],
+            'address_proof' => $data['address_proof'],
+            'shop_pincode' => $data['shop_pincode'],
+        ];
+
+        // Insert or Update
+        if ($vendor) {
+            VendorBussinessDetails::where('vendor_id', $vendorId)->update($vendorData);
+        } else {
+            VendorBussinessDetails::create($vendorData);
+        }
+
+        ActivityLogger::log('Update', "Updated vendor business details");
+
+        Alert::toast('Upated vendor business details Successfully!', 'success');
+        return redirect()->back();
         // } catch (\Illuminate\Validation\ValidationException $e) {
         //     // Laravel's built-in validation exception
         //     return redirect()->back()->withErrors($e->validator->errors())->withInput();
@@ -844,47 +844,7 @@ if ($request->hasFile('shop_image')) {
             return redirect()->back();
         }
     }
-    public function updateRole(Request $request, $id)
-    {
-        try {
-            if ($request->isMethod('post')) {
-                $data = $request->all();
-                unset($data['_token']);
-                AdminsRole::where('admin_id', $id)->delete();
-
-                foreach ($data as $key => $value) {
-                    if (isset($value['view'])) {
-                        $view = $value['view'];
-                    } else {
-                        $view = 0;
-                    }
-                    if (isset($value['edit'])) {
-                        $edit = $value['edit'];
-                    } else {
-                        $edit = 0;
-                    }
-                    if (isset($value['full'])) {
-                        $full = $value['full'];
-                    } else {
-                        $full = 0;
-                    }
-                    AdminsRole::where('admin_id', $id)->insert(['admin_id' => $id, 'module' => $key, 'view_access' => $view, 'edit_access' => $edit, 'full_access' => $full]);
-                }
-
-
-                Alert::toast('Roles has been updated successfully!', 'success');
-                return redirect()->back();
-            }
-            $appsettings = AppSetting::all()->toArray();
-            $adminDetails = Admin::where('id', $id)->first()->toArray();
-            $adminRoles = AdminsRole::where('admin_id', $id)->get()->toArray();
-            return view('admin.admin.admin_role.update_roles', compact('appsettings', 'adminDetails', 'adminRoles'));
-        } catch (\Exception $e) {
-            // Log or handle the exception as needed
-            Alert::toast('something is wrong!!', 'error');
-            return redirect()->back();
-        }
-    }
+   
 
 
     public function ForgetPassword()
@@ -989,14 +949,11 @@ if ($request->hasFile('shop_image')) {
         if (!$update) {
             return back()->withInput()->with('error', 'Invalid token!');
         }
-
         try {
             $user = Admin::where('email', $request->email)->first();
-
             if (!$user) {
                 return back()->withInput()->with('error', 'User not found!');
             }
-
             // Hash and update the password
             $user->password = Hash::make($request->password);
             $user->save();

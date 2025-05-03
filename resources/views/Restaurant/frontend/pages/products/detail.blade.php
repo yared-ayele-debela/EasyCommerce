@@ -47,12 +47,13 @@
         <!-- Product Image -->
         <div class="col-md-5 text-center">
             <div class="image-container position-relative">
-                <img src="{{ asset('restaurant_frontend/assets/img/product_background.png') }}" alt="Background" class="background-image img-fluid">
-                @if($product->image)
-                <img id="mainProductImage" src="{{ $product->image }}" alt="Product" class="product-image img-fluid position-absolute top-50 start-50 translate-middle">
-                @else
-                <img id="mainProductImage" src="{{ asset('restaurant_frontend/default-image.png') }}" alt="Product" class="product-image img-fluid position-absolute top-50 start-50 translate-middle">
-                @endif
+                <div class="image-container position-relative">
+                    <img src="{{ asset('restaurant_frontend/assets/img/product_background.png') }}" alt="Background" class="background-image img-fluid">
+                    <img id="mainProductImage"
+                         src="{{ $product->image ? $product->image : asset('restaurant_frontend/default-image.png') }}"
+                         alt="Product"
+                         class="product-image img-fluid position-absolute top-50 start-50 translate-middle">
+                </div>
             </div>
             <div class="d-flex justify-content-center mt-3">
                 @foreach($product->images as $key => $image)
@@ -86,8 +87,8 @@
             <div class="offer-card p-3 shadow-sm">
                 <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
                     <h2 class="card-title text-dark">{{ $product->name }}</h2>
-                    <h1 class="text-primary" id="product-price">
-                        {{ $product->sizes->first()->price ?? $product->price }} Birr
+                    <h1 class="text-primary" id="product-price" data-base-price="{{ $product->price }}">
+                        {{ $product->price }} Birr
                     </h1>
                 </div>
                 <div class="card-body">
@@ -227,85 +228,108 @@
     </div>
 </div>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        let priceDisplay = document.getElementById("product-price");
-        let quantityInput = document.getElementById("quantity");
-        let incrementBtn = document.getElementById("increment");
-        let decrementBtn = document.getElementById("decrement");
-        let sizeSelectors = document.querySelectorAll(".size-selector");
-        let selectedPrice = parseFloat(sizeSelectors[0] ? .getAttribute("data-price") || "{{ $product->price }}");
+    document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('addToCart').addEventListener('click', function () {
+        let productId = this.getAttribute('data-product-id');
+        let selectedSize = document.querySelector('input[name="size"]:checked');
+        let quantity = document.getElementById('quantity').value;
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        function updatePrice() {
-            let selectedSize = document.querySelector('input[name="size"]:checked');
-            let size = selectedSize ? selectedSize.getAttribute('data-size') : '';
-            let quantity = parseInt(quantityInput.value);
-            let totalPrice = selectedPrice * quantity;
-            priceDisplay.textContent = totalPrice.toFixed(2) + " Birr";
+        // Handle null selectedSize
+        let size = selectedSize ? selectedSize.getAttribute('data-size') : null;
+        let price = selectedSize ? selectedSize.getAttribute('data-price') : document.getElementById("product-price").getAttribute("data-base-price");
 
-            document.getElementById('p_size').value = size;
-            document.getElementById('p_qty').value = quantity;
-            document.getElementById('p_price').value = totalPrice.toFixed(2); // Set price to 2 decimal places
-
-        }
-        // Handle size selection
-        sizeSelectors.forEach(button => {
-            button.addEventListener("change", function() {
-                selectedPrice = parseFloat(this.getAttribute("data-price"));
-                updatePrice();
-            });
-        });
-
-        incrementBtn.addEventListener("click", function() {
-            quantityInput.value = parseInt(quantityInput.value) + 1;
-            updatePrice();
-        });
-
-        decrementBtn.addEventListener("click", function() {
-            if (quantityInput.value > 1) {
-                quantityInput.value = parseInt(quantityInput.value) - 1;
-                updatePrice();
-            }
-        });
-        // Update price initially
-        updatePrice();
+        fetch("{{ route('restaurant.cart.add') }}", {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                product_id: productId,
+                size: size,
+                price: price,
+                quantity: quantity
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            showAlert(data.status, data.message);
+            updateCartCount();
+        })
+        .catch(error => console.error("Error:", error));
     });
-    const mainImage = document.getElementById('mainProductImage');
+});
+function updateCartCount() {
+        fetch("{{ route('cart.count') }}")
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("cart-count").innerText = data.total;
+            })
+            .catch(error => {
+                console.error('Error fetching cart count:', error);
+                document.getElementById("cart-count").innerText = '0';
+            });
+    }
+
+</script>
+<script>
+      const mainImage = document.getElementById('mainProductImage');
     document.querySelectorAll('.thumbnail').forEach(thumbnail => {
         thumbnail.addEventListener('click', function() {
             mainImage.src = this.src; // Set main image to clicked thumbnail
         });
     });
-    document.getElementById('addToCart').addEventListener('click', function() {
+</script>
+<script>
+   document.addEventListener("DOMContentLoaded", function () {
+    let priceDisplay = document.getElementById("product-price");
+    let quantityInput = document.getElementById("quantity");
+    let incrementBtn = document.getElementById("increment");
+    let decrementBtn = document.getElementById("decrement");
+    let sizeSelectors = document.querySelectorAll(".size-selector");
 
-        let productId = this.getAttribute('data-product-id');
+    // Store base product price from the element
+    let basePrice = parseFloat(priceDisplay.getAttribute("data-base-price") || "{{ $product->price }}");
+
+    function updatePrice() {
         let selectedSize = document.querySelector('input[name="size"]:checked');
-        let quantity = document.getElementById('quantity').value;
+        let price = selectedSize ? parseFloat(selectedSize.getAttribute('data-price')) : basePrice;
+        let size = selectedSize ? selectedSize.getAttribute('data-size') : '';
+        let quantity = parseInt(quantityInput.value);
+        let totalPrice = price * quantity;
 
+        priceDisplay.textContent = totalPrice.toFixed(2) + " Birr";
 
-        let price = selectedSize.getAttribute('data-price');
-        let size = selectedSize.getAttribute('data-size');
+        document.getElementById('p_size').value = size;
+        document.getElementById('p_qty').value = quantity;
+        document.getElementById('p_price').value = totalPrice.toFixed(2);
+    }
 
-        fetch("{{ route('restaurant.cart.add') }}", {
-                method: "POST"
-                , headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                    , "Content-Type": "application/json"
-                }
-                , body: JSON.stringify({
-                    product_id: productId
-                    , size: size
-                    , price: price
-                    , quantity: quantity
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                showAlert(data.status, data.message);
-                updateCartCount();
-            })
-            .catch(error => console.error("Error:", error));
+    // Handle size selection
+    sizeSelectors.forEach(button => {
+        button.addEventListener("change", function () {
+            updatePrice();
+        });
     });
 
+    incrementBtn.addEventListener("click", function () {
+        quantityInput.value = parseInt(quantityInput.value) + 1;
+        updatePrice();
+    });
+
+    decrementBtn.addEventListener("click", function () {
+        if (quantityInput.value > 1) {
+            quantityInput.value = parseInt(quantityInput.value) - 1;
+            updatePrice();
+        }
+    });
+
+    // Initial update
+    updatePrice();
+});
+
 </script>
+
 @endsection
 

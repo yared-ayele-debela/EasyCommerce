@@ -16,12 +16,12 @@ class CartController extends Controller
     public function addToCart(Request $request)
     {
 
-        dd($request->all());
+        // dd($request->all());
         $cart = session()->get('cart', []);
 
         $cart[] = [
             'product_id' => $request->product_id,
-            'size' => $request->size,
+            'size' => $request->size? $request->size : '',
             'price' => $request->price,
             'quantity' => $request->quantity
         ];

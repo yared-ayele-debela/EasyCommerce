@@ -1,6 +1,12 @@
 @extends('all_frontend_layouts.layouts')
 @section('content')
-<div class="container py-5">
+<div class="container pb-3">
+        <div class="header">
+            <button class="btn btn-link text-dark" onclick="history.back()">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+            <h5 class="my-4 text-dark text-center">Contact Us</h5>
+        </div>
     <div class="row">
         <!-- Contact Form -->
         <div class="col-lg-6">

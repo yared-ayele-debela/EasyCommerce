@@ -10,12 +10,13 @@ use App\Models\Restaurant\Product;
         margin: 5px !important;
     }
 </style>
-<div class="container my-4">
-
-    <div class="checkout-header">
-        <a href="{{ url('/') }}">Home</a> / <span>Checkout</span>
+<div class="container mb-4">
+    <div class="header">
+        <button class="btn btn-link text-dark" onclick="history.back()">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+        <h5 class="my-4 text-dark text-center">Checkout</h5>
     </div>
-
     <div class="row">
         <div class="col-12 col-md-8">
             @session('success')
