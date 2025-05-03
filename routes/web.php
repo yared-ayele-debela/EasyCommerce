@@ -714,7 +714,7 @@ Route::prefix('admin')->group(function () {
 
         //for fast orders
 
-        Route::controller(CustomOrderController::class)->group(function () {
+        Route::controller(AdminCustomOrderController::class)->group(function () {
             Route::get('custom-orders', 'index')->name('custom_orders');
 
             Route::get('custom-orders/inactive/{id}', 'inactive')->name('inactive_fast_orders');

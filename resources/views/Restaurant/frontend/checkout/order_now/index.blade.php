@@ -11,7 +11,6 @@ use App\Models\Restaurant\Product;
     }
 </style>
 <div class="container mb-4">
-
     <div class="header">
         <button class="btn btn-link text-dark" onclick="history.back()">
             <i class="bi bi-arrow-left"></i>

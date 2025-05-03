@@ -18,15 +18,11 @@ $user = Auth::guard('admin')->user();
     <div class="row">
         <div class="col-lg-12">
            <div class="card">
+            <div class="card-header">
+                <a class="btn btn-primary" href="{{ route('create-custom-order') }}">Create custom orders</a>
+            </div>
               <div class="card-body">
-                 <ul class="nav nav-tabs pb-4 align-items-end card-header-tabs w-100">
-                      <li class="nav-item">
-                      <a class="nav-link active" href=""><i class="fa fa-list mr-2"></i>All custom orders</a>
-                      </li>
-                      <li class="nav-item ">
-                        <a class="nav-link " href="{{ route('create-custom-order') }}"><i class="fa fa-list mr-2"></i>Create custom orders</a>
-                        </li>
-                 </ul>
+
                  <table id="example"  class="table datatable">
                     <thead>
                        <tr>
