@@ -306,7 +306,6 @@ function updateCartCount() {
         document.getElementById('p_price').value = totalPrice.toFixed(2);
     }
 
-    // Handle size selection
     sizeSelectors.forEach(button => {
         button.addEventListener("change", function () {
             updatePrice();
@@ -324,8 +323,6 @@ function updateCartCount() {
             updatePrice();
         }
     });
-
-    // Initial update
     updatePrice();
 });
 

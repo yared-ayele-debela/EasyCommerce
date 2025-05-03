@@ -310,7 +310,6 @@ $appsettings=AppSetting::all()->toArray();
     });
 
 </script>
-
 <script>
     $(document).ready(function() {
         $('#newsletterForm').on('submit', function(e) {
@@ -338,11 +337,10 @@ $appsettings=AppSetting::all()->toArray();
             });
         });
     });
-
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-      // Only apply on mobile screen sizes
+
         const categoryItems = document.querySelectorAll('#categoryList > li');
 
         categoryItems.forEach(function (item) {
@@ -361,7 +359,7 @@ $appsettings=AppSetting::all()->toArray();
         });
 
     });
-    </script>
+</script>
 <script>
     const toggleIcon = document.querySelector("#categoryToggle i");
     const categoryList = document.getElementById("categoryList");
@@ -371,7 +369,6 @@ $appsettings=AppSetting::all()->toArray();
         toggleIcon.classList.toggle("bi-toggle-on");
         toggleIcon.classList.toggle("bi-toggle-off");
     });
-
 </script>
 
 <script>
@@ -386,7 +383,6 @@ $appsettings=AppSetting::all()->toArray();
             , position: 'top-end'
         });
     }
-
 </script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -639,7 +635,7 @@ $appsettings=AppSetting::all()->toArray();
 
 </script>
 <script>
-    document.getElementById('ratingForm').addEventListener('submit', function(event) {
+      document.getElementById('ratingForm').addEventListener('submit', function(event) {
         event.preventDefault();
 
         let formData = new FormData(this);
@@ -664,43 +660,41 @@ $appsettings=AppSetting::all()->toArray();
                 showAlert('info', "An error occurred. Please try again later.");
             });
     });
-
-    // document.getElementById('addToCart').addEventListener('click', function() {
-    //     let productId = this.getAttribute('data-product-id');
-    //     let selectedSize = document.querySelector('input[name="size"]:checked');
-    //     let quantity = document.getElementById('quantity').value;
-    //     // if (!selectedSize) {
-    //     //     showAlert('info', 'Please select a size!');
-    //     //     return;
-    //     // }
-
-
-    let price = selectedSize ? selectedSize.getAttribute('data-price') :'';
-    // let size = selectedSize ? selectedSize.getAttribute('data-size') : '';
-
-    //     fetch("{{ route('restaurant.cart.add') }}", {
-
-    //             method: "POST"
-    //             , headers: {
-    //                 "X-CSRF-TOKEN": "{{ csrf_token() }}"
-    //                 , "Content-Type": "application/json"
-    //             }
-    //             , body: JSON.stringify({
-    //                 product_id: productId
-    //                 , size: size
-    //                 , price: price
-    //                 , quantity: quantity
-    //             })
-    //         })
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             showAlert(data.status, data.message);
-    //             updateCartCount(); // Update cart count after adding item
-
-    //         })
-    //         .catch(error => console.error("Error:", error));
-    // });
-
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', function () {
+            let productId = this.getAttribute('data-product');
+            let productPrice = this.getAttribute('data-product-price');
+
+            fetch("{{ route('restaurant.cart.add') }}", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": token,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    product_id: productId,
+                    size: null,
+                    price: productPrice,
+                    quantity: 1
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                showAlert(data.status, data.message);
+                updateCartCount();
+            })
+            .catch(error => {
+                showAlert('info','Failed to add to cart');
+            });
+        });
+    });
+});
+</script>
+
 </body>
 </html>

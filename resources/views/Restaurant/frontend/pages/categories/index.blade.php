@@ -5,7 +5,7 @@
     <div class="header">
         <button class="btn btn-link text-dark" onclick="history.back()">
             <i class="bi bi-arrow-left"></i>
-         </button>
+        </button>
         <h5 class="my-4 text-dark text-center">All Categories</h5>
     </div>
     <div class="row g-3 my-3">
@@ -25,3 +25,4 @@
     </div>
 </div>
 @endsection
+

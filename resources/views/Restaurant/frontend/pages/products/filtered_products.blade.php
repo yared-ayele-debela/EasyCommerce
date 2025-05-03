@@ -42,7 +42,7 @@
                     <button onclick="window.location.href='{{ url('restaurant/product-detail/'.encrypt($product->id)) }}'" class="btn-view">
                         <i class="bi bi-eye-fill"></i>
                     </button>
-                    <button class="btn-cart add-to-cart" data-product="{{ $product->id }}">
+                    <button class="btn-cart add-to-cart" data-product="{{ $product->id }}"  data-product-price="{{ $product->price }}">
                         <i class="bi bi-cart-check-fill"></i>
                     </button>
                     <button class="btn-wishlist add-to-wishlist" data-product="{{ $product->id }}">
