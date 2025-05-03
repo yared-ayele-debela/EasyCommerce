@@ -749,38 +749,61 @@
     <div class="d-flex justify-content-between align-items-center mt-3">
         <h3 class="fw-bold">All Products</h3>
         <div class="d-flex gap-3 text-center">
-            <h6><a href="" class="text-dark">All</a></h6>
+            <form action="{{ route('ecommerce.products.all') }}" method="GET">
+                <input type="hidden" name="name" value="all">
+                <input type="submit" value="View All" class="btn btn-outline-primary btn-sm">
+            </form>
         </div>
     </div>
-    <div class="row" id="data-containers">
-        @include('fontend.layout.autoloadproduct.data')
+   <div id="product-container" class="row g-4">
+        @include('Ecommerce.products._product_card')
+    </div>
+    <div class="row d-flex justify-content-center align-items-center">
+        <div class="col-md-6 text-center">
+            <button onclick="loadMoreEcommerceProducts()" class="btn btn-primary my-3 rounded rounded-1 text-center"><i class="bi bi-arrow-counterclockwise"></i> Load More</button>
+        </div>
+    </div>
+    <div class="text-center my-1" id="loading" style="display: none;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
     </div>
     @include('all_frontend_layouts.partial_index')
 </div>
-
 <script>
-    var pages = 2;
+    let page = 1;
+    let loading = false;
 
-    $(document).ready(function() {
-        loadMoreData();
-        $(window).scroll(function() {
-            if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
-                loadMoreData();
-            }
-        });
-    });
+    function loadMoreEcommerceProducts() {
+        if (loading) return;
+        loading = true;
+        $('#loading').show();
+        page++;
 
-    function loadMoreData() {
         $.ajax({
-            url: '/fetch-product-data?page=' + pages
-            , type: 'get'
-            , dataType: 'html'
-            , success: function(response) {
-                $('#data-containers').append(response);
-                pages++;
+            url: "{{ route('ecommerce.products.all') }}?page=" + page
+            , type: "GET"
+            , success: function(data) {
+                if (data.trim().length === 0) {
+                    $(window).off('scroll');
+                    $('#loading').html('<p class="text-muted">No more products.</p>');
+                    return;
+                }
+                $('#product-container').append(data);
+                $('#loading').hide();
+                loading = false;
+            }
+            , error: function() {
+                $('#loading').html('<p class="text-danger">Something went wrong.</p>');
             }
         });
     }
+
+    $(window).on('scroll', function() {
+        if ($(window).scrollTop() + $(window).height() >= $(document).height() - 200) {
+            loadMoreProducts();
+        }
+    });
 
 </script>
 <script>

@@ -154,13 +154,15 @@ use App\Models\Restaurant\Product;
                 <div class="delivery-location mt-3 p-3">
                     <h6 class="fw-bold text-dark mb-2">Payment Method</h6>
                     <div class="payment-methods">
-                        <label type="button" class="payment-method" data-bs-toggle="modal" data-bs-target="#modalId">
-                            <input type="radio" name="payment_method" value="manual" class="d-none">
-                            <img src="{{ asset('restaurant_frontend/bill.png') }}" width="40" alt="CBE">
+                        <label type="button" class="payment-method shadow-sm rounded-3 p-3 text-center" data-bs-toggle="modal" data-bs-target="#modalId">
+                            <input type="radio" name="payment_method" value="bank_transfer" class="d-none">
+                            <img src="{{ asset('restaurant_frontend/assets/img/bank.png') }}" alt="Bank Transfer" width="35" class="mb-2">
+                            <div class="fw-semibold">Bank Transfer</div>
                         </label>
-                        <label class="payment-method">
-                            <input type="radio" name="payment_method" value="cash" class="d-none">
-                            <img src="{{ asset('restaurant_frontend/assets/img/Cash (1).png') }}" alt="Cash on Delivery">
+                        <label class="payment-method shadow-sm rounded-3 p-3 text-center">
+                            <input type="radio" name="payment_method" value="cash_on_delivery" class="d-none">
+                            <img src="{{ asset('restaurant_frontend/assets/img/cash.png') }}" alt="Cash on Delivery" width="35" class="mb-2">
+                            <div class="fw-semibold">Cash on Delivery</div>
                         </label>
                     </div>
                     <span id="payment-error" class="text-danger d-none">Please select a payment method.</span>
@@ -371,8 +373,6 @@ use App\Models\Restaurant\Product;
     paymentError.classList.add("d-none");
     addressError.classList.add("d-none");
 
-
-
     if (!selectedAddress) {
         addressError.classList.remove("d-none");
         return;
@@ -382,7 +382,6 @@ use App\Models\Restaurant\Product;
         return;
     }
     document.getElementById("checkoutForm").submit();
-
 
 });
 </script>

@@ -4,6 +4,20 @@
 $user = Auth::guard('admin')->user();
 @endphp
 <div class="container">
+    <nav class="breadcrumb bg-white shadow-sm py-3 px-4 rounded d-flex justify-content-between align-items-center">
+        <button class="btn btn-outline-primary btn-sm d-flex align-items-center" onclick="history.back()">
+            <i class="bi bi-arrow-left mr-2"></i> &nbsp;
+            <span>Back</span>
+        </button>
+
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+                <a href="{{ route('restaurant.dashboard') }}">Home</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Order detail</li>
+        </ol>
+    </nav>
+
     <h4>Order #{{ $order->id }} Details</h4>
 
     <div class="row">

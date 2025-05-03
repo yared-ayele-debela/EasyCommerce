@@ -64,8 +64,9 @@ class FrontendController extends Controller
                 ->get();
         }
         $allbrands = Brand::all()->where('status', 1)->toArray();
-
-
-        return view('all_frontend_layouts.ecommerce', compact('allbrands','new_arrival','alladvertisement', 'getCategory', 'isfeatured', 'discountedproduct', 'banners', 'fixbanners', 'group', 'new_products', 'all_products', 'getVendorShop', 'allvendor', 'vendorRatingsCount', 'featured_flash_deal', 'flash_deal_products'));
+        $auto_scroll_products = Product::where('status', 1)
+        ->latest()
+        ->paginate(12);
+        return view('all_frontend_layouts.ecommerce', compact('auto_scroll_products','allbrands','new_arrival','alladvertisement', 'getCategory', 'isfeatured', 'discountedproduct', 'banners', 'fixbanners', 'group', 'new_products', 'all_products', 'getVendorShop', 'allvendor', 'vendorRatingsCount', 'featured_flash_deal', 'flash_deal_products'));
     }
 }

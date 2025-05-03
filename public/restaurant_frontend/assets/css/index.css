@@ -133,6 +133,9 @@
   .text-primary{
     color: #17BE18 !important;
   }
+  .active-text-primary{
+    color: #17BE18 !important;
+  }
 
   /* Container Styling */
 .newsletter-container {

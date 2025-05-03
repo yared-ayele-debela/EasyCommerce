@@ -87,6 +87,7 @@
             <div class="card-body">
 
                 <div id="salesSummaryData" class="row">
+
                     <!-- Total Orders -->
                     <div class="col-md-4 col-lg-2 my-3">
                         <div class="card shadow-sm border-left-primary h-100 py-2">
@@ -113,7 +114,7 @@
                         <div class="card shadow-sm border-left-info h-100 py-2">
                             <div class="card-body text-center">
                                 <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Subtotal</div>
-                                <div class="h4 mb-0 font-weight-bold text-gray-800" id="ss-subtotal">0 ETB</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="ss-subtotal">0 ETB</div>
                             </div>
                         </div>
                     </div>
@@ -123,7 +124,7 @@
                         <div class="card shadow-sm border-left-warning h-100 py-2">
                             <div class="card-body text-center">
                                 <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Discount</div>
-                                <div class="h4 mb-0 font-weight-bold text-gray-800" id="ss-discount">0 ETB</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="ss-discount">0 ETB</div>
                             </div>
                         </div>
                     </div>
@@ -134,7 +135,7 @@
                             <div class="card-body text-center">
                                 <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">Delivery Fee
                                 </div>
-                                <div class="h4 mb-0 font-weight-bold text-gray-800" id="ss-delivery"> ETB</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="ss-delivery"> ETB</div>
                             </div>
                         </div>
                     </div>
@@ -144,7 +145,7 @@
                         <div class="card shadow-sm border-left-dark h-100 py-2">
                             <div class="card-body text-center">
                                 <div class="text-xs font-weight-bold text-dark text-uppercase mb-1">Net Revenue</div>
-                                <div class="h3 mb-0 font-weight-bold" id="ss-net"> ETB</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="ss-net"> ETB</div>
                             </div>
                         </div>
                     </div>
@@ -216,54 +217,12 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <canvas id="cityChart" height="120"></canvas>
-                </div>
-            </div>
-        </div>
+
+
     </div>
 
 </section>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-    fetch(`{{ route('orderbycity') }}`)
-    .then(res => res.json())
-        .then(data => {
-            const labels = Object.keys(data);
-            const values = Object.values(data);
-
-            new Chart(document.getElementById('cityChart'), {
-                type: 'doughnut',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Orders by City',
-                        data: values,
-                        backgroundColor: [
-                            '#007bff', '#28a745', '#dc3545', '#ffc107', '#17a2b8',
-                            '#6f42c1', '#20c997', '#fd7e14', '#6c757d', '#6610f2'
-                        ]
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Orders by City'
-                        },
-                        legend: {
-                            position: 'right'
-                        }
-                    }
-                }
-            });
-        });
-</script>
-
 <script>
 function fetchSalesSummary(days = 7) {
     fetch(`{{ route('dashboard.sales.summary') }}?days=${days}`)

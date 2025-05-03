@@ -1,7 +1,7 @@
 <?php use App\Models\Product; ?>
 @extends('all_frontend_layouts.layouts')
 @section('content')
-<div class="container">
+<div class="container mb-5 mb-md-0">
     <div class="header">
         <button class="btn btn-link text-dark" onclick="history.back()">
             <i class="bi bi-arrow-left"></i>
@@ -34,7 +34,7 @@
                     @endif
                     <div class="delivery-location mb-2">
                         <div class="d-flex justify-content-between align-items-center">
-                            <button type="button" class="btn btn-outline-primary fw-bold px-4 py-2 delivery_text" id="loadAddresses">
+                            <button type="button" class="btn btn-outline-primary fw-bold px-2 py-2 delivery_text" id="loadAddresses">
                                 <i class="bi bi-geo-alt"></i> Load Delivery Addresses
                             </button>
                             <a href="#" class="btn btn-primary fw-bold d-flex align-items-center delivery_text px-3 py-2 rounded-3" data-bs-toggle="modal" data-bs-target="#addressModal">
@@ -47,38 +47,51 @@
                     </div>
                     <span id="address-error" class="text-danger" style="display: none;">Please select a delivery address.</span>
                     <input type="hidden" name="address_id" id="selected_address_id">
-
                     @error('address_id')
                     <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
                 @php $total_price = 0; @endphp
-                <div class="row">
-                    @foreach($getCartItems as $item)
-                    <div class="col-md-4">
-                        @php
-                        $getDiscountAttributePrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
-                        $product_quantity = $getDiscountAttributePrice['final_price'] * $item['quantity'];
-                        $total_price += $product_quantity;
-                        @endphp
-                        <div class="border border-1 card mb-3 shadow-none">
-                            <div class="card-body d-flex align-items-center">
-                                <a href="{{ url('product/' . $item['product_id']) }}" class="me-3">
-                                    <img src="{{ $item['product']['product_image']}}" alt="{{ $item['product']['product_name'] }}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
-                                </a>
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-1">{{ $item['product']['product_name'] }}</h6>
-                                    <small class="text-muted">Quantity: x {{ $item['quantity'] }}</small>
-                                </div>
-                                <div>
-                                    <h6 class="mb-0">
-                                        {{ App\Helper\Helper::currency_converter($product_quantity) }}
-                                    </h6>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <button type="button" class="btn btn-outline-primary fw-bold px-4 py-2" id="toggleItems">
+                        <i class="bi bi-eye"></i> Show Items
+                    </button>
+                </div>
+                <div id="itemsSection" class="mt-3 d-none">
+                    <h4 class="text-dark">Items details</h4>
+                    <div class="row my-3">
+                        @foreach($getCartItems as $item)
+                        <div class="col-md-4">
+                            @php
+                            $getDiscountAttributePrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
+                            $product_quantity = $getDiscountAttributePrice['final_price'] * $item['quantity'];
+                            $total_price += $product_quantity;
+                            @endphp
+                            <div class=" offer-card p-3 mb-3">
+                                <div class=" d-flex align-items-center">
+                                    <a href="{{ url('product/' . $item['product_id']) }}" class="me-3">
+                                        @if($item['product']['product_image'])
+                                        <img src="{{ $item['product']['product_image']}}" alt="{{ $item['product']['product_name'] }}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
+                                        @else
+                                        <img src="{{ asset('restaurant_frontend/default-image.png') }}" alt="{{ $item['product']['product_name'] }}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
+
+                                        @endif
+                                    </a>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">{{ $item['product']['product_name'] }}</h6>
+                                        <small class="text-muted">Quantity: x {{ $item['quantity'] }}</small>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">
+                                            {{ App\Helper\Helper::currency_converter($product_quantity) }}
+                                        </h6>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        @endforeach
                     </div>
-                    @endforeach
                 </div>
 
             </div>
@@ -117,20 +130,21 @@
                     <div class="delivery-location mt-3 p-3">
                         <h6 class="fw-bold text-dark mb-2">Payment Method</h6>
                         <div class="payment-methods">
-                            <label type="button" class="payment-method" data-bs-toggle="modal" data-bs-target="#modalId">
-                                <input type="radio" name="payment_gateway" value="manual" class="d-none">
-                                <img src="{{ asset('restaurant_frontend/bill.png') }}" width="40" alt="CBE">
+                            <label type="button" class="payment-method shadow-sm rounded-3 p-3 text-center" data-bs-toggle="modal" data-bs-target="#modalId">
+                                <input type="radio" name="payment_method" value="bank_transfer" class="d-none">
+                                <img src="{{ asset('restaurant_frontend/assets/img/bank.png') }}" alt="Bank Transfer" width="35" class="mb-2">
+                                <div class="fw-semibold">Bank Transfer</div>
                             </label>
-                            <label class="payment-method">
-                                <input type="radio" name="payment_gateway" value="cash" class="d-none">
-                                <img src="{{ asset('restaurant_frontend/assets/img/Cash (1).png') }}" alt="Cash on Delivery">
+                            <label class="payment-method shadow-sm rounded-3 p-3 text-center">
+                                <input type="radio" name="payment_method" value="cash_on_delivery" class="d-none">
+                                <img src="{{ asset('restaurant_frontend/assets/img/cash.png') }}" alt="Cash on Delivery" width="35" class="mb-2">
+                                <div class="fw-semibold">Cash on Delivery</div>
                             </label>
-
                         </div>
                         <div class="invalid-feedback text-danger" id="paymentErrors" style="display: none;">
                             Please select a payment method.
                         </div>
-                        @error('payment_gateway')
+                        @error('payment_geteway')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
                         <span id="payment-error" class="text-danger d-none">Please select a payment method.</span>
@@ -188,7 +202,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                        Close
+                                        Submit
                                     </button>
                                 </div>
                             </div>
@@ -323,13 +337,31 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script>
+ // JavaScript to handle payment method selection
+ document.querySelectorAll('.payment-method').forEach(method => {
+    method.addEventListener('click', function() {
+        document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
+        this.classList.add('selected');
+        this.querySelector('input').checked = true; // Set the radio input as checked
+        document.getElementById("payment-error").classList.add("d-none"); // Hide error on selection
+
+        });
+    });
+
+    // JavaScript to handle tip selection
+    document.querySelectorAll('.tip-option').forEach((tip) => {
+        tip.addEventListener('click', function() {
+            document.querySelectorAll('.tip-option').forEach((el) => el.classList.remove('selected'));
+            this.classList.add('selected');
+        });
+    });
      $('#placeOrderForm').on('submit', function(e) {
-    e.preventDefault();
-
+      e.preventDefault();
     const form = this;
+    let selected = document.querySelector("input[name='payment_method']:checked");
 
-    const selected = document.querySelector('input[name="payment_gateway"]:checked');
     const error = document.getElementById('paymentErrors');
     const addressError = document.getElementById('address-error');
     const selectedAddress = document.querySelector("input[name='address']:checked");
@@ -347,8 +379,6 @@
     } else {
         error.style.display = 'none';
     }
-
-    // ✅ Use FormData to support file upload
     const formData = new FormData(form);
 
     $.ajax({
@@ -382,58 +412,13 @@
         }
     });
 });
-
-
-    document.querySelectorAll('.payment-method').forEach(method => {
-        method.addEventListener('click', function() {
-            document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
-            this.classList.add('selected');
-            this.querySelector('input').checked = true; // Set the radio input as checked
-            document.getElementById("payment-error").classList.add("d-none"); // Hide error on selection
-
-        });
-    });
-
-    // JavaScript to handle tip selection
-    document.querySelectorAll('.tip-option').forEach((tip) => {
-        tip.addEventListener('click', function() {
-            document.querySelectorAll('.tip-option').forEach((el) => el.classList.remove('selected'));
-            this.classList.add('selected');
-        });
-    });
-    document.getElementById("placeOrder").addEventListener("click", function() {
-        let selectedPayment = document.querySelector("input[name='payment_gateway']:checked");
-        let selectedAddress = document.querySelector("input[name='address']:checked");
-
-        let paymentError = document.getElementById("payment-error");
-        let addressError = document.getElementById("address-error");
-        paymentError.classList.add("d-none");
-        addressError.classList.add("d-none");
-
-
-
-        if (!selectedAddress) {
-            addressError.classList.remove("d-none");
-            return;
-        }
-        if (!selectedPayment) {
-            paymentError.classList.remove("d-none");
-            return;
-        }
-        document.getElementById("checkoutForm").submit();
-
-
-    });
-
 </script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         $("#toggleItems").click(function() {
             $("#itemsSection").toggleClass("d-none");
             let isVisible = !$("#itemsSection").hasClass("d-none");
-            $(this).html(isVisible ? '<i class="bi bi-eye-slash"></i> Hide Items ({{ count(session('
-                cart ', [])) }})' : '<i class="bi bi-eye"></i> Show Items ({{ count(session('
-                cart ', [])) }})');
+            $(this).html(isVisible ? '<i class="bi bi-eye-slash"></i> Hide Items' : '<i class="bi bi-eye"></i> Show Items');
         });
 
         var map = L.map('map').setView([9.03, 38.74], 12);

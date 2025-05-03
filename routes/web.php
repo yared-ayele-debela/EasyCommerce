@@ -1070,6 +1070,13 @@ Route::prefix('admin/restaurant')->group(function () {
 
         Route::get('dashboard', [RestaurantDashboardController::class, 'index'])
             ->name('restaurant.dashboard');
+        Route::get('/dashboard/orders/trend', [RestaurantDashboardController::class, 'orderTrend'])->name('orders.trend');
+        Route::get('/dashboard/orders.by.category', [RestaurantDashboardController::class, 'ordersByCategory'])->name('orders.by.category');
+        Route::get('/chart/top-users', [RestaurantDashboardController::class, 'topOrderingUsers'])->name('chart.top.users');
+        Route::get('/dashboard/sales-summary', [RestaurantDashboardController::class, 'salesSummary'])->name('dashboard.sales.summary');
+        Route::get('/dashboard/orderStatusBreakdown', [RestaurantDashboardController::class, 'orderStatusBreakdown'])->name('orderStatusBreakdown');
+        Route::get('/dashboard/orderbycity', [RestaurantDashboardController::class, 'ordersByCity'])->name('orderbycity');
+
         Route::resource('slider-banners', SliderBannerController::class);
         Route::resource('restaurants', RestaurantController::class);
         Route::get('my-restaurant/{id}', [RestaurantController::class, 'show'])->name('my-restaurant');
@@ -1300,6 +1307,8 @@ Route::prefix('/ecommerce')->group(function () {
     Route::get('/flash-sales/products', [ProductsController::class, 'flash'])->name('ecommerce.products.flash.sales');
     Route::get('/product/{id}',[ProductsController::class, 'detail'])->name('ecommerce.product.detail');
     Route::get('/products/discounted', [ProductsController::class, 'discounted'])->name('ecommerce.products.discounted');
+    Route::get('/all-products', [ProductsController::class, 'all'])->name('ecommerce.products.all');
+    Route::get('/ecommerce/products/load', [ProductsController::class, 'fetchMore'])->name('ecommerce.products.load');
 
     Route::get('/vendors', [FrontendVendorController::class, 'index'])->name('ecommerce.vendors.index');
     Route::middleware('auth')->group(function () {

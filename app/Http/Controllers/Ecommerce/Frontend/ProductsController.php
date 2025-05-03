@@ -104,10 +104,24 @@ class ProductsController extends Controller
     }
     public function latest()
     {
-        $products = Product::where('status', 1)->inRandomOrder()->get();
+        $products = Product::where('status', 1)->latest()->get();
         $name = "Latest Produts";
         return view('Ecommerce.products.index', compact('products', 'name'));
     }
+
+    public function all(Request $request)
+    {
+        $auto_scroll_products = Product::where('status', 1)
+            ->latest()
+            ->paginate(12);
+
+        if ($request->ajax()) {
+            return view('Ecommerce.products._product_card', compact('auto_scroll_products'))->render();
+        }
+
+        return view('Ecommerce.products.autoload', compact('auto_scroll_products'));
+    }
+
 
     public function featured()
     {

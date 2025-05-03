@@ -3,11 +3,21 @@
 @php
 $user = Auth::guard('admin')->user();
 @endphp
-<nav class="breadcrumb">
-    <a class="breadcrumb-item" href="#">Home</a>
-    <a class="breadcrumb-item active" href="#">Product Detail</a>
-</nav>
+
 <div class="container">
+    <nav class="breadcrumb bg-white shadow-sm py-3 px-4 rounded d-flex justify-content-between align-items-center">
+        <button class="btn btn-outline-primary btn-sm d-flex align-items-center" onclick="history.back()">
+            <i class="bi bi-arrow-left mr-2"></i> &nbsp;
+            <span>Back</span>
+        </button>
+
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+                <a href="{{ route('restaurant.dashboard') }}">Home</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Product detail</li>
+        </ol>
+    </nav>
     <div class="card">
         <div class="card-header">
 

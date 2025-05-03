@@ -4,6 +4,11 @@ use App\Models\CmsPage;
 $cms_pages = CmsPage::all()->toArray();
 $appsettings=AppSetting::all()->toArray();
 
+$wishlistCount = Auth::check() ? \App\Models\Restaurant\Wishlist::where('user_id', Auth::id())->count() : 0;
+$ecommerce_wishlistCount = Auth::check() ? \App\Models\Wishlist::where('user_id', Auth::id())->count() : 0;
+$sessionCount = count(session('cart', []));
+$helperCount = \App\Helper\Helper::totalCartItems();
+$cartCount = $sessionCount + $helperCount;
 @endphp
 <footer class="bg-primary pt-5 pb-3 d-none d-md-block">
     <div class="container-fluid">
@@ -107,39 +112,40 @@ $appsettings=AppSetting::all()->toArray();
     </div>
 </footer>
 <!-- Bottom Navigation Bar -->
-<nav class="bottom-nav d-md-none fixed-bottom bg-white border-top shadow-sm">
+<nav class="bottom-nav d-md-none fixed-bottom bg-white shadow-sm">
     <div class="d-flex justify-content-around text-center py-2">
 
-        <a href="{{ url('/') }}" class="nav-item {{ request()->is('/')?'text-primary':'text-dark' }}">
+        <a href="{{ url('/') }}" class="nav-item {{ request()->is('/')?'active-text-primary':'text-dark' }}">
             <i class="fas fa-home fa-lg"></i>
             <div class="small">Home</div>
         </a>
 
-
-        <a href="{{ url('my-cart') }}" class="nav-item {{ request()->is('my-cart')?'text-primary':'text-dark' }}">
+        <a href="{{ url('my-cart') }}" class="nav-item {{ request()->is('my-cart')?'active-text-primary':'text-dark' }} position-relative">
             <i class="fas fa-shopping-cart fa-lg"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary" id="cart-count">
+                {{ $cartCount }}
+            </span>
             <div class="small">Cart</div>
-            {{-- @if(session('cart') && count(session('cart')) > 0)
-                <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger">
-                    {{ count(session('cart')) }}
-                </span>
-            @endif --}}
         </a>
-        <a href="{{ url('my-wishlist') }}" class="nav-item {{ request()->is('my-wishlist')?'text-primary':'text-dark' }}">
+        <a href="{{ url('my-wishlist') }}" class="nav-item {{ request()->is('my-wishlist')?'active-text-primary':'text-dark' }} position-relative">
             <i class="fas fa-heart fa-lg"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary" id="whishlist-count">
+                {{ $wishlistCount + $ecommerce_wishlistCount }}
+            </span>
             <div class="small">Wishlist</div>
 
         </a>
 
-        <a href="{{ url('my-orders') }}" class="nav-item {{ request()->is('my-orders')?'text-primary':'text-dark' }}">
+        <a href="{{ url('my-orders') }}" class="nav-item {{ request()->is('my-orders')?'active-text-primary':'text-dark' }} ">
             <i class="fas fa-bag-shopping fa-lg"></i>
+
             <div class="small">Orders</div>
         </a>
 
         @if(Auth::check())
         <a href="{{ url('user/account/update') }}" class="nav-item text-dark">
             @if(Auth::user()->profile_photo_path)
-            <img src="{{ asset('storage/' . auth()->user()->profile_photo_path) }}" width="20" class="rounded-circle border shadow-sm">
+            <img src="{{ auth()->user()->profile_photo_path }}" width="20" class="rounded-circle border shadow-sm">
             @else
             <i class="fas fa-user fa-lg"></i>
             @endif

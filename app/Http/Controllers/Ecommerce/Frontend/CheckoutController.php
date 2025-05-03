@@ -89,10 +89,9 @@ class CheckoutController extends Controller
     public function placeOrder(Request $request)
     {
         // dd($request->all());
-        if($request->payment_gateway==="manual"){
-            // dd("cash");
+        if($request->payment_method==="manual"){
             $validator = Validator::make($request->all(), [
-                'payment_gateway' => 'required|string',
+                'payment_method' => 'required|string',
                 'address_id' => 'required|exists:delivery_address,id',
                 'bank_name' => 'nullable|string|max:255',
                 'transaction_number' => 'nullable|string|max:255',
@@ -103,7 +102,7 @@ class CheckoutController extends Controller
             // dd("other");
             $request->validate([
                 'address_id' => 'required',
-                'payment_gateway' => 'required',
+                'payment_method' => 'required',
                 'accept' => 'required',
             ]);
         }
@@ -202,10 +201,10 @@ class CheckoutController extends Controller
 
         $deliveryAddresses = DeliveryAddress::where('id', $data['address_id'])->first()->toArray();
 
-        if ($data['payment_gateway'] == "COD") {
+        if ($data['payment_method'] == "COD") {
             $payment_method = "COD";
             $order_status = "New";
-        } elseif ($data['payment_gateway'] == "Chapa") {
+        } elseif ($data['payment_method'] == "Chapa") {
             $payment_method = "Chapa";
             $order_status = "Pending";
         } else {
@@ -246,13 +245,13 @@ class CheckoutController extends Controller
         $order->coupon_amount = Session::get('couponAmount');
         $order->order_status = $order_status;
         $order->payment_method = $payment_method;
-        $order->payment_gateway = $data['payment_gateway'];
+        $order->payment_method = $data['payment_method'];
         $order->grand_total = $grand_total;
         $order->save();
 
         $order_id = DB::getPdo()->lastInsertId();
 
-        if($request->payment_gateway==="manual"){
+        if($request->payment_method==="manual"){
         $payment= new EcommerceOrderPaymentInfo();
         $payment->orders_id=$order_id;
         $payment->user_id=Auth::id();
