@@ -94,15 +94,15 @@ class DashboardController extends Controller
     }
 
     public function salesSummary(Request $request)
-{
-    $days = in_array((int)$request->days, [7, 15, 30, 60, 90, 365]) ? (int)$request->days : 7;
+    {
+        $days = in_array((int)$request->days, [1, 7, 15, 30, 60, 90, 365]) ? (int)$request->days : 7;
 
-    $startDate = \Carbon\Carbon::now()->subDays($days)->startOfDay();
-    $endDate = \Carbon\Carbon::now()->endOfDay();
+        $startDate = \Carbon\Carbon::now()->subDays($days)->startOfDay();
+        $endDate = \Carbon\Carbon::now()->endOfDay();
 
-    $summary = DB::table('restaurant_orders')
-        ->whereBetween('created_at', [$startDate, $endDate])
-        ->selectRaw('
+        $summary = DB::table('restaurant_orders')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('
             COUNT(*) as total_orders,
             SUM(subtotal) as total_subtotal,
             SUM(discount) as total_discount,
@@ -110,32 +110,29 @@ class DashboardController extends Controller
             SUM(total) as total_sales,
             SUM(subtotal - discount) as net_revenue
         ')
-        ->first();
+            ->first();
 
-    return response()->json($summary);
-}
+        return response()->json($summary);
+    }
 
-public function orderStatusBreakdown()
-{
-    $data = DB::table('restaurant_orders')
-        ->select('status', DB::raw('COUNT(*) as count'))
-        ->groupBy('status')
-        ->pluck('count', 'status');
+    public function orderStatusBreakdown()
+    {
+        $data = DB::table('restaurant_orders')
+            ->select('status', DB::raw('COUNT(*) as count'))
+            ->groupBy('status')
+            ->pluck('count', 'status');
 
-    return response()->json($data);
-}
+        return response()->json($data);
+    }
 
-public function ordersByCity()
-{
-    $data = DB::table('restaurant_orders')
-        ->join('delivery_address', 'restaurant_orders.delivery_address_id', '=', 'delivery_address.id')
-        ->select('delivery_address.city', DB::raw('COUNT(*) as total'))
-        ->groupBy('delivery_address.city')
-        ->pluck('total', 'delivery_address.city');
+    public function ordersByCity()
+    {
+        $data = DB::table('restaurant_orders')
+            ->join('delivery_address', 'restaurant_orders.delivery_address_id', '=', 'delivery_address.id')
+            ->select('delivery_address.city', DB::raw('COUNT(*) as total'))
+            ->groupBy('delivery_address.city')
+            ->pluck('total', 'delivery_address.city');
 
-    return response()->json($data);
-}
-
-
-
+        return response()->json($data);
+    }
 }

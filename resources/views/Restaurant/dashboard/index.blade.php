@@ -75,7 +75,8 @@
                 <div class="form-inline">
                     <label class="mr-2 font-weight-bold">Time Range:</label>
                     <select id="salesSummaryFilter" class="form-control">
-                        <option value="7" selected>Last 7 Days</option>
+                        <option value="1" selected>Last 1 Day</option>
+                        <option value="7" >Last 7 Days</option>
                         <option value="15">Last 15 Days</option>
                         <option value="30">Last 30 Days</option>
                         <option value="60">Last 60 Days</option>
@@ -89,19 +90,19 @@
                 <div id="salesSummaryData" class="row">
                     <!-- Total Orders -->
                     <div class="col-md-4 col-lg-2 my-3">
-                        <div class="card shadow-sm border-left-primary h-100 py-2">
-                            <div class="card-body text-center">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Orders
-                                </div>
+                        <div class="card shadow-sm border border-2 h-100 py-2">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center text-center h-100">
+                                <div class="text-xs font-weight-bold text-dark text-uppercase mb-1">Total Orders</div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800" id="ss-orders">0</div>
                             </div>
                         </div>
+
                     </div>
 
                     <!-- Total Sales -->
                     <div class="col-md-4 col-lg-2 my-3">
-                        <div class="card shadow-sm border-left-success h-100 py-2">
-                            <div class="card-body text-center">
+                        <div class="card shadow-sm border border-2 h-100 py-2">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center text-center h-100">
                                 <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Sales</div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800" id="ss-sales">0 ETB</div>
                             </div>
@@ -110,8 +111,8 @@
 
                     <!-- Subtotal -->
                     <div class="col-md-4 col-lg-2 my-3">
-                        <div class="card shadow-sm border-left-info h-100 py-2">
-                            <div class="card-body text-center">
+                        <div class="card shadow-sm border border-2 h-100 py-2">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center text-center h-100">
                                 <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Subtotal</div>
                                 <div class="h4 mb-0 font-weight-bold text-gray-800" id="ss-subtotal">0 ETB</div>
                             </div>
@@ -120,18 +121,17 @@
 
                     <!-- Discount -->
                     <div class="col-md-4 col-lg-2 my-3">
-                        <div class="card shadow-sm border-left-warning h-100 py-2">
-                            <div class="card-body text-center">
+                        <div class="card shadow-sm border border-2 h-100 py-2">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center text-center h-100">
                                 <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Discount</div>
                                 <div class="h4 mb-0 font-weight-bold text-gray-800" id="ss-discount">0 ETB</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Delivery Fee -->
                     <div class="col-md-4 col-lg-2 my-3">
-                        <div class="card shadow-sm border-left-secondary h-100 py-2">
-                            <div class="card-body text-center">
+                        <div class="card shadow-sm border border-2 h-100 py-2">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center text-center h-100">
                                 <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">Delivery Fee
                                 </div>
                                 <div class="h4 mb-0 font-weight-bold text-gray-800" id="ss-delivery"> ETB</div>
@@ -141,8 +141,8 @@
 
                     <!-- Net Revenue -->
                     <div class="col-md-4 col-lg-2 my-3">
-                        <div class="card shadow-sm border-left-dark h-100 py-2">
-                            <div class="card-body text-center">
+                        <div class="card shadow-sm border border-2 h-100 py-2">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center text-center h-100">
                                 <div class="text-xs font-weight-bold text-dark text-uppercase mb-1">Net Revenue</div>
                                 <div class="h3 mb-0 font-weight-bold" id="ss-net"> ETB</div>
                             </div>
