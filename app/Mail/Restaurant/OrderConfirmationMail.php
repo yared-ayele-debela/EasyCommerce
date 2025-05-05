@@ -32,7 +32,7 @@ class OrderConfirmationMail extends Mailable
         // Generate PDF receipt
         $pdf = Pdf::loadView('restaurant.emails.receipt', ['order' => $this->order]);
         return $this->subject('Order Confirmation')
-                    ->view('restaurant.emails.order_confirmation')
+                    ->view('Restaurant.emails.order_confirmation')
                     ->attachData($pdf->output(), "receipt_{$this->order->id}.pdf");
     }
 

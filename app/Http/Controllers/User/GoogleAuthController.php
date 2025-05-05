@@ -1,0 +1,46 @@
+<?php
+
+namespace App\Http\Controllers\User;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Laravel\Socialite\Facades\Socialite;
+
+class GoogleAuthController extends Controller
+{
+    //
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    public function handleGoogleCallback()
+    {
+        try {
+            $googleUser = Socialite::driver('google')->stateless()->user();
+
+            // Check if the user already exists
+            $user = User::where('email', $googleUser->getEmail())->first();
+
+            if (!$user) {
+                // Register user if not exists
+                $user = User::create([
+                    'name' => $googleUser->getName(),
+                    'email' => $googleUser->getEmail(),
+                    'provider_id' => $googleUser->getId(),
+                    'password' => bcrypt(uniqid()), // random password
+                ]);
+            }
+
+            Auth::login($user);
+
+            return redirect()->intended('/my-cart');
+
+        } catch (Exception $e) {
+            return redirect('/login')->with('error', 'Something went wrong: ' . $e->getMessage());
+        }
+    }
+}

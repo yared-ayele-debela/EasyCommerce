@@ -1,8 +1,12 @@
 @extends('all_frontend_layouts.layouts')
 @section('content')
-<div class="container py-5  my-5">
-    <h2 class="text-center mb-4 fw-bold text-dark">Frequently Asked Questions</h2>
-
+<div class="container">
+    <div class="header">
+        <button class="btn btn-link text-dark" onclick="history.back()">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+        <h5 class="my-4 fw-bold text-dark">Frequently Asked Questions</h5>
+    </div>
     <div class="accordion" id="faqAccordion">
         @foreach ($allfaq as $index => $faq)
         <div class="accordion-item">

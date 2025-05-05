@@ -1,6 +1,6 @@
 @extends('all_frontend_layouts.layouts')
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid pb-5 pb-md-2">
     <div class="header">
         <button class="btn btn-link text-dark" onclick="history.back()">
             <i class="bi bi-arrow-left"></i>
@@ -9,7 +9,7 @@
     </div>
     <div class="row text-center mt-3">
             @foreach ($categories as $category)
-            <div class="col-md-1 mb-2">
+            <div class="col-md-1 col-6 mb-2">
                 <div class="category-item">
                     <a href="{{ url('ecommerce/category/'.encrypt($category['id'])) }}">
                         <img src="{{ $category['image'] }}" class="p-2 shadow" style="border:4px solid rgb(162, 159, 159);" alt="{{ $category->name }}">

@@ -1,6 +1,6 @@
 @extends('all_frontend_layouts.layouts')
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid pb-5 pb-md-2">
     <div class="header">
         <button class="btn btn-link text-dark" onclick="history.back()">
             <i class="bi bi-arrow-left"></i>
@@ -10,7 +10,7 @@
     <div class="row g-4">
         @if(!$products->isEmpty())
         @foreach ($products as $product)
-        <div class="col-md-2 mb-2 h-100">
+        <div class="col-md-2 col-6 mb-2 h-100">
             <div class="offer-card position-relative shadow-sm rounded-4 overflow-hidden h-100" style="z-index: 1100;">
                 @php
                 $getDiscountPrice = App\Models\Product::getDiscountPrice($product['id']);
@@ -59,7 +59,7 @@
         </div>
         @endif
     </div>
-    <div class="mt-4">
+    <div class="my-4">
         {{ $products->links() }}
     </div>
 </div>

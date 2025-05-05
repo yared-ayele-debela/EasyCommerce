@@ -29,6 +29,6 @@ class HotelReservationPaymentStatusUpdated extends Mailable
     public function build()
     {
         return $this->subject('Your Reservation Payment Status Has Been Updated')
-                    ->view('hotel.emails.reservation_payment_status_updated');
+                    ->view('Hotel.emails.reservation_payment_status_updated');
     }
 }

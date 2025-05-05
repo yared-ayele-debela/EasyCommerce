@@ -111,7 +111,7 @@ class AuthController extends Controller
 
     protected function _registerOrLoginUser($data)
     {
-        
+
         $user = User::where('email', '=', $data->email)->first();
         if (!$user) {
             $uuid = Str::uuid()->toString();

@@ -32,7 +32,7 @@ class OrderStatusUpdateMail extends Mailable
     public function build()
     {
         return $this->subject('Your Order Status Has Been Updated')
-                    ->view('restaurant.emails.order_status_updated') // View for the email content
+                    ->view('Restaurant.emails.order_status_updated') // View for the email content
                     ->with([
                         'order' => $this->order,
                     ]);

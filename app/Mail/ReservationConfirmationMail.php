@@ -32,7 +32,7 @@ class ReservationConfirmationMail extends Mailable
         // Generate PDF receipt
         $pdf = Pdf::loadView('Hotel.dashboard.reservations.receipt', ['reservation' => $this->reservation]);
         return $this->subject('Reservation Confirmation')
-                    ->view('hotel.emails.reservation_confirmation')
+                    ->view('Hotel.emails.reservation_confirmation')
                     ->attachData($pdf->output(), "receipt_{$this->reservation->id}.pdf");
     }
 }

@@ -45,15 +45,21 @@
     }
 
 </style>
-<div class="pagetitle shadow-sm">
-    <nav class=" p-2 text-center">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-            <li class="breadcrumb-item active">My Hotel</li>
+
+<div class="container py-2">
+    <nav class="breadcrumb bg-white shadow-sm py-3 px-4 rounded d-flex justify-content-between align-items-center">
+        <button class="btn btn-outline-primary btn-sm d-flex align-items-center" onclick="history.back()">
+            <i class="bi bi-arrow-left mr-2"></i> &nbsp;
+            <span>Back</span>
+        </button>
+
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+                <a href="{{ route('hotel.dashboard') }}">Home</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Hotel detail</li>
         </ol>
     </nav>
-</div>
-<div class="container py-2">
     <div class="hotel-card">
         @if($hotel->banner_image || (!empty($hotel->banner_image) && \Illuminate\Support\Facades\Storage::exists('public/'.$hotel->banner_image)))
         <img src="{{ asset('storage/' . $hotel->banner_image) }}" class="banner w-100" alt="{{ $hotel->name }}">

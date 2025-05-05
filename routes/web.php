@@ -110,6 +110,7 @@ use App\Http\Controllers\Ecommerce\Frontend\ProductsController;
 use App\Http\Controllers\Ecommerce\Frontend\VendorController as FrontendVendorController;
 use App\Http\Controllers\Ecommerce\Frontend\VendorsController;
 use App\Http\Controllers\Ecommerce\Frontend\WishlistController;
+use App\Http\Controllers\Ecommerce\Vendor\VendorRegistrationController;
 use App\Http\Controllers\Front\AddressController as FrontAddressController;
 use App\Http\Controllers\Front\BlogsController as FrontBlogsController;
 use App\Http\Controllers\Front\ChapaController;
@@ -178,6 +179,7 @@ use App\Http\Controllers\Restaurant\Frontend\RestaurantController as FrontendRes
 use App\Http\Controllers\Restaurant\Frontend\SubCategoryController as FrontendSubCategoryController;
 use App\Http\Controllers\Restaurant\Frontend\SuCategoryController;
 use App\Http\Controllers\Restaurant\Frontend\WishController;
+use App\Http\Controllers\User\GoogleAuthController;
 use App\Http\Controllers\UserDeliveryAddressController;
 use App\Models\Hotel\Hotel;
 use App\Models\HotelCategory;
@@ -943,9 +945,9 @@ Route::get('/fetch-product-data', [FontendController::class, 'fetchProductData']
 
 Route::get('/vendor/{vendorid}', [FontendController::class, 'vendorListing']);
 Route::post('/get-product-price', [FrontProductController::class, 'getProductPrice']);
-Route::get('/vendor/login-register', [VendorController::class, 'loginRegister'])->name('login_register');
-Route::post('/vendor/register', [FrontVendorController::class, 'Register'])->name('vendor_register');
-Route::get('/vendor/confirm/{code}', [VendorController::class, 'confirmVendor'])->name('confirm_vendor');
+Route::get('/vendor/login-register', [VendorRegistrationController::class, 'loginRegister'])->name('login_register');
+Route::post('/vendor/register', [VendorRegistrationController::class, 'Register'])->name('vendor_register');
+Route::get('/vendor/confirm/{code}', [VendorRegistrationController::class, 'confirmVendor'])->name('confirm_vendor');
 Route::get('/login_register/vendor', [ControllersVendorController::class, 'index'])->name('vlogin_register');
 //Add to Cart Route
 Route::post('cart/add', [FrontProductController::class, 'cartAdd']);
@@ -1117,6 +1119,8 @@ Route::group(['middleware' => ['admin', 'check.admin:Hotel Manager']], function 
     Route::prefix('admin/hotel')->middleware(['admin'])->group(function () {
         Route::get('dashboard', [DashboardDashboardController::class, 'index'])
             ->name('hotel.dashboard');
+            Route::post('/dashboard/filter', [DashboardDashboardController::class, 'filterStats'])->name('dashboard.filter');
+
         Route::resource('amenities', AmenityController::class);
         Route::resource('hotel-categories', HotelCategoryController::class);
         Route::post('/hotel-photos', [HotelPhotoController::class, 'store'])->name('hotel_photos.store');
@@ -1148,6 +1152,8 @@ Route::prefix('auth')->group(function () {
     Route::post('login', [UserController::class, 'userLogin'])->name('auth.login.submit');
     Route::post('register', [UserController::class, 'userRegister'])->name('auth.register');
     Route::match(['get', 'post'], 'forgot-password', [UserController::class, 'forgotPassword']);
+    Route::get('google', [GoogleAuthController::class, 'redirectToGoogle'])->name('google.login');
+    Route::get('google/callback', [GoogleAuthController::class, 'handleGoogleCallback']);
 });
 
 // User Account Routes (Requires Authentication)
@@ -1348,3 +1354,7 @@ Route::get('/vendor/detail/{vendorid}', [VendorsController::class, 'vendorListin
 Route::get('track-custom-order', [CustomController::class, 'index'])->name('track-custom-order');
 Route::match(['GET', 'POST'], 'check-custom-order', [CustomController::class, 'checkcustomorder'])->name('check_custom_order');
 Route::get('/custom-orders/{id}', [CustomController::class, 'showOrderDetails'])->name('create_custom_order');
+
+Route::get('register/vendor',[VendorRegistrationController::class,'index'])->name('vendor-register');
+Route::post('/vendor/register', [VendorRegistrationController::class, 'RegisterVendor'])->name('vendor_register');
+Route::get('/vendor/confirm/{code}', [VendorRegistrationController::class, 'confirmVendor'])->name('confirm_vendor');

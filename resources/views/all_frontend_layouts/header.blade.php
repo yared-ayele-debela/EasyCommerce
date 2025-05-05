@@ -193,7 +193,7 @@ use Illuminate\Support\Facades\Storage;
                             @if(Auth::user()->profile_photo_path)
                             <img src="{{ auth()->user()->profile_photo_path }}" width="28" class="rounded-circle border shadow-sm">
                             @else
-                            <i class="bi bi-person-circle fs-5"></i>
+                            <i class="bi bi-person-circle fs-5 text-primary"></i>
                             @endif
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow">
@@ -207,9 +207,16 @@ use Illuminate\Support\Facades\Storage;
                         </ul>
                     </div>
                     @else
-                    <a href="{{ route('auth.login') }}" class="btn btn-light btn-sm">
-                        <i class="bi bi-person-circle fs-5 text-primary"></i>
-                    </a>
+                    <div class="dropdown">
+                        <a class="btn btn-light btn-sm" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle text-primary fs-5"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ route('auth.login') }}">Login As Customer</a></li>
+                            <li><a class="dropdown-item" href="{{ route('vendor-register') }}"> Become A Vendor</a></li>
+                        </ul>
+                    </div>
+
                     @endif
                     <button class="btn btn-light d-lg-none btn-sm ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu" aria-controls="mobileMenu">
                         <i class="bi bi-list fs-2"></i>

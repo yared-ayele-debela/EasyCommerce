@@ -2,15 +2,20 @@
 @extends('Hotel.dashboard.layouts')
 @section('hotel-dashboard')
 
-<div class="pagetitle shadow-sm">
-    <nav class=" p-2 text-center">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-            <li class="breadcrumb-item active">Hotels</li>
+<div class="container">
+    <nav class="breadcrumb bg-white shadow-sm py-3 px-4 rounded d-flex justify-content-between align-items-center">
+        <button class="btn btn-outline-primary btn-sm d-flex align-items-center" onclick="history.back()">
+            <i class="bi bi-arrow-left mr-2"></i> &nbsp;
+            <span>Back</span>
+        </button>
+
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+                <a href="{{ route('hotel.dashboard') }}">Home</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Hotels</li>
         </ol>
     </nav>
-</div>
-<div class="container">
     <div class="card">
         <div class="card-header">
             <h4 class="mb-4">Hotel List</h4>

@@ -1,42 +1,32 @@
 <?php
 
-namespace App\Http\Controllers\Front;
+namespace App\Http\Controllers\Ecommerce\Vendor;
 
 use App\Http\Controllers\Controller;
-use App\Models\Vendor;
-use Illuminate\Support\Facades\Mail;
 use App\Models\Admin;
-use App\Models\AppSetting;
-use App\Models\CmsPage;
 use App\Models\EmailTemplate;
-use Illuminate\Support\Facades\DB;
+use App\Models\Vendor;
 use Illuminate\Http\Request;
-use RealRashid\SweetAlert\Facades\Alert;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
-class VendorController extends Controller
+class VendorRegistrationController extends Controller
 {
     //
-
-    public function loginRegister()
+    public function index()
     {
         try {
-            $cms_pages = CmsPage::get()->toArray();
-            $appsettings = AppSetting::all()->toArray();
-            return view('fontend.faq');
+
+            return view('auth.vendor.register');
         } catch (\Exception $e) {
-            // Log or handle the exception as needed
-            Alert::toast('something is wrong!!', 'error');
             return redirect()->back();
         }
     }
 
-    public function Register(Request $request)
+    public function RegisterVendor(Request $request)
     {
         try {
-            if (!$request->method('post')) {
-                Alert::toast('something is wrong!!', 'error');
-                return redirect()->back();
-            }
+
             $this->validate($request, [
                 'name' => 'required|string',
                 'phone' => 'required|string',
@@ -48,17 +38,14 @@ class VendorController extends Controller
             $phone = $request->input('phone');
 
             if (strlen($request->input('phone')) !== 10) {
-                Alert::toast('Phone number should be exactly 10 digits!', 'error');
-                return redirect()->back();
+                return redirect()->back()->with('error','Phone number should be exactly 10 digits');
             }
             if (Vendor::where('mobile', $phone)->exists() || Admin::where('mobile', $email)->exists()) {
-                Alert::toast('Phone number already exists', 'error');
-                return redirect()->back();
+                return redirect()->back()->with('error','Phone number already exists');
             }
             // Check if the email already exists in the table
             if (Vendor::where('email', $email)->exists() || Admin::where('email', $email)->exists()) {
-                Alert::toast('Email already exists', 'error');
-                return redirect()->back();
+                return redirect()->back()->with('Eamil already exists');
             }
             // dd($request->all());
 
@@ -68,6 +55,8 @@ class VendorController extends Controller
             $vendor->mobile = $request->input('phone');
             $vendor->email = $request->input('email');
             $vendor->status = 1;
+            $vendor->confirm="Yes";
+
             $vendor->save();
 
 
@@ -81,6 +70,7 @@ class VendorController extends Controller
             $admin->email = $request->input('email');
             $admin->password = bcrypt($request->input('password'));
             $admin->status = 1;
+            $admin->confirm="Yes";
             $admin->save();
 
 
@@ -98,16 +88,13 @@ class VendorController extends Controller
             // });
             DB::commit();
 
-
-            Alert::toast('Thanks for registering as Vendor. Please confirm your email to activate your account', 'success');
-            return redirect()->back();
+            return redirect()->back()->with('success','Thanks for registering as Vendor. Please confirm your email to activate your account');
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Laravel's built-in validation exception
             return redirect()->back()->withErrors($e->validator->errors())->withInput();
 
         } catch (\Exception $e) {
             // Log or handle the exception as needed
-            Alert::toast('something is wrong!!', 'error');
             return redirect()->back();
         }
     }
@@ -120,9 +107,8 @@ class VendorController extends Controller
             if ($vendorCount > 0) {
                 $vendorDetails = Vendor::where('email', $email)->first();
                 if ($vendorDetails->confirm == "Yes") {
-                    $message = "Your Vendor Account is already confirmed. You can login";
-                    Alert::toast($message, 'success');
-                    return redirect('login_register/vendor');
+
+                    return redirect('login_register/vendor')->with('Your vendor account is already confirmed. You can login');
                 } else {
                     Admin::where('email', $email)->update(['confirm' => 'Yes']);
                     Vendor::where('email', $email)->update(['confirm' => 'Yes']);
@@ -141,19 +127,14 @@ class VendorController extends Controller
                     });
 
                     $message = "Your Vendor Email account is confirmed. You can login and add your personal,business and bank details to activate your Vendor Account to add products ";
-
-                    Alert::toast($message, 'success');
-                    return redirect('/login_register/vendor');
+                    return redirect('/login_register/vendor')->with('success',$message);
                 }
             } else {
                 abort(404);
             }
         } catch (\Illuminate\Validation\ValidationException $e) {
-            // Laravel's built-in validation exception
             return redirect()->back()->withErrors($e->validator->errors())->withInput();
         } catch (\Exception $e) {
-            // Log or handle the exception as needed
-            Alert::toast('something is wrong!!', 'error');
             return redirect()->back();
         }
     }

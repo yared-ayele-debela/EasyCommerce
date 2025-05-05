@@ -35,6 +35,6 @@ class HotelReservationStatusUpdated extends Mailable
     public function build()
     {
         return $this->subject('Your Reservation Status Has Been Updated')
-                    ->view('hotel.emails.reservation_status_updated');
+                    ->view('Hotel.emails.reservation_status_updated');
     }
 }
