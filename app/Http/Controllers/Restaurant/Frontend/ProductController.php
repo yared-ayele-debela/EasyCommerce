@@ -39,7 +39,6 @@ class ProductController extends Controller
                         ->get(['name','description','price_per_night','id'])
                         ->map(fn($item) => ['name' => $item->name,'description' => $item->description,'price' => $item->price_per_night, 'url' => url('hotel/'.$item->id.'/detail')]);
                     break;
-
                 default:
                     $results = ModelsProduct::where('product_name', 'like', "%$query%")
                         ->limit(6)
@@ -47,29 +46,22 @@ class ProductController extends Controller
                         ->map(fn($item) => ['name' => $item->product_name,'description' => $item->description,'price' => $item->product_price, 'url' => url('/ecommerce/product/'.encrypt($item->id))]);
                     break;
             }
-
             return response()->json($results);
         }
 
     public function search(Request $request)
     {
         $query = $request->input('query');
-
         $products = Product::where('name', 'LIKE', "%{$query}%")
                             ->orWhere('description', 'LIKE', "%{$query}%")
                             ->take(5)
                             ->get();
-
         return response()->json($products);
     }
-
-
     public function filter(Request $request)
     {
         try{
-
         $filter = $request->input('type');
-
         switch ($filter) {
             case 'specail_offer':
                 $products = Product::where('discount', '>', 0)->latest()->get();
@@ -91,21 +83,16 @@ class ProductController extends Controller
     catch(Exception $e){
         return redirect()->back();
     }
-
-
     return view('Restaurant.frontend.pages.products.filtered_products', compact('products', 'filter'));
     }
 
     public function index(Request $request){
         $products = Product::where('is_active',1)->latest()->get();
-        // dd($products);
-
         $categories = Category::all();
         $restaurants = Restaurant::all();
         $subcategories= Subcategory::all();
         $cities=ModelsCity::all();
         $menus=RestaurantMenu::all();
-
         return view('Restaurant.frontend.pages.products.index',compact('products','categories', 'restaurants','cities','subcategories','menus'));
     }
 
