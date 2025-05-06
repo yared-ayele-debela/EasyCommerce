@@ -107,6 +107,7 @@ use App\Http\Controllers\Ecommerce\Frontend\FrontendController as EcommerceFront
 use App\Http\Controllers\Ecommerce\Frontend\NewslettersController;
 use App\Http\Controllers\Ecommerce\Frontend\OrderController as EcommerceFrontendOrderController;
 use App\Http\Controllers\Ecommerce\Frontend\ProductsController;
+use App\Http\Controllers\Ecommerce\Frontend\RatingController as EcommerceFrontendRatingController;
 use App\Http\Controllers\Ecommerce\Frontend\VendorController as FrontendVendorController;
 use App\Http\Controllers\Ecommerce\Frontend\VendorsController;
 use App\Http\Controllers\Ecommerce\Frontend\WishlistController;
@@ -1154,6 +1155,11 @@ Route::prefix('auth')->group(function () {
     Route::match(['get', 'post'], 'forgot-password', [UserController::class, 'forgotPassword']);
     Route::get('google', [GoogleAuthController::class, 'redirectToGoogle'])->name('google.login');
     Route::get('google/callback', [GoogleAuthController::class, 'handleGoogleCallback']);
+
+    Route::get('/verify-otp', [UserController::class, 'showOTPVerification'])->name('verify-otp');
+    Route::post('/verify-otp', [UserController::class, 'verifyOTP'])->name('user-verify-otp');
+
+
 });
 
 // User Account Routes (Requires Authentication)
@@ -1190,6 +1196,8 @@ Route::prefix('/restaurant')->group(function () {
     Route::get('categories', [FrontendCategoryController::class, 'index'])->name('restaurant.categories');
     Route::get('category/{id}', [FrontendCategoryController::class, 'detail'])->name('restaurant.categories.detail');
     Route::get('/search', [FrontendProductController::class, 'search'])->name('search');
+
+    Route::get('/live-search', [FrontendProductController::class, 'liveSearch']);
 
     Route::post('/cart/add', [CartController::class, 'addToCart'])->name('restaurant.cart.add');
     Route::get('/cart/update/{key}/{action}', [CartController::class, 'updateCart'])->name('restaurant.cart.update');;
@@ -1326,6 +1334,8 @@ Route::prefix('/ecommerce')->group(function () {
 
     Route::get('/checkout', [FrontendCheckoutController::class, 'showOrderSummary'])->name('ecommerce.checkout.summary');
     Route::post('/checkout', [FrontendCheckoutController::class, 'placeOrder'])->name('ecommerce.checkout.placeOrder');
+
+    Route::post('/rate-ecommerce-product', [EcommerceFrontendRatingController::class, 'product_rating_store'])->name('ecommerce.product.rate');
 
 });
 

@@ -55,7 +55,6 @@ use App\Models\Wishlist;
     </div>
     <div class="row g-4 py-4">
         <div class="row">
-           <!-- Main Image -->
                 <div class="col-12 col-md-5 order-1 order-md-2 mb-3 mb-md-0 mb-2">
                     <img id="mainProductImage" src="{{ $product['product_image'] }}" class="img-fluid border-0 rounded w-100" alt="{{ $product->product_name }}" />
                 </div>
@@ -163,6 +162,42 @@ use App\Models\Wishlist;
                     <p class="mb-0 small text-muted">Free 30 Days Delivery Returns. <a href="{{ url('page/delivery_and_return') }}" target="_blank" class="text-primary">Details</a></p>
                 </div>
                 @endif
+                <div class="my-2 d-flex justify-content-between align-items-center">
+                    <p class="mt-3">
+                        <a class="btn btn-outline-primary shadow-sm" data-bs-toggle="collapse" href="#RestaurantRating" role="button" aria-expanded="false" aria-controls="RestaurantRating">
+                            @php
+                            $count= \App\Models\Rating::where('product_id', $product->id)->count();
+                            @endphp
+                            Customer Reviews ({{ $count? $count:'0' }})
+                        </a>
+                    </p>
+                    <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#EcommerceratingModal">
+                        Leave a Review
+                    </button>
+                </div>
+                @include('Ecommerce.products.rating.rating')
+                <div class="collapse mb-2 show" id="RestaurantRating">
+                    <div class="overflow-auto" style="white-space: nowrap;">
+                        <div class="d-flex gap-3" style="overflow-x: auto; scrollbar-width: thin;">
+                            @foreach ($product->ratings as $rating)
+                            <div class="offer-card shadow p-3 text-left mb-2" style="min-width: 300px; max-width: 350px;">
+                                <span class="font-italic">Name: {{ $rating->user->name }}</span>
+                                <br>
+                                <span class="fst-italic">Comment: {{ $rating->review }}</span>
+                                <br>
+                                <span>
+                                    @for ($i = 1; $i <= 5; $i++) @if ($i <=$rating->rating)
+                                        <i class="bi bi-star-fill text-primary"></i>
+                                        @else
+                                        <i class="bi bi-star text-primary"></i>
+                                        @endif
+                                        @endfor
+                                </span>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="col-md-12 order-md-4 order-4">
                 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">

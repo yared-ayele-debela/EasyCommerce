@@ -1,5 +1,4 @@
 <?php use App\Models\Product;?>
-
 @foreach ($categoryProducts as $product)
 <div class="product-item  col-lg-3 col-6  mb-4 list-images">
     <div class="item border">
@@ -30,12 +29,7 @@
                 <div class="item-description">
                     <p>{!! $product['description'] !!}</p>
                 </div>
-                {{-- <div class="item-stars">
-                        <div class="star" title="4.5 out of 5 - based on 23 Reviews">
-                            <span style="width:67px"></span>
-                        </div>
-                        <span>(23)</span>
-                    </div> --}}
+
             </div>
 
             <div class="price-template">

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Restaurant\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\City as ModelsCity;
+use App\Models\Hotel;
+use App\Models\Product as ModelsProduct;
 use App\Models\Restaurant\Category;
 use App\Models\Restaurant\City;
 use App\Models\Restaurant\Product;
@@ -16,6 +18,38 @@ use Illuminate\Http\Request;
 class ProductController extends Controller
 {
     //
+
+    public function liveSearch(Request $request)
+        {
+            $type = $request->input('type');
+            $query = $request->input('query');
+            $results = [];
+
+            switch ($type) {
+                case 'restaurant':
+                    $results = Product::where('name', 'like', "%$query%")
+                        ->limit(6)
+                        ->get(['name','description','price', 'id'])
+                        ->map(fn($item) => ['name' => $item->name,'description' => $item->description,'price' => $item->price, 'url' => url('/restaurant/product-detail/'.encrypt($item->id))]);
+                    break;
+
+                case 'hotel':
+                    $results = Hotel::where('name', 'like', "%$query%")
+                        ->limit(6)
+                        ->get(['name','description','price_per_night','id'])
+                        ->map(fn($item) => ['name' => $item->name,'description' => $item->description,'price' => $item->price_per_night, 'url' => url('hotel/'.$item->id.'/detail')]);
+                    break;
+
+                default:
+                    $results = ModelsProduct::where('product_name', 'like', "%$query%")
+                        ->limit(6)
+                        ->get(['product_name','description','product_price', 'id'])
+                        ->map(fn($item) => ['name' => $item->product_name,'description' => $item->description,'price' => $item->product_price, 'url' => url('/ecommerce/product/'.encrypt($item->id))]);
+                    break;
+            }
+
+            return response()->json($results);
+        }
 
     public function search(Request $request)
     {

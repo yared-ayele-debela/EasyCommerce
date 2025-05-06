@@ -55,22 +55,26 @@ class UserController extends Controller
             $email = $request->input('emails');
             $phone = $request->input('phone');
 
-            if (strlen($request->input('phone')) !== 10) {
-                return redirect()->back()->with('error','phone number should be exactly 10 digits');
-            }
+            // if (strlen($request->input('phone')) !== 10) {
+            //     return redirect()->back()->with('error', 'phone number should be exactly 10 digits');
+            // }
             if (User::where('mobile', $phone)->exists()) {
-                return redirect()->back()->with('error','phone number already exists');
+                return redirect()->back()->with('error', 'phone number already exists');
             }
             if (User::where('email', $email)->exists()) {
-                return redirect()->back()->with('error','Email already exists','error');
+                return redirect()->back()->with('error', 'Email already exists', 'error');
             }
             $user = new User;
             $user->name = $request->input('name');
             $user->mobile = $request->input('mobile');
             $user->email = $request->input('emails');
             $user->password = bcrypt($request->input('password'));
-            $user->status = 1;
+            $user->status = 0;
             $user->save();
+
+            $this->sendOTP($request->mobile); // Send OTP here
+
+            return redirect()->route('user-verify-otp', ['phone' => $request->phone]);
 
             // $email_template = EmailTemplate::first();
             //Acitve the user only when user confirm his email account
@@ -85,16 +89,114 @@ class UserController extends Controller
             //     $message->to($email)->subject('Confirm');
             // });
 
-            return redirect()->back()->with('success','Your account has been created successfully! Please log in to continue.');
+            return redirect()->back()->with('success', 'Your account has been created successfully! Please log in to continue.');
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Laravel's built-in validation exception
             return redirect()->back()->withErrors($e->validator->errors())->withInput();
         } catch (\Exception $e) {
             // Log or handle the exception as needed
 
-            return redirect()->back()->with('error','something was wrong');
+            return redirect()->back()->with('error', 'something was wrong');
         }
     }
+    public function showOTPVerification(Request $request)
+    {
+        $phone = $request->phone;
+        return view('auth.otp', compact('phone'));
+    }
+
+
+    private function sendOTP($phone)
+    {
+        $ch = curl_init();
+        $url = 'https://api.afromessage.com/api/challenge';
+        $token = 'eyJhbGciOiJIUzI1NiJ9.eyJpZGVudGlmaWVyIjoiSHUzcFdXNHYwWmdVbU5xN2lVNXhYbWlnTEhnSEtvaHkiLCJleHAiOjE5MDQyOTkyMDIsImlhdCI6MTc0NjUzMjgwMiwianRpIjoiYjJhZTkwZmYtNGQ0Mi00NTljLWE0ZmMtMmY2OTMwNDMyNzFhIn0.pA0SxwqsaC47m-aHK7Fc2owllvBvE8DlQC3QX-tyZ1E';
+        $from = 'e80ad9d8-adf3-463f-80f4-7c4b39f7f164';
+        $sender = 'EASY';
+
+
+
+$callback = 'https://yourdomain.com/callback'; // optional, use if needed
+$to = $phone; // recipient's phone number (e.g. '2519xxxxxxxx')
+
+$pre = urlencode('Your OTP code is: ');  // prefix message
+$post = ''; // optional postfix, also urlencode if used
+$sb = 1; // space before
+$sa = 1; // space after
+$ttl = 300; // validity in seconds
+$len = 6; // code length
+$t = 0; // code type: 0 = number, 1 = alphanumeric
+
+// Step 3: Set request URL with parameters
+$requestUrl = $url . '?from=' . $from . '&sender=' . $sender . '&to=' . $to .
+    '&pr=' . $pre . '&ps=' . $post . '&sb=' . $sb . '&sa=' . $sa . '&ttl=' . $ttl .
+    '&len=' . $len . '&t=' . $t . '&callback=' . urlencode($callback);
+
+curl_setopt($ch, CURLOPT_URL, $requestUrl);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+
+// Step 4: Add Authorization Header
+$headers = ['Authorization: Bearer ' . $token];
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+// Step 5: Execute the request
+$response = curl_exec($ch);
+
+// Step 6: Handle Errors
+if (curl_errno($ch)) {
+    // dd('cURL Error: ' . curl_error($ch));
+} else {
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    switch ($http_code) {
+        case 200:
+            $data = json_decode($response, true);
+            if (isset($data['acknowledge']) && $data['acknowledge'] === 'success') {
+                // dd("✅ OTP Sent Successfully!");
+            } else {
+                // dd("❌ API failure: ");
+                // dd($data);
+            }
+            break;
+        default:
+            // dd("❗ HTTP Error: " . $http_code . "\n");
+            // dd("Response: " . $response);
+    }
+}
+
+// Step 7: Close cURL
+curl_close($ch);
+    }
+
+    public function verifyOTP(Request $request)
+    {
+        $otp = implode('', $request->otp);
+        $phone = $request->phone;
+
+        // Call Afromessage to verify OTP
+        $ch = curl_init();
+        $url = 'https://api.afromessage.com/api/verify';
+        $token = 'eyJhbGciOiJIUzI1NiJ9.eyJpZGVudGlmaWVyIjoiSHUzcFdXNHYwWmdVbU5xN2lVNXhYbWlnTEhnSEtvaHkiLCJleHAiOjE5MDQyOTkyMDIsImlhdCI6MTc0NjUzMjgwMiwianRpIjoiYjJhZTkwZmYtNGQ0Mi00NTljLWE0ZmMtMmY2OTMwNDMyNzFhIn0.pA0SxwqsaC47m-aHK7Fc2owllvBvE8DlQC3QX-tyZ1E';
+
+        curl_setopt($ch, CURLOPT_URL, $url . "?to=$phone&code=$otp");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Authorization: Bearer ' . $token]);
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        $data = json_decode($response, true);
+        if ($data['acknowledge'] == 'success') {
+            $user = User::where('mobile', $phone)->first();
+            $user->status = 1;
+            $user->save();
+
+            Auth::login($user);
+            return redirect()->route('my.cart.view');
+        }
+
+        return redirect()->back()->with('error', 'Invalid OTP.');
+    }
+
 
     public function userLogout()
     {
@@ -127,8 +229,8 @@ class UserController extends Controller
                 return redirect()->back()->withErrors($validator)->withInput();
             } else {
                 if (Auth::attempt(['email' => $data['email'], 'password' => $data['passwords']])) {
-                    $id=Auth::user()->id;
-                    $user=User::where('id',$id)->first();
+                    $id = Auth::user()->id;
+                    $user = User::where('id', $id)->first();
                     if ($user->status == 0) {
                         Auth::logout();
                         return redirect()->back()->with('info', 'Your account is not activated. Please confirm your account to activate it.');
@@ -170,7 +272,9 @@ class UserController extends Controller
 
                     $messageData = [
                         'email_template' => $email_template,
-                        'name' => $userDetails->name, 'mobile' => $userDetails->mobile, 'email' => $email
+                        'name' => $userDetails->name,
+                        'mobile' => $userDetails->mobile,
+                        'email' => $email
                     ];
 
                     Mail::send('emails.register', $messageData, function ($message) use ($email) {
@@ -222,7 +326,9 @@ class UserController extends Controller
                     $email = $data['email'];
                     $messageData = [
                         'email_template' => $email_template,
-                        'name' => $userDetails['name'], 'email' => $email, 'password' => $new_password
+                        'name' => $userDetails['name'],
+                        'email' => $email,
+                        'password' => $new_password
                     ];
 
                     Mail::send('emails.user_forget_password', $messageData, function ($message) use ($email) {
@@ -337,17 +443,14 @@ class UserController extends Controller
         // Validate the incoming request
         $validator = Validator::make($request->all(), [
             'oldpassword' => 'required|string',
-            'new_password' => ['required|string|min:8','same:new_password_confirmation'],
+            'new_password' => ['required|string|min:8', 'same:new_password_confirmation'],
         ]);
-
-
-
         // Check if the old password matches
         if (!Hash::check($request->oldpassword, Auth::user()->password)) {
             return redirect()->back()->withErrors(['oldpassword' => 'The current password is incorrect.']);
         }
 
-        $user=User::findOrFail(Auth::user()->id);
+        $user = User::findOrFail(Auth::user()->id);
 
         // Update the password
         $user->update([
@@ -355,7 +458,6 @@ class UserController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Password updated successfully!');
-
     }
 
     // Update Account Details
@@ -378,7 +480,7 @@ class UserController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $user=User::findOrFail(Auth::user()->id);
+        $user = User::findOrFail(Auth::user()->id);
         $user->name = $request->name;
         $user->country = $request->country;
         $user->mobile = $request->mobile;

@@ -34,21 +34,6 @@ use Illuminate\Support\Facades\Storage;
             }
         }
 
-        #search-results {
-            position: absolute;
-            z-index: 1000;
-            max-height: 250px;
-            overflow-y: auto;
-            width: 100%;
-            background: rgba(132, 254, 123, 0.2) !important;
-            /* Semi-transparent */
-            backdrop-filter: blur(10px) !important;
-            /* Apply blur effect */
-            border-radius: 10px;
-            padding: 5px;
-            transition: all 0.3s ease-in-out;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
 
         .toggle-btn {
             display: flex;
@@ -156,10 +141,22 @@ use Illuminate\Support\Facades\Storage;
                     <img src="{{ asset('restaurant_frontend/assets/img/logo.png') }}" alt="Logo" style="height: 40px;">
                 </a>
 
-                <form class="d-none d-md-flex w-50 mx-4">
-                    <div class="input-group position-relative">
-                        <input class="form-control border-1  search-input" id="search-box" type="search" placeholder="Search for products">
-                        <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
+                <form class="d-none d-md-flex w-50 mx-4" style="position: relative;">
+                    <div class="input-group position-relative border border-1 rounded rounded-2">
+                        {{-- Search type selector --}}
+                        <select class="form-select w-auto border border-0" id="search-type" name="type" style="max-width: 150px;">
+                            <option value="restaurant" selected>Restaurant</option>
+                            <option value="hotel">Hotel</option>
+                            <option value="ecommerce">E-commerce</option>
+                        </select>
+
+                        {{-- Search box --}}
+                        <input class="form-control search-input border-0" id="search-box" name="query" type="search" placeholder="Search products, food, rooms..." autocomplete="off">
+
+                        {{-- Submit button --}}
+                        <button class="btn btn-primary" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
                     </div>
                     <div id="search-results" class="list-group position-absolute w-100 shadow-sm bg-white rounded d-none" style="top: 100%; z-index: 999;"></div>
                 </form>
@@ -262,38 +259,65 @@ use Illuminate\Support\Facades\Storage;
     @include('all_frontend_layouts.custom_order.index')
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $('#search-box').on('keyup', function() {
-                let query = $(this).val();
-                if (query.length > 1) {
-                    $.ajax({
-                        url: "{{ route('search') }}"
-                        , type: "GET"
-                        , data: {
-                            query: query
-                        }
-                        , success: function(data) {
-                            let results = '';
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchBox = document.getElementById('search-box');
+            const searchType = document.getElementById('search-type');
+            const resultsBox = document.getElementById('search-results');
+            let timeout = null;
+
+            searchBox.addEventListener('keyup', function() {
+                clearTimeout(timeout);
+                const query = this.value.trim();
+                const type = searchType.value;
+
+                if (query.length < 2) {
+                    resultsBox.classList.add('d-none');
+                    resultsBox.innerHTML = '';
+                    return;
+                }
+
+                timeout = setTimeout(() => {
+                    fetch(`/restaurant/live-search?query=${encodeURIComponent(query)}&type=${type}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Response:', data); // for debugging
+                            resultsBox.innerHTML = '';
+
                             if (data.length > 0) {
-                                data.forEach(product => {
-                                    results += `<a href="/restaurant/product-detail/${product.id}" class="list-group-item list-group-item-action">
-                                            <strong>${product.name}</strong> - ${product.description.substring(0, 50)}...
-                                        </a>`;
+                                data.forEach(item => {
+                                    const div = document.createElement('div');
+                                    div.className = 'search-item list-group-item list-group-item-action d-flex justify-content-between align-items-center';
+                                  
+                                    const shortDescription = item.description.length > 10
+                                    ? item.description.substring(0, 30) + '...'
+                                    : item.description;
+
+                                    div.innerHTML = `
+                                        <div>
+                                            <strong>${item.name}</strong><br>
+                                            <small class="text-muted"> ${shortDescription}, <b>Price: ${item.price} ETB</b></small>
+                                        </div>
+                                        <i class="bi bi-eye-fill text-primary"></i>
+                                    `;
+                                    div.onclick = () => window.location.href = item.url;
+                                    resultsBox.appendChild(div);
                                 });
+
+                                resultsBox.classList.remove('d-none');
+                                resultsBox.classList.add('fade-in');
                             } else {
-                                results = `<div class="list-group-item text-muted">No results found</div>`;
+                                resultsBox.classList.add('d-none');
                             }
-                            $('#search-results').html(results).removeClass('d-none');
-                        }
-                    });
-                } else {
-                    $('#search-results').addClass('d-none');
+                        })
+
+                }, 300);
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!resultsBox.contains(e.target) && e.target !== searchBox) {
+                    resultsBox.classList.add('d-none');
                 }
             });
-            $(document).on('click', function(e) {
-                if (!$(e.target).closest('#search-box, #search-results').length) {
-                    $('#search-results').addClass('d-none');
-                }
-            });
-    });
+        });
+
     </script>

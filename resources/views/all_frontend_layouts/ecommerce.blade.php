@@ -381,7 +381,7 @@
                     <div class="card-body p-3">
                         <p class="text-muted small mb-1">{{ $product['product_code'] }} • {{ $product['product_color'] }}</p>
                         <h6 class="fw-semibold mb-2">
-                            <a href="{{ url('product/'.$product['id']) }}" class="text-dark text-decoration-none">
+                            <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}" class="text-dark text-decoration-none">
                                 {{ Str::limit($product['product_name'], 40) }}
                             </a>
                         </h6>
@@ -398,10 +398,22 @@
                         </h5>
                         @endif
                         <div class="text-warning small">
-                            <i class="fas fa-star"></i> <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i> <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                            <small class="text-muted">(88)</small>
+                            @php
+                                $averageRating = round($product->ratings_avg_rating ?? 0, 1);
+                                $fullStars = floor($averageRating);
+                                $halfStar = ($averageRating - $fullStars) >= 0.5;
+                                $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
+                            @endphp
+                            @for ($i = 0; $i < $fullStars; $i++)
+                                <i class="fas fa-star"></i>
+                            @endfor
+                            @if ($halfStar)
+                                <i class="fas fa-star-half-alt"></i>
+                            @endif
+                            @for ($i = 0; $i < $emptyStars; $i++)
+                                <i class="far fa-star"></i>
+                            @endfor
+                            <small class="text-muted">({{ $averageRating }})</small>
                         </div>
                     </div>
                 </div>
@@ -504,7 +516,7 @@
                     <div class="card-body p-3">
                         <p class="text-muted small mb-1">{{ $product['product_code'] }} • {{ $product['product_color'] }}</p>
                         <h6 class="fw-semibold mb-2">
-                            <a href="{{ url('product/'.$product['id']) }}" class="text-dark text-decoration-none">
+                            <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}" class="text-dark text-decoration-none">
                                 {{ Str::limit($product['product_name'], 40) }}
                             </a>
                         </h6>
@@ -521,11 +533,28 @@
                         </h5>
                         @endif
                         <div class="text-warning small">
-                            <i class="fas fa-star"></i> <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i> <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                            <small class="text-muted">(88)</small>
+                            @php
+                                $averageRating = round($product->ratings_avg_rating ?? 0, 1);
+                                $fullStars = floor($averageRating);
+                                $halfStar = ($averageRating - $fullStars) >= 0.5;
+                                $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
+                            @endphp
+
+                            @for ($i = 0; $i < $fullStars; $i++)
+                                <i class="fas fa-star"></i>
+                            @endfor
+
+                            @if ($halfStar)
+                                <i class="fas fa-star-half-alt"></i>
+                            @endif
+
+                            @for ($i = 0; $i < $emptyStars; $i++)
+                                <i class="far fa-star"></i>
+                            @endfor
+
+                            <small class="text-muted">({{ $averageRating }})</small>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -575,7 +604,7 @@
                     <div class="card-body p-3">
                         <p class="text-muted small mb-1">{{ $product['product_code'] }} • {{ $product['product_color'] }}</p>
                         <h6 class="fw-semibold mb-2">
-                            <a href="{{ url('product/'.$product['id']) }}" class="text-dark text-decoration-none">
+                            <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}" class="text-dark text-decoration-none">
                                 {{ Str::limit($product['product_name'], 40) }}
                             </a>
                         </h6>
@@ -592,10 +621,26 @@
                         </h5>
                         @endif
                         <div class="text-warning small">
-                            <i class="fas fa-star"></i> <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i> <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                            <small class="text-muted">(88)</small>
+                            @php
+                                $averageRating = round($product->ratings_avg_rating ?? 0, 1);
+                                $fullStars = floor($averageRating);
+                                $halfStar = ($averageRating - $fullStars) >= 0.5;
+                                $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
+                            @endphp
+
+                            @for ($i = 0; $i < $fullStars; $i++)
+                                <i class="fas fa-star"></i>
+                            @endfor
+
+                            @if ($halfStar)
+                                <i class="fas fa-star-half-alt"></i>
+                            @endif
+
+                            @for ($i = 0; $i < $emptyStars; $i++)
+                                <i class="far fa-star"></i>
+                            @endfor
+
+                            <small class="text-muted">({{ $averageRating }})</small>
                         </div>
                     </div>
                 </div>
@@ -640,7 +685,7 @@
                     <div class="card-body p-3">
                         <p class="text-muted small mb-1">{{ $product['product_code'] }} • {{ $product['product_color'] }}</p>
                         <h6 class="fw-semibold mb-2">
-                            <a href="{{ url('product/'.$product['id']) }}" class="text-dark text-decoration-none">
+                            <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}" class="text-dark text-decoration-none">
                                 {{ Str::limit($product['product_name'], 40) }}
                             </a>
                         </h6>
@@ -657,10 +702,26 @@
                         </h5>
                         @endif
                         <div class="text-warning small">
-                            <i class="fas fa-star"></i> <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i> <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                            <small class="text-muted">(88)</small>
+                            @php
+                                $averageRating = round($product->ratings_avg_rating ?? 0, 1);
+                                $fullStars = floor($averageRating);
+                                $halfStar = ($averageRating - $fullStars) >= 0.5;
+                                $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
+                            @endphp
+
+                            @for ($i = 0; $i < $fullStars; $i++)
+                                <i class="fas fa-star"></i>
+                            @endfor
+
+                            @if ($halfStar)
+                                <i class="fas fa-star-half-alt"></i>
+                            @endif
+
+                            @for ($i = 0; $i < $emptyStars; $i++)
+                                <i class="far fa-star"></i>
+                            @endfor
+
+                            <small class="text-muted">({{ $averageRating }})</small>
                         </div>
                     </div>
                 </div>

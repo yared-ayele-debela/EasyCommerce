@@ -23,6 +23,51 @@
     border: 1px solid #b2f7b2;
     box-shadow: 0 2px 10px rgb(204, 252, 204) !important;
 }
+#search-results {
+    top: 100%;
+    left: 0;
+    z-index: 1050;
+    max-height: 350px;
+    overflow-y: auto;
+    background: #fff;
+    border:none;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    padding: 0.25rem 0;
+}
+
+/* Smooth fade-in animation */
+.fade-in {
+    animation: fadeInUp 0.3s ease-out forwards;
+}
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Item styles */
+.search-item {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f1f1f1;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.search-item:last-child {
+    border-bottom: none;
+}
+
+.search-item:hover {
+    background-color: #f8f9fa;
+}
+
 
 .offer-card img {
     transition: transform 0.3s ease-in-out;

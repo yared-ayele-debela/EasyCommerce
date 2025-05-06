@@ -177,5 +177,9 @@ class Product extends Model
     {
         return $this->hasMany(Offer::class);
     }
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
+    }
 
 }

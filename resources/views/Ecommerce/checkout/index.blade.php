@@ -1,6 +1,10 @@
 <?php use App\Models\Product; ?>
 @extends('all_frontend_layouts.layouts')
 @section('content')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    #map { height: 400px; width: 100%; margin-bottom: 20px; }
+</style>
 <div class="container mb-5 mb-md-0">
     <div class="header">
         <button class="btn btn-link text-dark" onclick="history.back()">
@@ -216,117 +220,7 @@
         </div>
     </form>
 </div>
-
-<div class="modal fade" id="addressModal" tabindex="-1" aria-labelledby="addressModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addressModalLabel">Add Delivery Address</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-7">
-                        <div class="mb-3">
-                            <input type="text" id="searchBox" class="form-control" placeholder="Search for an address..." />
-                        </div>
-                        <div id="map" style="height: 600px;"></div>
-                    </div>
-                    <div class="col-md-5">
-                        <form id="addressForm">
-                            @csrf
-                            <div class="row">
-                                <div class="col-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Full Name</label>
-                                        <input type="text" class="form-control" name="name" required>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Address</label>
-                                        <input type="text" class="form-control" name="address" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="country" class="form-label">Country</label>
-                                        <select id="country" class="form-select" name="country">
-                                            <option value="">Select Country</option>
-                                            @foreach ($countries as $country)
-                                            <option value="{{ $country->id }}">{{ $country->country_name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="state" class="form-label">State</label>
-                                        <select id="state" class="form-select" name="state">
-                                            <option value="">Select State</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="city" class="form-label">City</label>
-                                        <select id="city" class="form-select" name="city">
-                                            <option value="">Select City</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="sub_city" class="form-label">Sub City</label>
-                                        <select id="sub_city" class="form-select" name="sub_city">
-                                            <option value="">Select Sub City</option>
-                                        </select>
-                                    </div>
-
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="street" class="form-label">Street</label>
-                                        <select id="street" class="form-select" name="street">
-                                            <option value="">Select Street</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="col-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Pincode</label>
-                                        <input type="text" class="form-control w-100" name="pincode">
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <label class="form-label">Mobile</label>
-                                        <input type="number" class="form-control w-100" name="mobile" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Latitude</label>
-                                        <input type="number" class="form-control w-100" name="latitude" id="latitude" readonly>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Longitude</label>
-                                        <input type="number" class="form-control w-100" name="longitude" id="longitude" readonly>
-                                    </div>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn bg-primary text-white">Save Address</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Optional: Place to the bottom of scripts -->
+@include('all_frontend_layouts.partials.delivery_address_modal')
 <script>
     const myModal = new bootstrap.Modal(
         document.getElementById("modalId")
@@ -335,8 +229,6 @@
 </script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
  // JavaScript to handle payment method selection

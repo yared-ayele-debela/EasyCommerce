@@ -346,9 +346,7 @@ $cartCount = $sessionCount + $helperCount;
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-
         const categoryItems = document.querySelectorAll('#categoryList > li');
-
         categoryItems.forEach(function (item) {
           item.addEventListener('click', function (e) {
             e.stopPropagation();

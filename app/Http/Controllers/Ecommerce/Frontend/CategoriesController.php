@@ -18,7 +18,7 @@ class CategoriesController extends Controller
     {
         $ids=decrypt($id);
         $category = Category::where('id',$ids)->first();
-        $products = $category->products()->where('status', 1)->paginate(12);
+        $products = $category->products()->withAvg('ratings', 'rating')->where('status', 1)->paginate(12);
 
         return view('Ecommerce.categories.show', compact('category', 'products'));
     }

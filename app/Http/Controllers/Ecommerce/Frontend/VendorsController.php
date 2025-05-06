@@ -17,7 +17,7 @@ class VendorsController extends Controller
         $allvendor = Vendor::with('vendorbusinessdetails', 'adminvendor')->where('id', $vendorid)->first();
         // dd($allvendor);
 
-        $vendorProducts = Product::with('brand')->where('vendor_id', $vendorid)->where('status', 1);
+        $vendorProducts =Product::withAvg('ratings', 'rating')->with('brand')->where('vendor_id', $vendorid)->where('status', 1);
         $vendorProducts = $vendorProducts->paginate(10);
         // dd($vendorProducts);
         return view('Ecommerce.vendor.detail', compact( 'allvendor', 'vendorProducts'));

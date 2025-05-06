@@ -38,7 +38,7 @@ class ProductsController extends Controller
         $totalStock = ProductAttribute::where('product_id', $productId)->sum('stock');
 
         // Similar products (same category, different product)
-        $similarProducts = Product::with('brand')
+        $similarProducts = Product::withAvg('ratings', 'rating')->with('brand')
             ->where('category_id', $product->category->id)
             ->where('id', '!=', $productId)
             ->inRandomOrder()
@@ -64,6 +64,7 @@ class ProductsController extends Controller
             ->pluck('product_id');
 
         $recentlyViewedProducts = Product::with('brand')
+            ->withAvg('ratings', 'rating')
             ->whereIn('id', $recentProductIds)
             ->get();
 
@@ -104,14 +105,14 @@ class ProductsController extends Controller
     }
     public function latest()
     {
-        $products = Product::where('status', 1)->latest()->get();
+        $products = Product::withAvg('ratings', 'rating')->where('status', 1)->latest()->get();
         $name = "Latest Produts";
         return view('Ecommerce.products.index', compact('products', 'name'));
     }
 
     public function all(Request $request)
     {
-        $auto_scroll_products = Product::where('status', 1)
+        $auto_scroll_products = Product::withAvg('ratings', 'rating')->where('status', 1)
             ->latest()
             ->paginate(12);
 
@@ -125,7 +126,7 @@ class ProductsController extends Controller
 
     public function featured()
     {
-        $products = Product::where('is_Featured', 'Yes')->where('status', 1)->inRandomOrder()->get();
+        $products = Product::withAvg('ratings', 'rating')->where('is_Featured', 'Yes')->where('status', 1)->inRandomOrder()->get();
         $name = "Featured Produts";
 
         return view('Ecommerce.products.index', compact('products', 'name'));
@@ -133,7 +134,7 @@ class ProductsController extends Controller
 
     public function discounted()
     {
-        $products = Product::where('product_discount', '>', 0)->where('status', 1)->inRandomOrder()->get();
+        $products = Product::withAvg('ratings', 'rating')->where('product_discount', '>', 0)->where('status', 1)->inRandomOrder()->get();
         $name = "Discounted Produts";
 
         return view('Ecommerce.products.index', compact('products', 'name'));
@@ -149,7 +150,7 @@ class ProductsController extends Controller
         $flash_deal_products = collect();
         if ($featured_flash_deal) {
             $flash_deal_ids = $featured_flash_deal->pluck('id');
-            $flash_deal_products = FlashDealProduct::with('product')
+            $flash_deal_products = FlashDealProduct::with('product')->withAvg('ratings', 'rating')
                 ->whereIn('flash_deal_id', $flash_deal_ids)
                 ->inRandomOrder()
                 ->get();

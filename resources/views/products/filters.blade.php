@@ -20,7 +20,7 @@ $productFilters=ProductFilter::productFilters();
             @foreach ($getCategory as $category )
             <li class="border-1">
                 @php $productCount=Product::productCount($category['id']) @endphp
-                <a href="{{ url('category/'.$category['id']) }}">
+                <a href="{{ url('ecommerce/category/'.encrypt($category['id'])) }}">
                     {{ $category['name'] }} &nbsp; {{$productCount === 0 ? "" : "($productCount)" }}
                 </a>
             </li>
@@ -125,6 +125,5 @@ $productFilters=ProductFilter::productFilters();
             @endforeach
         </form>
     </div>
-
 </div>
 
