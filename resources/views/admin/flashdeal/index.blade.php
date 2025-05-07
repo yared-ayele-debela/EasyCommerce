@@ -48,11 +48,11 @@ $user = Auth::guard('admin')->user();
                                 <td>{{ $flash_deal->start_date}}</td>
                                 <td>{{$flash_deal->end_date }}</td>
                                 <td>
-                                    @if ($user && $user->hasPermissionByRole('edit_flashdeal'))
+                                   @if ($user && $user->hasPermissionByRole('edit_flashdeal'))
                                    @if($flash_deal->status==1)
                                      <a href="{{ url('admin/flash_deals/status/inactive/'.$flash_deal->id) }}" class="btn btn-success btn-sm">Active</a>
                                    @else
-                                   <a href="{{ url('admin/flash_deals/status/active/'.$flash_deal->id) }}" class="btn btn-danger btn-sm">inActive</a>
+                                     <a href="{{ url('admin/flash_deals/status/active/'.$flash_deal->id) }}" class="btn btn-danger btn-sm">inActive</a>
                                    @endif
                                    @endif
 

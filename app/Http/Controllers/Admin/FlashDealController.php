@@ -10,6 +10,7 @@ use App\Models\Product;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use RealRashid\SweetAlert\Facades\Alert;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
@@ -52,25 +53,19 @@ class FlashDealController extends Controller
         }
         $flash_deal = new FlashDeal();
         $flash_deal->title = $request->title;
-        $flash_deal->text_color = $request->text_color;
         $flash_deal->start_date = Carbon::createFromFormat('d-m-Y H:i:s', $request->start_date)->format('Y-m-d H:i:s');
         $flash_deal->end_date = Carbon::createFromFormat('d-m-Y H:i:s', $request->end_date)->format('Y-m-d H:i:s');
 
-        $flash_deal->background_color = $request->background_color;
         $flash_deal->slug = Str::slug($request->title) . '-' . Str::random(5);
 
 
         if ($request->hasFile('banner')) {
-            // Get original file name with extension
             $fileNameWithExt = $request->file('banner')->getClientOriginalName();
             $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
             $extension = $request->file('banner')->getClientOriginalExtension();
             $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
-
-            // Store the file
             $path = $request->file('banner')->storeAs('public/banners', $fileNameToStore);
 
-            // Store the full URL in the database
             $flash_deal->banner = asset('storage/banners/' . $fileNameToStore);
         }
 
@@ -89,8 +84,6 @@ class FlashDealController extends Controller
 
                 $root_product->save();
             }
-
-
             Alert::toast('Flash Deal has been saved', 'success');
             return redirect()->route('flash_deals.index');
         } else {
@@ -142,20 +135,14 @@ class FlashDealController extends Controller
         }
         $flash_deal = FlashDeal::findOrFail($id);
 
-        $flash_deal->text_color = $request->text_color;
-
         $date_var               = explode(" to ", $request->date_range);
         $flash_deal->start_date = Carbon::createFromFormat('d-m-Y H:i:s', $request->start_date)->format('Y-m-d H:i:s');
         $flash_deal->end_date = Carbon::createFromFormat('d-m-Y H:i:s', $request->end_date)->format('Y-m-d H:i:s');
 
-        $flash_deal->background_color = $request->background_color;
-
         $flash_deal->title = $request->title;
 
         if ($request->hasFile('banner')) {
-            // Check if the old banner exists and delete it
             if ($flash_deal->banner && Storage::disk('public')->exists('banners/' . $flash_deal->banner)) {
-                // Delete the old banner image from storage
                 Storage::disk('public')->delete('banners/' . $flash_deal->banner);
             }
 
@@ -171,7 +158,6 @@ class FlashDealController extends Controller
             // Save the new banner URL to the DB
             $flash_deal->banner = asset('storage/banners/' . $fileNameToStore);
         }
-
         foreach ($flash_deal->flash_deal_products as $key => $flash_deal_product) {
             $flash_deal_product->delete();
         }
@@ -193,8 +179,8 @@ class FlashDealController extends Controller
             Alert::toast('Flash deal has been updated!', 'success');
             return redirect()->route('flash_deals.index');
         } else {
-            notify()->success('Something went wrong');
-            return back();
+            Alert::toast("Something was wrong",'error');
+            return redirect()->back();
         }
     }
 

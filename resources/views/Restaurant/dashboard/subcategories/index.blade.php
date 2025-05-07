@@ -36,8 +36,13 @@
                     @foreach($subcategories as $subcategory)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
-                        <td>{{ $subcategory->name }}</td>
-                        <td>{{ $subcategory->category->name }}</td>
+                        <td>{{ $subcategory->name? $subcategory->name:'' }}</td>
+                        <td>
+                            @if($subcategory->category)
+                            {{ $subcategory->category->name }}
+                            @else
+                            @endif
+                        </td>
                         <td>
                             <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editModal{{ $subcategory->id }}"><i class="bi bi-pencil-fill"></i></button>
                             <form action="{{ route('subcategories.destroy', $subcategory->id) }}" method="POST" class="d-inline">

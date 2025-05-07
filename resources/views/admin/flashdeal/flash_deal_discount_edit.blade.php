@@ -23,7 +23,7 @@
                 <td>
                   <div class="form-group row">
                       <div class="col-auto">
-                        <img class="size-60px img-fit" height="20px;" width="30px;" src="{{ asset('/storage/products/'.$product->product_image) }}">
+                        <img class="size-60px img-fit" height="20px;" width="30px;" src="{{ $product->product_image }}">
                     </div>
                       <div class="col">
                           <span>{{  $product->product_name }}</span>
@@ -36,7 +36,6 @@
                 <td>
                     <input type="text" lang="en" name="discount_{{ $id }}" value="{{ $product->product_discount }}" min="0" step="1" class="form-control" required>
                 </td>
-
             </tr>
         @endforeach
     </tbody>

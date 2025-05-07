@@ -2,7 +2,6 @@
 <table class="table table-bordered aiz-table">
   <thead>
   	<tr>
-
   		<td width="50%">
           <span>Product</span>
   		</td>
@@ -23,7 +22,7 @@
             <td>
               <div class="from-group row">
                 <div class="col-auto">
-                  <img class="size-60px img-fit" height="20px;" width="30px;" src="{{ asset('/storage/products/'.$product->product_image) }}">
+                  <img class="size-60px img-fit" height="30px;" width="30px;" src="{{ $product->product_image}}">
                 </div>
                 <div class="col">
                   <span>{{  $product->product_name  }}</span>

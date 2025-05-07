@@ -65,7 +65,7 @@
                         </div>
                         <div class="mb-2">
                             <label for="transaction_number" class="form-label">Transaction Number</label>
-                            <input type="text" name="transaction_number" class="form-control" required>
+                            <input type="text" name="transaction_number" class="form-control">
                             @error('transaction_number')
                             <span class="text-danger">{{ $message }}</span>
                             @enderror

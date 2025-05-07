@@ -26,10 +26,9 @@ use App\Models\Order;
     <div class="tab-content" id="pills-tabContent">
         <div class="tab-pane fade show active" id="pills-reservation" role="tabpanel" aria-labelledby="pills-reservation-tab">
             @if($orders->isEmpty())
-            <div class="alert alert-info text-center">
-                <p>No orders found. Start ordering your favorite meals!</p>
-                <a href="{{ url('/') }}" class="btn btn-primary">Order Now</a>
-            </div>
+            {{-- <div class="alert alert-info text-center"> --}}
+                <p class="text-dark">No orders found. Start ordering your favorite meals!</p>
+            {{-- </div> --}}
             @else
             <div class="row">
                 @foreach($orders as $order)
@@ -239,102 +238,101 @@ use App\Models\Order;
         </div>
         <div class="tab-pane fade" id="pills-goods" role="tabpanel" aria-labelledby="pills-goods-tab">
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-2">
-                    @foreach ($good_orders as $order)
-                        @if($order['orders_products'])
-                            <div class="col-md-4">
-                                <div class="offer-card h-100 rounded-3">
-                                    <div class="card-body">
-                                        <h5 class="card-title mb-3">
-                                            <span class="text-muted">Order ID:</span>
-                                            <a href="{{ url('user/orders/'.$order['id']) }}" class="text-decoration-none text-dark">
-                                                #{{ $order['id'] }}
-                                            </a>
-                                        </h5>
+                @foreach ($good_orders as $order)
+                @if($order['orders_products'])
+                <div class="col-md-4">
+                    <div class="offer-card h-100 rounded-3">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">
+                                <span class="text-muted">Order ID:</span>
+                                <a href="{{ url('user/orders/'.$order['id']) }}" class="text-decoration-none text-dark">
+                                    #{{ $order['id'] }}
+                                </a>
+                            </h5>
 
-                                        <p class="mb-2">
-                                            <span class="fw-semibold text-muted">Ordered Products:</span><br>
-                                            @foreach ($order['orders_products'] as $product)
-                                                <span class="badge bg-light text-dark border me-1 mb-1">
-                                                    {{ $product['product_code'] }}
-                                                </span>
-                                            @endforeach
-                                        </p>
-                                        <p class="mb-1"><strong class="text-muted">Payment Method:</strong> {{ $order['payment_method'] }}</p>
-                                        <p class="mb-1"><strong class="text-muted">Grand Total:</strong> {{ $order['grand_total'] }}</p>
-                                        <p class="mb-3"><strong class="text-muted">Date:</strong> {{ $order->created_at->format('d M Y, h:i A') }}</p>
-                                        <button class="btn btn-outline-primary btn-sm " type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#goodsorderDetails{{ $order->id }}">
-                                            View Ordered Products
-                                        </button>
+                            <p class="mb-2">
+                                <span class="fw-semibold text-muted">Ordered Products:</span><br>
+                                @foreach ($order['orders_products'] as $product)
+                                <span class="badge bg-light text-dark border me-1 mb-1">
+                                    {{ $product['product_code'] }}
+                                </span>
+                                @endforeach
+                            </p>
+                            <p class="mb-1"><strong class="text-muted">Payment Method:</strong> {{ $order['payment_method'] }}</p>
+                            <p class="mb-1"><strong class="text-muted">Grand Total:</strong> {{ $order['grand_total'] }}</p>
+                            <p class="mb-3"><strong class="text-muted">Date:</strong> {{ $order->created_at->format('d M Y, h:i A') }}</p>
+                            <button class="btn btn-outline-primary btn-sm " type="button" data-bs-toggle="collapse" data-bs-target="#goodsorderDetails{{ $order->id }}">
+                                View Ordered Products
+                            </button>
 
-                                        <div id="goodsorderDetails{{ $order->id }}" class="collapse mt-3">
-                                            <div class="border rounded-2 p-2 bg-light">
-                                                @foreach ($order['orders_products'] as $product)
-                                                    <div class="d-flex align-items-center mb-3">
-                                                        <img src="{{ asset('/storage/products/' . Product::getProductImage($product['product_id'])) }}"
-                                                             alt="Product Image" class="rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
-                                                        <div class="flex-grow-1">
-                                                            <h6 class="mb-1">{{ $product['product_name'] }}</h6>
-                                                            <small class="text-muted">Code: {{ $product['product_code'] }}</small><br>
-                                                            <small class="text-muted">Size: {{ $product['product_size'] }} | Color: {{ $product['product_color'] }}</small>
-                                                        </div>
-                                                        <span class="badge bg-primary-subtle text-dark ms-3">
-                                                            Qty: {{ $product['product_qty'] }}
-                                                        </span>
-                                                    </div>
-                                                @endforeach
-                                            </div>
+                            <div id="goodsorderDetails{{ $order->id }}" class="collapse mt-3">
+                                <div class="border rounded-2 p-2 bg-light">
+                                    @foreach ($order['orders_products'] as $product)
+                                    <div class="d-flex align-items-center mb-3">
+                                        <img src="{{ asset('/storage/products/' . Product::getProductImage($product['product_id'])) }}" alt="Product Image" class="rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">{{ $product['product_name'] }}</h6>
+                                            <small class="text-muted">Code: {{ $product['product_code'] }}</small><br>
+                                            <small class="text-muted">Size: {{ $product['product_size'] }} | Color: {{ $product['product_color'] }}</small>
                                         </div>
-
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div class="text-start mt-3 d-flex justify-content-between align-items-center">
-                                                @if($order->paymentInfo)
-                                                <div class="d-flex justify-content-around align-items-center">
-                                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#Reservation{{ $order->id }}">
-                                                        <i class="bi bi-eye-fill"></i> Payment information
-                                                    </button> &nbsp;
-                                                </div>
-                                                <div class="modal fade" id="Reservation{{ $order->id }}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
-                                                    <div class="modal-dialog modal-dialog-scrollable" role="document">
-                                                        <div class="modal-content ">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title">Payment Detail</h5>
-                                                                <button type="button" class="close btn" data-bs-dismiss="modal" aria-label="Close">
-                                                                    <span aria-hidden="true">&times;</span>
-                                                                </button>
-                                                            </div>
-                                                            <div class="modal-body text-left">
-                                                                <p>Receipt:</p>
-                                                                @if($order->paymentInfo->receipt)
-                                                                <img src="{{ asset('storage/'.$order->paymentInfo->receipt) }}" class="img-fluid" alt="{{ $order->paymentInfo->bank_name }}">
-                                                                @else
-                                                                <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid" alt="{{ $order->paymentInfo->bank_name }}">
-                                                                @endif
-                                                                <p class="card-text"><strong>Bank Name :</strong> {{ $order->paymentInfo->bank_name }}</p>
-                                                                <p class="card-text"><strong>Transaction Number :</strong> <strong>{{ $order->paymentInfo->transaction_number }}</strong></p>
-                                                                <p class="card-text"><strong>Amount Paid :</strong> {{ $order->paymentInfo->amount_paid }} ETB</p>
-                                                                <p class="card-text text-dark"><strong>Payment Status :</strong> <span class="btn btn-sm btn btn-secondary">{{ $order->paymentInfo->payment_status }}</span></p>
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                @else
-                                                @endif
-                                            </div>
-                                            <a href="{{ url('ecommerce/orders/'.encrypt($order['id'])) }}" class="btn btn-sm btn-primary mt-3">
-                                                <i class="fas fa-eye me-1"></i> View Full Order
-                                            </a>
-                                        </div>
+                                        <span class="badge bg-primary-subtle text-dark ms-3">
+                                            Qty: {{ $product['product_qty'] }}
+                                        </span>
                                     </div>
+                                    @endforeach
                                 </div>
                             </div>
-                        @endif
-                    @endforeach
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="text-start mt-3 d-flex justify-content-between align-items-center">
+                                    @if($order->paymentInfo)
+                                    <div class="d-flex justify-content-around align-items-center">
+                                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#Reservation{{ $order->id }}">
+                                            <i class="bi bi-eye-fill"></i> Payment information
+                                        </button> &nbsp;
+                                    </div>
+                                    <div class="modal fade" id="Reservation{{ $order->id }}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-scrollable" role="document">
+                                            <div class="modal-content ">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Payment Detail</h5>
+                                                    <button type="button" class="close btn" data-bs-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body text-left">
+                                                    <p>Receipt:</p>
+                                                    @if($order->paymentInfo->receipt)
+                                                    <img src="{{ asset('storage/'.$order->paymentInfo->receipt) }}" class="img-fluid" alt="{{ $order->paymentInfo->bank_name }}">
+                                                    @else
+                                                    <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid" alt="{{ $order->paymentInfo->bank_name }}">
+                                                    @endif
+                                                    <p class="card-text"><strong>Bank Name :</strong> {{ $order->paymentInfo->bank_name }}</p>
+                                                    <p class="card-text"><strong>Transaction Number :</strong> <strong>{{ $order->paymentInfo->transaction_number }}</strong></p>
+                                                    <p class="card-text"><strong>Amount Paid :</strong> {{ $order->paymentInfo->amount_paid }} ETB</p>
+                                                    <p class="card-text text-dark"><strong>Payment Status :</strong> <span class="btn btn-sm btn btn-secondary">{{ $order->paymentInfo->payment_status }}</span></p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @else
+                                    @endif
+                                </div>
+                                <a href="{{ url('ecommerce/orders/'.encrypt($order['id'])) }}" class="btn btn-sm btn-primary mt-3">
+                                    <i class="fas fa-eye me-1"></i> View Full Order
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
+                @endforeach
             </div>
         </div>
     </div>
 </div>
 @endsection
+

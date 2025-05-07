@@ -152,15 +152,14 @@ if (curl_errno($ch)) {
         case 200:
             $data = json_decode($response, true);
             if (isset($data['acknowledge']) && $data['acknowledge'] === 'success') {
-                // dd("✅ OTP Sent Successfully!");
+                dd("✅ OTP Sent Successfully!");
             } else {
                 // dd("❌ API failure: ");
-                // dd($data);
+                dd($data);
             }
             break;
         default:
-            // dd("❗ HTTP Error: " . $http_code . "\n");
-            // dd("Response: " . $response);
+            dd("Response: " . $response);
     }
 }
 

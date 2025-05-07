@@ -4,25 +4,17 @@
 @php
 $user = Auth::guard('admin')->user();
 @endphp
-<!-- Include Flatpickr CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<!-- Include Flatpickr JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <div class="row">
     <div class="col-lg-12 mx-auto">
         <div class="card">
+            <div class="card-header">
+                @if ($user && $user->hasPermissionByRole('view_flash_deal'))
+                   <a class="btn btn-primary" href="{{ route('flash_deals.index') }}">All Flashdeals</a>
+                @endif
+            </div>
             <div class="card-body">
-                <h5 class="card-title">Create FlashDeal</h5>
-                <ul class="nav nav-tabs pb-4 align-items-end card-header-tabs w-100">
-                   <li class="nav-item border-none">
-                      <a class="nav-link  bg-light " href=""><i class=" fas fa-plus"></i>Add Flashdeal</a>
-                    </li>
-                    @if ($user && $user->hasPermissionByRole('view_flash_deal'))
-                    <li class="nav-item border-none">
-                        <a class="nav-link  bg-light active" href="{{ route('flash_deals.index') }}"><i class=" fas fa-plus"></i>All Flashdeals</a>
-                    </li>
-                    @endif
-                </ul>
                 <form action="{{ route('flash_deals.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="row">
@@ -33,27 +25,12 @@ $user = Auth::guard('admin')->user();
                                     <input type="text" placeholder="Title" id="name" name="title" class="form-control" required>
                                 </div>
                             </div>
-                            <div class="form-group ">
-                                <label class="col-sm-3 control-label" for="background_color">Background Color <small>Hexa-code</small></label>
-                                <div class="col-sm-9">
-                                    <input type="text" placeholder="#FFFFFF" id="background_color" name="background_color" class="form-control" required>
-                                </div>
-                            </div>
-                            <div class="form-group ">
-                                <label class="col-lg-3 control-label" for="name">Text Color</label>
-                                <div class="col-lg-9">
-                                    <select name="text_color" id="text_color" class="form-control aiz-selectpicker" required>
-                                        <option value="">Select One</option>
-                                        <option value="white">White</option>
-                                        <option value="dark">Dark</option>
-                                    </select>
-                                </div>
-                            </div>
+
                             <div class="form-group ">
                                 <label class="col-md-3 col-form-label" for="signinSrEmail">Banner</label>
                                 <div class="col-md-9">
                                     <div class="input-group">
-                                        <input type="file" name="banner" class="selected-files">
+                                        <input type="file" name="banner" class="selected-files form-control">
                                     </div>
                                     <div class="file-preview box sm">
                                     </div>
@@ -88,7 +65,6 @@ $user = Auth::guard('admin')->user();
                                         If any product has discount or exists in another flash deal, the discount will be replaced by this discount & time limit.
                                       </div>
                                 </div>
-
                             </div>
 
                             <br>
@@ -109,6 +85,22 @@ $user = Auth::guard('admin')->user();
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#products').on('change', function(){
+            var product_ids = $('#products').val();
+            if(product_ids.length > 0){
+                $.post('{{ route('flash_deals.product_discount') }}', {_token:'{{ csrf_token() }}', product_ids:product_ids}, function(data){
+                    $('#discount_table').html(data);
+                   AIZ.plugins.fooTable();
+                });
+            }
+            else{
+                $('#discount_table').html(null);
+            }
+        });
+    });
+</script>
 @endsection
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -123,9 +115,7 @@ $user = Auth::guard('admin')->user();
         });
     });
 </script>
-
 <script>
-
     var AIZ = AIZ || {};
     AIZ.local = {
         nothing_selected: 'Nothing selected',
@@ -150,22 +140,3 @@ $user = Auth::guard('admin')->user();
         files: 'Files',
     }
 </script>
-@section('script')
-    <script type="text/javascript">
-        $(document).ready(function(){
-            $('#products').on('change', function(){
-                // alert("hello");
-                var product_ids = $('#products').val();
-                if(product_ids.length > 0){
-                    $.post('{{ route('flash_deals.product_discount') }}', {_token:'{{ csrf_token() }}', product_ids:product_ids}, function(data){
-                        $('#discount_table').html(data);
-                        AIZ.plugins.fooTable();
-                    });
-                }
-                else{
-                    $('#discount_table').html(null);
-                }
-            });
-        });
-    </script>
-@endsection

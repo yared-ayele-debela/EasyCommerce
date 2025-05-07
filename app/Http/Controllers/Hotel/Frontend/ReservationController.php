@@ -32,7 +32,7 @@ class ReservationController extends Controller
             'room_id' => 'required|exists:rooms,id',
             'user_id' => 'required|exists:users,id',
             'bank_name' => 'required|string',
-            'transaction_number' => 'required|string',
+            'transaction_number' => 'nullable|string',
             'receipt' => 'nullable|max:2048',
             'coupon_code' => 'nullable|string',
         ]);

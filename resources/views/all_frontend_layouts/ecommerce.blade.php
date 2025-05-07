@@ -291,7 +291,7 @@
                 <div class="carousel-inner">
                     @foreach ($banners as $index => $banner)
                     <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                        <div class="d-flex align-items-center banner-box {{ $index % 2 === 0 ? 'text-white' : 'text-dark' }}" style="border-radius:6px; background: url('{{$banner['image'] }}') center center / cover no-repeat;">
+                        <div class="d-flex align-items-center banner-box {{ $index % 2 === 0 ? 'text-white' : 'text-dark' }}" style="border-radius:8px; background: url('{{$banner['image'] }}') center center / cover no-repeat;">
                             <div class="container py-5 px-4">
                                 <h1 class="display-6 fw-bold">{{ $banner['title'] ?? 'Promotion' }}</h1>
                                 <p class="lead">{{ $banner['alt'] ?? 'Don’t miss out on our latest offers!' }}</p>
@@ -753,7 +753,7 @@
                         @if(!empty($vendor->vendorbusinessdetails['shop_image']))
                         <img src="{{ $vendor->vendorbusinessdetails['shop_image'] }}" class="w-100 " style="height: 150px; object-fit: cover;" alt="Shop Banner">
                         @else
-                        <img src="{{ asset('banner.png') }}" class="w-100 " style="height: 150px; object-fit: cover;" alt="Shop Banner">
+                        <img src="{{ asset('banner.png') }}" class="w-100 " style="height: 120px; object-fit: cover;" alt="Shop Banner">
                         @endif
                         <div class="position-absolute bottom-0 start-0 translate-middle-y ms-3 mb-1">
                             @if(!empty($vendor->adminvendor['image']))

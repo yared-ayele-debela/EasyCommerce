@@ -14,18 +14,13 @@ $user = Auth::guard('admin')->user();
 <div class="row">
     <div class="col-lg-12 mx-auto">
         <div class="card">
+            <div class="card-header">
+                @if ($user && $user->hasPermissionByRole('view_flash_deal'))
+                        <a class="btn btn-primary" href="{{ route('flash_deals.index') }}">All Flashdeals</a>
+                @endif
+            </div>
             <div class="card-body">
-                <h5 class="card-title">Create FlashDeal</h5>
-                <ul class="nav nav-tabs pb-4 align-items-end card-header-tabs w-100">
-                   <li class="nav-item border-none">
-                      <a class="nav-link  bg-light " href=""><i class=" fas fa-plus"></i>Update Flashdeal</a>
-                    </li>
-                    @if ($user && $user->hasPermissionByRole('view_flash_deal'))
-                    <li class="nav-item border-none">
-                        <a class="nav-link  bg-light active" href="{{ route('flash_deals.index') }}"><i class=" fas fa-plus"></i>All Flashdeals</a>
-                    </li>
-                    @endif
-                </ul>
+
               <form class="p-4" action="{{ route('flash_deals.update', $flash_deal->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="row">
@@ -37,27 +32,12 @@ $user = Auth::guard('admin')->user();
                                 <input type="text" placeholder="Title" id="name" name="title" value="{{ $flash_deal->title }}" class="form-control" required>
                             </div>
                         </div>
-                        <div class="form-group ">
-                            <label class="col-sm-3 col-from-label" for="background_color">Background Color<small>Hexa-code</small></label>
-                            <div class="col-sm-9">
-                                <input type="text" placeholder="#0000ff" id="background_color" name="background_color" value="{{ $flash_deal->background_color }}" class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="form-group ">
-                            <label class="col-lg-3 col-from-label" for="text_color">Text Color</label>
-                            <div class="col-lg-9">
-                                <select name="text_color" id="text_color" class="form-control demo-select2" required>
-                                    <option value="">Select One</option>
-                                    <option value="white" @if ($flash_deal->text_color == 'white') selected @endif>White</option>
-                                    <option value="dark" @if ($flash_deal->text_color == 'dark') selected @endif>Dark</option>
-                                </select>
-                            </div>
-                        </div>
+
                         <div class="form-group ">
                             <label class="col-md-3 col-form-label" for="signinSrEmail">Banner</label>
                             <div class="col-md-9">
                                 <div class="input-group" data-toggle="aizuploader" data-type="image">
-                                    <input type="file" name="banner" value="" class="selected-files">
+                                    <input type="file" name="banner" value="" class="selected-files form-control">
                                 </div>
                                 <div class="file-preview box sm">
                                 </div>
@@ -104,9 +84,6 @@ $user = Auth::guard('admin')->user();
                             </div>
                           </div>
                       </div>
-
-
-
                       <br>
                       <div class="form-group" id="discount_table">
 
@@ -125,8 +102,6 @@ $user = Auth::guard('admin')->user();
         </div>
     </div>
 </div>
-
-@endsection
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -166,7 +141,7 @@ $user = Auth::guard('admin')->user();
         files: 'Files',
     }
 </script>
-@section('script')
+
     <script type="text/javascript">
         $(document).ready(function(){
 

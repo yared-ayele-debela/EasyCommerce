@@ -19,29 +19,28 @@ use Illuminate\Support\Facades\Storage;
         @foreach ($banners as $banner)
         <div class="item mb-2 position-relative">
             @php
-                // Extract the relative path from full URL
-                $imagePath = $banner->image
-                    ? ltrim(parse_url($banner->image, PHP_URL_PATH), '/')
-                    : null;
-
-                // Remove 'storage/' prefix to match storage/app/public
-                $relativePath = $imagePath ? str_replace('storage/', '', $imagePath) : null;
+            // Extract the relative path from full URL
+            $imagePath = $banner->image
+            ? ltrim(parse_url($banner->image, PHP_URL_PATH), '/')
+            : null;
+            // Remove 'storage/' prefix to match storage/app/public
+            $relativePath = $imagePath ? str_replace('storage/', '', $imagePath) : null;
             @endphp
 
             @if($relativePath && Storage::disk('public')->exists($relativePath))
-                <img src="{{ $banner->image }}" alt="{{ $banner->link }}" class="img-fluid">
+            <img src="{{ $banner->image }}" alt="{{ $banner->link }}" style="border-radius:8px;" class="img-fluid">
             @else
-                <img src="{{ asset('no_banner.png') }}" class="img-fluid" alt="{{ $banner->link }}">
+            <img src="{{ asset('no_banner.png') }}" class="img-fluid" alt="{{ $banner->link }}">
             @endif
 
 
-                <div class="overlay-text position-absolute text-white p-3">
+            <div class="overlay-text position-absolute text-white p-3">
                 <h3>{{ $banner->title }}</h3>
                 <p>{{ $banner->description }}</p>
                 <a href="{{ $banner->link }}" class="btn bg-primary text-white" target="_blank">Buy Now</a>
             </div>
         </div>
-       @endforeach
+        @endforeach
     </div>
 </div>
 
@@ -50,7 +49,7 @@ use Illuminate\Support\Facades\Storage;
         <h4 class="mt-5 mb-2">Categories</h4>
         <h5 class="mt-5 mb-2"><a href="{{ route('restaurant.categories') }}" class="text-dark">All</a></h5>
     </div>
-       <div class="row g-3 my-1">
+    <div class="row g-3 my-1">
         <div class="owl-carousel owl-theme categories mt-4">
             @foreach ($categories as $category)
             <div class="item mb-2">
@@ -60,19 +59,13 @@ use Illuminate\Support\Facades\Storage;
                         // Extract the relative path from the full URL (if provided)
                         $parsedPath = $category->image ? parse_url($category->image, PHP_URL_PATH) : null;
                         $relativePath = $parsedPath ? str_replace('storage/', '', ltrim($parsedPath, '/')) : null;
-                    @endphp
+                        @endphp
 
-                    @if($relativePath && Storage::disk('public')->exists($relativePath))
-                        <img src="{{ $category->image }}"
-                             class="p-2 shadow"
-                             style="border:4px solid rgb(162, 159, 159);"
-                             alt="{{ $category->name ?? 'Category' }}">
-                    @else
-                        <img src="{{ asset('restaurant_frontend/default-image.png') }}"
-                             class="p-2 shadow"
-                             style="border:4px solid rgb(162, 159, 159);"
-                             alt="Default Category">
-                    @endif
+                        @if($relativePath && Storage::disk('public')->exists($relativePath))
+                        <img src="{{ $category->image }}" class="p-2 shadow" style="border:4px solid rgb(162, 159, 159);" alt="{{ $category->name ?? 'Category' }}">
+                        @else
+                        <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="p-2 shadow" style="border:4px solid rgb(162, 159, 159);" alt="Default Category">
+                        @endif
 
                         <p class="text-dark">{{ $category->name }}</p>
                     </a>
@@ -102,26 +95,26 @@ use Illuminate\Support\Facades\Storage;
                 <div class="offer-card p-3 h-100">
                     <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}" class="text-decoration-none text-dark d-block">
                         @php
-                            $off = $product->price - $product->getFinalPrice();
+                        $off = $product->price - $product->getFinalPrice();
                         @endphp
                         @if($off > 0)
-                            <div class="btn btn-sm btn-primary">
-                                {{ $off }} ETB OFF
-                            </div>
+                        <div class="btn btn-sm btn-primary">
+                            {{ $off }} ETB OFF
+                        </div>
                         @endif
                         @php
                         // Safely extract relative storage path from full URL or asset path
                         $parsedPath = $product->image ? parse_url($product->image, PHP_URL_PATH) : null;
                         $relativePath = $parsedPath ? str_replace('storage/', '', ltrim($parsedPath, '/')) : null;
-                    @endphp
+                        @endphp
 
-                    @if($relativePath && Storage::disk('public')->exists($relativePath))
+                        @if($relativePath && Storage::disk('public')->exists($relativePath))
                         <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
-                    @else
+                        @else
                         <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" alt="No Image">
-                    @endif
+                        @endif
 
-                                          <h6 class="text-dark">{{ $product->name }}</h6>
+                        <h6 class="text-dark">{{ $product->name }}</h6>
                         <p class="mb-0">
                             <span class="price">{{ $product->getFinalPrice() }} ETB</span>
                             <span class="price-old">{{ $product->price }} ETB</span>
@@ -131,7 +124,7 @@ use Illuminate\Support\Facades\Storage;
                         <button onclick="window.location.href='{{ url('restaurant/product-detail/'.encrypt($product->id)) }}'" class="btn-view">
                             <i class="bi bi-eye-fill"></i>
                         </button>
-                        <button class="btn-cart add-to-cart" data-product="{{ $product->id }}"  data-product-price="{{ $product->price }}">
+                        <button class="btn-cart add-to-cart" data-product="{{ $product->id }}" data-product-price="{{ $product->price }}">
                             <i class="bi bi-cart-check-fill"></i>
                         </button>
                         <button class="btn-wishlist add-to-wishlist" data-product="{{ $product->id }}">
@@ -170,15 +163,15 @@ use Illuminate\Support\Facades\Storage;
                         // Safely extract relative storage path from full URL or asset path
                         $parsedPath = $product->image ? parse_url($product->image, PHP_URL_PATH) : null;
                         $relativePath = $parsedPath ? str_replace('storage/', '', ltrim($parsedPath, '/')) : null;
-                    @endphp
+                        @endphp
 
-                    @if($relativePath && Storage::disk('public')->exists($relativePath))
+                        @if($relativePath && Storage::disk('public')->exists($relativePath))
                         <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
-                    @else
+                        @else
                         <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" alt="No Image">
-                    @endif
+                        @endif
 
-                                          <h6 class="text-dark">{{ $product->name }}</h6>
+                        <h6 class="text-dark">{{ $product->name }}</h6>
                         <p class="mb-0">
                             <span class="price">{{ $product->getFinalPrice() }} ETB</span>
                             <span class="price-old">{{ $product->price }} ETB</span>
@@ -188,7 +181,7 @@ use Illuminate\Support\Facades\Storage;
                         <button onclick="window.location.href='{{ url('restaurant/product-detail/'.encrypt($product->id)) }}'" class="btn-view">
                             <i class="bi bi-eye-fill"></i>
                         </button>
-                        <button class="btn-cart add-to-cart" data-product="{{ $product->id }}"  data-product-price="{{ $product->price }}">
+                        <button class="btn-cart add-to-cart" data-product="{{ $product->id }}" data-product-price="{{ $product->price }}">
                             <i class="bi bi-cart-check-fill"></i>
                         </button>
                         <button class="btn-wishlist add-to-wishlist" data-product="{{ $product->id }}">
@@ -204,7 +197,7 @@ use Illuminate\Support\Facades\Storage;
     <div class="d-flex justify-content-between align-items-center">
         <h4 class="mt-5 mb-2">Best Seller</h4>
         <h5 class="mt-5 mb-2">
-             <form action="{{ route('all-restaurant-products') }}" method="GET">
+            <form action="{{ route('all-restaurant-products') }}" method="GET">
 
                 @csrf
                 <input type="hidden" name="type" value="best_seller">
@@ -221,19 +214,19 @@ use Illuminate\Support\Facades\Storage;
                 <div class="offer-card p-3 h-100">
                     <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}" class="text-decoration-none text-dark d-block">
 
-                            <span class="btn btn-sm btn-warning text-white">
-                                Best seller
-                            </span>
-                            @php
-                            // Safely extract relative storage path from full URL or asset path
-                            $parsedPath = $product->image ? parse_url($product->image, PHP_URL_PATH) : null;
-                            $relativePath = $parsedPath ? str_replace('storage/', '', ltrim($parsedPath, '/')) : null;
+                        <span class="btn btn-sm btn-warning text-white">
+                            Best seller
+                        </span>
+                        @php
+                        // Safely extract relative storage path from full URL or asset path
+                        $parsedPath = $product->image ? parse_url($product->image, PHP_URL_PATH) : null;
+                        $relativePath = $parsedPath ? str_replace('storage/', '', ltrim($parsedPath, '/')) : null;
                         @endphp
 
                         @if($relativePath && Storage::disk('public')->exists($relativePath))
-                            <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
+                        <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
                         @else
-                            <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" alt="No Image">
+                        <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" alt="No Image">
                         @endif
 
                         <h6 class="text-dark">{{ $product->name }}</h6>
@@ -246,7 +239,7 @@ use Illuminate\Support\Facades\Storage;
                         <button onclick="window.location.href='{{ url('restaurant/product-detail/'.encrypt($product->id)) }}'" class="btn-view">
                             <i class="bi bi-eye-fill"></i>
                         </button>
-                        <button class="btn-cart add-to-cart" data-product="{{ $product->id }}"  data-product-price="{{ $product->price }}">
+                        <button class="btn-cart add-to-cart" data-product="{{ $product->id }}" data-product-price="{{ $product->price }}">
                             <i class="bi bi-cart-check-fill"></i>
                         </button>
                         <button class="btn-wishlist add-to-wishlist" data-product="{{ $product->id }}">
@@ -262,7 +255,7 @@ use Illuminate\Support\Facades\Storage;
     <div class="d-flex justify-content-between align-items-center">
         <h4 class="mt-5 mb-2">Latest Product</h4>
         <h5 class="mt-5 mb-2">
-             <form action="{{ url('restaurant/all-products') }}" method="GET">
+            <form action="{{ url('restaurant/all-products') }}" method="GET">
 
                 @csrf
                 <input type="hidden" name="type" value="best_seller">
@@ -278,21 +271,21 @@ use Illuminate\Support\Facades\Storage;
             <div class="item my-2">
                 <div class="offer-card p-3 h-100">
                     <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}" class="text-decoration-none text-dark d-block">
-                            <div class="btn btn-sm btn-danger text-white">
-                              Latest
-                            </div>
-                            @php
-                            // Safely extract relative storage path from full URL or asset path
-                                    $parsedPath = $product->image ? parse_url($product->image, PHP_URL_PATH) : null;
-                                    $relativePath = $parsedPath ? str_replace('storage/', '', ltrim($parsedPath, '/')) : null;
-                                @endphp
+                        <div class="btn btn-sm btn-danger text-white">
+                            Latest
+                        </div>
+                        @php
+                        // Safely extract relative storage path from full URL or asset path
+                        $parsedPath = $product->image ? parse_url($product->image, PHP_URL_PATH) : null;
+                        $relativePath = $parsedPath ? str_replace('storage/', '', ltrim($parsedPath, '/')) : null;
+                        @endphp
 
-                                @if($relativePath && Storage::disk('public')->exists($relativePath))
-                                    <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
-                                @else
-                                    <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" alt="No Image">
-                                @endif
-                                             <h6 class="text-dark">{{ $product->name }}</h6>
+                        @if($relativePath && Storage::disk('public')->exists($relativePath))
+                        <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
+                        @else
+                        <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" alt="No Image">
+                        @endif
+                        <h6 class="text-dark">{{ $product->name }}</h6>
                         <p class="mb-0">
                             <span class="price">{{ $product->getFinalPrice() }} ETB</span>
                             <span class="price-old">{{ $product->price }} ETB</span>
@@ -302,7 +295,7 @@ use Illuminate\Support\Facades\Storage;
                         <button onclick="window.location.href='{{ url('restaurant/product-detail/'.encrypt($product->id)) }}'" class="btn-view">
                             <i class="bi bi-eye-fill"></i>
                         </button>
-                        <button class="btn-cart add-to-cart" data-product="{{ $product->id }}"  data-product-price="{{ $product->price }}">
+                        <button class="btn-cart add-to-cart" data-product="{{ $product->id }}" data-product-price="{{ $product->price }}">
                             <i class="bi bi-cart-check-fill"></i>
                         </button>
                         <button class="btn-wishlist add-to-wishlist" data-product="{{ $product->id }}">
@@ -404,7 +397,7 @@ use Illuminate\Support\Facades\Storage;
     @include('all_frontend_layouts.partial_index')
 </div>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(position => {
                 const latitude = position.coords.latitude;
@@ -463,7 +456,7 @@ use Illuminate\Support\Facades\Storage;
             `;
         });
     }
-    </script>
+
+</script>
 
 @endsection
-

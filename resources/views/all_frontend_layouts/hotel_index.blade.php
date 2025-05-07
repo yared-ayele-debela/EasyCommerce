@@ -89,7 +89,7 @@
         <div class="item mb-2 position-relative">
                    <a href="{{ $banner->link }}" target="_blank" class="text-decoration-none text-white">
                     {{-- @if ($banner && $banner->image && Storage::exists('public/' .$banner->image)) --}}
-                        <img src="{{ $banner->image}}" alt="{{ $banner->link }}" class="img-fluid">
+                        <img src="{{ $banner->image}}" alt="{{ $banner->link }}" style="border-radius:8px;" class="img-fluid">
                     {{-- @else
                         <img src="{{asset('no_banner.png') }}" class="img-fluid" alt="{{ $banner->link }}"> <!-- Optionally display a fallback message or image -->
                     @endif --}}
