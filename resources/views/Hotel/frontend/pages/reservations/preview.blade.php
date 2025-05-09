@@ -11,8 +11,8 @@
                     <h4 class="card-title text-primary mb-3">{{ $room->hotel->name }}</h4>
                     <div class="row">
                         <div class="col-md-4">
-                            @if($room->cover_image)
-                            <img src="{{ $room->cover_image }}" class="w-100 rounded-img" height="170" alt="{{ $room->hotel->name }}">
+                            @if($room->image)
+                            <img src="{{ $room->image }}" class="w-100 rounded-img" height="170" alt="{{ $room->hotel->name }}">
                             @endif
                         </div>
                         <div class="col-md-8">

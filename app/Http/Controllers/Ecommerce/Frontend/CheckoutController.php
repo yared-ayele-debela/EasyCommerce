@@ -21,6 +21,7 @@ use App\Models\Restaurant\OrderPaymentInfo;
 use App\Models\SalesCommission;
 use App\Models\SalesMainCommission;
 use App\Models\ShippingCharge;
+use App\Models\Vendor;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -75,7 +76,6 @@ class CheckoutController extends Controller
             $totalTax += round($product_total_price_after_discount * $tax_percent / 100, 2);
         }
         $deliveryAddresses = DeliveryAddress::where('user_id', Auth::id())->get();
-        // dd($deliveryAddresses);
 
         return view('Ecommerce.checkout.index', compact(
             'countries',
@@ -216,7 +216,7 @@ class CheckoutController extends Controller
 
         $shipping_charges = 0;
 
-        // $shipping_charges = ShippingCharge::getShippingCharges($total_weight, $deliveryAddresses['city']);
+        $shipping_charges = ShippingCharge::getShippingCharges($total_weight, $deliveryAddresses['city']);
 
         $grand_total = $total_price + $shipping_charges + $totalTax - Session::get('couponAmount');
 
@@ -349,4 +349,41 @@ class CheckoutController extends Controller
         ]);
 
     }
+
+    // app/Http/Controllers/CheckoutController.php
+    public function calculateShipping(Request $request)
+    {
+        $request->validate(['address_id' => 'required|exists:delivery_address,id']);
+        $address=DeliveryAddress::where('id',$request->address_id)->first();
+        $getCartItems = Cart::getCartItems();
+
+        $totalShipping = 0;
+
+        foreach ($getCartItems as $item) {
+            $totalWeight = 0;
+
+            $getDiscountAttributePrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
+            $product=Product::where('id',$item['product_id'])->first();
+            // dd($product);
+            $vendor_city=Vendor::where('id',$product->vendor_id)->first();
+            $city=$vendor_city->city;
+
+            // dd($vendor_city);
+            $product_quantity = $item['quantity'];
+            $product_weight = $item['product']['product_weight'];
+            $totalWeight += $product_weight;
+
+
+            // dd($product_weight);
+            $shipping = ShippingCharge::getShippingCharges($totalWeight, $city);
+            // dd($shipping);
+            $totalShipping += $shipping;
+
+        }
+
+        return response()->json(['fee' => $totalShipping]);
+    }
+
+
+
 }

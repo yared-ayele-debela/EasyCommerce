@@ -186,62 +186,53 @@ class AdminController extends Controller
 
     //for check if admin login or not
     public function loginvalidate(Request $request)
-    {
-
-        // try {
-        if (!$request->method('post')) {
-            Alert::toast('Error', 'Something is wrong!', 'error');
-            return redirect()->back();
-        }
-
-        $data = $request->all();
-        $validateData = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|min:8',
-        ]);
-
-        if (Auth::guard('admin')->attempt(['email' => $data['email'], 'password' => $data['password'], 'status' => 1])) {
-            if (Auth::guard('admin')->user()->type == "vendor" & Auth::guard('admin')->user()->confirm == "No") {
-                Alert::toast('Please confirm your email to active your Vendor Account', 'error');
-                return redirect()->back();
-            } else if (Auth::guard('admin')->user()->type != "vendor" && Auth::guard('admin')->user()->status = "0") {
-                Alert::toast('Your account is not acitve', 'error');
-                return redirect()->back();
-            } else {
-                $currentDateTime = Carbon::now();
-                $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
-
-                ActivityLogger::log('User login', "user login at {$formattedDateTime}");
-                Alert::toast('Welcome to Dashboard', 'success');
-
-                switch (Auth::guard('admin')->user()->type) {
-                    case 'Hotel Manager':
-                        return redirect('/admin/hotel/dashboard');
-                    case 'Restaurant Manager':
-                        return redirect('/admin/restaurant/dashboard');
-                    case 'Ecommerce Manager':
-                        return redirect('/admin/dashboard');
-                    case 'Super Admin':
-                        return redirect('/admin/dashboard');
-                    case 'vendor':
-                        return redirect('/admin/dashboard');
-                    default:
-                        Auth::logout();
-                        abort(403);
-                }
-            }
-        } else {
-            Alert::toast('Your email or password is incorrect', 'error');
-            return redirect()->back();
-        }
-        // } catch (\Illuminate\Validation\ValidationException $e) {
-        //     // Laravel's built-in validation exception
-        //     return redirect()->back()->withErrors($e->validator->errors())->withInput();
-        // } catch (\Exception $e) {
-        //     Alert::toast('Error', 'Something is wrong!', 'error');
-        //     return redirect()->back();
-        // }
+{
+    if (!$request->isMethod('post')) {
+        Alert::toast('Error', 'Something is wrong!', 'error');
+        return redirect()->back();
     }
+
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required|min:8',
+    ]);
+
+    if (Auth::guard('admin')->attempt([
+        'email' => $request->email,
+        'password' => $request->password,
+        'status' => 1
+    ])) {
+        $user = Auth::guard('admin')->user();
+        // dd($user);
+
+        if ($user->type === "vendor" && $user->confirm === "No") {
+            Auth::guard('admin')->logout();
+            return redirect()->back()->with('error', 'Please confirm your email to activate your Vendor account.');
+        }
+
+        if ($user->type !== "vendor" && $user->status == "0") {
+            Auth::guard('admin')->logout();
+            return redirect()->back()->with('error', 'Your account is not active.');
+        }
+
+        switch ($user->type) {
+            case 'Hotel Manager':
+                return redirect('/admin/hotel/dashboard');
+            case 'Restaurant Manager':
+                return redirect('/admin/restaurant/dashboard');
+            case 'Ecommerce Manager':
+            case 'Super Admin':
+            case 'vendor':
+                return redirect('/admin/dashboard');
+            default:
+                Auth::guard('admin')->logout();
+                abort(403);
+        }
+    } else {
+        return redirect()->back()->with('error', 'Your email or password is incorrect');
+    }
+}
+
     public function logout()
     {
         try {
@@ -252,7 +243,8 @@ class AdminController extends Controller
             ActivityLogger::log('User logout', "User logout at {$formattedDateTime}");
             Auth::guard('admin')->logout();
 
-            return view('admin.auth.login', compact('appsettings'));
+            return redirect()->route('admin_login');
+            // return view('admin.auth.login', compact('appsettings'));
         } catch (\Exception $e) {
             Alert::toast('Error', 'Something is wrong!', 'error');
             return redirect()->back();
@@ -844,7 +836,7 @@ class AdminController extends Controller
             return redirect()->back();
         }
     }
-   
+
 
 
     public function ForgetPassword()

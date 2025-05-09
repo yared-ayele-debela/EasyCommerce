@@ -53,6 +53,18 @@
                 <h4 class="font-weight-bold text-dark text-center">Admin Login</h4>
                 <p class="text-muted text-center">Enter your credentials to access your account</p>
 
+                @if(session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+                @endif
+
+                @if(session('error'))
+                    <div class="alert alert-danger">{{ session('error') }}</div>
+                @endif
+
+                @if(session('info'))
+                    <div class="alert alert-info">{{ session('info') }}</div>
+                @endif
+
                 <form method="POST" action="{{ url('admin/login') }}" class="needs-validation" novalidate>
                     @csrf
                     <div class="form-group text-left">
@@ -78,6 +90,15 @@
         </div>
     </div>
 </div>
+@if(session('error'))
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: '{{ session('error') }}'
+        });
+    </script>
+@endif
 
 <!-- Bootstrap 4 JS -->
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>

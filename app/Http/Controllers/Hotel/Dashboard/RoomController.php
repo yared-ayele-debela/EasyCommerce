@@ -64,7 +64,7 @@ class RoomController extends Controller
 
         if ($request->hasFile('cover_image')) {
             $path = $request->file('cover_image')->store('room_images', 'public');
-            $data['cover_image'] = asset('storage/' . $path); // Store full URL
+            $data['image'] = asset('storage/' . $path); // Store full URL
         }
 
         $room = Room::create($data);
@@ -73,7 +73,7 @@ class RoomController extends Controller
             foreach ($request->file('images') as $image) {
                 $path = $image->store('room_images', 'public');
                 $room->images()->create([
-                    'image_path' => asset('storage/' . $path) // Store full URL
+                    'photo_url' => asset('storage/' . $path) // Store full URL
                 ]);
             }
         }
@@ -117,13 +117,13 @@ class RoomController extends Controller
 
         $data = $request->only(['room_type', 'total_adult', 'total_child', 'total_infant', 'room_number', 'floor', 'capacity', 'price', 'is_available', 'description']);
         if ($request->hasFile('cover_image')) {
-            if ($room->cover_image) {
+            if ($room->image) {
                 // Remove full URL to get storage path
-                $oldCoverPath = str_replace(asset('storage') . '/', '', $room->cover_image);
+                $oldCoverPath = str_replace(asset('storage') . '/', '', $room->image);
                 Storage::disk('public')->delete($oldCoverPath);
             }
             $coverPath = $request->file('cover_image')->store('room_images', 'public');
-            $data['cover_image'] = asset('storage/' . $coverPath);
+            $data['image'] = asset('storage/' . $coverPath);
         }
 
         $room->update($data);
@@ -131,7 +131,7 @@ class RoomController extends Controller
         if ($request->hasFile('images')) {
             // Delete old images
             foreach ($room->images as $oldImage) {
-                $oldImagePath = str_replace(asset('storage') . '/', '', $oldImage->image_path);
+                $oldImagePath = str_replace(asset('storage') . '/', '', $oldImage->photo_url);
                 Storage::disk('public')->delete($oldImagePath);
                 $oldImage->delete();
             }
@@ -140,7 +140,7 @@ class RoomController extends Controller
             foreach ($request->file('images') as $image) {
                 $path = $image->store('room_images', 'public');
                 $room->images()->create([
-                    'image_path' => asset('storage/' . $path)
+                    'photo_url' => asset('storage/' . $path)
                 ]);
             }
         }
@@ -160,15 +160,15 @@ class RoomController extends Controller
         // Delete room images
         foreach ($room->images as $image) {
             // Convert full URL to storage path
-            $imagePath = str_replace(asset('storage') . '/', '', $image->image_path);
+            $imagePath = str_replace(asset('storage') . '/', '', $image->photo_url);
             if (Storage::disk('public')->exists($imagePath)) {
                 Storage::disk('public')->delete($imagePath);
             }
             $image->delete();
         }
         // Delete cover image if stored as a full URL
-        if ($room->cover_image) {
-            $coverImagePath = str_replace(asset('storage') . '/', '', $room->cover_image);
+        if ($room->image) {
+            $coverImagePath = str_replace(asset('storage') . '/', '', $room->image);
 
             if (Storage::disk('public')->exists($coverImagePath)) {
                 Storage::disk('public')->delete($coverImagePath);

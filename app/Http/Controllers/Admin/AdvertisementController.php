@@ -23,9 +23,7 @@ class AdvertisementController extends Controller
                 return view('admin.errors.unauthorized');
             }
             $adver = Advertisement::all();
-
             $appsettings = AppSetting::all()->toArray();
-
             return view('admin.advertisement.alladvertisement', compact('adver', 'appsettings'));
         } catch (\Exception $e) {
             Alert::toast('something is wrong!!', 'error');

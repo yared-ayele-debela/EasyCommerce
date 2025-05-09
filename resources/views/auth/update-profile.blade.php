@@ -191,6 +191,37 @@
                     </form>
                 </div>
             </div>
+            <!-- Delete Account Button -->
+            <button class="btn btn-danger shadow mt-3" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                <i class="bi bi-trash"></i> Delete My Account
+            </button>
+
+            <!-- Delete Account Modal -->
+            <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 shadow-lg">
+                        <div class="modal-header bg-danger text-white">
+                            <h5 class="modal-title" id="deleteAccountModalLabel">Confirm Account Deletion</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="mb-3">
+                                Are you sure you want to permanently delete your account? This action <strong>cannot be undone</strong>.
+                            </p>
+                            <p class="text-danger small">All your data will be erased and you will no longer be able to access your account.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <form action="{{ route('user.destroy') }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-danger">Yes, Delete My Account</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

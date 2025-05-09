@@ -77,7 +77,7 @@ class RestaurantController extends Controller
             'latitude'  => $request->latitude,
             'longitude' => $request->longitude,
             'logo'      => $logoPath,
-            'is_active' => $request->is_active
+            'is_open' => $request->is_active
         ]);
 
         // Upload and Save Multiple Images
@@ -122,7 +122,7 @@ class RestaurantController extends Controller
             'description'   => $request->description,
             'latitude'  => $request->latitude,
             'longitude' => $request->longitude,
-            'is_active' => $request->is_active
+            'is_open' => $request->is_active
         ]);
 
         // Update logo if a new one is uploaded

@@ -18,7 +18,7 @@ class Room extends Model
         'total_adult','total_child','total_infant',
         'room_number',
         'floor',
-        'cover_image',
+        'image',
         'capacity',
         'price',
         'is_available',

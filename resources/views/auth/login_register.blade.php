@@ -15,6 +15,9 @@
             @if(session('error'))
             <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
+            @if(session('info'))
+            <div class="alert alert-warning">{{ session('info') }}</div>
+            @endif
 
 
             <ul class="nav nav-pills mb-3 d-flex justify-content-center align-items-center" id="pills-tab" role="tablist">
@@ -96,9 +99,9 @@
                     <form method="POST" action="{{ url('auth/login') }}">
                         @csrf
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
-                            @error('email')
+                            <label for="mobile" class="form-label">Mobile Number</label>
+                            <input type="mobile" class="form-control" id="mobile" name="mobile" placeholder="Enter your mobile" required>
+                            @error('mobile')
                             <small class=" text-danger">{{ $message }}</small>
                             @enderror
                         </div>

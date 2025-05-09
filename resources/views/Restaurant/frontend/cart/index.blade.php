@@ -2,8 +2,8 @@
 @section('content')
 @php
 use App\Models\Restaurant\Product;
-
 @endphp
+
 <div class="container my-4">
     <div class="header">
         <button class="btn btn-link text-dark" onclick="history.back()">
@@ -11,13 +11,12 @@ use App\Models\Restaurant\Product;
         </button>
         <h5 class="my-4 text-dark text-center">My Cart</h5>
     </div>
-
     <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="pills-cart-tab" data-bs-toggle="pill" data-bs-target="#pills-cart" type="button" role="tab" aria-controls="pills-cart" aria-selected="true">Restaurant Cart</button>
+           <button class="nav-link active" id="pills-cart-tab" data-bs-toggle="pill" data-bs-target="#pills-cart" type="button" role="tab" aria-controls="pills-cart" aria-selected="true">Restaurant Cart</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="pills-ecommerce-tab" data-bs-toggle="pill" data-bs-target="#pills-ecommerce" type="button" role="tab" aria-controls="pills-ecommerce" aria-selected="false">Ecommerce Cart</button>
+           <button class="nav-link" id="pills-ecommerce-tab" data-bs-toggle="pill" data-bs-target="#pills-ecommerce" type="button" role="tab" aria-controls="pills-ecommerce" aria-selected="false">Ecommerce Cart</button>
         </li>
     </ul>
     <div class="tab-content" id="pills-tabContent">
@@ -55,8 +54,8 @@ use App\Models\Restaurant\Product;
                                         <div class="d-flex align-items-center">
                                             @php
                                                 $imagePath = $product->image
-                                                    ? str_replace(asset('storage') . '/', '', $product->image)
-                                                    : null;
+                                                ? str_replace(asset('storage') . '/', '', $product->image)
+                                                : null;
                                             @endphp
                                             @if($product->image && Storage::disk('public')->exists($imagePath))
                                                 <img src="{{ $product->image }}" class="me-3" style="width: 60px; height: 60px;">

@@ -3,7 +3,6 @@
     <div class="offer-card p-3 h-100">
         <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}" class="text-decoration-none text-dark d-block">
             @php
-            // Safely extract relative storage path from full URL or asset path
             $parsedPath = $product->image ? parse_url($product->image, PHP_URL_PATH) : null;
             $relativePath = $parsedPath ? str_replace('storage/', '', ltrim($parsedPath, '/')) : null;
         @endphp

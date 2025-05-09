@@ -19,6 +19,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'mobile',
         'email',
         'password',
         'google_id',
@@ -47,5 +48,9 @@ class User extends Authenticatable
     public function reservations()
     {
         return $this->hasMany(Reservation::class);
+    }
+    public function getAuthIdentifierName()
+    {
+        return 'mobile';
     }
 }

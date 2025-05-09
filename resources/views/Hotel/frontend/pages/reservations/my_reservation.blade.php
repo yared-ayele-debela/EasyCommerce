@@ -39,9 +39,9 @@
                                 <ul class="list-group">
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         <div class="d-flex align-items-center">
-                                            @if($reservation->room->cover_image)
+                                            @if($reservation->room->image)
                                             <a href="{{ url('hotel/room/'.$reservation->room->id.'/detail') }}">
-                                            <img src="{{$reservation->room->cover_image }}" class="img-thumbnail me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                            <img src="{{$reservation->room->image }}" class="img-thumbnail me-3" style="width: 50px; height: 50px; object-fit: cover;">
                                             </a>
                                             @endif
                                             <div>
@@ -80,6 +80,7 @@
                                     <div class="modal-body">
                                         <p>Receipt:</p>
                                         @if($reservation->hotel_reservation_payment_info->receipt)
+
                                         <img src="{{ asset('storage/'.$reservation->hotel_reservation_payment_info->receipt) }}"  class="img-fluid" alt="{{ $reservation->hotel_reservation_payment_info->bank_name }}">
                                         @else
                                         <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid" alt="{{ $reservation->hotel_reservation_payment_info->bank_name }}">

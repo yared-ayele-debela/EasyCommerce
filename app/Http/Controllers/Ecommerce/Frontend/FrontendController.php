@@ -35,20 +35,21 @@ class FrontendController extends Controller
 
         $group = Group::with('categories')->get();
         $alladvertisement = Advertisement::where('is_approved', 1)->get();
-        $new_products = Product::where('status', 1)->orderByDesc('id')->get();
+        $new_products = Product::with('attributes')->where('status', 1)->orderByDesc('id')->get();
 
         $getCategory = Category::where('parent_id', 0)->where('status', 1)->get();
-        $isfeatured = Product::withAvg('ratings', 'rating')->where('is_Featured', 'Yes')->where('status', 1)->inRandomOrder()->get();
-        $discountedproduct = Product::withAvg('ratings', 'rating')->where('product_discount', '>', 0)->where('status', 1)->inRandomOrder()->get();
+        $isfeatured = Product::with('attributes')->withAvg('ratings', 'rating')->where('is_Featured', 'Yes')->where('status', 1)->inRandomOrder()->get();
+        // dd($isfeatured);
+        $discountedproduct = Product::with('attributes')->withAvg('ratings', 'rating')->where('product_discount', '>', 0)->where('status', 1)->inRandomOrder()->get();
 
         $banners = Banner::where('type', 'Slider')->where('status', 1)->get();
         $fixbanners = Banner::where('type', 'Fix')->where('status', 1)->get();
 
-        $all_products=Product::withAvg('ratings', 'rating')->where('status', 1)->orderByDesc('id')->get();
+        $all_products=Product::with('attributes')->withAvg('ratings', 'rating')->where('status', 1)->orderByDesc('id')->get();
 
         $getVendorShop = Admin::with('vendorBusiness')->where('type', 'vendor')->get();
 
-        $new_arrival=Product::withAvg('ratings', 'rating')->where('status', 1)->latest()->limit(4)->get();
+        $new_arrival=Product::with('attributes')->withAvg('ratings', 'rating')->where('status', 1)->latest()->limit(4)->get();
         $now = \Carbon\Carbon::now('UTC');
         $featured_flash_deal = FlashDeal::where('status', 1)
             ->where('start_date', '<=', $now)
@@ -58,13 +59,13 @@ class FrontendController extends Controller
         $flash_deal_products = collect();
         if ($featured_flash_deal) {
             $flash_deal_ids = $featured_flash_deal->pluck('id');
-            $flash_deal_products = FlashDealProduct::with(['product.ratings'])
+            $flash_deal_products = FlashDealProduct::with(['product.ratings','attributes'])
                 ->whereIn('flash_deal_id', $flash_deal_ids)
                 ->inRandomOrder()
                 ->get();
         }
         $allbrands = Brand::all()->where('status', 1)->toArray();
-        $auto_scroll_products = Product::withAvg('ratings', 'rating')->where('status', 1)
+        $auto_scroll_products = Product::with('attributes')->withAvg('ratings', 'rating')->where('status', 1)
         ->latest()
         ->paginate(12);
         return view('all_frontend_layouts.ecommerce', compact('auto_scroll_products','allbrands','new_arrival','alladvertisement', 'getCategory', 'isfeatured', 'discountedproduct', 'banners', 'fixbanners', 'group', 'new_products', 'all_products', 'getVendorShop', 'allvendor', 'vendorRatingsCount', 'featured_flash_deal', 'flash_deal_products'));

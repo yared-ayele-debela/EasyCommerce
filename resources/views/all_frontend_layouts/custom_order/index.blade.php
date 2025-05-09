@@ -8,13 +8,12 @@
                     Custom Order
                 </h5>
                 <div>
-                <a href="{{ url('track-custom-order') }}" class="btn btn-outline-primary rounded rounded-1">Track Your Custom Order</a>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
             </div>
             <div class="modal-body">
                 <form name="fast_orders" id="fast_orders" method="POST">
-                    @csrf 
+                    @csrf
                 <div class="field_wrapper mb-1">
                     <div class="row mb-2">
                         <div class="col-md-3 mb-1">
@@ -52,7 +51,7 @@
                 </div>
                 <div class="form-group pt-3">
                     <input type="submit" class="btn btn-primary submitbutton btn pt-2 pb-2 shadow" value="Submit">
-                </div>  
+                </div>
                 </form>
             </div>
         </div>
@@ -64,7 +63,7 @@
     // Form submission
     $('#fast_orders').submit(function (e) {
         e.preventDefault(); // Prevent default form submission
-        
+
         $(".text-danger").text("");
         var formData = new FormData(this);
 
@@ -84,7 +83,7 @@
                     showAlert('success',"Custom order placed successfully!");
                     $('#fast_orders')[0].reset();
                     $('#customOrder').modal('hide'); // Close the modal
-                    
+
                 }
             },
             error: function (xhr, status, error) {

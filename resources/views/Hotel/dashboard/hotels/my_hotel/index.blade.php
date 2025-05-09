@@ -134,8 +134,8 @@
                                 <div class="carousel-inner">
                                     @foreach ($room->images as $index => $img)
                                     <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
-                                        @if($img->image_path || (!empty($img->image_path) && \Illuminate\Support\Facades\Storage::exists('public/'.$img->image_path)))
-                                        <img src="{{ asset('storage/' . $img->image_path) }}" class="d-block w-100" height="150" style="object-fit: cover;">
+                                        @if($img->photo_url || (!empty($img->photo_url) && \Illuminate\Support\Facades\Storage::exists('public/'.$img->photo_url)))
+                                        <img src="{{ asset('storage/' . $img->photo_url) }}" class="d-block w-100" height="150" style="object-fit: cover;">
                                         @else
                                         <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="d-block w-100">
                                         @endif

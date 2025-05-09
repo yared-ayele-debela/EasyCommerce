@@ -226,9 +226,9 @@
         <div class="item my-2">
             {{-- <div class="col-md-3 mb-4"> --}}
             <div class="offer-card h-100">
-                @if($room->cover_image)
+                @if($room->image)
                 <a href="{{ url('hotel/room/'.$room->id.'/detail') }}">
-                    <img class="card-img-top" src="{{ $room->cover_image }}" alt="{{ $room->room_type }}">
+                    <img class="card-img-top" src="{{ $room->image }}" alt="{{ $room->room_type }}">
                     @else
                     <img class="card-img-top" src="{{ asset('restaurant_frontend/default-image.png')}}" alt="{{ $room->room_type }}">
                     @endif

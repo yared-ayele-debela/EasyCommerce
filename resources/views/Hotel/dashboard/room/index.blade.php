@@ -101,8 +101,8 @@
                            </div>
                         </td>
                         <td>
-                            @if($room->cover_image)
-                            <img src="{{ $room->cover_image }}" width="50" height="50">
+                            @if($room->image)
+                            <img src="{{ $room->image }}" width="50" height="50">
                             @endif
                         </td>
                         <td>
@@ -123,7 +123,7 @@
                                         </div>
                                         <div class="modal-body">
                                             @foreach($room->images as $img)
-                                             <img src="{{ $img->image_path}}" width="50" height="50" class="mb-2">
+                                             <img src="{{ $img->photo_url}}" width="50" height="50" class="mb-2">
                                             @endforeach
                                         </div>
                                         <div class="modal-footer">
@@ -249,8 +249,8 @@
                                                         @error('cover_image')
                                                         <span class="alert alert-danger">{{ $message }}</span>
                                                         @enderror
-                                                        @if($room->cover_image)
-                                                        <img src="{{ $room->cover_image }}" width="50" height="50">
+                                                        @if($room->image)
+                                                        <img src="{{ $room->image }}" width="50" height="50">
                                                         @endif
                                                     </div>
                                                 </div>
@@ -263,7 +263,7 @@
                                                         @enderror
                                                         @if($room->images)
                                                         @foreach($room->images as $img)
-                                                        <img src="{{$img->image_path }}" width="50" height="50">
+                                                        <img src="{{$img->photo_url }}" width="50" height="50">
                                                         @endforeach
                                                         @endif
                                                     </div>

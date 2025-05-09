@@ -93,9 +93,10 @@ use App\Models\Wishlist;
                     </span>
                     <small class="text-muted">({{$ratings->count() }} Reviews)</small>
                     @if($totalStock>0)
-                    <span class="text-primary ms-3">In Stock</span>
+                    <span class="text-primary ms-3"><b>In Stock</b></span>
                     @else
-                    <span class="text-danger ms-3">Out of Stock</span>
+                    <span class="text-danger ms-3"><b>Out of Stock</b></span>
+
                     @endif
                 </div>
                 <div class="getAttributePrice mt-3">
@@ -126,7 +127,7 @@ use App\Models\Wishlist;
                 </div>
                 <!-- Size -->
                 @if($product['attributes'])
-                <div class="mb-3">
+                <div class="mb-2">
                     <label class="form-label fw-bold d-block">Select Size:</label>
                     <div id="sizeOptions" class="d-flex flex-wrap">
                         @foreach ($product['attributes'] as $index => $attribute)
@@ -136,6 +137,7 @@ use App\Models\Wishlist;
                     </div>
                 </div>
                 @endif
+                @if($totalStock>0)
                 <form id="addToCartForm">
                     <input type="hidden" id="product_id" name="product_id" value="{{ $product->id }}">
                     <input type="hidden" id="final_price_input" name="final_price" value="{{ $product->product_price }}">
@@ -151,7 +153,12 @@ use App\Models\Wishlist;
                         </button>
                     </div>
                 </form>
-
+                @else
+                <button class="btn btn-outline-primary btn-sm mb-2 notify-vendor-btn" data-product-id="{{ $product->id }}">
+                    Notify Vendor
+                </button>
+                @include('Ecommerce.products.modal.out_of_stock')
+                @endif
                 <div class="border rounded p-3 mb-2">
                     <i class="fas fa-truck me-2"></i><strong>Free Delivery</strong>
                     <p class="mb-0 small text-muted">Enter your postal code for Delivery Availability</p>
@@ -295,6 +302,12 @@ use App\Models\Wishlist;
             <div class="item mb-2 h-100">
                 <div class="offer-card position-relative shadow-sm rounded-4 overflow-hidden h-100" style="z-index: 1100;">
                     @php
+                    $hasStock = $product->attributes->sum('stock') > 0;
+                    @endphp
+                    @if(!$hasStock)
+                        <span class="bg-secondary position-absolute badge bg-danger top-0 end-0 p-2 m-2" style="z-index: 1100;">Out of Stock</span>
+                    @endif
+                    @php
                     $getDiscountPrice = App\Models\Product::getDiscountPrice($product['id']);
                     $hasDiscount = $getDiscountPrice > 0;
                     @endphp
@@ -346,6 +359,12 @@ use App\Models\Wishlist;
             <div class="item mb-2 h-100">
                 <div class="offer-card position-relative shadow-sm rounded-4 overflow-hidden h-100" style="z-index: 1100;">
                     @php
+                    $hasStock = $product->attributes->sum('stock') > 0;
+                    @endphp
+                    @if(!$hasStock)
+                        <span class="bg-secondary position-absolute badge bg-danger top-0 end-0 p-2 m-2" style="z-index: 1100;">Out of Stock</span>
+                    @endif
+                    @php
                     $getDiscountPrice = App\Models\Product::getDiscountPrice($product['id']);
                     $hasDiscount = $getDiscountPrice > 0;
                     @endphp
@@ -389,7 +408,17 @@ use App\Models\Wishlist;
         </div>
     </div>
 </div>
+<script>
+    // JavaScript to show modal with product ID
+$(document).on('click', '.notify-vendor-btn', function () {
+    const productId = $(this).data('product-id');
+    $('#notify-product-id').val(productId);
+    $('#notifyVendorModal').modal('show');
+});
 
+
+
+</script>
 <script>
     $(document).ready(function() {
         $("input[name='product_size']").on("change", function() {

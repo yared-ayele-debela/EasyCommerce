@@ -57,7 +57,7 @@
                 </div>
                 @php $total_price = 0; @endphp
 
-                <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex justify-content-between align-items-center mb-3">
                     <button type="button" class="btn btn-outline-primary fw-bold px-4 py-2" id="toggleItems">
                         <i class="bi bi-eye"></i> Show Items
                     </button>
@@ -107,8 +107,9 @@
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span><strong>Shipping</strong></span>
-                        <span class="shipping_charges"><strong>{{ App\Helper\Helper::currency_converter(0) }}</strong></span>
+                        <strong><span id="shippingFeeDisplay">0 ETB</span></strong>
                     </div>
+
                     <div class="d-flex justify-content-between mb-2">
                         <span><strong>Coupon Discount</strong></span>
                         <span>
@@ -249,6 +250,7 @@
             this.classList.add('selected');
         });
     });
+    
      $('#placeOrderForm').on('submit', function(e) {
       e.preventDefault();
     const form = this;
@@ -446,6 +448,25 @@
             });
         });
     });
+// Listen for radio selection
+$('#addressContainer').on('change', '.address-radio', function () {
+    const addressId = $(this).val();
+
+    $.ajax({
+        url: "{{ url('/ecommerce/calculate-shipping') }}",
+        method: "POST",
+        data: {
+            _token: "{{ csrf_token() }}",
+            address_id: addressId
+        },
+        success: function(response) {
+            $('#shippingFeeDisplay').text(`${response.fee} ETB`);
+        },
+        error: function() {
+            alert("Failed to calculate shipping fee.");
+        }
+    });
+});
 
 </script>
 @endsection

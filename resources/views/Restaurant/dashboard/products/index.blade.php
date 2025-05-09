@@ -50,7 +50,12 @@ $user = Auth::guard('admin')->user();
                     @foreach($products as $product)
                     <tr>
                         <td>{{ $product->name }}</td>
-                        <td>{{ $product->category->name }}</td>
+                        <td>
+                            @if($product->category)
+                            {{ $product->category->name }}
+                            @else
+                            @endif
+                        </td>
                         <td>
                             {{ $product->subcategory ? $product->subcategory->name : "" }}
                         </td>

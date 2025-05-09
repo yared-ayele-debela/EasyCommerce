@@ -20,11 +20,21 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class UserController extends Controller
 {
     //
+    public function destroy(Request $request)
+    {
+        $user = Auth::user();
+        Auth::logout();
+        $user->delete();
+
+        return redirect('/auth/login')->with('success', 'Your account has been deleted successfully.');
+    }
+
     public function loginRegister()
     {
         try {
@@ -48,7 +58,7 @@ class UserController extends Controller
             $data = $this->validate($request, [
                 'name' => 'required|string',
                 'phone' => 'required|string',
-                'emails' => 'required|',
+                'emails' => 'nullable',
                 'password' => 'required|min:8|confirmed',
             ]);
 
@@ -66,13 +76,13 @@ class UserController extends Controller
             }
             $user = new User;
             $user->name = $request->input('name');
-            $user->mobile = $request->input('mobile');
+            $user->mobile = $request->input('phone');
             $user->email = $request->input('emails');
             $user->password = bcrypt($request->input('password'));
             $user->status = 0;
             $user->save();
 
-            $this->sendOTP($request->mobile); // Send OTP here
+            $this->sendOTP($request->phone); // Send OTP here
 
             return redirect()->route('user-verify-otp', ['phone' => $request->phone]);
 
@@ -116,55 +126,55 @@ class UserController extends Controller
 
 
 
-$callback = 'https://yourdomain.com/callback'; // optional, use if needed
-$to = $phone; // recipient's phone number (e.g. '2519xxxxxxxx')
+        $callback = 'https://yourdomain.com/callback'; // optional, use if needed
+        $to = $phone; // recipient's phone number (e.g. '2519xxxxxxxx')
 
-$pre = urlencode('Your OTP code is: ');  // prefix message
-$post = ''; // optional postfix, also urlencode if used
-$sb = 1; // space before
-$sa = 1; // space after
-$ttl = 300; // validity in seconds
-$len = 6; // code length
-$t = 0; // code type: 0 = number, 1 = alphanumeric
+        $pre = urlencode('Your OTP code is: ');  // prefix message
+        $post = ''; // optional postfix, also urlencode if used
+        $sb = 1; // space before
+        $sa = 1; // space after
+        $ttl = 300; // validity in seconds
+        $len = 6; // code length
+        $t = 0; // code type: 0 = number, 1 = alphanumeric
 
-// Step 3: Set request URL with parameters
-$requestUrl = $url . '?from=' . $from . '&sender=' . $sender . '&to=' . $to .
-    '&pr=' . $pre . '&ps=' . $post . '&sb=' . $sb . '&sa=' . $sa . '&ttl=' . $ttl .
-    '&len=' . $len . '&t=' . $t . '&callback=' . urlencode($callback);
+        // Step 3: Set request URL with parameters
+        $requestUrl = $url . '?from=' . $from . '&sender=' . $sender . '&to=' . $to .
+            '&pr=' . $pre . '&ps=' . $post . '&sb=' . $sb . '&sa=' . $sa . '&ttl=' . $ttl .
+            '&len=' . $len . '&t=' . $t . '&callback=' . urlencode($callback);
 
-curl_setopt($ch, CURLOPT_URL, $requestUrl);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+        curl_setopt($ch, CURLOPT_URL, $requestUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
-// Step 4: Add Authorization Header
-$headers = ['Authorization: Bearer ' . $token];
-curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        // Step 4: Add Authorization Header
+        $headers = ['Authorization: Bearer ' . $token];
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-// Step 5: Execute the request
-$response = curl_exec($ch);
+        // Step 5: Execute the request
+        $response = curl_exec($ch);
 
-// Step 6: Handle Errors
-if (curl_errno($ch)) {
-    // dd('cURL Error: ' . curl_error($ch));
-} else {
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    switch ($http_code) {
-        case 200:
-            $data = json_decode($response, true);
-            if (isset($data['acknowledge']) && $data['acknowledge'] === 'success') {
-                dd("✅ OTP Sent Successfully!");
-            } else {
-                // dd("❌ API failure: ");
-                dd($data);
+        // Step 6: Handle Errors
+        if (curl_errno($ch)) {
+            // dd('cURL Error: ' . curl_error($ch));
+        } else {
+            $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            switch ($http_code) {
+                case 200:
+                    $data = json_decode($response, true);
+                    if (isset($data['acknowledge']) && $data['acknowledge'] === 'success') {
+                        // dd("✅ OTP Sent Successfully!");
+                    } else {
+                        // dd("❌ API failure: ");
+                        // dd($data);
+                    }
+                    break;
+                default:
+                    dd("Response: " . $response);
             }
-            break;
-        default:
-            dd("Response: " . $response);
-    }
-}
+        }
 
-// Step 7: Close cURL
-curl_close($ch);
+        // Step 7: Close cURL
+        curl_close($ch);
     }
 
     public function verifyOTP(Request $request)
@@ -211,47 +221,59 @@ curl_close($ch);
     }
 
     public function userLogin(Request $request)
-    {
-        try {
-            if (!$request->method('post')) {
-                Alert::toast('something is wrong!!', 'error');
-                return redirect()->back();
-            }
-            $data = $request->all();
-
-            $validator = Validator::make($data, [
-                'email' => 'required|email|max:150|exists:users',
-                'passwords' => 'required|min:6', // Minimum password length is 6 characters (you can adjust this as needed)
-            ]);
-
-            if ($validator->fails()) {
-                return redirect()->back()->withErrors($validator)->withInput();
-            } else {
-                if (Auth::attempt(['email' => $data['email'], 'password' => $data['passwords']])) {
-                    $id = Auth::user()->id;
-                    $user = User::where('id', $id)->first();
-                    if ($user->status == 0) {
-                        Auth::logout();
-                        return redirect()->back()->with('info', 'Your account is not activated. Please confirm your account to activate it.');
-                    }
-                    if (!empty(Session::get('session_id'))) {
-                        $user_id = Auth::user()->id;
-                        $session_id = Session::get('session_id');
-                        Cart::where('session_id', $session_id)->update(['user_id' => $user_id]);
-                    }
-                    return redirect('my-cart')->with('success', 'Welcome to our website!');
-                } else {
-                    return redirect()->back()->with('error', 'Incorrect username or password');
-                }
-            }
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Laravel's built-in validation exception
-            return redirect()->back()->withErrors($e->validator->errors())->withInput();
-        } catch (\Exception $e) {
-            Alert::toast('something is wrong!!', 'error');
-            return redirect()->back();
-        }
+{
+    // Ensure the request is POST
+    if (!$request->isMethod('post')) {
+        Alert::toast('Something went wrong!', 'error');
+        return redirect()->back();
     }
+
+    // Validate request
+    $validator = Validator::make($request->all(), [
+        'mobile' => [
+            'required',
+            'string',
+            'max:15',
+            Rule::exists('users', 'mobile')
+        ],
+        'passwords' => 'required|string|min:6',
+    ]);
+
+    // If validation fails
+    if ($validator->fails()) {
+        return redirect()->back()
+            ->withErrors($validator)
+            ->withInput();
+    }
+
+    $credentials = [
+        'mobile' => $request->input('mobile'),
+        'password' => $request->input('passwords')
+    ];
+
+    // Attempt login
+    if (Auth::attempt($credentials)) {
+        $user = Auth::user();
+
+        // Check if user is active
+        if ($user->status == 0) {
+            Auth::logout();
+            return redirect()->back()
+                ->with('info', 'Your account is not activated. Please confirm your account.');
+        }
+
+        // Update cart if session exists
+        $sessionId = Session::get('session_id');
+        if (!empty($sessionId)) {
+            Cart::where('session_id', $sessionId)
+                ->update(['user_id' => $user->id]);
+        }
+
+        return redirect('my-cart')->with('success', 'Welcome to our website!');
+    }
+
+    return redirect()->back()->with('error', 'Incorrect mobile number or password');
+}
 
 
     public function confirmAccount($code)

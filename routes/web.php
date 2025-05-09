@@ -94,6 +94,7 @@ use App\Http\Controllers\Delivery\StockTransferProductController;
 use App\Http\Controllers\FastOrdersController;
 use App\Http\Controllers\Socail\AuthController;
 use App\Http\Controllers\Admin\VendorController;
+use App\Http\Controllers\Admin\VendorNotificationController;
 use App\Http\Controllers\Admin\VendorWithdrawRequestController;
 use App\Http\Controllers\Admin\WithdrawSettingController;
 use App\Http\Controllers\Ecommerce\Frontend\BlogController;
@@ -106,6 +107,7 @@ use App\Http\Controllers\Ecommerce\Frontend\DeliveryAddressController;
 use App\Http\Controllers\Ecommerce\Frontend\FrontendController as EcommerceFrontendFrontendController;
 use App\Http\Controllers\Ecommerce\Frontend\NewslettersController;
 use App\Http\Controllers\Ecommerce\Frontend\OrderController as EcommerceFrontendOrderController;
+use App\Http\Controllers\Ecommerce\Frontend\ProductRequestController;
 use App\Http\Controllers\Ecommerce\Frontend\ProductsController;
 use App\Http\Controllers\Ecommerce\Frontend\RatingController as EcommerceFrontendRatingController;
 use App\Http\Controllers\Ecommerce\Frontend\VendorController as FrontendVendorController;
@@ -140,6 +142,7 @@ use App\Http\Controllers\Hotel\Frontend\FrontendController as FrontendFrontendCo
 use App\Http\Controllers\Hotel\Frontend\HotelController as FrontendHotelController;
 use App\Http\Controllers\Hotel\Frontend\ReservationController;
 use App\Http\Controllers\Hotel\Frontend\RoomController as FrontendRoomController;
+use App\Http\Controllers\Restaurant\Dashboard\AssignOrderController;
 use App\Http\Controllers\SalesUserAuth\DashboardController as SalesUserAuthDashboardController;
 use App\Http\Controllers\SalesUserAuth\ForgotPasswordController;
 use App\Http\Controllers\SalesUserAuth\LoginController as SalesUserAuthLoginController;
@@ -277,7 +280,11 @@ Route::prefix('admin')->group(function () {
 
 });
 
-    Route::group(['middleware' => ['admin','check.admin:Ecommerce Manager']], function () {
+Route::group(['middleware' => ['admin']], function () {
+Route::get('adminlogout', [AdminController::class, 'logout'])->name('adminlogout');
+
+});
+Route::group(['middleware' => ['admin', 'check.admin:Ecommerce Manager,vendor']], function () {
 
         Route::post('sales-report', [DashboardController::class, 'filterOrders'])->name('sales-report');
 
@@ -436,6 +443,8 @@ Route::prefix('admin')->group(function () {
         Route::get('delivery_man/type/active/{id}', [DeliveryManTypeController::class, 'active'])->name('active-delivery_man_type');
         Route::get('delivery_man/type/inactive/{id}', [DeliveryManTypeController::class, 'inactive'])->name('inactive-delivery_man_type');
 
+
+
         //for delivery man type
         Route::get('delivery_zone', [DeliveryZoneController::class, 'index'])->name('delivery_zone');
         Route::get('delivery_zone/add', [DeliveryZoneController::class, 'create'])->name('add-delivery_zone');
@@ -549,7 +558,6 @@ Route::prefix('admin')->group(function () {
         Route::post('delivery-boy/{user}/update-role', [DeliveryBoyRolesController::class, 'updateRole'])->name('delivery_boy.update_role');
 
         Route::get('dashboard', [DashboardController::class, 'index'])->name('maindashboard');
-        Route::get('adminlogout', [AdminController::class, 'logout'])->name('adminlogout');
 
         //for update vendor
         Route::get('updatevendordetails', [AdminController::class, 'updatevendordetails'])->name('updatevendordetails');
@@ -770,6 +778,10 @@ Route::prefix('admin')->group(function () {
         Route::get('faq/inactive/{id}', [FaqController::class, 'inactive'])->name('inactive_faq');
         Route::get('faq/active/{id}', [FaqController::class, 'active'])->name('active_faq');
 
+        Route::get('vendor-notification',[VendorNotificationController::class,'index'])->name('vendor-notification');
+        Route::patch('vendor/notifications/{id}/read', [VendorNotificationController::class, 'markAsRead'])
+    ->name('vendor.notifications.markAsRead');
+
         Route::get('cms-pages', [CmsController::class, 'cmspages']);
         Route::get('cms/active/{cms_id}', [CmsController::class, 'active'])->name('active_cms');
         Route::get('cms/inactive/{cms_id}', [CmsController::class, 'inactive'])->name('inactive_cms');
@@ -923,20 +935,18 @@ Route::group(['middleware' => 'deliverymen'], function () {
     });
 });
 
-
-
 // // for frontend user
 
 Route::get('shop', [FontendController::class, 'shop'])->name('shop');
 
 $catUrls = Category::select('url')->where('status', 1)->get()->pluck('url')->toArray();
-// dd($catUrls);
+
 foreach ($catUrls as $key => $url) {
     Route::match(['get', 'post'], '/' . $url, [FrontProductController::class, 'listing']);
 }
 
 Route::get('page/{url}', [FrontCmsController::class, 'pages'])->name('pages');
-//Product Details page
+
 Route::get('/product/{id}', [FrontProductController::class, 'detail'])->name('product_detail');
 Route::get('category/{id}', [FontendController::class, 'category']);
 
@@ -950,7 +960,7 @@ Route::get('/vendor/login-register', [VendorRegistrationController::class, 'logi
 Route::post('/vendor/register', [VendorRegistrationController::class, 'Register'])->name('vendor_register');
 Route::get('/vendor/confirm/{code}', [VendorRegistrationController::class, 'confirmVendor'])->name('confirm_vendor');
 Route::get('/login_register/vendor', [ControllersVendorController::class, 'index'])->name('vlogin_register');
-//Add to Cart Route
+
 Route::post('cart/add', [FrontProductController::class, 'cartAdd']);
 Route::get('cart', [FrontProductController::class, 'cart'])->name('cart');
 Route::post('cart/update', [FrontProductController::class, 'cartUpdate'])->name('update-cart');
@@ -1107,6 +1117,7 @@ Route::prefix('admin/restaurant')->group(function () {
 
         Route::get('/orders', [DashboardOrderController::class, 'index'])->name('restaurant.orders.index');
         Route::get('/orders/{id}', [DashboardOrderController::class, 'show'])->name('restaurant.orders.show');
+        Route::post('/assignToDeliveryMan/{order_id}', [AssignOrderController::class, 'assignToDeliveryMan'])->name('restaurant.assignToDeliveryMan');
         Route::post('/orders/{id}/update', [DashboardOrderController::class, 'updateStatus'])->name('restaurant.orders.updateStatus');
     });
 });
@@ -1160,11 +1171,16 @@ Route::prefix('auth')->group(function () {
     Route::post('/verify-otp', [UserController::class, 'verifyOTP'])->name('user-verify-otp');
 
 
+
 });
 
 // User Account Routes (Requires Authentication)
 Route::middleware('auth')->group(function () {
     Route::put('account', [UserController::class, 'userAccount'])->name('account.update');
+
+    Route::post('/products/{product}/request-stock', [ProductRequestController::class, 'store'])->name('product.request-stock');
+
+    Route::delete('/user/delete', [UserController::class, 'destroy'])->name('user.destroy');
 });
 
 // Pages
@@ -1336,6 +1352,9 @@ Route::prefix('/ecommerce')->group(function () {
     Route::post('/checkout', [FrontendCheckoutController::class, 'placeOrder'])->name('ecommerce.checkout.placeOrder');
 
     Route::post('/rate-ecommerce-product', [EcommerceFrontendRatingController::class, 'product_rating_store'])->name('ecommerce.product.rate');
+
+        // routes/web.php
+    Route::post('/calculate-shipping', [FrontendCheckoutController::class, 'calculateShipping']);
 
 });
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Restaurant\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Mail\Restaurant\OrderStatusUpdateMail;
+use App\Models\DeliveryMan;
 use App\Models\Restaurant\Order;
 use App\Models\Restaurant\Restaurant;
 use Illuminate\Http\Request;
@@ -34,11 +35,15 @@ class OrderController extends Controller
     // Show order details and allow status update
     public function show($id)
     {
+        $delivery_mans=DeliveryMan::where('status','available')->get();
         // Fetch the order with related order items and products
         $order = Order::with('orderItems.product','address')->findOrFail($id);
         // dd($order);
+        $delivery_man="";
+        $delivery_man=DeliveryMan::where('id',$order->delivery_man_id)->first();
+        
 
-        return view('Restaurant.dashboard.orders.show', compact('order'));
+        return view('Restaurant.dashboard.orders.show', compact('order','delivery_mans','delivery_man'));
     }
 
     // Update order status and delivery status

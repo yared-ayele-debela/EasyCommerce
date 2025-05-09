@@ -9,6 +9,7 @@ use App\Models\FlashDealProduct;
 use App\Models\Product;
 use App\Models\ProductAttribute;
 use App\Models\Rating;
+use App\Notifications\ProductInterestNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
@@ -20,6 +21,7 @@ class ProductsController extends Controller
     {
         $id = decrypt($Id);
         $product = Product::with([
+
             'group',
             'category',
             'brand',
@@ -38,7 +40,7 @@ class ProductsController extends Controller
         $totalStock = ProductAttribute::where('product_id', $productId)->sum('stock');
 
         // Similar products (same category, different product)
-        $similarProducts = Product::withAvg('ratings', 'rating')->with('brand')
+        $similarProducts = Product::with('attributes')->withAvg('ratings', 'rating')->with('brand')
             ->where('category_id', $product->category->id)
             ->where('id', '!=', $productId)
             ->inRandomOrder()
@@ -64,6 +66,7 @@ class ProductsController extends Controller
             ->pluck('product_id');
 
         $recentlyViewedProducts = Product::with('brand')
+            ->with('attributes')
             ->withAvg('ratings', 'rating')
             ->whereIn('id', $recentProductIds)
             ->get();
@@ -71,7 +74,7 @@ class ProductsController extends Controller
         // Group products by color (e.g., color variations)
         $groupProducts = [];
         if (!empty($product->product_color)) {
-            $groupProducts = Product::select('id', 'product_image')
+            $groupProducts = Product::with('attributes')->select('id', 'product_image')
                 ->where('product_color', $product->product_color)
                 ->where('id', '!=', $productId)
                 ->where('status', 1)
@@ -105,14 +108,14 @@ class ProductsController extends Controller
     }
     public function latest()
     {
-        $products = Product::withAvg('ratings', 'rating')->where('status', 1)->latest()->get();
+        $products = Product::with('attributes')->withAvg('ratings', 'rating')->where('status', 1)->latest()->get();
         $name = "Latest Produts";
         return view('Ecommerce.products.index', compact('products', 'name'));
     }
 
     public function all(Request $request)
     {
-        $auto_scroll_products = Product::withAvg('ratings', 'rating')->where('status', 1)
+        $auto_scroll_products = Product::with('attributes')->withAvg('ratings', 'rating')->where('status', 1)
             ->latest()
             ->paginate(12);
 
@@ -126,7 +129,7 @@ class ProductsController extends Controller
 
     public function featured()
     {
-        $products = Product::withAvg('ratings', 'rating')->where('is_Featured', 'Yes')->where('status', 1)->inRandomOrder()->get();
+        $products = Product::with('attributes')->withAvg('ratings', 'rating')->where('is_Featured', 'Yes')->where('status', 1)->inRandomOrder()->get();
         $name = "Featured Produts";
 
         return view('Ecommerce.products.index', compact('products', 'name'));
@@ -134,7 +137,7 @@ class ProductsController extends Controller
 
     public function discounted()
     {
-        $products = Product::withAvg('ratings', 'rating')->where('product_discount', '>', 0)->where('status', 1)->inRandomOrder()->get();
+        $products = Product::with('attributes')->withAvg('ratings', 'rating')->where('product_discount', '>', 0)->where('status', 1)->inRandomOrder()->get();
         $name = "Discounted Produts";
 
         return view('Ecommerce.products.index', compact('products', 'name'));
@@ -150,7 +153,7 @@ class ProductsController extends Controller
         $flash_deal_products = collect();
         if ($featured_flash_deal) {
             $flash_deal_ids = $featured_flash_deal->pluck('id');
-            $flash_deal_products = FlashDealProduct::with('product')->withAvg('ratings', 'rating')
+            $flash_deal_products = FlashDealProduct::with('product')->with('attributes')->withAvg('ratings', 'rating')
                 ->whereIn('flash_deal_id', $flash_deal_ids)
                 ->inRandomOrder()
                 ->get();
@@ -158,4 +161,6 @@ class ProductsController extends Controller
         $name = "Flash Deal Products";
         return view('Ecommerce.products.flash_sales', compact('flash_deal_products', 'name','featured_flash_deal'));
     }
+
+    
 }

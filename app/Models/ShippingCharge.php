@@ -12,31 +12,25 @@ class ShippingCharge extends Model
 
     use HasFactory;
 
-    public static function getShippingCharges($total_weight,$country){
+    // app/Models/ShippingCharge.php
+    public static function getShippingCharges($totalWeight, $city)
+    {
+        $shipping = self::where('city', $city)->first();
 
-       $shippingDetails=ShippingCharge::where('city',$country)->first();
-    //    dd($shippingDetails);
-        if($total_weight>0){
-            if($total_weight>0 && $total_weight<=500){
-                $rate=$shippingDetails['0_500g'];
-            }else if($total_weight>500 && $total_weight<=1000){
-                $rate=$shippingDetails['501_1000g'];
-            }else if($total_weight>1000 && $total_weight<=2000){
-                $rate=$shippingDetails['1001_2000g'];
-            }else if($total_weight>2000 && $total_weight<=5000){
-                $rate=$shippingDetails['2001_5000g'];
-            }else if($total_weight>5000){
-                $rate=$shippingDetails['above_5000g'];
-            }else{
-                $rate=0;
-            }
-        }else{
-            $rate=0;
+        if (!$shipping || $totalWeight <= 0) {
+            return 0;
         }
 
-    return $rate;
-
+        return match (true) {
+            $totalWeight <= 500 => $shipping->{"0_500g"},
+            $totalWeight <= 1000 => $shipping->{"501_1000g"},
+            $totalWeight <= 2000 => $shipping->{"1001_2000g"},
+            $totalWeight <= 5000 => $shipping->{"2001_5000g"},
+            $totalWeight > 5000 => $shipping->{"above_5000g"},
+            default => 0,
+        };
     }
+
 
 
 }

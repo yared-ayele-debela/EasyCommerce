@@ -13,6 +13,12 @@
         <div class="col-md-2 col-6 mb-2 h-100">
             <div class="offer-card position-relative shadow-sm rounded-4 overflow-hidden h-100" style="z-index: 1100;">
                 @php
+                $hasStock = $product->attributes->sum('stock') > 0;
+                @endphp
+                @if(!$hasStock)
+                    <span class="bg-secondary position-absolute badge bg-danger top-0 end-0 p-2 m-2" style="z-index: 1100;">Out of Stock</span>
+                @endif
+                @php
                 $getDiscountPrice = App\Models\Product::getDiscountPrice($product['id']);
                 $hasDiscount = $getDiscountPrice > 0;
                 @endphp
@@ -32,7 +38,6 @@
                         </a>
                     </h6>
                     @if($product['is_offer_price'] === "yes")
-                    <span class="text-primary fw-bold">Offer Price</span>
                     @else
                     <h5 class="text-primary fw-bold mb-1">
                         {{ App\Helper\Helper::currency_converter($hasDiscount ? $getDiscountPrice : $product['product_price']) }}

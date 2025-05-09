@@ -9,7 +9,6 @@ $user = Auth::guard('admin')->user();
             <i class="bi bi-arrow-left mr-2"></i> &nbsp;
             <span>Back</span>
         </button>
-
         <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item">
                 <a href="{{ route('restaurant.dashboard') }}">Home</a>
@@ -17,9 +16,7 @@ $user = Auth::guard('admin')->user();
             <li class="breadcrumb-item active" aria-current="page">Order detail</li>
         </ol>
     </nav>
-
     <h4>Order #{{ $order->id }} Details</h4>
-
     <div class="row">
         <!-- User Info Card -->
         <div class="col-md-4">
@@ -41,7 +38,6 @@ $user = Auth::guard('admin')->user();
                 </div>
             </div>
         </div>
-
         <!-- Order Items Card -->
         <div class="col-md-4">
             <div class="card">
@@ -55,10 +51,8 @@ $user = Auth::guard('admin')->user();
                             <div class="card-body">
                                 <img src="{{ $item->product->image }}" width="50">
                                 <strong>{{ $item->product->name }}</strong> ({{ $item->quantity }} x {{ $item->product->price }} ETB)
-
                             </div>
                         </div>
-
                         @endforeach
                     </ul>
                 </div>
@@ -80,8 +74,14 @@ $user = Auth::guard('admin')->user();
                 </div>
             </div>
         </div>
-
         <!-- Order Status and Update Form Card -->
+        <div class="col-md-12">
+            @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+            @endif
+        </div>
         <div class="col-md-4">
             <div class="card">
                 <div class="card-header">
@@ -92,13 +92,7 @@ $user = Auth::guard('admin')->user();
                     <p><strong>Current Delivery Status:</strong>  <button class="btn btn-sm btn-outline-primary">{{ $order->delivery_status }}</button></p>
                     <!-- Status Update Form -->
                     <h6>UPDATE STATUS</h6>
-                    @if(session('success'))
-                    <div class="alert alert-success">
-                        {{ session('success') }}
-                    </div>
-                    @endif
-
-                    <hr>
+                   
                     <form action="{{ route('restaurant.orders.updateStatus', $order->id) }}" method="POST">
                         @csrf
                         <div class="mb-3">
@@ -123,7 +117,37 @@ $user = Auth::guard('admin')->user();
                 </div>
             </div>
         </div>
-
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Assign Order to Delivery man</h5>
+                </div>
+                <div class="card-body mt-2">
+                    @if(empty($order->delivery_man_id))
+                    <form action="{{ route('restaurant.assignToDeliveryMan', $order->id) }}" method="POST">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="delivery_man_id" class="form-label">Delivery Man</label>
+                            <select name="delivery_man_id" id="delivery_man_id" class="form-select">
+                                @foreach ($delivery_mans as $man)
+                                <option value="{{ $man->id }}">{{ $man->first_name }} {{ $man->last_name }} | {{ $man->phone }}</option>                  
+                                @endforeach        
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success">Assign To Delivery Man</button>
+                    </form>
+                    @else
+                    <div class="alert alert-warning" role="alert">
+                        <strong>Order already assigned to {{ $delivery_man->first_name }}</strong>
+                    </div>
+                     <p class="text-dark card-text"><img src="{{ $delivery_man->delivery_man_image }}" style="width: 50px; height:50px" alt=""></p>
+                     <h5>Name: {{ $delivery_man->first_name }} {{ $delivery_man->last_name }}</h5>
+                     <p class="text-dark card-text">Mobile Number: {{ $delivery_man->phone }}</p>
+                     <p class="text-dark card-text">Email: {{ $delivery_man->email }}</p>
+                    @endif
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection

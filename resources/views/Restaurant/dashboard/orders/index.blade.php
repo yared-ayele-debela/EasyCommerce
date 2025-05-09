@@ -10,7 +10,6 @@ $user = Auth::guard('admin')->user();
             <i class="bi bi-arrow-left mr-2"></i> &nbsp;
             <span>Back</span>
         </button>
-
         <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item">
                 <a href="{{ route('restaurant.dashboard') }}">Home</a>
@@ -84,7 +83,6 @@ $user = Auth::guard('admin')->user();
                                                 @else
                                                 <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid" alt="{{ $order->paymentInfo->bank_name }}">
                                                 @endif
-                                                {{-- <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid" alt="{{ $order->paymentInfo->bank_name }}"> --}}
                                                 <p class="card-text"><strong>Bank Name :</strong> {{ $order->paymentInfo->bank_name }}</p>
                                                 <p class="card-text"><strong>Transaction Number :</strong> <strong>{{ $order->paymentInfo->transaction_number }}</strong></p>
                                                 <p class="card-text"><strong>Amount Paid :</strong> {{ $order->paymentInfo->amount_paid }} ETB</p>

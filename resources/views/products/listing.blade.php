@@ -3,114 +3,84 @@
 $productFilters=ProductFilter::productFilters();
 
 ?>
-@extends('fontend.layout.layout')
+{{-- @extends('fontend.layout.layout')
+@section('content') --}}
+@extends('all_frontend_layouts.layouts')
 @section('content')
-<style>
-    .list-images {
-    position: relative;
-    width: 100%;
-    min-height: 1px;
-    padding-right: 10px;
-    padding-left: 10px;
-  }
-  .filters-category{
-    position: relative;
-    width: 100%;
-    min-height: 1px;
-    padding-right: 15px;
-    padding-left: 15px;
-  }
-</style>
-<div class="page-shop u-s-p-t-80">
+<div class="page-shop my-4" style="padding-bottom: 6rem important;">
     <div class="container">
         <div class="row">
-            <!-- Shop-Left-Side-Bar-Wrapper -->
-             @include('products.filters')
-            <!-- Shop-Left-Side-Bar-Wrapper /- -->
-            <!-- Shop-Right-Wrapper -->
-            <div class="col-lg-9 col-md-9 col-sm-12 filters-category">
-                <!-- Page-Bar -->
-                <div class="page-bar clearfix">
-                    <div class="shop-settings">
-                        <a id="list-anchor" >
-                            <i class="fas fa-th-list"></i>
-                        </a>
-                        <a id="grid-anchor" class="active">
-                            <i class="fas fa-th"></i>
-                        </a>
-                    </div>
-                    <!-- Toolbar Sorter 1  -->
-                    @if(!isset($_REQUEST['search']))
+            @include('products.filters')
+            <div class="col-lg-9 col-md-8 col-sm-12">
+                <div class="d-flex offer-card p-2 flex-wrap justify-content-between align-items-center mb-4">
 
-                    <form name="sortProducts" id="sortProducts" action="">
+                    @if (!isset($_REQUEST['search']))
+                    <form id="sortProducts" name="sortProducts" method="GET" class="d-flex align-items-center gap-3">
                         <input type="hidden" name="url" id="url" value="{{ $url }}">
-                    <div class="toolbar-sorter">
-                        <div class="select-box-wrapper">
-                            <label class="sr-only" for="sort-by">Sort By</label>
-                            <select class="select-box" name="sort" id="sortproo" class="relevant_sort">
-                                <option  selected="" value=""> Sort By </option>
-                                <option value="product_latest" @if(isset($_GET['sort'])&& $_GET['sort']=="product_latest") selected=""
-                                @endif>Sort By: Latest</option>
-                                <option value="price_lowest" @if(isset($_GET['sort'])&& $_GET['sort']=="price_lowest") selected=""
-                                @endif>Sort By: Lowest Price</option>
-                                <option value="price_heighst" @if(isset($_GET['sort'])&& $_GET['sort']=="price_heighst") selected=""
-                                @endif>Sort By: Highest Price </option>
-                                <option value="sort_a_z" @if(isset($_GET['sort'])&& $_GET['sort']=="sort_a_z") selected=""
-                                @endif>Sort By:Name A-Z</option>
-                                <option value="sort_z_a" @if(isset($_GET['sort'])&& $_GET['sort']=="sort_z_a") selected=""
-                                @endif>Sort By: Name Z-A </option>
+                        <div class="form-group mb-0">
+                            <label for="sortproo" class="form-label visually-hidden">Sort By</label>
+                            <select name="sort" id="sortproo" class="form-select form-select-sm">
+                                <option value="">Sort By</option>
+                                <option value="product_latest" {{ request('sort') == 'product_latest' ? 'selected' : '' }}>Latest</option>
+                                <option value="price_lowest" {{ request('sort') == 'price_lowest' ? 'selected' : '' }}>Lowest Price</option>
+                                <option value="price_heighst" {{ request('sort') == 'price_heighst' ? 'selected' : '' }}>Highest Price</option>
+                                <option value="sort_a_z" {{ request('sort') == 'sort_a_z' ? 'selected' : '' }}>Name A-Z</option>
+                                <option value="sort_z_a" {{ request('sort') == 'sort_z_a' ? 'selected' : '' }}>Name Z-A</option>
                             </select>
                         </div>
-                    </div>
                     </form>
                     @endif
-
-                    <!-- //end Toolbar Sorter 1  -->
-                    <!-- Toolbar Sorter 2  -->
-                    <div class="toolbar-sorter-2">
-                        <div class="select-box-wrapper">
-                            <label class="sr-only" for="show-records">Show Records Per Page</label>
-                            <select class="select-box" id="show-records">
-                                <option selected="selected" value="">Show: {{ count($categoryProducts) }}</option>
-                                <option value="">Showing All</option>
-                            </select>
-                        </div>
+                    <div class="form-group mb-0">
+                        <label for="show-records" class="visually-hidden">Show Records</label>
+                        <select id="show-records" class="form-select form-select-sm">
+                            <option selected>Show: {{ count($categoryProducts) }}</option>
+                            <option value="">Showing All</option>
+                        </select>
                     </div>
-                    <!-- //end Toolbar Sorter 2  -->
                 </div>
-                <!-- Page-Bar /- -->
-                <!-- Row-of-Product-Container -->
-                <div class="row product-container list-style filter_products"  id="filter_products">
+                <div class="row product-container list-style filter_products" id="filter_products">
                     @include('products.ajax_products_listing')
-
                 </div>
-
-                @if(!isset($_REQUEST['search']))
-
-                @if(isset($_GET['sort']))
-                <div>{{ $categoryProducts->appends(['sort'=>$_GET['sort']])->links() }}</div>
-                @else
-                <div>{{ $categoryProducts->links() }}</div>
+                @if (!isset($_REQUEST['search']))
+                    <div class="mt-4">
+                        @if (request()->has('sort'))
+                            {{ $categoryProducts->appends(['sort' => request('sort')])->links() }}
+                        @else
+                            {{ $categoryProducts->links() }}
+                        @endif
+                    </div>
                 @endif
+
+                <!-- Category Description -->
+                @if (!empty($categoryDetails['categoryDetails']['description']))
+                <div class="mt-4">
+                    {!! $categoryDetails['categoryDetails']['description'] !!}
+                </div>
                 @endif
-                <div>&nbsp;</div>
-                <div>{{$categoryDetails['categoryDetails']['description']  }}</div>
-                <!-- Row-of-Product-Container /- -->
             </div>
-            <!-- Shop-Right-Wrapper /- -->
+            <!-- Shop Right Wrapper /- -->
         </div>
     </div>
 </div>
-@endsection
-@section('script')
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const toggleBtn = document.getElementById('toggleFilterBtn');
+        const toggleIcon = document.querySelector("#toggleFilterBtn i");
 
+        const filterSidebar = document.getElementById('filterSidebar');
+
+        toggleBtn.addEventListener('click', function () {
+            filterSidebar.classList.toggle('d-none');
+            toggleIcon.classList.toggle("bi-toggle-on");
+            toggleIcon.classList.toggle("bi-toggle-off");
+        });
+    });
+</script>
+<script>
  $(document).ready(function(){
     //sort by brand
     $(".brand").on("change", function() {
-             // $(".myDiv").load(".myDiv")
-             //  this.form.submit();
-             // alert("hello");
+
             var price=get_filter('price');
             var brand=get_filter('brand');
             var color=get_filter('color');
@@ -143,9 +113,7 @@ $productFilters=ProductFilter::productFilters();
         });
     //sort by price
      $(".price").on("change", function() {
-             // $(".myDiv").load(".myDiv")
-             //  this.form.submit();
-             // alert("hello");
+
             var brand=get_filter('brand');
             var price=get_filter('price');
             var color=get_filter('color');

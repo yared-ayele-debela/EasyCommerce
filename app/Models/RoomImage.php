@@ -9,8 +9,8 @@ class RoomImage extends Model
 {
     use HasFactory;
 
-    protected $table = 'rooms_images';
-    protected $fillable = ['room_id', 'image_path'];
+    protected $table = 'room_photos';
+    protected $fillable = ['room_id', 'photo_url','caption'];
 
     public function room()
     {

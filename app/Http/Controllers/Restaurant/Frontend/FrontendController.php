@@ -26,9 +26,9 @@ class FrontendController extends Controller
         $most_popular_products=Product::where('most_populer',1)->latest()->get();
         $best_seller_products=Product::where('best_seller',1)->latest()->get();
         $latest_products=Product::latest()->get();
-        $restaurants= Restaurant::where('is_active',1)->get();
+        $restaurants= Restaurant::where('is_open',1)->get();
 
-        $auto_restaurants=Restaurant::where('is_active',1)->latest()->paginate(4);
+        $auto_restaurants=Restaurant::where('is_open',1)->latest()->paginate(4);
 
         $auto_scroll_products = Product::where('is_active', 1)
             ->latest()

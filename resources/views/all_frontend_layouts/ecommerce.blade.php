@@ -363,6 +363,12 @@
             <div class="item mb-2 h-100">
                 <div class="offer-card position-relative shadow-sm rounded-4 overflow-hidden h-100">
                     @php
+                    $hasStock = $product->attributes->sum('stock') > 0;
+                    @endphp
+                    @if(!$hasStock)
+                        <span class="bg-secondary position-absolute badge bg-danger top-0 end-0 p-2 m-2" style="z-index: 1100;">Out of Stock</span>
+                    @endif
+                    @php
                     $getDiscountPrice = App\Models\Product::getDiscountPrice($product['id']);
                     $hasDiscount = $getDiscountPrice > 0;
                     @endphp
@@ -499,6 +505,12 @@
             <div class="item mb-2 h-100">
                 <div class="offer-card position-relative shadow-sm rounded-4 overflow-hidden h-100" style="z-index: 1100;">
                     @php
+                    $hasStock = $product->attributes->sum('stock') > 0;
+                    @endphp
+                    @if(!$hasStock)
+                        <span class="bg-secondary position-absolute badge bg-danger top-0 end-0 p-2 m-2" style="z-index: 1100;">Out of Stock</span>
+                    @endif
+                    @php
                     $getDiscountPrice = App\Models\Product::getDiscountPrice($product['id']);
                     $hasDiscount = $getDiscountPrice > 0;
                     @endphp
@@ -586,6 +598,12 @@
             <div class="item mb-2 h-100">
                 <div class="offer-card position-relative shadow-sm rounded-4 overflow-hidden h-100">
                     @php
+                    $hasStock = $product->attributes->sum('stock') > 0;
+                    @endphp
+                    @if(!$hasStock)
+                        <span class="bg-secondary position-absolute badge bg-danger top-0 end-0 p-2 m-2" style="z-index: 1100;">Out of Stock</span>
+                    @endif
+                    @php
                     $getDiscountPrice = App\Models\Product::getDiscountPrice($product['id']);
                     $hasDiscount = $getDiscountPrice > 0;
                     @endphp
@@ -667,6 +685,12 @@
             @foreach ($discountedproduct as $product)
             <div class="item mb-2 h-100">
                 <div class="offer-card position-relative shadow-sm rounded-4 overflow-hidden h-100">
+                    @php
+                    $hasStock = $product->attributes->sum('stock') > 0;
+                    @endphp
+                    @if(!$hasStock)
+                        <span class="bg-secondary position-absolute badge bg-danger top-0 end-0 p-2 m-2" style="z-index: 1100;">Out of Stock</span>
+                    @endif
                     @php
                     $getDiscountPrice = App\Models\Product::getDiscountPrice($product['id']);
                     $hasDiscount = $getDiscountPrice > 0;

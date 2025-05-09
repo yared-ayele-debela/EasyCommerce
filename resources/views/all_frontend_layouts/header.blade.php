@@ -125,6 +125,8 @@ use Illuminate\Support\Facades\Storage;
                 </ul>
               </div> --}}
                     <div>
+                        <a href="{{ url('track-custom-order') }}" class="btn btn-outline-primary btn-sm me-2">Track Custom Order</a>
+
                         <button type="button" class="btn btn-primary btn-sm me-2 custom-order-btn" data-bs-toggle="modal" data-bs-target="#customOrder">
                             Custom Order
                         </button>
@@ -287,7 +289,7 @@ use Illuminate\Support\Facades\Storage;
                                 data.forEach(item => {
                                     const div = document.createElement('div');
                                     div.className = 'search-item list-group-item list-group-item-action d-flex justify-content-between align-items-center';
-                                  
+
                                     const shortDescription = item.description.length > 10
                                     ? item.description.substring(0, 30) + '...'
                                     : item.description;

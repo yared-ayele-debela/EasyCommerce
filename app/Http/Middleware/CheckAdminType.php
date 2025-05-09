@@ -14,11 +14,11 @@ class CheckAdminType
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, $type): Response
+    public function handle(Request $request, Closure $next, ...$types): Response
     {
         $admin = Auth::guard('admin')->user(); // assuming you're using an 'admin' guard
 
-        if ($admin && $admin->type == $type || $admin->type == 'Super Admin') {
+        if ($admin && (in_array($admin->type, $types) || $admin->type === 'Super Admin')) {
 
             return $next($request);
         }

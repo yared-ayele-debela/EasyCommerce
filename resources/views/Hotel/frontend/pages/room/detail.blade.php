@@ -40,7 +40,7 @@
         </div>
         @foreach($room->images as $img)
         <div class="col-md-4 offer-card py-2 mr-1">
-            <img src="{{ $img->image_path }}" class=" img-fluid rounded rounded-3">
+            <img src="{{ $img->photo_url }}" class=" img-fluid rounded rounded-3">
         </div>
         @endforeach
         <br>

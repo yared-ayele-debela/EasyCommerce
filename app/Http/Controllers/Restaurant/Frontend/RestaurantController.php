@@ -13,12 +13,12 @@ class RestaurantController extends Controller
     //
     public function index()
     {
-        $restaurants=Restaurant::where('is_active',1)->latest()->paginate(10);
+        $restaurants=Restaurant::where('is_open',1)->latest()->paginate(10);
         return view('Restaurant.frontend.pages.restaurants.index',compact('restaurants'));
     }
     public function fetchRestaurant(Request $request)
     {
-        $auto_restaurants=Restaurant::where('is_active',1)->latest()->paginate(4);
+        $auto_restaurants=Restaurant::where('is_open',1)->latest()->paginate(4);
 
         if ($request->ajax()) {
             return view('all_frontend_layouts.partials.restaurant-cards', compact('auto_restaurants'))->render();

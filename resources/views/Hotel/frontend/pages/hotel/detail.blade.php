@@ -152,9 +152,9 @@
             @foreach ($rooms as $room)
                 <div class="col-12 col-sm-6 col-md-3 my-4 room-card" data-room-type="{{ $room->room_type }}">
                     <div class="offer-card h-100">
-                        @if($room->cover_image)
+                        @if($room->image)
                             <a href="{{ url('hotel/room/'.$room->id.'/detail') }}">
-                                <img class="card-img-top" src="{{$room->cover_image }}"
+                                <img class="card-img-top" src="{{$room->image }}"
                                     alt="{{ $room->room_type }}">
                         @else
                             <img class="card-img-top" src="{{ asset('restaurant_frontend/default-image.png')}}"

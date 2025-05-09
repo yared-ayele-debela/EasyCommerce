@@ -52,7 +52,6 @@ class ProductController extends Controller
 
             $url = $data['url'];
             $_GET['sort'] = $data['sort'];
-            // $url=Route::getFacadeRoot()->current()->uri();
             $categoryCount = Category::where(['url' => $url, 'status' => 1])->count();
             if ($categoryCount > 0) {
 
@@ -131,7 +130,7 @@ class ProductController extends Controller
                     $categoryProducts->whereIn('products.id', $productIds);
                 }
 
-                $categoryProducts = $categoryProducts->Paginate(10);
+                $categoryProducts = $categoryProducts->Paginate(20);
 
                 return view('products.ajax_products_listing', compact('cms_pages', 'appsettings', 'url', 'categoryDetails', 'categoryProducts', 'allcategoryProducts'));
             } else {
@@ -201,9 +200,8 @@ class ProductController extends Controller
                             $categoryProducts->orderby('products.product_name', 'DESC');
                         }
                     }
-                    $categoryProducts = $categoryProducts->paginate(10);
+                    $categoryProducts = $categoryProducts->paginate(20);
                     $appsettings = AppSetting::all()->toArray();
-                    // dd($categoryDetails);
                     return view('products.listing', compact('cms_pages', 'appsettings', 'url', 'categoryDetails', 'categoryProducts', 'allcategoryProducts'));
                 } else {
                     abort(404);

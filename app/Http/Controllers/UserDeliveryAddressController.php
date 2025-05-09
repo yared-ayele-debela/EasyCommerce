@@ -14,7 +14,7 @@ class UserDeliveryAddressController extends Controller
 {
     public function index()
     {
-        $addresses = DeliveryAddress::where('user_id', Auth::id())->get();
+        $addresses = DeliveryAddress::where('user_id', Auth::user()->id)->get();
         return response()->json($addresses);
     }
 
@@ -31,7 +31,7 @@ class UserDeliveryAddressController extends Controller
         ]);
 
         DeliveryAddress::create([
-            'user_id' => Auth::id(),
+            'user_id' => Auth::user()->id,
             'name' => $request->name,
             'address' => $request->address,
             'city' => $request->city,
@@ -44,7 +44,7 @@ class UserDeliveryAddressController extends Controller
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
         ]);
-        return redirect()->back()->with('success', 'Address saved successfully!'); 
+        return redirect()->back()->with('success', 'Address saved successfully!');
 
     }
      // Delete an address
