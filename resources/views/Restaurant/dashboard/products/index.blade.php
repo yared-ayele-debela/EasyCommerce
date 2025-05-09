@@ -59,8 +59,8 @@ $user = Auth::guard('admin')->user();
                         <td>
                             {{ $product->subcategory ? $product->subcategory->name : "" }}
                         </td>
-                        <td>{{ $product->menu->name }}</td>
-                        <td>{{ $product->city->name }}</td>
+                        <td>{{ $product->menu? $product->menu->name:'' }}</td>
+                        <td>{{ $product->city? $product->city->name:'' }}</td>
                         <td>{{ $product->price }} Birr</td>
                         <td>{{ $product->discount_type }}</td>
                         <td>{{ $product->discount }} Birr</td>
