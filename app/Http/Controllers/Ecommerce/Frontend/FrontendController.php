@@ -59,7 +59,7 @@ class FrontendController extends Controller
         $flash_deal_products = collect();
         if ($featured_flash_deal) {
             $flash_deal_ids = $featured_flash_deal->pluck('id');
-            $flash_deal_products = FlashDealProduct::with(['product.ratings','attributes'])
+            $flash_deal_products = FlashDealProduct::with(['product.ratings'])
                 ->whereIn('flash_deal_id', $flash_deal_ids)
                 ->inRandomOrder()
                 ->get();
