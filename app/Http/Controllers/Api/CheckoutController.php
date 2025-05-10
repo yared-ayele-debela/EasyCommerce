@@ -36,6 +36,10 @@ class CheckoutController extends Controller
     public function process(Request $request)
     {
         try {
+            $user = auth()->user();
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'Forbidden'], 403);
+            }
             // Validate the request
             $validator = Validator::make($request->all(), [
                 'user_id' => 'required|integer|exists:users,id',
@@ -162,6 +166,11 @@ class CheckoutController extends Controller
     public function hotelReservationCheckout(Request $request)
     {
         try {
+            $user = auth()->user();
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'Forbidden'], 403);
+            }
+
             $validator = Validator::make($request->all(), [
                 'user_id' => 'required|integer|exists:users,id',
                 'hotel_id' => 'required|integer|exists:hotels,id',
@@ -263,6 +272,10 @@ class CheckoutController extends Controller
     public function restaurantOrderCheckout(Request $request)
     {
         try {
+            $user = auth()->user();
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'Forbidden'], 403);
+            }
             $validator = Validator::make($request->all(), [
                 'user_id' => 'required|integer',
                 'items' => 'required',

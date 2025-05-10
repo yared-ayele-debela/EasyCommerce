@@ -26,7 +26,44 @@ class OrderController extends Controller
      *     security={{"sanctum":{}}},
      *     @OA\Response(
      *         response=200,
-     *         description="Successful operation"
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="id", type="integer", description="Order ID"),
+     *                     @OA\Property(property="order_code", type="string", description="Order Code"),
+     *                     @OA\Property(property="name", type="string", description="Customer Name"),
+     *                     @OA\Property(property="address", type="string", description="Delivery Address"),
+     *                     @OA\Property(property="city", type="string", description="City"),
+     *                     @OA\Property(property="state", type="string", description="State"),
+     *                     @OA\Property(property="country", type="string", description="Country"),
+     *                     @OA\Property(property="pincode", type="string", description="Pincode"),
+     *                     @OA\Property(property="latitude", type="string", description="Latitude"),
+     *                     @OA\Property(property="longitude", type="string", description="Longitude"),
+     *                     @OA\Property(property="mobile", type="string", description="Customer Mobile Number"),
+     *                     @OA\Property(property="email", type="string", description="Customer Email"),
+     *                     @OA\Property(property="shipping_charges", type="number", format="float", description="Shipping Charges"),
+     *                     @OA\Property(property="tax_charge", type="number", format="float", description="Tax Charges"),
+     *                     @OA\Property(property="coupon_code", type="string", description="Coupon Code"),
+     *                     @OA\Property(property="coupon_amount", type="string", description="Coupon Amount"),
+     *                     @OA\Property(property="order_status", type="string", description="Order Status"),
+     *                     @OA\Property(property="payment_method", type="string", description="Payment Method"),
+     *                     @OA\Property(property="payment_gateway", type="string", description="Payment Gateway"),
+     *                     @OA\Property(property="grand_total", type="number", format="float", description="Grand Total"),
+     *                     @OA\Property(property="payment_currency", type="string", description="Payment Currency"),
+     *                     @OA\Property(property="courier_name", type="string", description="Courier Name"),
+     *                     @OA\Property(property="tracking_number", type="string", description="Tracking Number"),
+     *                     @OA\Property(property="itemquantity", type="integer", description="Quantity of Items"),
+     *                     @OA\Property(property="created_at", type="string", format="date-time", description="Creation Date"),
+     *                     @OA\Property(property="updated_at", type="string", format="date-time", description="Update Date")
+     *                 )
+     *             )
+     *         ),
      *     ),
      *     @OA\Response(
      *         response=401,
@@ -37,9 +74,22 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         try {
-            $user = $request->user(); // Get the authenticated user
+            $user = auth()->user();
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'Forbidden'], 403);
+            }
+
             $orders = Order::where('user_id', $user->id)->get(); // Fetch only the user's orders
-            return response()->json(['success' => true, 'data' => $orders], 200);
+
+            // Include itemquantity, trackingnumber, and order status
+            $ordersWithDetails = $orders->map(function ($order) {
+                $order->itemquantity = $order->orderItems->sum('quantity');  // Assuming orderItems is a related model
+                $order->tracking_number = $order->tracking_number;
+                $order->order_status = $order->order_status;
+                return $order;
+            });
+
+            return response()->json(['success' => true, 'data' => $ordersWithDetails], 200);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
@@ -50,7 +100,7 @@ class OrderController extends Controller
      *     path="/api/orders/{id}",
      *     tags={"Orders"},
      *     summary="Get order details",
-     *     security={{"sanctum":{}}},
+     *     security={{"sanctum":{}}}, 
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -71,10 +121,20 @@ class OrderController extends Controller
     public function getOrderDetails($id)
     {
         try {
-            $order = Order::find($id);
+            $user = auth()->user();
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+            }
+
+            $order = Order::with(['orderItems'])->find($id); // Fetch order along with items
             if (!$order) {
                 return response()->json(['success' => false, 'message' => 'Order not found'], 404);
             }
+
+            // Add itemquantity and trackingnumber to the response
+            $order->itemquantity = $order->orderItems->sum('quantity');  // Sum of all item quantities
+            $order->trackingnumber = $order->tracking_number;  // Assuming tracking_number is in the order table
+
             return response()->json(['success' => true, 'data' => $order], 200);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
@@ -82,21 +142,21 @@ class OrderController extends Controller
     }
 
     /**
-     * @OA\Post(
+     * @OA\Get(
      *     path="/api/orders/myorder",
      *     tags={"Orders"},
-     *     summary="Create a new order for food, hotel reservation, or e-commerce product",
+     *     summary="Get user's orders based on type",
      *     security={{"sanctum":{}}},
-     *     @OA\RequestBody(
+     *     @OA\Parameter(
+     *         name="type",
+     *         in="query",
      *         required=true,
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="type", type="string", enum={"food", "hotel", "ecommerce"}, description="Type of order"),
-     *         )
+     *         description="Type of order",
+     *         @OA\Schema(type="string", enum={"food", "hotel", "ecommerce"})
      *     ),
      *     @OA\Response(
-     *         response=201,
-     *         description="Order created successfully"
+     *         response=200,
+     *         description="Orders retrieved successfully"
      *     ),
      *     @OA\Response(
      *         response=400,
@@ -106,6 +166,11 @@ class OrderController extends Controller
      */
     public function getUserOrders(Request $request)
     {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Forbidden'], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'type' => 'required|string|in:food,hotel,ecommerce',
         ]);
@@ -115,9 +180,9 @@ class OrderController extends Controller
         }
 
         try {
-            $user = $request->user();
+            $user = $request->user(); // Get the authenticated user
 
-            switch ($request->type) {
+            switch ($request->query('type')) {
                 case 'food':
                     $orders = \App\Models\RestaurantOrder::where('user_id', $user->id)->get();
                     break;
@@ -143,7 +208,7 @@ class OrderController extends Controller
      *     path="/api/orders/cancel/{id}",
      *     tags={"Orders"},
      *     summary="Cancel an order",
-     *     security={{"sanctum":{}}},
+     *     security={{"sanctum":{}}}, 
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -170,6 +235,11 @@ class OrderController extends Controller
      */
     public function cancel(Request $request, $id)
     {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+        }
+
         $validator = Validator::make($request->all(), [
             'reason' => 'required|string|max:255',
         ]);
@@ -184,7 +254,6 @@ class OrderController extends Controller
                 return response()->json(['success' => false, 'message' => 'Order not found'], 404);
             }
 
-            // Assuming there's a status field in the Order model
             $order->status = 'cancelled';
             $order->cancellation_reason = $request->reason;
             $order->save();
@@ -220,6 +289,11 @@ class OrderController extends Controller
     public function reorder($id)
     {
         try {
+            $user = auth()->user();
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'Forbidden'], 403);
+            }
+
             $order = Order::find($id);
             if (!$order) {
                 return response()->json(['success' => false, 'message' => 'Order not found'], 404);

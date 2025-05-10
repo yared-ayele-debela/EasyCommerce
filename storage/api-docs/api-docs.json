@@ -984,9 +984,27 @@
                 ],
                 "summary": "Get cart items",
                 "operationId": "7fdb9b40bd4ad2baf12aa15164eab788",
+                "parameters": [
+                    {
+                        "name": "product_type",
+                        "in": "query",
+                        "description": "Filter cart items by product type (goods or foods)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "goods",
+                                "foods"
+                            ]
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "List of cart items"
+                    },
+                    "500": {
+                        "description": "Failed to fetch cart items"
                     }
                 }
             }
@@ -1011,6 +1029,18 @@
                                     "quantity": {
                                         "type": "integer",
                                         "example": 2
+                                    },
+                                    "product_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "goods",
+                                            "foods"
+                                        ],
+                                        "example": "goods"
+                                    },
+                                    "size": {
+                                        "type": "string",
+                                        "example": "Large"
                                     }
                                 },
                                 "type": "object"
@@ -1021,6 +1051,12 @@
                 "responses": {
                     "200": {
                         "description": "Item added to cart"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Failed to add item to cart"
                     }
                 }
             }
@@ -1041,6 +1077,14 @@
                                     "product_id": {
                                         "type": "integer",
                                         "example": 1
+                                    },
+                                    "product_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "goods",
+                                            "foods"
+                                        ],
+                                        "example": "foods"
                                     }
                                 },
                                 "type": "object"
@@ -1051,6 +1095,12 @@
                 "responses": {
                     "200": {
                         "description": "Item removed from cart"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Failed to remove item from cart"
                     }
                 }
             }
@@ -1075,6 +1125,14 @@
                                     "quantity": {
                                         "type": "integer",
                                         "example": 3
+                                    },
+                                    "product_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "goods",
+                                            "foods"
+                                        ],
+                                        "example": "goods"
                                     }
                                 },
                                 "type": "object"
@@ -1085,6 +1143,12 @@
                 "responses": {
                     "200": {
                         "description": "Cart item updated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Failed to update cart item"
                     }
                 }
             }
@@ -3528,7 +3592,137 @@
                 "operationId": "955bb77a45ae173a485fadb8befed93f",
                 "responses": {
                     "200": {
-                        "description": "Successful operation"
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "description": "Order ID",
+                                                        "type": "integer"
+                                                    },
+                                                    "order_code": {
+                                                        "description": "Order Code",
+                                                        "type": "string"
+                                                    },
+                                                    "name": {
+                                                        "description": "Customer Name",
+                                                        "type": "string"
+                                                    },
+                                                    "address": {
+                                                        "description": "Delivery Address",
+                                                        "type": "string"
+                                                    },
+                                                    "city": {
+                                                        "description": "City",
+                                                        "type": "string"
+                                                    },
+                                                    "state": {
+                                                        "description": "State",
+                                                        "type": "string"
+                                                    },
+                                                    "country": {
+                                                        "description": "Country",
+                                                        "type": "string"
+                                                    },
+                                                    "pincode": {
+                                                        "description": "Pincode",
+                                                        "type": "string"
+                                                    },
+                                                    "latitude": {
+                                                        "description": "Latitude",
+                                                        "type": "string"
+                                                    },
+                                                    "longitude": {
+                                                        "description": "Longitude",
+                                                        "type": "string"
+                                                    },
+                                                    "mobile": {
+                                                        "description": "Customer Mobile Number",
+                                                        "type": "string"
+                                                    },
+                                                    "email": {
+                                                        "description": "Customer Email",
+                                                        "type": "string"
+                                                    },
+                                                    "shipping_charges": {
+                                                        "description": "Shipping Charges",
+                                                        "type": "number",
+                                                        "format": "float"
+                                                    },
+                                                    "tax_charge": {
+                                                        "description": "Tax Charges",
+                                                        "type": "number",
+                                                        "format": "float"
+                                                    },
+                                                    "coupon_code": {
+                                                        "description": "Coupon Code",
+                                                        "type": "string"
+                                                    },
+                                                    "coupon_amount": {
+                                                        "description": "Coupon Amount",
+                                                        "type": "string"
+                                                    },
+                                                    "order_status": {
+                                                        "description": "Order Status",
+                                                        "type": "string"
+                                                    },
+                                                    "payment_method": {
+                                                        "description": "Payment Method",
+                                                        "type": "string"
+                                                    },
+                                                    "payment_gateway": {
+                                                        "description": "Payment Gateway",
+                                                        "type": "string"
+                                                    },
+                                                    "grand_total": {
+                                                        "description": "Grand Total",
+                                                        "type": "number",
+                                                        "format": "float"
+                                                    },
+                                                    "payment_currency": {
+                                                        "description": "Payment Currency",
+                                                        "type": "string"
+                                                    },
+                                                    "courier_name": {
+                                                        "description": "Courier Name",
+                                                        "type": "string"
+                                                    },
+                                                    "tracking_number": {
+                                                        "description": "Tracking Number",
+                                                        "type": "string"
+                                                    },
+                                                    "itemquantity": {
+                                                        "description": "Quantity of Items",
+                                                        "type": "integer"
+                                                    },
+                                                    "created_at": {
+                                                        "description": "Creation Date",
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "updated_at": {
+                                                        "description": "Update Date",
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -3575,36 +3769,31 @@
             }
         },
         "/api/orders/myorder": {
-            "post": {
+            "get": {
                 "tags": [
                     "Orders"
                 ],
-                "summary": "Create a new order for food, hotel reservation, or e-commerce product",
-                "operationId": "56754d760ce29414404ed1f25a4167c0",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "type": {
-                                        "description": "Type of order",
-                                        "type": "string",
-                                        "enum": [
-                                            "food",
-                                            "hotel",
-                                            "ecommerce"
-                                        ]
-                                    }
-                                },
-                                "type": "object"
-                            }
+                "summary": "Get user's orders based on type",
+                "operationId": "95ce1afddb5743d377b1e28d94457fce",
+                "parameters": [
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Type of order",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "food",
+                                "hotel",
+                                "ecommerce"
+                            ]
                         }
                     }
-                },
+                ],
                 "responses": {
-                    "201": {
-                        "description": "Order created successfully"
+                    "200": {
+                        "description": "Orders retrieved successfully"
                     },
                     "400": {
                         "description": "Invalid input"
@@ -4827,8 +5016,25 @@
                 "tags": [
                     "Wishlist"
                 ],
-                "summary": "Get all wishlist items",
+                "summary": "Get all wishlist items with optional product type filter",
                 "operationId": "25e51433040f79ef596ee4001198d4f2",
+                "parameters": [
+                    {
+                        "name": "product_type",
+                        "in": "query",
+                        "description": "Filter wishlist by product type (restaurant, food, hotel, goods)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "restaurant",
+                                "food",
+                                "hotel",
+                                "goods"
+                            ]
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Success",
@@ -4867,12 +5073,17 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "item_id"
+                                    "product_id",
+                                    "product_type"
                                 ],
                                 "properties": {
-                                    "item_id": {
+                                    "product_id": {
                                         "type": "integer",
                                         "example": 1
+                                    },
+                                    "product_type": {
+                                        "type": "string",
+                                        "example": "restaurant"
                                     }
                                 },
                                 "type": "object"
@@ -4911,12 +5122,17 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "item_id"
+                                    "product_id",
+                                    "product_type"
                                 ],
                                 "properties": {
-                                    "item_id": {
+                                    "product_id": {
                                         "type": "integer",
                                         "example": 1
+                                    },
+                                    "product_type": {
+                                        "type": "string",
+                                        "example": "restaurant"
                                     }
                                 },
                                 "type": "object"

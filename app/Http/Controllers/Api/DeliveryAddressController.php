@@ -32,6 +32,11 @@ class DeliveryAddressController extends Controller
      */
     public function index()
     {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Forbidden'], 403);
+        }
+
         $addresses = DeliveryAddress::where('user_id', Auth::id())->get();
 
         return response()->json([
@@ -94,6 +99,10 @@ class DeliveryAddressController extends Controller
      */
     public function store(Request $request)
     {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Forbidden'], 403);
+        }
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'address' => 'nullable|string|max:255',
@@ -156,6 +165,10 @@ class DeliveryAddressController extends Controller
      */
     public function destroy($id)
     {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Forbidden'], 403);
+        }
         $address = DeliveryAddress::where('id', $id)->where('user_id', Auth::id())->first();
 
         if (!$address) {

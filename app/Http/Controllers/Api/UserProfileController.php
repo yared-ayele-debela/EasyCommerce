@@ -43,7 +43,11 @@ class UserProfileController extends Controller
     public function profile()
     {
         try {
-            $user = Auth::user();
+            $user = auth()->user();
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'Forbidden'], 403);
+            }
+            // $user = Auth::user();
             return response()->json([
                 'success' => true,
                 'data' => $user,
@@ -92,6 +96,11 @@ class UserProfileController extends Controller
      */
     public function update(Request $request)
     {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Forbidden'], 403);
+        }
+        
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
