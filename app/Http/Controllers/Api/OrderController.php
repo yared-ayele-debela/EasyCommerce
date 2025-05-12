@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Order;
 
 
@@ -83,7 +84,7 @@ class OrderController extends Controller
 
             // Include itemquantity, trackingnumber, and order status
             $ordersWithDetails = $orders->map(function ($order) {
-                $order->itemquantity = $order->orderItems->sum('quantity');  // Assuming orderItems is a related model
+                // $order->itemquantity = $order->orderItems->sum('quantity');  // Assuming orderItems is a related model
                 $order->tracking_number = $order->tracking_number;
                 $order->order_status = $order->order_status;
                 return $order;
@@ -126,13 +127,13 @@ class OrderController extends Controller
                 return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
             }
 
-            $order = Order::with(['orderItems'])->find($id); // Fetch order along with items
+            $order = Order::with(['orders_products'])->find($id); // Fetch order along with items
             if (!$order) {
                 return response()->json(['success' => false, 'message' => 'Order not found'], 404);
             }
 
             // Add itemquantity and trackingnumber to the response
-            $order->itemquantity = $order->orderItems->sum('quantity');  // Sum of all item quantities
+            // $order->itemquantity = $order->orderItems->sum('quantity');  // Sum of all item quantities
             $order->trackingnumber = $order->tracking_number;  // Assuming tracking_number is in the order table
 
             return response()->json(['success' => true, 'data' => $order], 200);
@@ -166,7 +167,7 @@ class OrderController extends Controller
      */
     public function getUserOrders(Request $request)
     {
-        $user = auth()->user();
+        $user = Auth::user();
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Forbidden'], 403);
         }
@@ -184,13 +185,13 @@ class OrderController extends Controller
 
             switch ($request->query('type')) {
                 case 'food':
-                    $orders = \App\Models\RestaurantOrder::where('user_id', $user->id)->get();
+                    $orders = \App\Models\RestaurantOrder::with('restaurant')->where('user_id', $user->id)->get();
                     break;
                 case 'hotel':
-                    $orders = \App\Models\Reservation::where('user_id', $user->id)->get();
+                    $orders = \App\Models\Reservation::with('hotel')->where('user_id', $user->id)->get();
                     break;
                 case 'ecommerce':
-                    $orders = \App\Models\Order::where('user_id', $user->id)->get();
+                    $orders = \App\Models\Order::with('orders_products')->where('user_id', $user->id)->get();
                     break;
                 default:
                     return response()->json(['success' => false, 'message' => 'Invalid order type'], 400);

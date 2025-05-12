@@ -42,13 +42,12 @@ class WishlistController extends Controller
      */
     public function index(Request $request)
     {
-        // Check if the user is authenticated
-        if (!Auth::check()) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
+        
         try {
-            $user = Auth::user();
+            $user = auth()->user();
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'Forbidden'], 403);
+            }
             $query = Wishlist::where('user_id', $user->id);
 
             // If product_type is provided, filter by product_type
@@ -59,7 +58,7 @@ class WishlistController extends Controller
             $wishlists = $query->get();
             return response()->json(['data' => $wishlists], 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to fetch wishlist items'], 500);
+            return response()->json(['error' => 'Failed to fetch wishlist items','err'=>$e->getMessage()], 500);
         }
     }
 
@@ -94,9 +93,10 @@ class WishlistController extends Controller
     public function add(Request $request)
     {
         // Check if the user is authenticated
-        if (!Auth::check()) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+        $user = auth()->user();
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'Forbidden'], 403);
+            }
 
         $validator = Validator::make($request->all(), [
             'product_id' => 'required|integer',
@@ -108,7 +108,7 @@ class WishlistController extends Controller
         }
 
         try {
-            $user = Auth::user();
+            // $user = Auth::user();
 
             // Check for duplicate
             $exists = Wishlist::where('user_id', $user->id)
@@ -163,9 +163,10 @@ class WishlistController extends Controller
     public function remove(Request $request)
     {
         // Check if the user is authenticated
-        if (!Auth::check()) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+        $user = auth()->user();
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'Forbidden'], 403);
+            }
 
         $validator = Validator::make($request->all(), [
             'product_id' => 'required|integer',
@@ -177,7 +178,7 @@ class WishlistController extends Controller
         }
 
         try {
-            $user = Auth::user();
+            // $user = Auth::user();
 
             Wishlist::where('user_id', $user->id)
                 ->where('product_id', $request->product_id)

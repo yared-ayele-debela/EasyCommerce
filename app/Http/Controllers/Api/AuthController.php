@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Restaurant;
 use Exception;
+use Illuminate\Support\Facades\Http;
 
 class AuthController extends Controller
 {
@@ -50,7 +51,7 @@ class AuthController extends Controller
           $request->validate([
              'name' => 'required|string|max:255',
              'mobile' => 'required|string|unique:users',
-             'email' => 'required|string|email|max:255|unique:users',
+             'email' => 'nullable|string|email|max:255|unique:users',
              'password' => 'required|string|min:8',
              'address' => 'nullable|string|max:255',
              'city' => 'nullable|string|max:255',
@@ -74,10 +75,22 @@ class AuthController extends Controller
              'latitude' => $request->latitude,
              'longitude' => $request->longitude,
           ]);
+          $otpResponse = $this->sendOtp(['phone'=>$request->mobile]);
 
-          $token = $user->createToken('auth_token')->plainTextToken;
+                
+          if ($otpResponse->acknowledge !== 'success') {
+              return response()->json(['message' => 'Failed to send OTP'], 500);
+          }
+        //   $token = $user->createToken('auth_token')->plainTextToken;
+          $otpResponse = [
+              'message' => 'OTP sent successfully',
+              'verificationId' => $otpResponse->response->verificationId,
+          ];
+          return response()->json($otpResponse);
 
-          return response()->json(['token' => $token, 'user' => $user], 201);
+        //   $token = $user->createToken('auth_token')->plainTextToken;
+
+        //   return response()->json(['token' => $token, 'user' => $user], 201);
        } catch (Exception $e) {
           return response()->json(['error' => 'An error occurred while registering', 'details' => $e->getMessage()], 500);
        }
@@ -86,14 +99,24 @@ class AuthController extends Controller
     /**
      * @OA\Post(
      *     path="/api/auth/user/login",
-     *     summary="User login",
+     *     summary="Login via email/password or phone/OTP",
      *     tags={"Authentication"},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"phone_or_email", "password"},
-     *             @OA\Property(property="phone_or_email", type="string", example="user@example.com or 1234567890"),
-     *             @OA\Property(property="password", type="string", format="password", example="password123")
+     *             oneOf={
+     *                 @OA\Schema(
+     *                     description="Login using email and password",
+     *                     required={"email", "password"},
+     *                     @OA\Property(property="email", type="string", example="user@example.com"),
+     *                     @OA\Property(property="password", type="string", format="password", example="secret123")
+     *                 ),
+     *                 @OA\Schema(
+     *                     description="Login using phone only (OTP will be sent)",
+     *                     required={"phone"},
+     *                     @OA\Property(property="phone", type="string", example="+251936676745")
+     *                 )
+     *             }
      *         )
      *     ),
      *     @OA\Response(
@@ -104,41 +127,93 @@ class AuthController extends Controller
      *             @OA\Property(property="user")
      *         )
      *     ),
-     *     @OA\Response(response=401, description="Invalid credentials"),
+     *     @OA\Response(response=401, description="Unauthorized or invalid credentials"),
+     *     @OA\Response(response=404, description="User not found"),
      *     @OA\Response(response=500, description="Server error")
      * )
      */
+
     public function login(Request $request)
     {
         try {
-            $request->validate([
-                'phone_or_email' => 'required|string',
-                'password' => 'required|string|min:8',
-            ]);
+            // Email/password login
+            if ($request->filled(['phone_or_email', 'password'])) {
+                $request->validate([
+                    'phone_or_email' => 'required|string',
+                    'password' => 'required|string|min:6',
+                ]);
 
-            $credentials = $request->only('phone_or_email', 'password');
+                $credentials = $request->only('phone_or_email', 'password');
 
-            if (filter_var($credentials['phone_or_email'], FILTER_VALIDATE_EMAIL)) {
-                $credentials['email'] = $credentials['phone_or_email'];
+                if (filter_var($credentials['phone_or_email'], FILTER_VALIDATE_EMAIL)) {
+                    $credentials['email'] = $credentials['phone_or_email'];
+                } else {
+                    $credentials['phone'] = $credentials['phone_or_email'];
+                }
+
                 unset($credentials['phone_or_email']);
-            } else {
-                $credentials['phone'] = $credentials['phone_or_email'];
-                unset($credentials['phone_or_email']);
+
+                if (Auth::attempt($credentials)) {
+                    $user = Auth::user();
+                    $token = $user->createToken('auth_token')->plainTextToken;
+
+                    return response()->json(['token' => $token, 'user' => $user], 200);
+                }
+
+                return response()->json(['message' => 'Invalid credentials'], 401);
             }
 
-            if (Auth::attempt($credentials)) {
-                $user = Auth::user();
-                $token = $user->createToken('auth_token')->plainTextToken;
+            // Phone/OTP login
+            if ($request->filled(['phone'])) {
+                $otpResponse = $this->sendOtp($request);
 
-                return response()->json(['token' => $token, 'user' => $user], 200);
+
+                if ($otpResponse->acknowledge !== 'success') {
+                    return response()->json(['message' => 'Failed to send OTP'], 500);
+                }
+
+                $otpResponse = [
+                    'message' => 'OTP sent successfully',
+                    'verificationId' => $otpResponse->response->verificationId,
+                ];
+                return response()->json($otpResponse);
             }
 
-            return response()->json(['message' => 'Invalid credentials'], 401);
-        } catch (Exception $e) {
-            return response()->json(['error' => 'An error occurred while logging in', 'details' => $e->getMessage()], 500);
+            return response()->json(['message' => 'Missing required login fields.'], 422);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Login error',
+                'details' => $e->getMessage()
+            ], 500);
         }
     }
 
+
+    public function sendOtp($request)
+    {
+        $request->validate(['phone' => 'required|string']);
+
+        $user = User::where('mobile', $request->phone)->first();
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $response = Http::withToken(env('AFRO_SMS_API_KEY'))->get("https://api.afromessage.com/api/challenge", [
+            'from' => env('AFRO_SMS_SENDER_ID'),
+            'sender' => env('AFRO_SMS_SENDER_NAME'),
+            'to' => $request->phone,
+            'pr' => 'Welcome to EasyCommerce. Your OTP code is ',
+            'ps' => 'please enter the OTP code to verify your phone number.',
+            'ttl' => 300,
+            'sb' => '1',            
+            'sa' => '1',  
+            'len' => '4',        
+        ]);
+        
+
+        return $response;
+    }
     /**
      * @OA\Post(
      *     path="/api/auth/user/forgot-password",
@@ -404,5 +479,103 @@ class AuthController extends Controller
         } catch (Exception $e) {
             return response()->json(['error' => 'An error occurred while logging in restaurant', 'details' => $e->getMessage()], 500);
         }
+    }
+
+    /**
+ * @OA\Post(
+ *     path="/api/user/verify-token",
+ *     summary="Verify Token and Authenticate User",
+ *     tags={"Auth"},
+ *     @OA\Parameter(
+ *         name="vc",
+ *         in="query",
+ *         required=true,
+ *         description="Verification ID",
+ *         @OA\Schema(type="string", example="54047239-7a1f-450b-bfdf-c996cb99b530")
+ *     ),
+ *     @OA\Parameter(
+ *         name="to",
+ *         in="query",
+ *         required=true,
+ *         description="Phone number",
+ *         @OA\Schema(type="string", example="+251936676745")
+ *     ),
+ *     @OA\Parameter(
+ *         name="code",
+ *         in="query",
+ *         required=true,
+ *         description="Verification code",
+ *         @OA\Schema(type="string", example="1889")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Successful verification",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="acknowledge", type="string", example="success"),
+ *             @OA\Property(property="response", type="object",
+ *                 @OA\Property(property="phone", type="string", example="+251936676745"),
+ *                 @OA\Property(property="code", type="string", example="1889"),
+ *                 @OA\Property(property="verificationId", type="string", example="54047239-7a1f-450b-bfdf-c996cb99b530"),
+ *                 @OA\Property(property="sentAt", type="string", example="2 minutes ago @ 2025-05-11 23:27:09")
+ *             ),
+ *             @OA\Property(property="user", type="object",
+ *                 @OA\Property(property="id", type="integer", example=1),
+ *                 @OA\Property(property="name", type="string", example="New User"),
+ *                 @OA\Property(property="phone", type="string", example="+251936676745")
+ *             ),
+ *             @OA\Property(property="access_token", type="string", example="1|XyzToken"),
+ *             @OA\Property(property="token_type", type="string", example="Bearer")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Invalid verification details",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="acknowledge", type="string", example="failed"),
+ *             @OA\Property(property="message", type="string", example="Invalid verification details.")
+ *         )
+ *     )
+ * )
+ */
+    public function verifyToken(Request $request)
+    {
+        $request->validate([
+            'vc' => 'required|string',
+            'to' => 'required|string',
+            'code' => 'required|string',
+        ]);
+
+        // Make request to AFRO SMS verify endpoint
+        $response = Http::get(config('app.afro_sms_verify_url'), [
+            'vc'   => $request->vc,
+            'to'   => $request->to,
+            'code' => $request->code,
+        ]);
+
+        if ($response->failed() || $response->json('acknowledge') !== 'success') {
+            return response()->json([
+                'acknowledge' => 'failed',
+                'message' => 'Invalid verification details.'
+            ], 401);
+        }
+
+        $data = $response->json('response');
+        
+        // Find or create user
+        $user = User::firstOrCreate(
+            ['mobile' => $data['phone']],
+            ['name' => 'New User']
+        );
+
+        // Create access token
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'acknowledge' => 'success',
+            'response' => $data,
+            'user' => $user,
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+        ]);
     }
 }

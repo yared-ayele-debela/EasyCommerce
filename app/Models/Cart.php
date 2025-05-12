@@ -10,7 +10,14 @@ class Cart extends Model
 {
     use HasFactory;
     protected $table="carts";
-
+    protected $fillable = [
+        'product_id',
+        'product_type',
+        'size',
+        'quantity',
+        'user_id',
+        'session_id'
+    ];
     public static function getCartItems(){
         if(Auth::check()){
             $getCartItems=Cart::with(['product'=>function($query){

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Cart;
 
 
 /**
@@ -38,6 +40,11 @@ class CartController extends Controller
  *     )
  * )
  */
+    public function __construct()
+    {
+        session_start();
+        $this->middleware('auth:sanctum')->except(['index']);
+    }
 
     
     public function index(Request $request)
@@ -47,28 +54,27 @@ class CartController extends Controller
             if (!$user) {
                 return response()->json(['success' => false, 'message' => 'Forbidden'], 403);
             }
-            $userId = Auth::id();
-            $sessionId = $request->session()->getId(); // fallback for guest users
+            $userId = $user->id;
+            $sessionId = null; // fallback for guest users
             $productType = $request->query('product_type', null); // optional filter
-
+            
             $query = Cart::query();
-
             if ($userId) {
                 $query->where('user_id', $userId);
             } else {
                 $query->where('session_id', $sessionId);
             }
-
+            
             if ($productType) {
                 $query->where('product_type', $productType);
             }
-
+            // return 'check';
             $cartItems = $query->get();
 
             return response()->json(['success' => true, 'data' => $cartItems], 200);
         } catch (\Exception $e) {
             Log::error($e);
-            return response()->json(['success' => false, 'message' => 'Failed to fetch cart items'], 500);
+            return response()->json(['success' => false, 'message' => 'Failed to fetch cart items','err'=>$e->getMessage()], 500);
         }
     }
 
@@ -110,7 +116,8 @@ class CartController extends Controller
             ]);
 
             $userId = Auth::id();
-            $sessionId = $request->session()->getId();
+            $sessionId =  null;
+            // Check if the product already exists in the cart
 
             $cartItem = Cart::updateOrCreate(
                 [
@@ -130,7 +137,7 @@ class CartController extends Controller
             return response()->json(['success' => false, 'message' => $e->errors()], 422);
         } catch (\Exception $e) {
             Log::error($e);
-            return response()->json(['success' => false, 'message' => 'Failed to add item to cart'], 500);
+            return response()->json(['success' => false, 'message' => 'Failed to add item to cart','error'=>$e->getMessage()], 500);
         }
     }
 
@@ -170,7 +177,7 @@ class CartController extends Controller
             ]);
 
             $userId = Auth::id();
-            $sessionId = $request->session()->getId();
+            $sessionId = null;
 
             $cartItem = Cart::where('product_id', $validated['product_id'])
                 ->where('size', $validated['size'])
@@ -189,7 +196,7 @@ class CartController extends Controller
             return response()->json(['success' => false, 'message' => $e->errors()], 422);
         } catch (\Exception $e) {
             Log::error($e);
-            return response()->json(['success' => false, 'message' => 'Failed to remove item from cart'], 500);
+            return response()->json(['success' => false, 'message' => 'Failed to remove item from cart','error'=>$e->getMessage()], 500);
         }
     }
 
@@ -229,7 +236,7 @@ class CartController extends Controller
             ]);
 
             $userId = Auth::id();
-            $sessionId = $request->session()->getId();
+            $sessionId = null;
 
             $cartItem = Cart::where('product_id', $validated['product_id'])
                 ->where('size', $validated['size'])

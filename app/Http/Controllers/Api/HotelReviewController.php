@@ -34,11 +34,29 @@ class HotelReviewController extends Controller
      *     )
      * )
      */
-    public function store(Request $request)
+    public function store(Request $request, $hotel_id)
     {
-        $review = HotelReview::create($request->all());
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'required|string|max:1000',
+        ]);
+
+        $review = HotelReview::create([
+            'hotel_id' => $hotel_id,
+            'user_id' => $user->id,
+            'rating' => $request->rating,
+            'review' => $request->comment,
+        ]);
+
         return response()->json($review, 201);
     }
+
 
     /**
      * @OA\Get(

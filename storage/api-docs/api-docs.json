@@ -488,29 +488,47 @@
                 "tags": [
                     "Authentication"
                 ],
-                "summary": "User login",
+                "summary": "Login via email/password or phone/OTP",
                 "operationId": "a85164caca71750a04ed8228be0a3087",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": [
-                                    "phone_or_email",
-                                    "password"
-                                ],
-                                "properties": {
-                                    "phone_or_email": {
-                                        "type": "string",
-                                        "example": "user@example.com or 1234567890"
+                                "oneOf": [
+                                    {
+                                        "description": "Login using email and password",
+                                        "required": [
+                                            "email",
+                                            "password"
+                                        ],
+                                        "properties": {
+                                            "email": {
+                                                "type": "string",
+                                                "example": "user@example.com"
+                                            },
+                                            "password": {
+                                                "type": "string",
+                                                "format": "password",
+                                                "example": "secret123"
+                                            }
+                                        },
+                                        "type": "object"
                                     },
-                                    "password": {
-                                        "type": "string",
-                                        "format": "password",
-                                        "example": "password123"
+                                    {
+                                        "description": "Login using phone only (OTP will be sent)",
+                                        "required": [
+                                            "phone"
+                                        ],
+                                        "properties": {
+                                            "phone": {
+                                                "type": "string",
+                                                "example": "+251936676745"
+                                            }
+                                        },
+                                        "type": "object"
                                     }
-                                },
-                                "type": "object"
+                                ]
                             }
                         }
                     }
@@ -533,7 +551,10 @@
                         }
                     },
                     "401": {
-                        "description": "Invalid credentials"
+                        "description": "Unauthorized or invalid credentials"
+                    },
+                    "404": {
+                        "description": "User not found"
                     },
                     "500": {
                         "description": "Server error"
@@ -824,6 +845,131 @@
                 }
             }
         },
+        "/api/user/verify-token": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Verify Token and Authenticate User",
+                "operationId": "759aec71a6b889820e7d2adce0851772",
+                "parameters": [
+                    {
+                        "name": "vc",
+                        "in": "query",
+                        "description": "Verification ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "54047239-7a1f-450b-bfdf-c996cb99b530"
+                        }
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "description": "Phone number",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "+251936676745"
+                        }
+                    },
+                    {
+                        "name": "code",
+                        "in": "query",
+                        "description": "Verification code",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "1889"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful verification",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "acknowledge": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "response": {
+                                            "properties": {
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "+251936676745"
+                                                },
+                                                "code": {
+                                                    "type": "string",
+                                                    "example": "1889"
+                                                },
+                                                "verificationId": {
+                                                    "type": "string",
+                                                    "example": "54047239-7a1f-450b-bfdf-c996cb99b530"
+                                                },
+                                                "sentAt": {
+                                                    "type": "string",
+                                                    "example": "2 minutes ago @ 2025-05-11 23:27:09"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "New User"
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "+251936676745"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "access_token": {
+                                            "type": "string",
+                                            "example": "1|XyzToken"
+                                        },
+                                        "token_type": {
+                                            "type": "string",
+                                            "example": "Bearer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid verification details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "acknowledge": {
+                                            "type": "string",
+                                            "example": "failed"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid verification details."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/banners/ecommerce": {
             "get": {
                 "tags": [
@@ -983,7 +1129,7 @@
                     "Cart"
                 ],
                 "summary": "Get cart items",
-                "operationId": "7fdb9b40bd4ad2baf12aa15164eab788",
+                "operationId": "45f606e76a9907c8fef3b06147af7ceb",
                 "parameters": [
                     {
                         "name": "product_type",
@@ -5203,6 +5349,10 @@
         {
             "name": "Authentication",
             "description": "Authentication"
+        },
+        {
+            "name": "Auth",
+            "description": "Auth"
         },
         {
             "name": "Banners",

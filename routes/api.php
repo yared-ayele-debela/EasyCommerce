@@ -25,6 +25,7 @@ use App\Http\Controllers\Api\BannerController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\Api\HotelController;
+use App\Http\Controllers\Api\HotelReviewController;
 // use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\CountryController;
 ;
@@ -69,6 +70,7 @@ Route::prefix('auth')->group(function () {
     // User Routes
     Route::post('user/register', [AuthController::class, 'Register']);
     Route::post('user/login', [AuthController::class, 'Login']);
+    Route::post('user/verify-token', [AuthController::class, 'verifyToken']);
     Route::post('user/forgot-password', [AuthController::class, 'forgetPassword']);
     Route::post('user/reset-password', [AuthController::class, 'resetPassword']);
     
@@ -106,7 +108,7 @@ Route::prefix('brands')->group(function () {
     Route::get('/', [BrandController::class, 'brand']);
 });
 // Cart routes
-Route::prefix('cart')->group(function () {
+Route::middleware('auth:sanctum')->prefix('cart')->group(function () {
     Route::get('/', [CartController::class, 'index']);
     Route::post('add', [CartController::class, 'add']);
     Route::post('remove', [CartController::class, 'remove']);
@@ -114,7 +116,7 @@ Route::prefix('cart')->group(function () {
 });
 
 // Checkout routes
-Route::prefix('checkout')->group(function () {
+Route::middleware('auth:sanctum')->prefix('checkout')->group(function () {
     Route::post('/', [CheckoutController::class, 'process']);
 });
 
@@ -125,14 +127,16 @@ Route::prefix('payment')->group(function () {
 });
 
 // Order routes
-Route::prefix('orders')->group(function () {
+Route::middleware('auth:sanctum')->prefix('orders')->group(function () {
     Route::get('/', [OrderController::class, 'index']);
+    Route::get('/myorder', [OrderController::class, 'getUserOrders']);
+
     Route::get('{id}', [OrderController::class, 'detail']);
     Route::post('cancel/{id}', [OrderController::class, 'cancel']);
 });
 
 // Wishlist routes
-Route::prefix('wishlist')->group(function () {
+Route::middleware('auth:sanctum')->prefix('wishlist')->group(function () {
     Route::get('/', [WishlistController::class, 'index']);
     Route::post('add', [WishlistController::class, 'add']);
     Route::post('remove', [WishlistController::class, 'remove']);
@@ -145,7 +149,7 @@ Route::prefix('reviews')->group(function () {
 });
 
 // Address management
-Route::prefix('addresses')->group(function () {
+Route::middleware('auth:sanctum')->prefix('addresses')->group(function () {
     Route::get('/', [AddressController::class, 'index']);
     Route::post('add', [AddressController::class, 'add']);
     Route::post('update/{id}', [AddressController::class, 'update']);
@@ -169,7 +173,7 @@ Route::get('/foods', [FoodController::class, 'index']);
 Route::get('/foods/special-offers', [FoodController::class, 'specialOffers']);
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/restaurants/nearby', [RestaurantController::class, 'nearbyRestaurants']);
-Route::delete('/delivery-addresses/{id}', [DeliveryAddressController::class, 'destroy']);
+Route::middleware('auth:sanctum')->delete('/delivery-addresses/{id}', [DeliveryAddressController::class, 'destroy']);
 // Food Category routes
 Route::get('/foods/category', [FoodController::class, 'category']);
 Route::get('/foods/category/{categoryId}', [FoodController::class, 'getFoodsByCategory']);
@@ -178,7 +182,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 // Restaurant
 // Protected Routes (Require Authentication)
-// Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index']);
@@ -192,12 +196,12 @@ Route::post('/login', [AuthController::class, 'login']);
     Route::get('/notifications', [NotificationController::class, 'index']);
 
     // Delivery Addresses
-    Route::get('/delivery-addresses', [DeliveryAddressController::class, 'index']);
-    Route::post('/delivery-addresses', [DeliveryAddressController::class, 'store']);
+    Route::middleware('auth:sanctum')->get('/delivery-addresses', [DeliveryAddressController::class, 'index']);
+    Route::middleware('auth:sanctum')->post('/delivery-addresses', [DeliveryAddressController::class, 'store']);
 
     // Logout
     Route::post('/logout', [AuthController::class, 'logout']);
-// });
+});
 // ================Hotel=================
 Route::get('hotels', [HotelController::class, 'hotelIndex']);
 Route::post('hotels', [HotelController::class, 'hotelStore']);
@@ -227,7 +231,7 @@ Route::post('/hotel-reservation-checkout', [CheckoutController::class, 'hotelRes
 // Restaurant Order Checkout
 Route::post('/restaurant-order-checkout', [CheckoutController::class, 'restaurantOrderCheckout']);
 // API routes for orders
-Route::prefix('orders')->group(function () {
+Route::middleware('auth:sanctum')->prefix('orders')->group(function () {
     // Cancel an order
     Route::put('cancel/{id}', [OrderController::class, 'cancel']);
 
@@ -260,7 +264,7 @@ Route::get('/hotels/featured/{hotel_id}/rooms/{room_id}/bookings', [HotelControl
 Route::get('/hotels/featured/{hotel_id}/rooms/{room_id}/availability', [HotelController::class, 'checkFeaturedHotelRoomAvailability']);
 Route::get('/hotels/featured/{hotel_id}/rooms/{room_id}/bookings', [HotelController::class, 'getFeaturedHotelRoomBookings']);
 
-Route::post('hotels/{hotel_id}/reviews', [HotelReviewController::class, 'store']);
+Route::middleware('auth:sanctum')->post('hotels/{hotel_id}/reviews', [HotelReviewController::class, 'store']);
 Route::get('hotels/{hotel_id}/reviews', [HotelReviewController::class, 'show']);
 Route::get('/hotels/featured/{hotel_id}/rooms/{room_id}/reviews', [HotelReviewController::class, 'getFeaturedHotelRoomReviews']);
 Route::post('reservations', [ReservationController::class, 'store']);
@@ -285,7 +289,6 @@ Route::get('main/food-categories', [FoodCategoryController::class, 'mainCategory
 Route::apiResource('foods', FoodController::class);
 
 // User-specific orders
-Route::get('/orders/myorder', [OrderController::class, 'getUserOrders']);
 
 // Favorites routes
 Route::prefix('favorites')->group(function () {
