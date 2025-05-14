@@ -52,7 +52,7 @@ $user = Auth::guard('admin')->user();
                     <tr>
                         <td>{{ $restaurant->name }}</td>
                         <td>{{ $restaurant->email }}</td>
-                        <td>{{ $restaurant->admin->name }}</td>
+                        <td>{{ $restaurant->admin?$restaurant->admin->name:'' }}</td>
                         <td>{{ $restaurant->phone }}</td>
                         <td>{{ $restaurant->address }}</td>
                         <td><img src="{{ $restaurant->logo }}" width="50" /></td>
