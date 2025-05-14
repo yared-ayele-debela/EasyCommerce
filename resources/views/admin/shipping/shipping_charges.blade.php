@@ -3,47 +3,43 @@
 @php
 $user = Auth::guard('admin')->user();
 @endphp
-<div class="pagetitle bg-light">
-   <nav>
-      <ol class="breadcrumb p-3">
-         <li class="breadcrumb-item"><a href="{{ url('admin/dashboard') }}">Home</a></li>
-         <li class="breadcrumb-item">Shipping Charges
-            Chargess
-         </li>
-      </ol>
-   </nav>
- </div>
- <section class="section">
+
+ <section class="container">
+        <nav class="breadcrumb bg-white shadow-sm py-3 px-4 rounded d-flex justify-content-between align-items-center">
+        <button class="btn btn-outline-primary btn-sm d-flex align-items-center" onclick="history.back()">
+            <i class="bi bi-arrow-left mr-2"></i> &nbsp;
+            <span>Back</span>
+        </button>
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+                <a href="{{ url('admin/dashboard') }}">Home</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Lists of Shipping Charges</li>
+        </ol>
+    </nav>
    <div class="row">
       <div class="col-lg-12">
          <div class="card">
-
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5>All Shipping Charge Lists</h5>
+                  @if ($user && $user->hasPermissionByRole('create_shipping_charge'))
+                  <a class="btn btn-primary" href="{{ url('admin/shipping_create') }}">Add Shipping</a>
+                @endif
+            </div>
             <div class="card-body">
                @if(Session::has('success_message'))
-            <div class=" col-lg-6 alert alert-success alert-dismissible fade show" role="alert">
+                <div class=" col-lg-6 alert alert-success alert-dismissible fade show" role="alert">
                  <i class="bi bi-check-circle me-1">
                  </i>{{ Session::get('success_message') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
                 </button>
              </div>
              @endif
-               <h5 class="card-title">Shipping Data</h5>
-               <ul class="nav nav-tabs pb-4 align-items-end card-header-tabs w-100">
-                <li class="nav-item">
-                  <a class="nav-link active" href=""><i class="fa fa-list mr-2"></i>All Shipping</a>
-                </li>
-                @if ($user && $user->hasPermissionByRole('create_shipping_charge'))
-                  <li class="nav-item bshipping-charges-none">
-                  <a class="nav-link bg-light" href="{{ url('admin/shipping_create') }}"><i class=" fas fa-plus"></i>Add Shipping</a>
-                </li>
-                @endif
-               </ul>
-
-               <table id="example"  class="table datatable">
+               <table id="example" class="table datatable">
                   <thead>
                      <tr>
                         <th scope="col">ID</th>
-                        <th scope="col">City</th>
+                        <th scope="col">Zone</th>
                         <th scope="col">Rate (0g to 500g)</th>
                         <th scope="col">Rate (501g to 1000g)</th>
                         <th scope="col">Rate (1001g to 2000g)</th>
@@ -59,14 +55,13 @@ $user = Auth::guard('admin')->user();
                      <tr>
                         <td>{{ $shipping['id']}}</td>
                         <td>
-                            {{ $shipping['city']}}
+                            {{ $shipping['zone']}}
                         </td>
                         <td>{{ $shipping['0_500g'] }}</td>
                         <td>{{ $shipping['501_1000g'] }}</td>
                         <td>{{ $shipping['1001_2000g'] }}</td>
                         <td>{{ $shipping['2001_5000g'] }}</td>
                         <td>{{ $shipping['above_5000g'] }}</td>
-
                         <td>
                             @if ($user && $user->hasPermissionByRole('edit_shipping_charge'))
                             @if($shipping['status']==1)
@@ -78,7 +73,6 @@ $user = Auth::guard('admin')->user();
 
                         </td>
                         </td>
-
                         <td>
                         <div class="flex">
                             @if ($user && $user->hasPermissionByRole('edit_shipping_charge'))
@@ -94,7 +88,7 @@ $user = Auth::guard('admin')->user();
                   </tbody>
                </table>
                <div class=" pagination-sm">
-                  {{-- {{ $categories->links() }} --}}
+                  {{ $shippingCharges->links() }}
                </div>
             </div>
          </div>

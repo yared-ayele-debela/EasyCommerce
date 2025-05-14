@@ -31,6 +31,7 @@ $user = Auth::guard('admin')->user();
                     <th>SubTotal</th>
                     <th>Discount</th>
                     <th>Delivery Fee</th>
+                    <th>Tax</th>
                     <th>Total</th>
                     <th>Payment Method</th>
                     <th>Order Status</th>
@@ -47,6 +48,7 @@ $user = Auth::guard('admin')->user();
                         <td>{{ $order->subtotal }} ETB</td>
                         <td>{{ $order->discount }} ETB</td>
                         <td>{{ $order->delivery_fee }} ETB</td>
+                        <td>{{ $order->tax? $order->tax:0 }} ETB</td>
                         <td>{{ $order->total }} ETB</td>
                         <td>{{ $order->payment_method }}</td>
                         <td>

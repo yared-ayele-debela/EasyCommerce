@@ -9,6 +9,7 @@ use App\Models\AppSetting;
 use Illuminate\Support\Str;
 use App\Models\CmsPage;
 use App\Models\Country;
+use App\Models\Delivery_Zone;
 use App\Models\EmailTemplate;
 use App\Models\Roles;
 use App\Models\Vendor;
@@ -262,7 +263,8 @@ class AdminController extends Controller
             $cms_pages = CmsPage::get()->toArray();
             $country = Country::where('status', 1)->get();
             $vendorDetails = Vendor::where('id', Auth::guard('admin')->user()->vendor_id)->first()->toArray();
-            return view('admin.vendor.updatevendordetails', compact('vendorDetails', 'country', 'appsettings', 'cms_pages'));
+            $zones=Delivery_Zone::all();
+            return view('admin.vendor.updatevendordetails', compact('zones','vendorDetails', 'country', 'appsettings', 'cms_pages'));
         } catch (\Exception $e) {
             Alert::toast('Error', 'Something is wrong!', 'error');
             return redirect()->back();
@@ -279,6 +281,7 @@ class AdminController extends Controller
                 return redirect()->back();
             }
             $data = $request->all();
+            // dd($data);
             if ($request->hasFile('vendor_image')) {
                 $admin = Auth::guard('admin')->user();
 
@@ -323,7 +326,8 @@ class AdminController extends Controller
                 'address' => $data['vendor_address'],
                 'mobile' => $data['vendor_mobile'],
                 'country' => $data['vendor_country'],
-                'pincode' => $data['vendor_pincode']
+                'pincode' => $data['vendor_pincode'],
+                'zone' =>  $data['zone'],
             ]);
             ActivityLogger::log('Update detail', "user updated their detail information");
 

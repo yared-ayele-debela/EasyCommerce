@@ -55,7 +55,9 @@
                     <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
-                @php $total_price = 0; @endphp
+                @php
+                 $total_price = 0;
+                @endphp
 
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <button type="button" class="btn btn-outline-primary fw-bold px-4 py-2" id="toggleItems">
@@ -103,44 +105,46 @@
                 <div class="summary-card mt-3">
                     <div class="d-flex justify-content-between mb-2">
                         <span><strong>Subtotal</strong></span>
-                        <span><strong>{{ App\Helper\Helper::currency_converter($total_price) }}</strong></span>
+                        <span><strong>{{ $total_price }} ETB</strong></span>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span><strong>Shipping</strong></span>
-                        <strong><span id="shippingFeeDisplay">0 ETB</span></strong>
+                        <strong><span id="shippingFeeDisplay">{{ $totalShipping }} ETB</span></strong>
                     </div>
-
                     <div class="d-flex justify-content-between mb-2">
                         <span><strong>Coupon Discount</strong></span>
                         <span>
                             <strong>
                                 @if(Session::has('couponAmount'))
-                                <span class="couponAmount">{{ App\Helper\Helper::currency_converter(Session::get('couponAmount')) }}</span>
+                                <span class="couponAmount">{{ Session::get('couponAmount') }}</span>
                                 @else
-                                {{ App\Helper\Helper::currency_converter(0) }}
+                                 0
                                 @endif
                             </strong>
                         </span>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span><strong>Tax</strong></span>
-                        <span><strong>{{ App\Helper\Helper::currency_converter($totalTax) }}</strong></span>
+                        <span><strong>{{ $totalTax }}</strong></span>
                     </div>
                     <div class="line"></div>
-                    @php $grand_total = $total_price + $totalTax - Session::get('couponAmount'); @endphp
+                    @php
+                    $discount = Session::has('couponAmount',0);
+                    $grand_total = $total_price + $totalShipping+ $totalTax - Session::get('couponAmount');
+                    @endphp
                     <div class="d-flex justify-content-between">
                         <span><strong>Total</strong></span>
-                        <span class="grand_total"><strong>{{ App\Helper\Helper::currency_converter($grand_total) }}</strong></span>
+                        <span class="total"><strong>{{ $grand_total }} ETB</strong></span>
                     </div>
                     <div class="delivery-location mt-3 p-3">
                         <h6 class="fw-bold text-dark mb-2">Payment Method</h6>
                         <div class="payment-methods">
-                            <label type="button" class="payment-method shadow-sm rounded-3 p-3 text-center" data-bs-toggle="modal" data-bs-target="#modalId">
+                            <label type="button" class="payment-method bg-white shadow-sm rounded-3 p-3 text-center" data-bs-toggle="modal" data-bs-target="#modalId">
                                 <input type="radio" name="payment_method" value="bank_transfer" class="d-none">
-                                <img src="{{ asset('restaurant_frontend/assets/img/bank.png') }}" alt="Bank Transfer" width="35" class="mb-2">
+                                <img src="{{ asset('restaurant_frontend/assets/img/bank.jpg') }}" alt="Bank Transfer" width="200" class="mb-2">
                                 <div class="fw-semibold">Bank Transfer</div>
                             </label>
-                            <label class="payment-method shadow-sm rounded-3 p-3 text-center">
+                            <label class="payment-method shadow-sm bg-white rounded-3 p-3 text-center">
                                 <input type="radio" name="payment_method" value="cash_on_delivery" class="d-none">
                                 <img src="{{ asset('restaurant_frontend/assets/img/cash.png') }}" alt="Cash on Delivery" width="35" class="mb-2">
                                 <div class="fw-semibold">Cash on Delivery</div>
@@ -153,19 +157,21 @@
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
                         <span id="payment-error" class="text-danger d-none">Please select a payment method.</span>
+                          <h6 class="fw-bold text-dark mb-2">Tip For Driver</h6>
+                            <input type="hidden" name="tip_option" id="selected_tip" value="0"> <!-- Default selected -->
+                            <div class="tip-options" id="tipOptions">
+                                <div class="tip-option shadow-sm selected" data-tip="0">No</div>
+                                @foreach($tips as $tip)
+                                    <div class="tip-option shadow-sm" data-tip="{{ $tip->amount }}">
+                                        {{ $tip->amount }} Birr
+                                    </div>
+                                @endforeach
+                                <div class="tip-option shadow-sm" data-tip="custom">Custom</div>
+                            </div>
+                            <div id="custom-tip-container">
+                                <input type="number" name="custom_tip_amount" class="form-control w-100 shadow-sm" id="custom_tip_amount" placeholder="0" min="1">
+                            </div>
                     </div>
-
-                    <div class="form-check mt-2">
-                        <input class="form-check-input" type="checkbox" name="accept" id="accept" required>
-                        <label class="form-check-label" for="accept">
-                            I agree to the <a href="#" class="text-primary">Terms & Conditions</a>
-                        </label>
-                        @error('accept')
-                        <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-
                     <div class="modal fade" id="modalId" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg" role="document">
                             <div class="modal-content">
@@ -180,18 +186,24 @@
                                         <input type="hidden" name="id" value="">
                                         <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
                                         <label for="bank" class="form-label">Select Bank</label>
-                                        <select class="form-select" name="bank_name">
+                                        <select class="form-select" name="bank_name" id="bank-select">
                                             <option value="" selected disabled>-- Choose Bank --</option>
-                                            <option value="CBE">Commercial Bank of Ethiopia</option>
-                                            <option value="Awash">Awash Bank</option>
-                                            <option value="Dashen">Dashen Bank</option>
+                                            @foreach ($banks as $bank)
+                                            <option value="{{ $bank->bank_name }}" data-account="{{ $bank->account_number }}">{{ $bank->bank_name }} | {{ $bank->account_number }}</option>
+                                            @endforeach
                                         </select>
                                         @error('bank_name')
                                         <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
+                                     <div id="account-info" class="my-2 alert alert-light" style="display: none;">
+                                        <div class="d-flex justify-content-between">
+                                        <span>Account Number: <strong id="account-number"></strong></span>
+                                        <button type="button" class="btn btn-sm btn-outline-primary ms-2" onclick="copyAccountNumber()"><i class="bi bi-copy"></i></button>
+                                        </div>
+                                    </div>
                                     <div class="mb-2">
-                                        <label for="transaction_number" class="form-label">Transaction Number</label>
+                                        <label for="transaction_number" class="form-label">Transaction Number (Optional)</label>
                                         <input type="text" name="transaction_number" class="form-control">
                                         @error('transaction_number')
                                         <span class="text-danger">{{ $message }}</span>
@@ -215,12 +227,18 @@
                     </div>
                     <button type="submit" class="checkout-btn border-0 bg-primary w-100 mt-3 text-white py-2">Place Order</button>
                     <div id="orderResponse"></div>
-
                 </div>
             </div>
         </div>
     </form>
 </div>
+@php
+    $safeTotal = is_numeric($total_price) ? $total_price : 0;
+    $safeDiscount = is_numeric($discount) ? $discount : 0;
+    $safeDelivery = is_numeric($totalShipping) ? $totalShipping : 0;
+    $safeTax = is_numeric($totalTax) ? $totalTax : 0;
+@endphp
+
 @include('all_frontend_layouts.partials.delivery_address_modal')
 <script>
     const myModal = new bootstrap.Modal(
@@ -230,7 +248,57 @@
 </script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tipOptions = document.querySelectorAll('.tip-option');
+        const selectedTipInput = document.getElementById('selected_tip');
+        const customInputContainer = document.getElementById('custom-tip-container');
+        const customInputField = customInputContainer.querySelector('input[name="custom_tip_amount"]');
 
+        const subtotal = parseFloat(@json($safeTotal));
+        const discount = parseFloat(@json($safeDiscount));
+        const deliveryFee = parseFloat(@json($safeDelivery));
+        const tax = parseFloat(@json($safeTax));
+        const totalDisplay = document.querySelector('.total');
+
+        function updateTotal(tipAmount = 0) {
+            const total = Math.max((subtotal - discount), 0) + deliveryFee + tax + parseFloat(tipAmount || 0);
+            totalDisplay.innerHTML = `<strong>${total.toFixed(2)} ETB</strong>`;
+        }
+
+        tipOptions.forEach(option => {
+            option.addEventListener('click', function () {
+                tipOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                const tipValue = this.dataset.tip;
+                if (tipValue === 'custom') {
+                    customInputField.addEventListener('input', function () {
+                        if (document.querySelector('.tip-option.selected')?.dataset.tip === 'custom') {
+                                selectedTipInput.value = this.value;
+                                updateTotal(this.value);
+                            }
+                    });
+                    customInputContainer.style.display = 'block';
+                    customInputField.focus();
+                } else {
+                    selectedTipInput.value = tipValue;
+                    customInputContainer.style.display = 'none';
+                    updateTotal(tipValue);
+                }
+            });
+        });
+
+        customInputField.addEventListener('input', function () {
+            if (document.querySelector('.tip-option.selected')?.dataset.tip === 'custom') {
+                selectedTipInput.value = this.value;
+                // updateTotal(this.value);
+            }
+        });
+        // Init total with default selected tip
+        const initialTip = document.querySelector('.tip-option.selected')?.dataset.tip || 0;
+        updateTotal(initialTip);
+    });
+</script>
 <script>
  // JavaScript to handle payment method selection
  document.querySelectorAll('.payment-method').forEach(method => {
@@ -250,7 +318,7 @@
             this.classList.add('selected');
         });
     });
-    
+
      $('#placeOrderForm').on('submit', function(e) {
       e.preventDefault();
     const form = this;
@@ -449,24 +517,24 @@
         });
     });
 // Listen for radio selection
-$('#addressContainer').on('change', '.address-radio', function () {
-    const addressId = $(this).val();
+// $('#addressContainer').on('change', '.address-radio', function () {
+//     const addressId = $(this).val();
 
-    $.ajax({
-        url: "{{ url('/ecommerce/calculate-shipping') }}",
-        method: "POST",
-        data: {
-            _token: "{{ csrf_token() }}",
-            address_id: addressId
-        },
-        success: function(response) {
-            $('#shippingFeeDisplay').text(`${response.fee} ETB`);
-        },
-        error: function() {
-            alert("Failed to calculate shipping fee.");
-        }
-    });
-});
+//     $.ajax({
+//         url: "{{ url('/ecommerce/calculate-shipping') }}",
+//         method: "POST",
+//         data: {
+//             _token: "{{ csrf_token() }}",
+//             address_id: addressId
+//         },
+//         success: function(response) {
+//             $('#shippingFeeDisplay').text(`${response.fee} ETB`);
+//         },
+//         error: function() {
+//             alert("Failed to calculate shipping fee.");
+//         }
+//     });
+// });
 
 </script>
 @endsection

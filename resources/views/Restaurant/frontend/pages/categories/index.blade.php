@@ -11,12 +11,7 @@
     <div class="row g-3 my-3">
         @foreach ($categories as $category)
         <div class="col-md-2 col-6">
-            <div class="category-item">
-                <a href="{{ url('restaurant/category/'.$category->id) }}">
-                    <img src="{{ $category->image }}" class="p-2 shadow" style="border:4px solid rgb(162, 159, 159);" alt="American">
-                    <p class="text-dark">{{ $category->name }}</p>
-                </a>
-            </div>
+          <x-restaurant.category-card :category="$category" />
         </div>
         @endforeach
         <div class="col-12">

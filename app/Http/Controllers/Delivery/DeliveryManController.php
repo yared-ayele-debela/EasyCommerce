@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Delivery;
 
+use App\Helper\Helper;
 use App\Http\Controllers\Admin\AssingOrderToDeliveryBoy;
 use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
@@ -13,6 +14,8 @@ use App\Models\CustomOrder;
 use App\Models\Delivery_Man_Type;
 use App\Models\Delivery_Zone;
 use App\Models\DeliveryMan;
+use App\Models\DeliveryManCommission;
+use App\Models\DeliveryManWithdrawRequest;
 use App\Models\Email;
 use App\Models\EmailTemplate;
 use App\Models\FastOrders;
@@ -64,11 +67,13 @@ class DeliveryManController extends Controller
        if (auth()->guard('deliverymen')->attempt($request->only('email', 'password'))) {
           Alert::toast('Welcome to your dashboard','success');
         return redirect()->route('delivery_man.dashboard');
-       }
-    //    dd($request->all());
+       }else{
+
 
        Alert::toast('Invalid Email or Password','error');
        return back()->withErrors(['email' => 'Invalid credentials']);
+              }
+
     // } catch (\Illuminate\Validation\ValidationException $e) {
     //     // Laravel's built-in validation exception
     //     return redirect()->back()->withErrors($e->validator->errors())->withInput();
@@ -397,6 +402,8 @@ class DeliveryManController extends Controller
     public function index(){
        try{
 
+        $deliveryManId=Auth::guard('deliverymen')->user()->id;
+
         $deliveryBoy = DeliveryMan::where('id',Auth::guard('deliverymen')->user()->id)->first();
         $orders = Order::with('orders_products')->where('delivery_boy_id',$deliveryBoy->id)->orderBy( 'created_at', 'desc')->take(4)->get()->toArray();
         $shipped_orders = Order::with('orders_products')->where('delivery_boy_id',$deliveryBoy->id)->where('order_status','Shipped')->count();
@@ -408,12 +415,30 @@ class DeliveryManController extends Controller
         $custom_order= CustomOrder::all()->where('delivery_boy_id',$deliveryBoy->id)->count();
 
         $stock_transfer_product=AssignStockProduct::all()->where('delivery_man_id',$deliveryBoy->id)->count();
-        // dd($stock_transfer_product);
-        // $fast_orders=FastOrders::with('user')->where('delivery_boy_id',$deliveryBoy->id)->get()->toArray();
-        // dd($fast_orders);
+
         $appsettings=AppSetting::all()->toArray();
 
-        return view('delivery_man.admin_dashboard.index',compact('stock_transfer_product','custom_order','allorders','appsettings','orders','deliverd_orders','pending_orders','paid_orders','new_orders','shipped_orders'));
+        // Total commissions
+        $men=DeliveryMan::where('id',$deliveryManId)->first();
+        $available_to_withdraw=$men->total_earn;
+
+        $totalEarned = DeliveryManCommission::where('delivery_man_id', $deliveryManId)
+            ->whereIn('status', ['earned', 'withdrawn','pending']) // total earned
+            ->sum('commission_amount');
+
+        // Available for withdrawal
+        $withdrawn = $totalEarned- $men->total_earn;
+
+
+        // Pending withdraw requests
+        $pendingWithdraw = DeliveryManWithdrawRequest::where('delivery_man_id', $deliveryManId)
+            ->where('status', 'pending')
+            ->sum('amount');
+
+        // Withdraw history
+        $withdrawals = DeliveryManWithdrawRequest::where('delivery_man_id', $deliveryManId)
+            ->latest()->get();
+        return view('delivery_man.admin_dashboard.index',compact('available_to_withdraw','stock_transfer_product','custom_order','allorders','appsettings','orders','deliverd_orders','pending_orders','paid_orders','new_orders','shipped_orders', 'totalEarned', 'withdrawn', 'pendingWithdraw', 'withdrawals'));
         } catch (\Exception $e) {
             // Log or handle the exception as needed
             Alert::toast('something is wrong!!','error');
@@ -458,7 +483,6 @@ class DeliveryManController extends Controller
          foreach ($orderDetails['orders_products'] as $product){
              $total_items=$total_items+$product['product_qty'];
          }
-         //Calculate Item Discount
          if($orderDetails['coupon_amount']>0){
              $item_discount=round($orderDetails['coupon_amount']/$total_items,2);
          }else{
@@ -489,32 +513,30 @@ class DeliveryManController extends Controller
             $data=$request->all();
 
             if ($data['order_status'] == 'Delivered' || $data['order_status'] == 'Paid') {
-
-                // if($data['order_status']=="Paid"){
-                //     $order = Order::where('id', $data['order_id'])->first();
-                //     $payment_id=Str::random(16);
-                //     // dd($payment_id);
-                //     $payment =new Payment();
-                //     $payment->order_id=$order['id'];
-                //     $payment->user_id=$order['user_id'];
-                //     $payment->payment_id=$payment_id;
-                //     $payment->payer_id=$order['user_id'];
-                //     $payment->payer_email=$order['email'];
-                //     $payment->amount=$order['grand_total'];
-                //     $payment->currency='Birr';
-                //     $payment->payment_status='approved';
-                //     $payment->save();
-                // }
                 $order = Order::where('id', $data['order_id'])->first();
                 if ($order->order_code == $data['user_code']) {
                     Order::where('id',$data['order_id'])
                     ->update(['order_status'=>$data['order_status']]);
                     $deliveryBoy = DeliveryMan::find(Auth::guard('deliverymen')->user()->id)->first();
-                    //   dd($deliveryBoy);
-                    if ($deliveryBoy) {
-                        $deliveryBoy->status = "available";
-                        $deliveryBoy->save();
-                    }
+
+                    // $commissionAmount = Helper::calculateDeliveryCommission($order); // e.g., flat or % based
+
+                    // if ($deliveryBoy) {
+                    //     $deliveryBoy->status = "available";
+                    //     $deliveryBoy->total_earn+=$commissionAmount;
+                    //     $deliveryBoy->save();
+                    // }
+
+
+                    // dd($commissionAmount);
+                    // DeliveryManCommission::create([
+                    //     'delivery_man_id' => $deliveryBoy->id,
+                    //     'order_type' =>'goods',
+                    //     'order_id' => $order->id,
+                    //     'commission_amount' => $commissionAmount,
+                    //     'status' => 'pending'
+                    // ]);
+
                     //udate courier Name and Tracking Number
                     if(!empty($data['courier_name'])&&!empty($data['tracking_number'])){
                         Order::where('id',$data['order_id'])->update([

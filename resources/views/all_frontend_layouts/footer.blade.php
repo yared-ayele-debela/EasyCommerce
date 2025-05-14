@@ -166,6 +166,58 @@ $cartCount = $sessionCount + $helperCount;
 <script src="{{ asset('restaurant_frontend/assets/js/index.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
 <script>
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            const userLat = position.coords.latitude;
+            const userLng = position.coords.longitude;
+
+            // Now send the coordinates to the server via AJAX
+            fetch(`/set-user-location`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ lat: userLat, lng: userLng })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // location.reload(); // refresh to show distances
+            });
+        });
+    } else {
+        console.log("Geolocation is not supported by this browser.");
+    }
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const select = document.getElementById('bank-select');
+        const infoDiv = document.getElementById('account-info');
+        const accountNumberEl = document.getElementById('account-number');
+
+        select.addEventListener('change', function () {
+            const selectedOption = select.options[select.selectedIndex];
+            const accountNumber = selectedOption.getAttribute('data-account');
+
+            if (accountNumber) {
+                accountNumberEl.textContent = accountNumber;
+                infoDiv.style.display = 'block';
+            } else {
+                infoDiv.style.display = 'none';
+            }
+        });
+    });
+
+    function copyAccountNumber() {
+        const number = document.getElementById('account-number').textContent;
+        navigator.clipboard.writeText(number).then(() => {
+            showAlert('success','Account Number copied!');
+        });
+    }
+</script>
+
+<script>
     let pages = 1;
     let loadings = false;
 

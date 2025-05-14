@@ -36,7 +36,7 @@
     }
 
 </style>
-<div class="container">
+<div class="container p-6 p-sm-2">
     <div class="header">
         <button class="btn btn-link text-dark" onclick="history.back()">
             <i class="bi bi-arrow-left"></i>
@@ -109,7 +109,9 @@
                             @endphp
                             <span><span class="bi bi-star-fill text-primary"></span> {{ number_format($averageRating, 1) }}</span>
                         </span>
-                        <span class="text-dark">20min</span>
+                        @if($product->delivery_time>0)
+                        <span class="text-dark">{{ $product->delivery_time}} min</span>
+                        @endif
                     </h4>
                     <p class="card-text text-dark">{{ $product->description }}</p>
                     <div class="d-flex justify-content-between align-items-center">
@@ -181,48 +183,7 @@
         </div>
         <div class="owl-carousel owl-theme products mt-4">
             @foreach ($related_products as $product)
-            <div class="item my-2">
-                <div class="offer-card p-3 h-100">
-                    <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}" class="text-decoration-none text-dark d-block">
-                        @php
-                        $off = $product->price - $product->getFinalPrice();
-                        @endphp
-                        @if($off > 0)
-                        <div class="btn btn-sm btn-primary">
-                            {{ $off }} ETB OFF
-                        </div>
-                        @endif
-                        @php
-                            // Safely extract relative storage path from full URL or asset path
-                            $parsedPath = $product->image ? parse_url($product->image, PHP_URL_PATH) : null;
-                            $relativePath = $parsedPath ? str_replace('storage/', '', ltrim($parsedPath, '/')) : null;
-                        @endphp
-
-                        @if($relativePath && Storage::disk('public')->exists($relativePath))
-                            <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
-                        @else
-                            <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" alt="No Image">
-                        @endif
-
-                        <h6 class="text-dark">{{ $product->name }}</h6>
-                        <p class="mb-0">
-                            <span class="price">{{ $product->getFinalPrice() }} ETB</span>
-                            <span class="price-old">{{ $product->price }} ETB</span>
-                        </p>
-                    </a>
-                    <div class="hover-buttons">
-                        <button onclick="window.location.href='{{ url('restaurant/product-detail/'.encrypt($product->id)) }}'" class="btn-view">
-                            <i class="bi bi-eye-fill"></i>
-                        </button>
-                        <button class="btn-cart add-to-cart" data-product="{{ $product->id }}">
-                            <i class="bi bi-cart-check-fill"></i>
-                        </button>
-                        <button class="btn-wishlist add-to-wishlist" data-product="{{ $product->id }}">
-                            <i class="bi bi-heart text-white"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
+             <x-restaurant.product-card :product="$product" />
             @endforeach
         </div>
     </div>

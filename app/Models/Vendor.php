@@ -18,6 +18,7 @@ class Vendor extends Model
             'state',
             'country',
             'pincode',
+            'zone',
             'mobile',
             'email',
             'status',
@@ -67,5 +68,5 @@ class Vendor extends Model
             return $this->hasMany(WithdrawalRequest::class, 'vendor_id');
         }
 
-       
+
 }

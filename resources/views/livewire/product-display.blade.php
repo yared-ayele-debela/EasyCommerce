@@ -48,7 +48,14 @@
                         @foreach ($products as $k => $product)
                         <tr>
                             <td>{{ $product['id'] }}</td>
-                            <td>{{ $product['product_name']}}</td>
+                            <td>{{ $product['product_name']}}
+                                   @php
+                                    $hasStock = $product['attributes'];
+                                    @endphp
+                                    @if(!$hasStock)
+                                        <span class="bg-secondary position-absolute badge bg-danger m-2" style="z-index: 1100;">Out of Stock</span>
+                                    @endif
+                            </td>
                             <td>{{ $product['product_code']}}</td>
                             <td>
                                 @if (!empty($product['product_image']))

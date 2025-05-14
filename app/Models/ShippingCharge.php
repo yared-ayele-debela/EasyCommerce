@@ -8,15 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class ShippingCharge extends Model
 {
     protected $table="shipping_charges";
-    protected $fillable=['city','0_500g','501_1000g','1001_2000g','2001_5000g','above_5000g'];
+    protected $fillable=['zone','0_500g','501_1000g','1001_2000g','2001_5000g','above_5000g'];
 
     use HasFactory;
 
     // app/Models/ShippingCharge.php
-    public static function getShippingCharges($totalWeight, $city)
+    public static function getShippingCharges($totalWeight, $zone)
     {
-        $shipping = self::where('city', $city)->first();
-
+        $zone = trim($zone); // removes leading/trailing whitespace and hidden characters
+        $shipping = ShippingCharge::where('zone', $zone)->first();
         if (!$shipping || $totalWeight <= 0) {
             return 0;
         }
@@ -30,7 +30,5 @@ class ShippingCharge extends Model
             default => 0,
         };
     }
-
-
 
 }

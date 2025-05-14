@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Hotel\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Mail\ReservationConfirmationMail;
+use App\Models\Bank;
 use App\Models\HotelCoupon;
 use App\Models\HotelReservationPaymentInfo;
+use App\Models\HotelReview;
 use App\Models\Reservation;
 use App\Models\Room;
 use App\Models\User;
@@ -32,7 +34,7 @@ class ReservationController extends Controller
             'room_id' => 'required|exists:rooms,id',
             'user_id' => 'required|exists:users,id',
             'bank_name' => 'required|string',
-            'transaction_number' => 'nullable|string',
+            'transaction_number' => 'nullable',
             'receipt' => 'nullable|max:2048',
             'coupon_code' => 'nullable|string',
         ]);
@@ -98,8 +100,10 @@ class ReservationController extends Controller
         ]);
 
         $room = Room::findOrFail($request->room_id);
+        $av_rating=HotelReview::where('room_id',$room->id)->avg('rating');
 
-        return view('Hotel.frontend.pages.reservations.preview', compact('validated', 'room'));
+        $banks=Bank::all();
+        return view('Hotel.frontend.pages.reservations.preview', compact('validated', 'room','banks','av_rating'));
     }
 
 

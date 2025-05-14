@@ -34,6 +34,7 @@ use App\Http\Controllers\Admin\OrdersController;
 use App\Http\Controllers\Admin\AdvertisementController;
 use App\Http\Controllers\Admin\AppSettingController;
 use App\Http\Controllers\Admin\AssingOrderToDeliveryBoy;
+use App\Http\Controllers\Admin\BankController;
 use App\Http\Controllers\Admin\Blog\BlogsCategoryController;
 use App\Http\Controllers\Admin\Blog\BlogsCommmentController;
 use App\Http\Controllers\Admin\Blog\BlogsController;
@@ -47,6 +48,7 @@ use App\Http\Controllers\Admin\DeliveryMan\DeliveryManTypeController;
 use App\Http\Controllers\Admin\DeliveryMan\DeliveryZoneController;
 use App\Http\Controllers\Admin\DeliveryMan\VehicleTypeController;
 use App\Http\Controllers\Admin\DeliveryManController;
+use App\Http\Controllers\Admin\DeliveryManWithdrawController;
 use App\Http\Controllers\Admin\DiscountManagementController;
 use App\Http\Controllers\Admin\EmailTemplateController;
 use App\Http\Controllers\Admin\FaqController;
@@ -55,6 +57,7 @@ use App\Http\Controllers\Admin\FlashDealController;
 use App\Http\Controllers\Admin\InvoiceSettingController;
 use App\Http\Controllers\Admin\NewletterSubscriberController;
 use App\Http\Controllers\Admin\OfferController;
+use App\Http\Controllers\Admin\OutOfStockProductController;
 use App\Http\Controllers\Admin\PermissionCategoriesController;
 use App\Http\Controllers\Admin\PermissionsController;
 use App\Http\Controllers\Admin\ProductTransferController;
@@ -80,6 +83,7 @@ use App\Http\Controllers\Admin\StreetController;
 use App\Http\Controllers\Admin\SubCityController;
 use App\Http\Controllers\Admin\SubscriptionController;
 use App\Http\Controllers\Admin\TaxController;
+use App\Http\Controllers\Admin\TipSettingsController;
 use App\Http\Controllers\Admin\TransactionsController;
 use App\Http\Controllers\Admin\TransferRequestController;
 use App\Http\Controllers\Admin\WereHouseController;
@@ -97,6 +101,8 @@ use App\Http\Controllers\Admin\VendorController;
 use App\Http\Controllers\Admin\VendorNotificationController;
 use App\Http\Controllers\Admin\VendorWithdrawRequestController;
 use App\Http\Controllers\Admin\WithdrawSettingController;
+use App\Http\Controllers\Delivery\OrderController as DeliveryOrderController;
+use App\Http\Controllers\Delivery\WithdrawController;
 use App\Http\Controllers\Ecommerce\Frontend\BlogController;
 use App\Http\Controllers\Ecommerce\Frontend\CartController as FrontendCartController;
 use App\Http\Controllers\Ecommerce\Frontend\CategoriesController as FrontendCategoriesController;
@@ -560,9 +566,9 @@ Route::group(['middleware' => ['admin', 'check.admin:Ecommerce Manager,vendor']]
         Route::get('dashboard', [DashboardController::class, 'index'])->name('maindashboard');
 
         //for update vendor
-        Route::get('updatevendordetails', [AdminController::class, 'updatevendordetails'])->name('updatevendordetails');
-        Route::get('updatevendorbankdetails', [AdminController::class, 'updatevendorbankdetails'])->name('updatevendorbankdetails');
-        Route::get('updatevendorbusinessdetails', [AdminController::class, 'updatevendorbusinessdetails'])->name('updatevendorbusinessdetails');
+        Route::get('update-vendor-details', [AdminController::class, 'updatevendordetails'])->name('updatevendordetails');
+        Route::get('update-vendor-bank-details', [AdminController::class, 'updatevendorbankdetails'])->name('updatevendorbankdetails');
+        Route::get('update-vendor-business-details', [AdminController::class, 'updatevendorbusinessdetails'])->name('updatevendorbusinessdetails');
 
         Route::put('update_vendor_details', [AdminController::class, 'update_vendor_details'])->name('update_vendor_details');
         Route::put('update_vendor_businessdetails', [AdminController::class, 'update_vendor_businessdetails'])->name('update_vendor_businessdetails');
@@ -880,6 +886,16 @@ Route::group(['middleware' => ['admin', 'check.admin:Ecommerce Manager,vendor']]
         Route::get('all-withdraw-requests', [AdminWithdrawRequestController::class, 'index'])->name('admin.withdrawrequest.index');
         Route::get('tax-settings', [TaxController::class, 'index'])->name('tax-settings.index');
         Route::get('withdraw-settings', [WithdrawSettingController::class, 'index'])->name('withdraw-settings.index');
+
+        Route::get('out-of-products',[OutOfStockProductController::class,'index'])->name('out-of-products');
+
+        Route::resource('tips',TipSettingsController::class)->except(['create', 'edit', 'show']);
+
+        Route::resource('banks', BankController::class)->except(['create', 'edit', 'show']);
+
+         Route::get('/withdrawals', [DeliveryManWithdrawController::class, 'index'])->name('admin.withdrawals');
+        Route::post('/withdrawals/{id}/approve', [DeliveryManWithdrawController::class, 'approve'])->name('admin.withdrawals.approve');
+        Route::post('/withdrawals/{id}/reject', [DeliveryManWithdrawController::class, 'reject'])->name('admin.withdrawals.reject');
     });
 });
 
@@ -897,6 +913,15 @@ Route::get('delivery-boy/reset-password/{token}', [DeliveryDeliveryManController
 Route::match(['get', 'post'], 'delivery-boy/reset-password', [DeliveryDeliveryManController::class, 'ResetPasswordStore'])->name('delivery-man-ResetPasswordPost');
 
 Route::group(['middleware' => 'deliverymen'], function () {
+
+    Route::post('/delivery/accept/{id}', [DeliveryOrderController::class, 'accept'])->name('delivery.accept');
+    Route::post('/delivery/decline/{id}', [DeliveryOrderController::class, 'decline'])->name('delivery.decline');
+    Route::get('/delivery/restaurant-orders', [DeliveryOrderController::class, 'orders'])->name('delivery.restaurant-orders');
+    Route::post('/notification/{id}/seen', [DeliveryOrderController::class, 'markNotificationSeen'])->name('delivery.markNotificationSeen');
+    Route::post('/delivery/mark-delivered/{orderId}', [DeliveryOrderController::class, 'verifyDeliveryCode'])->name('delivery.markDelivered');
+
+    Route::post('/delivery/confirm-pickup', [DeliveryOrderController::class, 'confirmPickup'])->name('delivery.pickup.confirm');
+
     Route::get('/delivery-boy/dashboard', [DeliveryDeliveryManController::class, 'index'])->name('delivery_man.dashboard');
     //delviery boy login and registeration
     Route::get('delivery-boy/logout', [DeliveryDeliveryManController::class, 'logout'])->name('delivery-boy-logout');
@@ -921,6 +946,8 @@ Route::group(['middleware' => 'deliverymen'], function () {
     Route::get('delivery-boy/product/stock-transfer/invoice/{id}', [ProductTransferController::class, 'viewinvoice'])->name('delivery-boy-view-stock-tranfer-invoice');
     //invoice for grn
     Route::get('delivery-boy/good-receiving-note/invoice/{id}', [ProductTransferController::class, 'good_receiving_note_invoice'])->name('delivery-boy-good-receiving-note_invoice');
+
+    Route::post('/withdraw-request', [WithdrawController::class, 'requestWithdraw'])->name('delivery.withdraw.request');
 
     Route::controller(DeliveryCustomOrderController::class)->group(function () {
         //for fast orders
@@ -1278,8 +1305,14 @@ Route::middleware('auth')->group(function () {
 
 // routes/web.php
 
-Route::get('/test-500', function () {
-    abort(500); // This triggers the 500 error
+
+// web.php
+Route::post('/set-user-location', function (\Illuminate\Http\Request $request) {
+    session([
+        'user_lat' => $request->lat,
+        'user_lng' => $request->lng
+    ]);
+    return response()->json(['status' => 'Location saved']);
 });
 
 Route::get('/restaurants/nearby', [FrontendRestaurantController::class, 'getNearbyRestaurants']);

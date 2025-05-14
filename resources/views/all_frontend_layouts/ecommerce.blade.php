@@ -395,10 +395,10 @@
                         <span class="text-primary fw-bold">Offer Price</span>
                         @else
                         <h5 class="text-primary fw-bold mb-1">
-                            {{ App\Helper\Helper::currency_converter($hasDiscount ? $getDiscountPrice : $product['product_price']) }}
+                            {{ $hasDiscount ? $getDiscountPrice : $product['product_price'] }}
                             @if($hasDiscount)
                             <small class="text-muted text-decoration-line-through ms-2">
-                                {{ App\Helper\Helper::currency_converter($product['product_price']) }}
+                                {{ $product['product_price'] }}
                             </small>
                             @endif
                         </h5>
@@ -432,7 +432,6 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const endTime = new Date("{{ \Carbon\Carbon::parse($featured_flash_deal->end_date)->format('Y-m-d H:i:s') }}").getTime();
-
             function updateCountdown() {
                 const now = new Date().getTime();
                 const distance = endTime - now;
@@ -475,14 +474,7 @@
     <div class="row text-center mt-3">
         <div class="owl-carousel owl-theme categories mt-4">
             @foreach ($getCategory as $category)
-            <div class="item mb-2">
-                <div class="category-item">
-                    <a href="{{ url('ecommerce/category/'.encrypt($category['id'])) }}">
-                        <img src="{{$category['image'] }}" class="p-2 shadow" style="border:4px solid rgb(162, 159, 159);" alt="{{ $category->name }}">
-                        <p class="text-dark">{{ $category->name }}</p>
-                    </a>
-                </div>
-            </div>
+            <x-category-card :category="$category" />
             @endforeach
         </div>
     </div>
@@ -502,84 +494,12 @@
     <div class="row g-4">
         <div class="owl-carousel owl-theme ecommerce_products mt-4">
             @foreach ($isfeatured as $product)
-            <div class="item mb-2 h-100">
-                <div class="offer-card position-relative shadow-sm rounded-4 overflow-hidden h-100" style="z-index: 1100;">
-                    @php
-                    $hasStock = $product->attributes->sum('stock') > 0;
-                    @endphp
-                    @if(!$hasStock)
-                        <span class="bg-secondary position-absolute badge bg-danger top-0 end-0 p-2 m-2" style="z-index: 1100;">Out of Stock</span>
-                    @endif
-                    @php
-                    $getDiscountPrice = App\Models\Product::getDiscountPrice($product['id']);
-                    $hasDiscount = $getDiscountPrice > 0;
-                    @endphp
-                    @if($hasDiscount)
-                    <span class="badge bg-primary position-absolute top-0 start-0 p-2 m-2" style="z-index: 1100;">
-                        -{{ round(100 - ($getDiscountPrice / $product['product_price']) * 100) }}%
-                    </span>
-                    @endif
-                    <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
-                        @if($product['product_image'])
-                        <img src="{{$product['product_image']}}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
-                        @else
-                        <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
-                        @endif                    </a>
-                    <div class="card-body p-3">
-                        <p class="text-muted small mb-1">{{ $product['product_code'] }} • {{ $product['product_color'] }}</p>
-                        <h6 class="fw-semibold mb-2">
-                            <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}" class="text-dark text-decoration-none">
-                                {{ Str::limit($product['product_name'], 40) }}
-                            </a>
-                        </h6>
-                        @if($product['is_offer_price'] === "yes")
-                        <span class="text-primary fw-bold">Offer Price</span>
-                        @else
-                        <h5 class="text-primary fw-bold mb-1">
-                            {{ App\Helper\Helper::currency_converter($hasDiscount ? $getDiscountPrice : $product['product_price']) }}
-                            @if($hasDiscount)
-                            <small class="text-muted text-decoration-line-through ms-2">
-                                {{ App\Helper\Helper::currency_converter($product['product_price']) }}
-                            </small>
-                            @endif
-                        </h5>
-                        @endif
-                        <div class="text-warning small">
-                            @php
-                                $averageRating = round($product->ratings_avg_rating ?? 0, 1);
-                                $fullStars = floor($averageRating);
-                                $halfStar = ($averageRating - $fullStars) >= 0.5;
-                                $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
-                            @endphp
-
-                            @for ($i = 0; $i < $fullStars; $i++)
-                                <i class="fas fa-star"></i>
-                            @endfor
-
-                            @if ($halfStar)
-                                <i class="fas fa-star-half-alt"></i>
-                            @endif
-
-                            @for ($i = 0; $i < $emptyStars; $i++)
-                                <i class="far fa-star"></i>
-                            @endfor
-
-                            <small class="text-muted">({{ $averageRating }})</small>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
+            <x-product-card :product="$product" />
             @endforeach
         </div>
     </div>
 
-    @if(isset($fixbanners[0]['image']))
-    <a href="{{ $fixbanners[0]['link']}}" target="_blank">
-        <div class="hero rounded-3 my-2 p-4 fix-banner-box" style="background:url({{ $fixbanners[0]['image'] }});" class="img-fluid">
-        </div>
-    </a>
-    @endif
+       <x-fixed-banner :image="$fixbanners[0]['image'] ?? ''" :link="$fixbanners[0]['link'] ?? '#'"/>
 
     <div class="d-flex justify-content-between align-items-center mt-2 pt-4">
         <h3 class="fw-bold">Latest Products</h3>
@@ -595,74 +515,7 @@
     <div class="row g-4">
         <div class="owl-carousel owl-theme ecommerce_products mt-4">
             @foreach ($new_products as $product)
-            <div class="item mb-2 h-100">
-                <div class="offer-card position-relative shadow-sm rounded-4 overflow-hidden h-100">
-                    @php
-                    $hasStock = $product->attributes->sum('stock') > 0;
-                    @endphp
-                    @if(!$hasStock)
-                        <span class="bg-secondary position-absolute badge bg-danger top-0 end-0 p-2 m-2" style="z-index: 1100;">Out of Stock</span>
-                    @endif
-                    @php
-                    $getDiscountPrice = App\Models\Product::getDiscountPrice($product['id']);
-                    $hasDiscount = $getDiscountPrice > 0;
-                    @endphp
-                    @if($hasDiscount)
-                    <span class="badge bg-primary position-absolute top-0 start-0 p-2 m-2" style="z-index: 1100;">
-                        -{{ round(100 - ($getDiscountPrice / $product['product_price']) * 100) }}%
-                    </span>
-                    @endif
-                    <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
-                        @if($product['product_image'])
-                        <img src="{{ $product['product_image'] }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
-                        @else
-                        <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
-                        @endif
-                    </a>
-                    <div class="card-body p-3">
-                        <p class="text-muted small mb-1">{{ $product['product_code'] }} • {{ $product['product_color'] }}</p>
-                        <h6 class="fw-semibold mb-2">
-                            <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}" class="text-dark text-decoration-none">
-                                {{ Str::limit($product['product_name'], 40) }}
-                            </a>
-                        </h6>
-                        @if($product['is_offer_price'] === "yes")
-                        <span class="text-primary fw-bold">Offer Price</span>
-                        @else
-                        <h5 class="text-primary fw-bold mb-1">
-                            {{ App\Helper\Helper::currency_converter($hasDiscount ? $getDiscountPrice : $product['product_price']) }}
-                            @if($hasDiscount)
-                            <small class="text-muted text-decoration-line-through ms-2">
-                                {{ App\Helper\Helper::currency_converter($product['product_price']) }}
-                            </small>
-                            @endif
-                        </h5>
-                        @endif
-                        <div class="text-warning small">
-                            @php
-                                $averageRating = round($product->ratings_avg_rating ?? 0, 1);
-                                $fullStars = floor($averageRating);
-                                $halfStar = ($averageRating - $fullStars) >= 0.5;
-                                $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
-                            @endphp
-
-                            @for ($i = 0; $i < $fullStars; $i++)
-                                <i class="fas fa-star"></i>
-                            @endfor
-
-                            @if ($halfStar)
-                                <i class="fas fa-star-half-alt"></i>
-                            @endif
-
-                            @for ($i = 0; $i < $emptyStars; $i++)
-                                <i class="far fa-star"></i>
-                            @endfor
-
-                            <small class="text-muted">({{ $averageRating }})</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <x-product-card :product="$product" />
             @endforeach
         </div>
     </div>
@@ -682,84 +535,13 @@
 <div class="container-fluid">
     <div class="row g-4">
         <div class="owl-carousel owl-theme ecommerce_products mt-4">
-            @foreach ($discountedproduct as $product)
-            <div class="item mb-2 h-100">
-                <div class="offer-card position-relative shadow-sm rounded-4 overflow-hidden h-100">
-                    @php
-                    $hasStock = $product->attributes->sum('stock') > 0;
-                    @endphp
-                    @if(!$hasStock)
-                        <span class="bg-secondary position-absolute badge bg-danger top-0 end-0 p-2 m-2" style="z-index: 1100;">Out of Stock</span>
-                    @endif
-                    @php
-                    $getDiscountPrice = App\Models\Product::getDiscountPrice($product['id']);
-                    $hasDiscount = $getDiscountPrice > 0;
-                    @endphp
-                    @if($hasDiscount)
-                    <span class="badge bg-primary position-absolute top-0 start-0 p-2 m-2" style="z-index: 1100;">
-                        -{{ round(100 - ($getDiscountPrice / $product['product_price']) * 100) }}%
-                    </span>
-                    @endif
-                    <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
-                        @if (!empty($product['product_image']))
-                        <img src="{{ $product['product_image'] }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
-                        @else
-                        <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
-                        @endif                    </a>
-                    <div class="card-body p-3">
-                        <p class="text-muted small mb-1">{{ $product['product_code'] }} • {{ $product['product_color'] }}</p>
-                        <h6 class="fw-semibold mb-2">
-                            <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}" class="text-dark text-decoration-none">
-                                {{ Str::limit($product['product_name'], 40) }}
-                            </a>
-                        </h6>
-                        @if($product['is_offer_price'] === "yes")
-                        <span class="text-primary fw-bold">Offer Price</span>
-                        @else
-                        <h5 class="text-primary fw-bold mb-1">
-                            {{ App\Helper\Helper::currency_converter($hasDiscount ? $getDiscountPrice : $product['product_price']) }}
-                            @if($hasDiscount)
-                            <small class="text-muted text-decoration-line-through ms-2">
-                                {{ App\Helper\Helper::currency_converter($product['product_price']) }}
-                            </small>
-                            @endif
-                        </h5>
-                        @endif
-                        <div class="text-warning small">
-                            @php
-                                $averageRating = round($product->ratings_avg_rating ?? 0, 1);
-                                $fullStars = floor($averageRating);
-                                $halfStar = ($averageRating - $fullStars) >= 0.5;
-                                $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
-                            @endphp
-
-                            @for ($i = 0; $i < $fullStars; $i++)
-                                <i class="fas fa-star"></i>
-                            @endfor
-
-                            @if ($halfStar)
-                                <i class="fas fa-star-half-alt"></i>
-                            @endif
-
-                            @for ($i = 0; $i < $emptyStars; $i++)
-                                <i class="far fa-star"></i>
-                            @endfor
-
-                            <small class="text-muted">({{ $averageRating }})</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @foreach($discountedproduct as $product)
+                <x-product-card :product="$product" />
             @endforeach
         </div>
     </div>
+    <x-fixed-banner :image="$fixbanners[1]['image'] ?? ''" :link="$fixbanners[1]['link'] ?? '#'"/>
 
-    @if(isset($fixbanners[1]['image']))
-    <a href="{{ $fixbanners[1]['link']}}" target="_blank">
-        <div class="hero rounded-3 my-2 p-4 fix-banner-box" style="background:url({{ $fixbanners[1]['image'] }});" class="img-fluid">
-        </div>
-    </a>
-    @endif
 </div>
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mt-2 pt-4">
@@ -771,39 +553,7 @@
     <div class="row g-4">
         <div class="owl-carousel owl-theme vendors mt-4">
             @foreach ($allvendor as $vendor)
-            <div class="item mb-2 h-100">
-                <div class="offer-card h-100 rounded-2">
-                    <div class="shop-banner-container position-relative">
-                        @if(!empty($vendor->vendorbusinessdetails['shop_image']))
-                        <img src="{{ $vendor->vendorbusinessdetails['shop_image'] }}" class="w-100 " style="height: 150px; object-fit: cover;" alt="Shop Banner">
-                        @else
-                        <img src="{{ asset('banner.png') }}" class="w-100 " style="height: 120px; object-fit: cover;" alt="Shop Banner">
-                        @endif
-                        <div class="position-absolute bottom-0 start-0 translate-middle-y ms-3 mb-1">
-                            @if(!empty($vendor->adminvendor['image']))
-                            <img src="{{ $vendor->adminvendor['image'] }}" class="rounded-circle border border-2" width="60" height="60" style="object-fit: cover;" alt="Vendor Image">
-                            @else
-                            <img src="{{ asset('no_vendor.png') }}" class="rounded-circle border border-2" width="60" height="60" style="object-fit: cover;" alt="Vendor Image">
-                            @endif
-                        </div>
-                    </div>
-                    <div class="card-body pt-4">
-                        <h5 class="fw-bold text-primary">{{ $vendor->name }}</h5>
-
-                        <p class="text-muted small mb-2">
-                            {{ Str::limit($vendor->vendorbusinessdetails['shop_name'] ?? 'Shop Name not available', 40) }}
-                        </p>
-                        <div class="d-flex flex-wrap gap-2">
-                            <a href="{{ url('/vendor/detail/'.encrypt($vendor->id)) }}" class="btn btn-sm btn-primary ">
-                                Products ({{ $vendor->products_count }})
-                            </a>
-                            <a href="{{ url('/vendor/detail/'.encrypt($vendor->id)) }}" class="btn btn-sm btn-outline-primary ">
-                                Reviews ({{ $vendorRatingsCount[$vendor->id] ?? 0 }})
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                <x-vendor-card :vendor="$vendor" :review-count="$vendorRatingsCount[$vendor->id] ?? 0" />
             @endforeach
         </div>
     </div>
@@ -817,17 +567,7 @@
     <div class="row text-center mt-2">
         <div class="owl-carousel owl-theme categories mt-4">
             @foreach ($allbrands as $brand)
-            <div class="item mb-2">
-                <div class="category-item">
-                    <a href="javascript:void(0);">
-                        @if($brand['image'])
-                        <img src="{{ $brand['image'] }}" class="p-2 shadow" style="border:4px solid rgb(162, 159, 159);" alt="brand">
-                        @else
-                        <img src="{{ asset('new_frontend/images/banners/b1.png') }}" class="p-2 shadow" style="border:4px solid rgb(162, 159, 159);" alt="brand">
-                        @endif
-                    </a>
-                </div>
-            </div>
+               <x-brand-card :brand="$brand" />
             @endforeach
         </div>
     </div>

@@ -8,8 +8,12 @@ use Illuminate\Http\Request;
 use App\Models\Restaurant;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Admin;
+use App\Models\City;
+use App\Models\Country;
+use App\Models\Delivery_Zone;
 use App\Models\Restaurant\Restaurant as RestaurantRestaurant;
 use App\Models\Restaurant\RestaurantImage;
+use App\Models\State;
 use Illuminate\Support\Facades\Auth;
 
 class RestaurantController extends Controller
@@ -18,11 +22,15 @@ class RestaurantController extends Controller
     {
         $adminType = Auth::guard('admin')->user()->type;
         if ($adminType === "Super Admin") {
-            $restaurants = RestaurantRestaurant::with(['admin', 'images'])->latest()->get();
+            $restaurants = RestaurantRestaurant::with(['admin', 'images'])->latest()->paginate(5);
         } else {
-            $restaurants = RestaurantRestaurant::with(['admin', 'images'])->where('admin_id', Auth::guard('admin')->user()->id)->latest()->get();
+            $restaurants = RestaurantRestaurant::with(['admin', 'images'])->where('admin_id', Auth::guard('admin')->user()->id)->latest()->paginate(5);
         }
-        return view('Restaurant.dashboard.restaurants.index', compact('restaurants'));
+        $zones=Delivery_Zone::all();
+        $cities=City::all();
+        $states=State::all();
+        $countries=Country::all();
+        return view('Restaurant.dashboard.restaurants.index', compact('restaurants','zones','cities','states','countries'));
     }
 
     public function show($Id){
@@ -47,7 +55,8 @@ class RestaurantController extends Controller
             'longitude' => 'nullable|numeric',
             'logo'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_active' => 'required|boolean',
-            'images.*'  => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'images.*'  => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'zone' => 'required|string|max:255'
         ]);
 
 
@@ -77,7 +86,14 @@ class RestaurantController extends Controller
             'latitude'  => $request->latitude,
             'longitude' => $request->longitude,
             'logo'      => $logoPath,
-            'is_open' => $request->is_active
+            'is_open' => $request->is_active,
+            'zone' => $request->zone,
+            'country_id' => $request->country_id,
+            'city' => $request->city,
+            'state' => $request->state,
+            'start_from' => $request->start_from,
+            'opening_time' => $request->opening_time,
+            'closing_time' => $request->closing_time,
         ]);
 
         // Upload and Save Multiple Images
@@ -110,7 +126,8 @@ class RestaurantController extends Controller
             'longitude' => 'nullable|numeric',
             'logo'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_active' => 'required|boolean',
-            'images.*'  => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'images.*'  => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'zone' => 'nullable|string|max:255'
         ]);
 
         // Update restaurant details
@@ -122,7 +139,14 @@ class RestaurantController extends Controller
             'description'   => $request->description,
             'latitude'  => $request->latitude,
             'longitude' => $request->longitude,
-            'is_open' => $request->is_active
+            'is_open' => $request->is_active,
+            'zone' => $request->zone,
+            'country_id' => $request->country_id? $request->country_id : $restaurant->country_id,
+            'city' => $request->city? $request->city : $restaurant->city,
+            'state' => $request->state ? $request->state : $restaurant->state,
+            'start_from' => $request->start_from ? $request->start_from : $restaurant->start_from,
+            'opening_time' => $request->opening_time ? $request->opening_time : $restaurant->opening_time,
+            'closing_time' => $request->closing_time ? $request->closing_time : $restaurant->closing_time,
         ]);
 
         // Update logo if a new one is uploaded

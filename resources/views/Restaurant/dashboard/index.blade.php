@@ -1,6 +1,11 @@
 @extends('Restaurant.dashboard.layouts')
 @section('restaurant-dashboard')
+<style>
+    .card h5 {
+    transition: all 0.3s ease-in-out;
+}
 
+</style>
 <nav class="breadcrumb bg-white shadow-sm py-3 px-4 rounded d-flex justify-content-between align-items-center">
     <button class="btn btn-outline-primary btn-sm d-flex align-items-center" onclick="history.back()">
         <i class="bi bi-arrow-left mr-2"></i> &nbsp;
@@ -89,65 +94,128 @@
 
                 <div id="salesSummaryData" class="row">
                     <!-- Total Orders -->
-                    <div class="col-md-4 col-lg-2 my-3">
-                        <div class="card shadow-sm border border-2 h-100 py-2">
-                            <div class="card-body d-flex flex-column justify-content-center align-items-center text-center h-100">
-                                <div class="text-xs font-weight-bold text-dark text-uppercase mb-1">Total Orders</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="ss-orders">0</div>
+                    <div class="row g-3">
+                    <!-- Total Orders -->
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card shadow-sm border-0 rounded-3 p-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary text-white rounded-circle p-2 me-3">
+                                    <i class="bi bi-bag-check fs-4"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 text-muted">Total Orders</h6>
+                                    <h5 class="mb-0" id="ss-orders">0</h5>
+                                </div>
                             </div>
                         </div>
-
                     </div>
 
                     <!-- Total Sales -->
-                    <div class="col-md-4 col-lg-2 my-3">
-                        <div class="card shadow-sm border border-2 h-100 py-2">
-                            <div class="card-body d-flex flex-column justify-content-center align-items-center text-center h-100">
-                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Sales</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="ss-sales">0 ETB</div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card shadow-sm border-0 rounded-3 p-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success text-white rounded-circle p-2 me-3">
+                                    <i class="bi bi-cash-coin fs-4"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 text-muted">Total Sales</h6>
+                                    <h5 class="mb-0" id="ss-sales">0 ETB</h5>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Subtotal -->
-                    <div class="col-md-4 col-lg-2 my-3">
-                        <div class="card shadow-sm border border-2 h-100 py-2">
-                            <div class="card-body d-flex flex-column justify-content-center align-items-center text-center h-100">
-                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Subtotal</div>
-                                <div class="h4 mb-0 font-weight-bold text-gray-800" id="ss-subtotal">0 ETB</div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card shadow-sm border-0 rounded-3 p-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-warning text-white rounded-circle p-2 me-3">
+                                    <i class="bi bi-receipt fs-4"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 text-muted">Subtotal</h6>
+                                    <h5 class="mb-0" id="ss-subtotal">0 ETB</h5>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Discount -->
-                    <div class="col-md-4 col-lg-2 my-3">
-                        <div class="card shadow-sm border border-2 h-100 py-2">
-                            <div class="card-body d-flex flex-column justify-content-center align-items-center text-center h-100">
-                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Discount</div>
-                                <div class="h4 mb-0 font-weight-bold text-gray-800" id="ss-discount">0 ETB</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4 col-lg-2 my-3">
-                        <div class="card shadow-sm border border-2 h-100 py-2">
-                            <div class="card-body d-flex flex-column justify-content-center align-items-center text-center h-100">
-                                <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">Delivery Fee
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card shadow-sm border-0 rounded-3 p-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-danger text-white rounded-circle p-2 me-3">
+                                    <i class="bi bi-tag fs-4"></i>
                                 </div>
-                                <div class="h4 mb-0 font-weight-bold text-gray-800" id="ss-delivery"> ETB</div>
+                                <div>
+                                    <h6 class="mb-0 text-muted">Discount</h6>
+                                    <h5 class="mb-0" id="ss-discount">0 ETB</h5>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Net Revenue -->
-                    <div class="col-md-4 col-lg-2 my-3">
-                        <div class="card shadow-sm border border-2 h-100 py-2">
-                            <div class="card-body d-flex flex-column justify-content-center align-items-center text-center h-100">
-                                <div class="text-xs font-weight-bold text-dark text-uppercase mb-1">Net Revenue</div>
-                                <div class="h3 mb-0 font-weight-bold" id="ss-net"> ETB</div>
+                    <!-- Delivery Fee -->
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card shadow-sm border-0 rounded-3 p-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-info text-white rounded-circle p-2 me-3">
+                                    <i class="bi bi-truck fs-4"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 text-muted">Delivery Fee</h6>
+                                    <h5 class="mb-0" id="ss-delivery">0 ETB</h5>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Tax -->
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card shadow-sm border-0 rounded-3 p-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-secondary text-white rounded-circle p-2 me-3">
+                                    <i class="bi bi-percent fs-4"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 text-muted">Tax</h6>
+                                    <h5 class="mb-0" id="ss-tax">0 ETB</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tip -->
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card shadow-sm border-0 rounded-3 p-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-dark text-white rounded-circle p-2 me-3">
+                                    <i class="bi bi-gift fs-4"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 text-muted">Tip</h6>
+                                    <h5 class="mb-0" id="ss-tip">0 ETB</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Net Profit -->
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card shadow-sm border-0 rounded-3 p-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success text-white rounded-circle p-2 me-3">
+                                    <i class="bi bi-graph-up-arrow fs-4"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 text-muted">Net Profit</h6>
+                                    <h5 class="mb-0" id="ss-profit">0 ETB</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
 
                 </div>
             </div>
@@ -271,21 +339,21 @@ function fetchSalesSummary(days = 7) {
         .then(data => {
             document.getElementById('ss-orders').innerText = data.total_orders ?? 0;
             document.getElementById('ss-sales').innerText = `${Number(data.total_sales ?? 0).toFixed(2)} ETB`;
-            document.getElementById('ss-subtotal').innerText =
-            `${Number(data.total_subtotal ?? 0).toFixed(2)}  ETB`;
-            document.getElementById('ss-discount').innerText =
-            `${Number(data.total_discount ?? 0).toFixed(2)}  ETB`;
-            document.getElementById('ss-delivery').innerText =
-                `${Number(data.total_delivery_fee ?? 0).toFixed(2)}  ETB`;
-            document.getElementById('ss-net').innerText = `${Number(data.net_revenue ?? 0).toFixed(2)}  ETB`;
+            document.getElementById('ss-subtotal').innerText = `${Number(data.total_subtotal ?? 0).toFixed(2)} ETB`;
+            document.getElementById('ss-discount').innerText = `${Number(data.total_discount ?? 0).toFixed(2)} ETB`;
+            document.getElementById('ss-delivery').innerText = `${Number(data.total_delivery_fee ?? 0).toFixed(2)} ETB`;
+            document.getElementById('ss-tax').innerText = `${Number(data.total_tax ?? 0).toFixed(2)} ETB`;
+            document.getElementById('ss-tip').innerText = `${Number(data.total_tip ?? 0).toFixed(2)} ETB`;
+            document.getElementById('ss-profit').innerText = `${Number(data.total_profit ?? 0).toFixed(2)} ETB`;
         });
 }
 
 fetchSalesSummary();
 
-document.getElementById('salesSummaryFilter').addEventListener('change', function() {
+document.getElementById('salesSummaryFilter').addEventListener('change', function () {
     fetchSalesSummary(this.value);
 });
+
 </script>
 
 <script>
@@ -398,7 +466,7 @@ function fetchRestaurantCategoryData(days = 7) {
         .then(res => res.json())
         .then(data => {
             if (!data.length) {
-                alert('No data found for selected period.');
+
                 return;
             }
 
@@ -461,7 +529,6 @@ function fetchChartData(days = 7) {
         .then(res => res.json())
         .then(data => {
             if (data.length === 0) {
-                alert('No orders found for the selected period.');
                 return;
             }
 

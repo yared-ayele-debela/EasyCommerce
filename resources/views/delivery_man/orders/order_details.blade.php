@@ -92,15 +92,12 @@ $user = Auth::guard('deliverymen')->user();
                                 @endforeach
                             </select>
                         </div>
-
                         <div class="form-group mt-3">
                             <input type="text" style="display: none;" name="courier_name" class="form-control" id="courier_name" placeholder="Courier Name">
                         </div>
-
                         <div class="form-group mt-3">
                             <input type="text" style="display: none;" name="tracking_number" class="form-control" id="tracking_number" placeholder="Tracking Number">
                         </div>
-
                         <div class="form-group mt-3" style="display: none;" id="user_code">
                             <label for="user_code" class="pb-2" id="user_code_label">Enter Customer Order Code to Verify Order Delivered</label>
                             <input type="text" name="user_code" class="form-control" id="user_code" placeholder="Enter Customer Code">
@@ -196,12 +193,7 @@ $user = Auth::guard('deliverymen')->user();
                             <label for="">{{ $userDetails['mobile'] }}</label>
                         </div>
                         @endif
-                        @if(!empty($userDetails['email']))
-                        <div class="col-md- pt-1">
-                            <label for="" class="form-label"><b>Email:</b></label>
-                            <label for="">{{ $userDetails['email'] }}</label>
-                        </div>
-                        @endif
+
                     </div>
                     <hr class=" hr pt-0 mt-4">
                     {{-- <h1 class="card-title p-3 mt-1 bg-light">Delivery Details</h1>
@@ -333,7 +325,7 @@ $user = Auth::guard('deliverymen')->user();
                                                 @endforeach
                                             </tbody>
                                         </table>
-                                        <button type="submit" class="btn btn-primary">Update Status</button>
+                                        <button type="submit" class="btn btn-primary btn-sm">Update Status</button>
                                         </form>
                                     </div>
                                 </div>
@@ -361,7 +353,7 @@ $user = Auth::guard('deliverymen')->user();
                                     <td>
                                         @php $getProductImage=Product::getProductImage($product['product_id']) @endphp
                                         <a target="_blank" href="{{ url('product/'.$product['product_id']) }}">
-                                            <img src="{{ asset('/storage/products/'.Product::getProductImage($product['product_id'])) }}" style="width:30px; height:30px;" alt="">
+                                            <img src="{{ Product::getProductImage($product['product_id']) }}" style="width:30px; height:30px;" alt="">
                                         </a>
 
                                     </td>
@@ -407,7 +399,7 @@ $user = Auth::guard('deliverymen')->user();
                                         @if($product['item_status']==="Completed")
                                         <button class="btn btn-sm btn-success text-white" disabled>Completed</button>
                                         @else
-                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal{{ $product['id'] }}">
+                                        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal{{ $product['id'] }}">
                                             Update
                                         </button>
                                         <!-- Modal -->
@@ -451,7 +443,7 @@ $user = Auth::guard('deliverymen')->user();
                                              $vendor=Vendor::where('id',$product['vendor_id'])->first();
                                         @endphp
 
-                                        <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#vendor{{ $vendor['id'] }}">
+                                        <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#vendor{{ $vendor['id'] }}">
                                             <i class="ri-eye-fill"></i>
                                         </button>
                                         <!-- Modal -->

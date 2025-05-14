@@ -40,7 +40,7 @@ class DashboardController extends Controller
 
     public function orderTrend(Request $request)
     {
-        $days = in_array((int) $request->days, [7, 15, 30, 60, 90, 365]) ? (int) $request->days : 7;
+        $days = in_array((int) $request->days, [7, 15, 30, 60, 90, 365]) ? (int) $request->days : 365;
 
         $startDate = \Carbon\Carbon::now()->subDays($days)->startOfDay();
 
@@ -100,6 +100,7 @@ class DashboardController extends Controller
         $startDate = \Carbon\Carbon::now()->subDays($days)->startOfDay();
         $endDate = \Carbon\Carbon::now()->endOfDay();
 
+
         $summary = DB::table('restaurant_orders')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->selectRaw('
@@ -108,9 +109,10 @@ class DashboardController extends Controller
             SUM(discount) as total_discount,
             SUM(delivery_fee) as total_delivery_fee,
             SUM(total) as total_sales,
-            SUM(subtotal - discount) as net_revenue
-        ')
-            ->first();
+            SUM(tip_amount) as total_tip,
+            SUM(tax) as total_tax,
+            SUM(total - tax) as total_profit
+        ')->first();
 
         return response()->json($summary);
     }

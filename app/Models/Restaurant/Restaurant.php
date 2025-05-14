@@ -10,7 +10,7 @@ class Restaurant extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'admin_id', 'name', 'email', 'phone', 'address','cover','description','logo', 'latitude', 'longitude', 'is_open'
+        'admin_id', 'name', 'email', 'phone', 'address','cover','description','logo','latitude', 'longitude', 'is_open','start_from','country_id','opening_time','closing_time','zone','city','state','postal_code'
     ];
 
     // Relationship with User (Admin/Restaurant Owner)
@@ -25,6 +25,10 @@ class Restaurant extends Model
     public function products()
     {
         return $this->hasMany(Product::class, 'restaurant_id');
+    }
+      public function menus()
+    {
+        return $this->hasMany(RestaurantMenu::class);
     }
     public function ratings()
 {

@@ -19,7 +19,7 @@ class DeliveryMan extends Authenticable
     protected $table="deliverymen";
 
     protected $fillable = [
-        'first_name', 'email', 'password',
+        'first_name', 'email', 'password','total_earn'
     ];
 
     protected $hidden = [
@@ -51,4 +51,3 @@ class DeliveryMan extends Authenticable
         return $this->hasMany(AssignStockProduct::class);
     }
 }
-

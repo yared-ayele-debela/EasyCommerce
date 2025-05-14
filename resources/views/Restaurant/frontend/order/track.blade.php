@@ -41,17 +41,29 @@
                             <span class="text">Ready for pickup</span>
                         </div>
                     </div>
-
-                    <!-- Estimated Delivery Time -->
-                    <div class="py-4">
-                        <h5 class="mb-3 text-center text-muted">Estimated Delivery Time</h5>
-                        <div class="text-center mb-3">
-                            <span class="badge bg-primary fs-6">30 mins</span>
+                    <div class="row">
+                        <div class="col-md-6">
+                            @if($order->delivery_status !== 'delivered')
+                            @if($order->delivery_code)
+                            <p><strong>Delivery Code:</strong> {{ $order->delivery_code }}</p>
+                            <div class="mb-2">
+                                {!! QrCode::size(100)->generate($order->delivery_code) !!}
+                            </div>
+                            @endif
+                            @endif
+                        </div>
+                        <div class="col-md-6">
+                            <!-- Estimated Delivery Time -->
+                            <div class="py-4">
+                                <h5 class="mb-3 text-center text-muted">Estimated Delivery Time</h5>
+                                <div class="text-center mb-3">
+                                    <span class="badge bg-primary fs-6">30 mins</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
                     <!-- Order Products -->
-                    <h5 class="mb-3 text-muted">Order Products</h5>
+                    <h6 class="my-3 text-muted">Order Products</h6>
                     <ul class="list-group mb-3">
                         @foreach($order->orderItems as $item)
                         <li class="list-group-item d-flex justify-content-between">
@@ -61,7 +73,6 @@
                                         ? str_replace(asset('storage') . '/', '', $item->product->image)
                                         : null;
                                 @endphp
-
                                 @if($item->product->image && Storage::disk('public')->exists($imagePath))
                                     <img src="{{ $item->product->image }}"style="max-width: 60px; height:auto;">
                                 @else
@@ -74,20 +85,26 @@
                         </li>
                         @endforeach
                     </ul>
-
                     <!-- Delivery Person Info -->
+                    @if($order->deliveryman)
                     <h5 class="mb-3 text-muted">Delivery Person</h5>
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center">
-                            <img src="{{ asset('assets/img/delivery.png') }}" alt="Delivery Man" class="rounded-circle me-3" style="width: 60px; height: 60px;">
-                            <h6 class="mb-0">John Girma</h6> &nbsp;
-                            <br>
-                            <span class="text-dark">Location</span>
+                            <img src="{{ asset('/storage/delivery_man/'.$order->deliveryman->delivery_man_image) }}" alt="Delivery Man" class="rounded-circle me-3" style="width: 60px; height: 60px;">
+                            <h6 class="mb-0">{{ $order->deliveryman->first_name }} {{ $order->deliveryman->last_name }}</h6> &nbsp;
+                            {{-- <span class="text-dark">Location</span> --}}
                         </div>
-                        <button class="btn bg-light shadow-lg" style="border-radius: 50%;">
-                            <i class="bi bi-telephone-forward-fill text-primary"></i>
+                        <button class="btn bg-light shadow-lg" style="">
+                            {{ $order->deliveryman->phone }}  <i class="bi bi-telephone-forward-fill text-primary"></i>
                         </button>
                     </div>
+                    @endif
+                    <hr>
+                     <div class="d-flex justify-content-between align-items-center">
+                            <p class="font-bold">
+                                Delivery Status: <span><strong>{{ $order->delivery_status }}</strong></span>
+                            </p>
+                     </div>
                 </div>
             </div>
         </div>

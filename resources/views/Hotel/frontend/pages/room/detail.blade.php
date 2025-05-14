@@ -17,51 +17,66 @@
 </style>
 
 </style>
-<div class="container">
+<div class="container pb-sm-0 pb-6">
     <div class="header">
         <button class="btn btn-link text-dark" onclick="history.back()">
             <i class="bi bi-arrow-left"></i>
         </button>
         <h5 class="my-4 text-dark text-center">{{ $room->room_type }}</h5>
     </div>
-    <div class="row">
-        <div class="col-12">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="d-flex">
-                        <p> {{ $room->hotel->name }} </p>
-                         <p> {{ $room->hotel->location }} </p>
-                    </div>
-                </div>
-                <div class="col-md-6 text-end">
-                    <span class="text-dark">1.0 Km &nbsp; <i class="bi bi-star-fill text-primary"></i> 4.8 Reviews</span>
-                </div>
+    {{-- <div class="container py-4"> --}}
+    <div class="row mb-3 align-items-center">
+        <div class="col-md-8">
+            <h4 class="mb-1">{{ $room->hotel->name }}</h4>
+            <p class="text-muted mb-0"><i class="bi bi-geo-alt-fill me-1 text-primary"></i> {{ $room->hotel->location }}</p>
+        </div>
+        <div class="col-md-4 text-md-end text-start mt-2 mt-md-0">
+            <span class="badge bg-light text-dark py-2 px-3">
+                <i class="bi bi-map me-1"></i> 1.0 Km
+                &nbsp;&nbsp;
+                @if($av_rating)
+                <i class="bi bi-star-fill text-primary"></i> {{ number_format($av_rating,1) }} Reviews
+                @else
+                    <span class="text-muted">No reviews yet</span>
+                @endif
+            </span>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        @foreach($room->images as $img)
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <img src="{{ $img->photo_url }}" class="card-img-top rounded-3" alt="Room Image">
             </div>
         </div>
-        @foreach($room->images as $img)
-        <div class="col-md-4 offer-card py-2 mr-1">
-            <img src="{{ $img->photo_url }}" class=" img-fluid rounded rounded-3">
-        </div>
         @endforeach
-        <br>
-        <div class="col-12 col-md-8 my-3 offer-card p-3">
-            <p><strong>About Room : </strong> {{ $room->description }}</p>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-8">
+            <div class="card shadow-sm p-3 border-0 rounded-3 offer-card h-100">
+                <h5 class="mb-2"><i class="bi bi-info-circle-fill text-primary me-1"></i> About Room</h5>
+                <p class="text-muted mb-0">{{ $room->description }}</p>
+            </div>
         </div>
-        <div class="col-md-4 my-3">
-            <div class="offer-card ">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-3 offer-card">
                 <div class="card-body">
-                    <h4 class="card-title">Start Booking</h4>
-                    <p class="text-primary my-2" style="font-size: 20px;"><strong>{{ $room->price }} ETB / Night</strong></p>
-                    <form action="{{ route('select_date',encrypt($room->id)) }}" method="GET">
+                    <h5 class="card-title mb-3 text-dark">Start Booking</h5>
+                    <p class="text-primary fw-bold fs-5">{{ $room->price }} ETB / Night</p>
+                    <form action="{{ route('select_date', encrypt($room->id)) }}" method="GET">
                         @csrf
                         <input type="hidden" name="id" value="{{ $room->id }}">
-                    <button type="submit" class="btn btn-primary rounded rounded-1 shadow">Select Date</button>
-                   </form>
-
+                        <button type="submit" class="btn btn-primary w-100 shadow-sm">
+                            <i class="bi bi-calendar-check me-1"></i> Select Date
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+
     <!-- Photo Gallery -->
     <div class="mt-2">
         <h5 class="text-dark mb-3">Amenities</h5>

@@ -9,6 +9,7 @@ use App\Models\Restaurant\Restaurant;
 use App\Models\Restaurant\RestaurantMenu;
 use App\Models\Restaurant\SliderBanner;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class FrontendController extends Controller
 {
@@ -18,7 +19,11 @@ class FrontendController extends Controller
     {
 
         $banners = SliderBanner::where('is_active', 1)->get();
-        $categories = Category::where('is_active', 1)->get();
+        // $categories = Category::where('is_active', 1)->get();
+        $categories = Category::all()->map(function ($cat) {
+            $cat->hasImage = $cat->image && Storage::disk('public')->exists($cat->image);
+            return $cat;
+        });
         $menus = RestaurantMenu::where('is_active', 1)->get();
         $products = Product::where('discount', '>', 0)
             ->orderBy('discount', 'desc')  // Order by discount in descending order

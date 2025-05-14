@@ -17,6 +17,8 @@ class RoomController extends Controller
 
 
         $room=Room::with('images','amenities','hotel','rating')->findOrFail($id);
+        $av_rating=HotelReview::where('room_id',$room->id)->avg('rating');
+        // dd($av_rating);
         $is_reserved = false;
         if(Auth::check()){
         $user= Reservation::where('room_id',$id)->where('user_id',auth()->user()->id)->first();
@@ -25,7 +27,7 @@ class RoomController extends Controller
         }
        }
         // dd($room);
-        return view('Hotel.frontend.pages.room.detail',compact('room','is_reserved'));
+        return view('Hotel.frontend.pages.room.detail',compact('room','is_reserved','av_rating'));
     }
 
     public function room_rating_store(Request $request)

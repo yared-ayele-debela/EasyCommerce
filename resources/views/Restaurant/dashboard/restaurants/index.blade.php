@@ -3,6 +3,7 @@
 @php
 $user = Auth::guard('admin')->user();
 @endphp
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
  <div class="container">
     <nav class="breadcrumb bg-white shadow-sm py-3 px-4 rounded d-flex justify-content-between align-items-center">
@@ -27,7 +28,8 @@ $user = Auth::guard('admin')->user();
         <div class="card-body">
 
             <!-- Table -->
-            <table class="table mt-3">
+            <div class="table-responsive">
+                 <table class="table mt-3">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -38,7 +40,10 @@ $user = Auth::guard('admin')->user();
                         <th>Logo</th>
                         <th>Cover Image</th>
                         <th>Images</th>
-                        <th>Status</th>
+                        <th>Opening Time</th>
+                        <th>Closing Time</th>
+                        <th>Address</th>
+                        <th>Is Open</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -88,8 +93,17 @@ $user = Auth::guard('admin')->user();
                            </div>
                         </td>
                         <td>
-                            <div class="btn btn-sm {{ $restaurant->is_active ? 'btn-success' : 'btn-warning' }}">
-                                {{ $restaurant->is_active ? 'Active' : 'Inactive' }}
+                            {{ $restaurant->opening_time }}
+                        </td>
+                        <td>
+                            {{ $restaurant->closing_time }}
+                        </td>
+                        <td>
+                         <small> {{ $restaurant->state }}, {{ $restaurant->city }}, | <b>Delivery Zone {{ $restaurant->zone }}</b></small>
+                        </td>
+                        <td>
+                            <div class="btn btn-sm {{ $restaurant->is_open ? 'btn-success' : 'btn-warning' }}">
+                                {{ $restaurant->is_open ? 'Open' : 'Close' }}
                             </div>
                         </td>
                         <td>
@@ -107,13 +121,17 @@ $user = Auth::guard('admin')->user();
                     @endforeach
                 </tbody>
             </table>
+            </div>
+            <div>
+                {{ $restaurants->links() }}
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Add Restaurant Modal -->
 <div class="modal fade" id="addRestaurantModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <form action="{{ route('restaurants.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="modal-content">
@@ -123,7 +141,7 @@ $user = Auth::guard('admin')->user();
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <div class="mb-3">
                                 <label for="name" class="form-label">Restaurant Name</label>
                                 <input type="text" id="name" name="name" class="form-control" placeholder="Enter Name" required>
@@ -132,7 +150,7 @@ $user = Auth::guard('admin')->user();
                                 @enderror
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email Address</label>
                                 <input type="email" id="email" name="email" class="form-control" placeholder="Enter Email" required>
@@ -141,7 +159,7 @@ $user = Auth::guard('admin')->user();
                                 @enderror
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-3">
 
                             <div class="mb-3">
                                 <label for="phone" class="form-label">Phone Number</label>
@@ -151,9 +169,9 @@ $user = Auth::guard('admin')->user();
                                 @enderror
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <div class="mb-3">
-                                <label for="is_active" class="form-label">Is Active?</label>
+                                <label for="is_active" class="form-label">Is Open?</label>
                                 <select id="is_active" name="is_active" class="form-control">
                                     <option value="1" selected>Yes</option>
                                     <option value="0">No</option>
@@ -182,8 +200,78 @@ $user = Auth::guard('admin')->user();
                                 @enderror
                             </div>
                         </div>
+                        @include('Restaurant.dashboard.restaurants.add_partail')
+                        <div class="col-md-3 mb-2">
+                            <div class="form-group">
+                                <label for="country">Country</label>
+                                <select class="form-control" name="country_id">
+                                    <option required selected disabled>Select country</option>
+                                    @foreach ($countries as $country)
+                                        <option value="{{ $country->id }}">{{ $country->country_name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('country')
+                                <small class=" text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <div class="form-group">
+                                <label for="state">State</label>
+                                <select class="form-control" name="state">
+                                    <option required selected disabled>Select State</option>
+                                    @foreach ($states as $state)
+                                        <option value="{{ $state->name }}">{{ $state->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('state')
+                                <small class=" text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <div class="form-group">
+                                <label for="city">City</label>
+                                <select class="form-control" name="city">
+                                    <option required selected disabled>Select City</option>
+                                    @foreach ($cities as $city)
+                                        <option value="{{ $city->name }}">{{ $city->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('city')
+                                <small class=" text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
 
-                        <div class="col-md-6">
+                         <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="start_from" class="form-label">Delivery fee start from</label>
+                                <input type="text" id="start_from" name="start_from" class="form-control">
+                                @error('start_from')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+                         <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="opening_time" class="form-label">Opening time</label>
+                                <input type="time" id="opening_time" name="opening_time" class="form-control">
+                                @error('opening_time')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+                         <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="closing_time" class="form-label">Closing time</label>
+                                <input type="time" id="closing_time" name="closing_time" class="form-control">
+                                @error('closing_time')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="logo" class="form-label">Restaurant Logo</label>
                                 <input type="file" id="logo" name="logo" class="form-control">
@@ -191,9 +279,8 @@ $user = Auth::guard('admin')->user();
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
-
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="cover_image" class="form-label">Restaurant Cover Image</label>
                                 <input type="file" id="cover_image" name="cover_image" class="form-control">
@@ -201,9 +288,8 @@ $user = Auth::guard('admin')->user();
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
-
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="images" class="form-label">Restaurant Image Gallery</label>
                                 <input type="file" id="images" name="images[]" class="form-control" multiple>
@@ -213,7 +299,7 @@ $user = Auth::guard('admin')->user();
                             </div>
                             <input type="hidden" name="admin_id" value="{{ $user->id }}">
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="latitude" class="form-label">Latitude</label>
                                 <input type="text" id="latitude" name="latitude" class="form-control" placeholder="Enter Latitude" required>
@@ -222,7 +308,7 @@ $user = Auth::guard('admin')->user();
                                 @enderror
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="longitude" class="form-label">Longitude</label>
                                 <input type="text" id="longitude" name="longitude" class="form-control" placeholder="Enter Longitude" required>
@@ -231,7 +317,7 @@ $user = Auth::guard('admin')->user();
                                 @enderror
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="mb-3">
                                 <button type="button" onclick="getLocation()" class="btn btn-secondary">Use My Location</button>
                             </div>
@@ -257,7 +343,7 @@ $user = Auth::guard('admin')->user();
 
 @foreach($restaurants as $restaurant)
 <div class="modal fade" id="editRestaurantModal-{{ $restaurant->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <form action="{{ route('restaurants.update', $restaurant->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
@@ -268,7 +354,7 @@ $user = Auth::guard('admin')->user();
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <div class="mb-3">
                                 <label for="name" class="form-label">Restaurant Name</label>
                                 <input type="text" id="name" name="name" class="form-control" value="{{ $restaurant->name }}" placeholder="Enter Name" required>
@@ -277,7 +363,7 @@ $user = Auth::guard('admin')->user();
                                 @enderror
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email Address</label>
                                 <input type="email" id="email" name="email" class="form-control" value="{{ $restaurant->email }}" placeholder="Enter Email" required>
@@ -286,7 +372,7 @@ $user = Auth::guard('admin')->user();
                                 @enderror
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-3">
 
                             <div class="mb-3">
                                 <label for="phone" class="form-label">Phone Number</label>
@@ -296,12 +382,12 @@ $user = Auth::guard('admin')->user();
                                 @enderror
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <div class="mb-3">
-                                <label for="is_active" class="form-label">Is Active?</label>
+                                <label for="is_active" class="form-label">Is Open?</label>
                                 <select id="is_active" name="is_active" class="form-control">
-                                    <option value="1" {{ $restaurant->is_active ? 'selected' : '' }}>Yes</option>
-                                    <option value="0" {{ $restaurant->is_active ? '' : 'selected' }}>No</option>
+                                    <option value="1" {{ $restaurant->is_open ? 'selected' : '' }}>Yes</option>
+                                    <option value="0" {{ $restaurant->is_open ? '' : 'selected' }}>No</option>
                                 </select>
                             </div>
                         </div>
@@ -327,7 +413,78 @@ $user = Auth::guard('admin')->user();
                                 @enderror
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        @include('Restaurant.dashboard.restaurants.edit_partail')
+                        <div class="col-md-3 mb-2">
+                            <div class="form-group">
+                                <label for="country">Country</label>
+                                <select class="form-control" name="country_id">
+                                    <option required selected disabled>Select country</option>
+                                    @foreach ($countries as $country)
+                                        <option @if($restaurant->country_id===$country->id) selected @endif value="{{ $country->id }}">{{ $country->country_name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('country')
+                                <small class=" text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <div class="form-group">
+                                <label for="state">State</label>
+                                <select class="form-control" name="state">
+                                    <option required selected disabled>Select State</option>
+                                    @foreach ($states as $state)
+                                        <option @if($restaurant->state===$state->name) selected @endif  value="{{ $state->name }}">{{ $state->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('state')
+                                <small class=" text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <div class="form-group">
+                                <label for="city">City</label>
+                                <select class="form-control" name="city">
+                                    <option required selected disabled>Select City</option>
+                                    @foreach ($cities as $city)
+                                        <option @if($restaurant->city===$city->name) selected @endif value="{{ $city->name }}">{{ $city->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('city')
+                                <small class=" text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+
+                         <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="start_from" class="form-label">Delivery fee start from</label>
+                                <input type="text" id="start_from" value=" {{ $restaurant->start_from }}" name="start_from" class="form-control">
+                                @error('start_from')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+                         <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="opening_time" class="form-label">Opening time</label>
+                                <input type="time" id="opening_time" value="{{ \Carbon\Carbon::parse($restaurant->opening_time)->format('H:i') }}" name="opening_time" class="form-control">
+                                @error('opening_time')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+                         <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="closing_time" class="form-label">Closing time</label>
+                                <input type="time" id="closing_time"  value="{{ \Carbon\Carbon::parse($restaurant->closing_time)->format('H:i') }}" name="closing_time" class="form-control">
+                                @error('closing_time')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="logo" class="form-label">Restaurant Logo</label>
                                 <input type="file" id="logo" name="logo" class="form-control">
@@ -340,7 +497,7 @@ $user = Auth::guard('admin')->user();
                             </div>
 
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="cover_image" class="form-label">Restaurant Cover Image</label>
                                 <input type="file" id="cover_image" name="cover_image" class="form-control">
@@ -353,7 +510,7 @@ $user = Auth::guard('admin')->user();
                             </div>
 
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="images" class="form-label">Restaurant Images</label>
                                 <input type="file" id="images" name="images[]" class="form-control" multiple>
@@ -367,7 +524,7 @@ $user = Auth::guard('admin')->user();
                             <img src="{{ $image->image_path }}" width="50">
                            @endforeach
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="latitude" class="form-label">Latitude</label>
                                 <input type="text" id="latitudes" name="latitude" value="{{ $restaurant->latitude }}" class="form-control" placeholder="Enter Latitude" required>
@@ -376,7 +533,7 @@ $user = Auth::guard('admin')->user();
                                 @enderror
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="longitudes" class="form-label">Longitude</label>
                                 <input type="text" id="longitudes" name="longitude" value="{{ $restaurant->longitude }}" class="form-control" placeholder="Enter Longitude" required>
@@ -412,6 +569,33 @@ $user = Auth::guard('admin')->user();
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+    $(document).ready(function () {
+        // Listen for any modal being shown
+        $('.modal').on('shown.bs.modal', function () {
+            // Inside this modal, find any .select-street and initialize Select2
+            const $modal = $(this);
+            $modal.find('.select-delivery-zon').select2({
+                dropdownParent: $modal, // make sure dropdown stays inside modal
+                placeholder: 'Select a street',
+                allowClear: true,
+                width: '100%' // optional but helps in modals
+            });
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+    $('#addRestaurantModal').on('shown.bs.modal', function () {
+        $('.select-delivery-zone').select2({
+            dropdownParent: $('#addRestaurantModal'),
+            placeholder: 'Select a street',
+            allowClear: true,
+            width: '100%' // Ensures full width inside modal
+        });
+    });
+
+});
     function getLocation() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(

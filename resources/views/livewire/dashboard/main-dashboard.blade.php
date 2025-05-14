@@ -410,6 +410,18 @@
                         </div>
                     </div>
                 </div>
+                @if(count($outOfStockProducts) > 0)
+                <div class="card mb-3">
+                    <div class="card-header bg-danger text-white d-flex justify-content-between">
+                        <span><i class="ri-error-warning-line"></i> Out of Stock Products</span>
+                        <a href="{{ route('out-of-products') }}" class="text-white small">View All</a>
+                    </div>
+                    <div class="card-body text-danger">
+                        <h5 class="card-title">{{ count($outOfStockProducts) }} product(s)</h5>
+                        <p class="card-text">Some products are currently out of stock. Restock them to avoid losing sales.</p>
+                    </div>
+                </div>
+                @endif
             </div>
         </div>
         <div class="row">

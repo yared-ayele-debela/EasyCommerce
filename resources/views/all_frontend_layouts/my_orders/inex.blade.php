@@ -4,7 +4,25 @@ use App\Models\Order;
 ?>
 @extends('all_frontend_layouts.layouts')
 @section('content')
+<style>
+    .corner-slash {
+    position: absolute;
+    top: 100px;
+    right: 10px;
+    background: rgba(73, 224, 108, 0.5); /* translucent green */
+    color: white;
+    padding: 5px 20px;
+    font-size: 12px;
+    font-weight: bold;
+    transform: rotate(90deg);
+    transform-origin: top right;
+    z-index: 1;
+    backdrop-filter: blur(5px); /* blur effect */
+    -webkit-backdrop-filter: blur(5px); /* Safari support */
+    border-radius: 4px;
+}
 
+</style>
 <div class="container my-1">
     <div class="header">
         <button class="btn btn-link text-dark" onclick="history.back()">
@@ -33,15 +51,18 @@ use App\Models\Order;
             <div class="row">
                 @foreach($orders as $order)
                 <div class="col-md-4">
-                    <div class="offer-card mb-3 shadow-sm">
-                        <div class="card-body">
+                    <div class="@if($order->status==='delivered' || $order->delivery_status==='delivered') bg-light @else offer-card @endif mb-3 shadow-sm position-relative">
+                        @if($order->status === 'delivered' || $order->delivery_status === 'delivered')
+                            <div class="corner-slash"> Delivered</div>
+                        @endif
+                            <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <h5 class="text-dark">Order #{{ $order->id }}</h5>
+
                                     <p class="text-muted mb-1">Placed on: {{ $order->created_at->format('M d, Y h:i A') }}</p>
-                                    <p class="text-muted mb-1"> Order Status : <span class="btn btn-sm text-white @if($order->status == 'completed') bg-success @endif  @if($order->status==='processing') bg-info @endif  @if($order->status == 'canceled') bg-danger @endif
-                                @if($order->status == 'pending') bg-warning @endif      ">
-                                            {{ ucfirst($order->status) }}
+                                    <p class="text-muted mb-1"> Order Status : <span class="btn btn-sm text-white btn-info ">
+                                            {{ $order->status }}
                                         </span>
                                     </p>
                                     <p class="text-muted mb-1"> Delivery Status : <span class="btn btn-sm text-white @if($order->delivery_status === 'shipped') bg-info @endif  @if($order->delivery_status==='delivered') bg-success @endif
@@ -49,13 +70,23 @@ use App\Models\Order;
                                             {{ ucfirst($order->delivery_status) }}
                                         </span>
                                     </p>
-
-                                </div>
-                                <div class="text-end">
-                                    <strong class="text-primary">Total: {{ $order->total }} ETB</strong>
                                 </div>
                             </div>
-
+                            <div class="text-left">
+                                <p class="text-dark">
+                                @if($order->tip_amount > 0)
+                                  Tip: {{ $order->tip_amount }} ETB
+                                @endif
+                                </p>
+                                <p class="text-dark">
+                                @if($order->delivery_fee > 0)
+                                  Delivery Fee: {{ $order->delivery_fee }} ETB
+                                @endif
+                                </p>
+                                <p>
+                                    <strong class="text-primary">Total: {{ $order->total }} ETB</strong>
+                                </p>
+                            </div>
                             <button class="btn btn-outline-primary btn-sm mt-3" type="button" data-bs-toggle="collapse" data-bs-target="#orderDetails-{{ $order->id }}">
                                 View Details
                             </button>
@@ -269,7 +300,7 @@ use App\Models\Order;
                                 <div class="border rounded-2 p-2 bg-light">
                                     @foreach ($order['orders_products'] as $product)
                                     <div class="d-flex align-items-center mb-3">
-                                        <img src="{{ asset('/storage/products/' . Product::getProductImage($product['product_id'])) }}" alt="Product Image" class="rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                        <img src="{{ Product::getProductImage($product['product_id']) }}" alt="Product Image" class="rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
                                         <div class="flex-grow-1">
                                             <h6 class="mb-1">{{ $product['product_name'] }}</h6>
                                             <small class="text-muted">Code: {{ $product['product_code'] }}</small><br>

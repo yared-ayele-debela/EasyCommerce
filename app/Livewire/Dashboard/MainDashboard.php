@@ -86,12 +86,17 @@ class MainDashboard extends Component
     public $endDate;
     public $productStockData;
 
+    public $outOfStockProducts;
 
 
     public function mount(MonthlyUsersChart $chart, MonthlyOrderChart $c, MonthlyUserRegisterChart $user, Order_Payment_StatusChart $payment)
     {
         // Generate report for users
         $this->orders = Order::with(['orders_products', 'orders_products.product'])->get();
+        $this->outOfStockProducts = Product::whereDoesntHave('attributes') // or use your custom logic
+                        ->orWhereHas('attributes', function($q){
+                            $q->where('stock', '<=', 0);
+                        })->get();
 
         $this->appsettings = AppSetting::all()->toArray();
 
@@ -168,7 +173,7 @@ class MainDashboard extends Component
         $this->alladmins = ModelsAdmin::count();
         $this->total_sales_person= SalesUser::count();
 
-        if (Auth::guard('admin')->user()->type == "vendor") {
+        if (Auth::guard('admin')->user()->type == "vendor" || Auth::guard('admin')->user()->type == "Ecommerce Manager") {
             $vendor_id = Auth::guard('admin')->user()->vendor_id;
 
             $this->allproducts = Product::where('vendor_id', $vendor_id)->where('status', 1)->count();
@@ -216,6 +221,10 @@ class MainDashboard extends Component
             $this->deliverdorderproducts = OrderProduct::where('vendor_id', $vendor_id)->where('item_status', 'delivered')->count();
             $this->paidorderproducts = OrderProduct::where('vendor_id', $vendor_id)->where('item_status', 'paid')->count();
             $this->latestOrdersproducts = OrderProduct::where('vendor_id', $vendor_id)->orderBy('created_at', 'desc')->take(5)->get();
+            $this->outOfStockProducts = Product::where('vendor_id', $vendor_id)->whereDoesntHave('attributes') // or use your custom logic
+                        ->orWhereHas('attributes', function($q){
+                            $q->where('stock', '<=', 0);
+                        })->get();
             $this->latestproducts = Product::where('vendor_id', $vendor_id)->orderBy('created_at', 'desc')->take(5)->get();
         }
 

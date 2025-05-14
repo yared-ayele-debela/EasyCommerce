@@ -7,6 +7,7 @@ use App\Models\City;
 use App\Models\Country;
 use App\Models\Hotel;
 use App\Models\HotelCategory;
+use App\Models\HotelReview;
 use App\Models\Room;
 use App\Models\State;
 use Exception;
@@ -40,8 +41,10 @@ class HotelController extends Controller
 
         $id=decrypt($id);
         $room=Room::with('images','amenities','hotel')->findOrFail($id);
+        $av_rating=HotelReview::where('room_id',$room->id)->avg('rating');
+
         // dd($room);
-        return view('Hotel.frontend.pages.room.select_date',compact('room'));
+        return view('Hotel.frontend.pages.room.select_date',compact('room','av_rating'));
     }
 
     public function discounted(){

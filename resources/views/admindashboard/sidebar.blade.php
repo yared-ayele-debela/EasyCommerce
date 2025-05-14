@@ -57,7 +57,7 @@
        <hr>
        @endif
 
-        @if(Auth::guard('admin')->user()->type=="vendor")
+        @if(Auth::guard('admin')->user()->type=="vendor" || Auth::guard('admin')->user()->type=="Ecommerce Manager")
         @if ($user && $user->hasPermissionByRole('view withdrawal request'))
             <li class="{{ request()->is('admin/withdraw-request')?'nav-item active':'' }}">
                 <a class="nav-link" data-bs-target="#withdrawal-nav" data-bs-toggle="collapse" href="javascripit:void(0);">
@@ -144,17 +144,17 @@
             </li>
             @endif
 
-        <li class="pt-4 {{ request()->is('admin/updatevendordetails')?'nav-item active':'' }} {{ request()->is('admin/updatevendorbankdetails')?'nav-item active':'' }} {{ request()->is('admin/updatevendorbusinessdetails')?'nav-item active':'' }}">
+        <li class="pt-4 {{ request()->is('admin/update-vendor-details')?'nav-item active':'' }} {{ request()->is('admin/update-vendor-bank-details')?'nav-item active':'' }} {{ request()->is('admin/update-vendor-business-details')?'nav-item active':'' }}">
             <a class="nav-link " data-bs-target="#vendordetails-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class="bi bi-person-bounding-box  "></i><span>Your Details</span><i class="bi bi-chevron-down ms-auto"></i> </a>
-            <ul id="vendordetails-nav" class=" nav-content collapse {{ request()->is('admin/updatevendordetails')?'show':'' }} {{ request()->is('admin/updatevendorbankdetails')?'show':'' }} {{ request()->is('admin/updatevendorbusinessdetails')?'show':'' }}" data-bs-parent="#sidebar-nav">
-                <li> <a href="{{ route('updatevendordetails') }}" class="{{ request()->is('admin/updatevendordetails*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Personal Details</span> </a></li>
-                <li> <a href="{{ route('updatevendorbusinessdetails') }}" class="{{ request()->is('admin/updatevendorbusinessdetails*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Business Details</span></a></li>
-                <li> <a href="{{ route('updatevendorbankdetails') }}" class="{{ request()->is('admin/updatevendorbankdetails*')?'nav-link active':'' }}"> <i class="bi bi-circle"></i><span>Bank Details</span></a></li>
+            <ul id="vendordetails-nav" class=" nav-content collapse {{ request()->is('admin/update-vendor-details')?'show':'' }} {{ request()->is('admin/update-vendor-bank-details')?'show':'' }} {{ request()->is('admin/update-vendor-business-details')?'show':'' }}" data-bs-parent="#sidebar-nav">
+                <li> <a href="{{ route('updatevendordetails') }}" class="{{ request()->is('admin/update-vendor-details*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Personal Details</span> </a></li>
+                <li> <a href="{{ route('updatevendorbusinessdetails') }}" class="{{ request()->is('admin/update-vendor-business-details*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Business Details</span></a></li>
+                <li> <a href="{{ route('updatevendorbankdetails') }}" class="{{ request()->is('admin/update-vendor-bank-details*')?'nav-link active':'' }}"> <i class="bi bi-circle"></i><span>Bank Details</span></a></li>
             </ul>
         </li>
         @endif
 
-        @if(Auth::guard('admin')->user()->type!=="vendor")
+        @if(Auth::guard('admin')->user()->type!=="vendor" && Auth::guard('admin')->user()->type!=="Ecommerce Manager")
 
         @if ($user->hasPermissionByRole('view_permission') || $user->hasPermissionByRole('view_role') || $user->hasPermissionByRole('view_admin'))
         <li class="{{ request()->is('admin/permissions')?'nav-item active':'' }} {{ request()->is('admin/permissions*')?'nav-item active':'' }} {{ request()->is('admin/all-delivery-boys')?'nav-item active':'' }} {{ request()->is('admin/delivery-boy/*')?'nav-item active':'' }} {{ request()->is('admin/permissions/create')?'nav-item active':'' }} {{ request()->is('admin/roles')?'nav-item active':'' }} {{ request()->is('admin/roles/*')?'nav-item active':'' }}  {{ request()->is('admin/all-admins')?'nav-item active':'' }}">
@@ -365,9 +365,12 @@
         @endif
 
         @if ($user && $user->hasPermissionByRole('view_delivery_boy') || $user->hasPermissionByRole('view delivery zone') || $user->hasPermissionByRole('view deliveryman type') || $user->hasPermissionByRole('view vehicle type'))
-        <li class="{{ request()->is('admin/vehicle_type')?'nav-item active':'' }}  {{ request()->is('admin/vehicle_type*')?'nav-item active':'' }}  {{ request()->is('admin/delivery_zone')?'nav-item active':'' }} {{ request()->is('admin/delivery_man/type*')?'nav-item active':'' }} {{ request()->is('admin/delivery_zone*')?'nav-item active':'' }} {{ request()->is('admin/delivery_man/type')?'nav-item active':'' }} {{ request()->is('admin/delivery_boy')?'nav-item active':'' }} {{ request()->is('admin/delivery_boy/*')?'nav-item active':'' }}  ">
+        <li class="{{ request()->is('admin/vehicle_type')?'nav-item active':'' }} {{ request()->is('admin/withdrawals')?'nav-item active':'' }} {{ request()->is('admin/vehicle_type*')?'nav-item active':'' }}  {{ request()->is('admin/delivery_zone')?'nav-item active':'' }} {{ request()->is('admin/delivery_man/type*')?'nav-item active':'' }} {{ request()->is('admin/delivery_zone*')?'nav-item active':'' }} {{ request()->is('admin/delivery_man/type')?'nav-item active':'' }} {{ request()->is('admin/delivery_boy')?'nav-item active':'' }} {{ request()->is('admin/delivery_boy/*')?'nav-item active':'' }}  ">
             <a class="nav-link" data-bs-target="#delivery-nav" data-bs-toggle="collapse" href="javascript:void();"> <i class="bx bxs-file"></i><span>Delivery Man</span><i class="bi bi-chevron-down ms-auto"></i> </a>
-            <ul id="delivery-nav" class="nav-content collapse {{ request()->is('admin/delivery_zone')?'show':'' }} {{ request()->is('admin/delivery_zone*')?'show':'' }} {{ request()->is('admin/delivery_man/type')?'show':'' }} {{ request()->is('admin/delivery_man/type*')?'show':'' }} {{ request()->is('admin/vehicle_type')?'show':'' }} {{ request()->is('admin/vehicle_type*')?'show':'' }}  {{ request()->is('admin/delivery_boy')?'show':'' }}  {{ request()->is('admin/delivery_boy/*')?'show':'' }}    " data-bs-parent="#sidebar-nav">
+            <ul id="delivery-nav" class="nav-content collapse {{ request()->is('admin/delivery_zone')?'show':'' }} {{ request()->is('admin/withdrawals')?'show':'' }} {{ request()->is('admin/delivery_zone*')?'show':'' }} {{ request()->is('admin/delivery_man/type')?'show':'' }} {{ request()->is('admin/delivery_man/type*')?'show':'' }} {{ request()->is('admin/vehicle_type')?'show':'' }} {{ request()->is('admin/vehicle_type*')?'show':'' }}  {{ request()->is('admin/delivery_boy')?'show':'' }}  {{ request()->is('admin/delivery_boy/*')?'show':'' }}    " data-bs-parent="#sidebar-nav">
+                @if( $user->hasPermissionByRole('view delivery zone'))
+                <li> <a href="{{ url('withdrawals') }}" class="{{ request()->is('admin/withdrawals')?'nav-link active':'' }} {{ request()->is('admin/withdrawals')?'nav-item active':'' }} "> <i class=" bi bi-zoom-in  active "></i><span>Delivery Men Withdraw Requests</span> </a></li>
+                @endif
                 @if( $user->hasPermissionByRole('view delivery zone'))
                 <li> <a href="{{ route('delivery_zone') }}" class="{{ request()->is('admin/delivery_zone')?'nav-link active':'' }} {{ request()->is('admin/delivery_zone*')?'nav-item active':'' }} "> <i class=" bi bi-zoom-in  active "></i><span>Delivery Zone</span> </a></li>
                 @endif
@@ -496,12 +499,18 @@
         @endif
 
         <li class="nav-heading">Business Settings</li>
-        @if ($user && $user->hasPermissionByRole('view email template') || $user->hasPermissionByRole('view currency') || $user->hasPermissionByRole('view invoice') || $user->hasPermissionByRole('manage_appsetting'))
-        <li class="{{ request()->is('admin/withdraw-settings')?'nav-item active':'' }} {{ request()->is('admin/appsettings')?'nav-item active':'' }} {{ request()->is('admin/tax-settings')?'nav-item active':'' }} {{ request()->is('admin/currency*')?'nav-item active':'' }}  {{ request()->is('admin/currencies')?'nav-item active':'' }}  {{ request()->is('admin/invoice-setting*')?'nav-item active':'' }} {{ request()->is('admin/email-template*')?'nav-item active':'' }}  ">
+        @if ($user && $user->hasPermissionByRole('view email template')  || $user->hasPermissionByRole('view currency') || $user->hasPermissionByRole('view invoice') || $user->hasPermissionByRole('manage_appsetting'))
+        <li class="{{ request()->is('admin/withdraw-settings')?'nav-item active':'' }} {{ request()->is('admin/banks')?'nav-item active':'' }} {{ request()->is('admin/tips')?'nav-item active':'' }} {{ request()->is('admin/appsettings')?'nav-item active':'' }} {{ request()->is('admin/tax-settings')?'nav-item active':'' }} {{ request()->is('admin/currency*')?'nav-item active':'' }}  {{ request()->is('admin/currencies')?'nav-item active':'' }}  {{ request()->is('admin/invoice-setting*')?'nav-item active':'' }} {{ request()->is('admin/email-template*')?'nav-item active':'' }}  ">
             <a class="nav-link" data-bs-target="#app-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class=" ri-group-2-fill"></i><span>Website Settings</span><i class="bi bi-chevron-down ms-auto"></i> </a>
-            <ul id="app-nav" class="nav-content collapse {{ request()->is('admin/withdraw-settings')?'show':'' }} {{ request()->is('admin/currency*')?'show':'' }} {{ request()->is('admin/tax-settings')?'show':'' }} {{ request()->is('admin/currencies')?'show':'' }}    {{ request()->is('admin/appsettings')?'show':'' }} {{ request()->is('admin/invoice-setting*')?'show':'' }}  {{ request()->is('admin/email-template*')?'show':'' }}  " data-bs-parent="#sidebar-nav">
+            <ul id="app-nav" class="nav-content collapse {{ request()->is('admin/withdraw-settings')?'show':'' }} {{ request()->is('admin/banks')?'show':'' }} {{ request()->is('admin/tips')?'show':'' }} {{ request()->is('admin/currency*')?'show':'' }} {{ request()->is('admin/tax-settings')?'show':'' }} {{ request()->is('admin/currencies')?'show':'' }}    {{ request()->is('admin/appsettings')?'show':'' }} {{ request()->is('admin/invoice-setting*')?'show':'' }}  {{ request()->is('admin/email-template*')?'show':'' }}  " data-bs-parent="#sidebar-nav">
                 @if($user->hasPermissionByRole('manage_appsetting'))
                 <li> <a href="{{ url('admin/appsettings') }}" class="{{ request()->is('admin/appsettings*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>General Settings</span></a></li>
+                @endif
+                @if($user->hasPermissionByRole('manage_appsetting'))
+                <li> <a href="{{ url('admin/tips') }}" class="{{ request()->is('admin/tips')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Tips Setting</span></a></li>
+                @endif
+                @if($user->hasPermissionByRole('manage_appsetting'))
+                <li> <a href="{{ url('admin/banks') }}" class="{{ request()->is('admin/banks')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Banks Account Setting</span></a></li>
                 @endif
                 @if($user->hasPermissionByRole('view email template'))
                 <li> <a href="{{ route('email_templates') }}" class="{{ request()->is('admin/email-template*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Email Settings</span></a></li>

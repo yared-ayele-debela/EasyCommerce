@@ -23,6 +23,7 @@
         "milon/barcode": "^11.0",
         "omnipay/paypal": "^3.0",
         "realrashid/sweet-alert": "^7.1",
+        "simplesoftwareio/simple-qrcode": "^4.2",
         "synergitech/laravel-alert": "^2.0"
     },
     "require-dev": {

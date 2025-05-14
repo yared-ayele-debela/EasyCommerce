@@ -3,6 +3,7 @@
 namespace App\Models\Restaurant;
 
 use App\Models\DeliveryAddress;
+use App\Models\DeliveryMan;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +12,7 @@ class Order extends Model
 {
     use HasFactory;
     protected $table="restaurant_orders";
-    protected $fillable = ['user_id', 'subtotal', 'discount', 'delivery_fee', 'total', 'status','delivery_status','payment_status', 'payment_method', 'delivery_address_id'];
+    protected $fillable = ['user_id', 'subtotal', 'discount', 'delivery_fee', 'total','tax','tip_amount','delivery_man_id','delivery_code','status','delivery_status','payment_status', 'payment_method', 'delivery_address_id'];
 
         public function user()
     {
@@ -29,5 +30,8 @@ class Order extends Model
     public function paymentInfo()
     {
         return $this->hasOne(OrderPaymentInfo::class,'restaurant_orders_id');
+    }
+    public function deliveryman(){
+        return $this->belongsTo(DeliveryMan::class,'delivery_man_id');
     }
 }

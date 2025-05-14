@@ -24,8 +24,7 @@
                                  {{ ucfirst($order->status) }}
                              </span>
                             </p>
-                            <p class="text-muted mb-1"> Delivery Status :  <span class="btn btn-sm text-white @if($order->delivery_status === 'shipped') bg-info @endif  @if($order->delivery_status==='delivered') bg-success @endif
-                                @if($order->delivery_status === 'pending') bg-warning @endif">
+                            <p class="text-muted mb-1"> Delivery Status :  <span class="btn btn-sm text-white btn-primary">
                                  {{ ucfirst($order->delivery_status) }}
                              </span>
                             </p>

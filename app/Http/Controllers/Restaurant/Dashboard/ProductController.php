@@ -10,6 +10,7 @@ use App\Models\Restaurant\ProductImage;
 use App\Models\Restaurant\Restaurant;
 use App\Models\Restaurant\RestaurantMenu;
 use App\Models\Restaurant\Subcategory;
+use App\Models\Tax;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -34,7 +35,8 @@ class ProductController extends Controller
         $subcategories=Subcategory::all();
         $menus=RestaurantMenu::all();
         $cities=City::all();
-        return view('Restaurant.dashboard.products.index', compact('products','categories','menus','cities','subcategories'));
+        $taxs=Tax::all();
+        return view('Restaurant.dashboard.products.index', compact('taxs','products','categories','menus','cities','subcategories'));
     }
 
     public function show($id){
@@ -64,7 +66,7 @@ class ProductController extends Controller
             $path = $request->file('cover_image')->store('product_images', 'public');
             $imagePath = asset('storage/' . $path); // Full URL: https://yourdomain.com/storage/product_images/filename.jpg
         }
-
+        // dd($request->all());
         $product = Product::create([
             'name' => $request->name,
             'slug' => Str::slug($request->name),
@@ -75,6 +77,7 @@ class ProductController extends Controller
             'menu_id' => $request->menu_id,
             'code' => $request->code,
             'price' => $request->price,
+            'product_tax' =>$request->product_tax,
             'discount_type' => $request->discount_type,
             'discount' => $request->discount,
             'image'=>$imagePath,
@@ -130,6 +133,7 @@ class ProductController extends Controller
             'menu_id' => $request->menu_id,
             'code' => $request->code,
             'price' => $request->price,
+            'product_tax' =>$request->product_tax,
             'discount_type' => $request->discount_type,
             'discount' => $request->discount,
             'admin_id' => $request->admin_id,

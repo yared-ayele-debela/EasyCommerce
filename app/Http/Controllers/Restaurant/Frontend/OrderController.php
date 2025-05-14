@@ -18,7 +18,7 @@ class OrderController extends Controller
     public function index()
     {
         // Fetch the authenticated user's orders with related items
-        $orders = Order::where('user_id', Auth::id())->with('orderItems.product','paymentInfo')->latest()->get();
+        $orders = Order::where('user_id', Auth::user()->id)->with('orderItems.product','paymentInfo')->latest()->get();
         $user = auth()->user()->id;
         $user = User::findOrFail($user);
         $reservations = $user->reservations()->with(['hotel', 'room','hotel_reservation_payment_info'])->latest()->get();
@@ -33,10 +33,11 @@ class OrderController extends Controller
     public function track(Order $order)
     {
         // Ensure the user can only track their own orders
-        if ($order->user_id !== Auth::id()) {
+        if ($order->user_id !== Auth::user()->id) {
             abort(403, 'Unauthorized access');
         }
-        $order = Order::with('orderItems.product')->findOrFail($order->id);
+        
+        $order = Order::with('orderItems.product','deliveryman')->findOrFail($order->id);
 
 
         return view('restaurant.frontend.order.track', compact('order'));

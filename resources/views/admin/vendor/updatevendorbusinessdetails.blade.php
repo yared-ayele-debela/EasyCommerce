@@ -1,27 +1,31 @@
 @extends('admindashboard.maindashboard')
 @section('dashboard')
-<div class="pagetitle bg-light">
-    <nav>
-        <ol class="breadcrumb p-3 ">
-            <li class="breadcrumb-item font-weight-bold"><a href="javascript:void(0);">Vendor Details</a></li>
-            <li class="breadcrumb-item">Update Vendor Business Details</li>
+<section class="section col-md-12">
+    <nav class="breadcrumb bg-white shadow-sm py-3 px-4 rounded d-flex justify-content-between align-items-center">
+        <button class="btn btn-outline-primary btn-sm d-flex align-items-center" onclick="history.back()">
+            <i class="bi bi-arrow-left mr-2"></i> &nbsp;
+            <span>Back</span>
+        </button>
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+                <a href="{{ url('admin/dashboard') }}">Home</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Update Business detail information</li>
         </ol>
     </nav>
-</div>
-<h1 class=" card-title">Welcome <span style="font-size: 20px; color:rgb(44, 10, 144)"> {{ Auth::guard('admin')->user()->name }}</span></h1>
+    <h1 class="card-title">Welcome <span style="font-size: 20px; color:rgb(44, 10, 144)"> {{ Auth::guard('admin')->user()->name }}</span></h1>
 
-<section class="section col-md-10">
     <div class="card border-0 shadow-sm">
-        <div class="card-body pt-3">
-            <ul class="nav nav-tabs pb-4 align-items-end card-header-tabs w-100 pt-3">
-                <li class="nav-item border-none">
-                    <a class="nav-link active bg-light" href=""><i class=" fas fa-plus"></i>Update Vendor Business Details</a>
-                </li>
-            </ul>
+          <div class="card-header">
+           <h5 class="text-dark"> Update Vendor Details</h5>
+        </div>
+        <div class="card-body">
+
             <form id="loginForm" class="row g-3" action="{{ url('admin/update_vendor_businessdetails') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
-                <div class="col-md-4 pt-3">
+                <div class="row">
+                    <div class="col-md-4 pt-3">
                     <label for="vendor_email" class="form-label">Email</label>
                     <input type="text" class="form-control " readonly value="{{Auth::guard('admin')->user()->email}}" name="vendor_email" required>
                     @error('vendor_email')
@@ -136,8 +140,9 @@
                     <small class=" text-danger">{{ $message }}</small>
                     @enderror
                 </div>
+                </div>
                 <div class="form-group pt-3   ">
-                    <input type="submit" class=" btn lightblue btn-warning pt-2 pb-2 shadow" value="Update Vendor Business Details">
+                    <input type="submit" class="btn lightblue btn-primary pt-2 pb-2 shadow" value="Update Vendor Business Details">
                 </div>
             </form>
         </div>

@@ -1,10 +1,13 @@
 @extends('all_frontend_layouts.layouts')
 @section('content')
-<div class="container py-5">
+<div class="container pb-sm-3 pb-6">
+      <div class="header">
+        <button class="btn btn-link text-dark" onclick="history.back()">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+        <h5 class="my-4 text-dark text-center">Reservation Summary</h5>
+    </div>
     <div class="row justify-content-center">
-        <div class="col-12">
-            <h4 class="mb-4">Reservation Summary</h4>
-        </div>
         <div class="col-lg-7 mb-2">
             <div class="offer-card">
                 <div class="card-body p-4">
@@ -19,7 +22,13 @@
                             <ul class="list-group list-group-flush border-0">
                                 <li class="list-group-item border-0"><strong>Hotel:</strong> {{ $room->hotel->name }}</li>
                                 <li class="list-group-item border-0"><strong>Hotel Location:</strong> {{ $room->hotel->country }}, {{ $room->hotel->state }}, {{ $room->hotel->city }}, {{ $room->hotel->location }}</li>
-                                <li class="list-group-item border-0"><strong><i class=" bi bi-star-fill text-primary"></i></strong> {{ $room->hotel->rating}}</li>
+                                <li class="list-group-item border-0">
+                                    @if($av_rating)
+                                    <i class="bi bi-star-fill text-primary"></i> {{ number_format($av_rating,1) }} Reviews
+                                    @else
+                                        <span class="text-muted">No reviews yet</span>
+                                    @endif
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -53,18 +62,24 @@
                         <hr>
                         <div class="mb-2">
                             <label for="bank" class="form-label">Select Bank</label>
-                            <select class="form-select" name="bank_name" required>
-                                <option value="" selected disabled>-- Choose Bank --</option>
-                                <option value="CBE">Commercial Bank of Ethiopia</option>
-                                <option value="Awash">Awash Bank</option>
-                                <option value="Dashen">Dashen Bank</option>
-                            </select>
-                            @error('bank_name')
-                            <span class="text-danger">{{ $message }}</span>
-                            @enderror
+                           <select class="form-select" name="bank_name" id="bank-select">
+                            <option value="" selected disabled>-- Choose Bank --</option>
+                            @foreach ($banks as $bank)
+                            <option value="{{ $bank->bank_name }}" data-account="{{ $bank->account_number }}">{{ $bank->bank_name }} | {{ $bank->account_number }}</option>
+                            @endforeach
+                        </select>
+                        @error('bank_name')
+                        <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                        </div>
+                         <div id="account-info" class="my-2 alert alert-light" style="display: none;">
+                            <div class="d-flex justify-content-between">
+                              <span>Account Number: <strong id="account-number"></strong></span>
+                               <button type="button" class="btn btn-sm btn-outline-primary ms-2" onclick="copyAccountNumber()"><i class="bi bi-copy"></i></button>
+                            </div>
                         </div>
                         <div class="mb-2">
-                            <label for="transaction_number" class="form-label">Transaction Number</label>
+                            <label for="transaction_number" class="form-label">Transaction Number (Optional)</label>
                             <input type="text" name="transaction_number" class="form-control">
                             @error('transaction_number')
                             <span class="text-danger">{{ $message }}</span>

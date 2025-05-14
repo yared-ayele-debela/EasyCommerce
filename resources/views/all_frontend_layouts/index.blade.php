@@ -19,7 +19,6 @@ use Illuminate\Support\Facades\Storage;
         @foreach ($banners as $banner)
         <div class="item mb-2 position-relative">
             @php
-            // Extract the relative path from full URL
             $imagePath = $banner->image
             ? ltrim(parse_url($banner->image, PHP_URL_PATH), '/')
             : null;
@@ -30,10 +29,8 @@ use Illuminate\Support\Facades\Storage;
             @if($relativePath && Storage::disk('public')->exists($relativePath))
             <img src="{{ $banner->image }}" alt="{{ $banner->link }}" style="border-radius:8px;" class="img-fluid">
             @else
-            <img src="{{ asset('no_banner.png') }}" class="img-fluid" alt="{{ $banner->link }}">
+            <img src="{{ asset('no_banner.png') }}" class="img-fluid" style="border-radius:8px;"  alt="{{ $banner->link }}">
             @endif
-
-
             <div class="overlay-text position-absolute text-white p-3">
                 <h3>{{ $banner->title }}</h3>
                 <p>{{ $banner->description }}</p>
@@ -52,25 +49,7 @@ use Illuminate\Support\Facades\Storage;
     <div class="row g-3 my-1">
         <div class="owl-carousel owl-theme categories mt-4">
             @foreach ($categories as $category)
-            <div class="item mb-2">
-                <div class="category-item">
-                    <a href="{{ url('restaurant/category/'.$category->id) }}">
-                        @php
-                        // Extract the relative path from the full URL (if provided)
-                        $parsedPath = $category->image ? parse_url($category->image, PHP_URL_PATH) : null;
-                        $relativePath = $parsedPath ? str_replace('storage/', '', ltrim($parsedPath, '/')) : null;
-                        @endphp
-
-                        @if($relativePath && Storage::disk('public')->exists($relativePath))
-                        <img src="{{ $category->image }}" class="p-2 shadow" style="border:4px solid rgb(162, 159, 159);" alt="{{ $category->name ?? 'Category' }}">
-                        @else
-                        <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="p-2 shadow" style="border:4px solid rgb(162, 159, 159);" alt="Default Category">
-                        @endif
-
-                        <p class="text-dark">{{ $category->name }}</p>
-                    </a>
-                </div>
-            </div>
+             <x-restaurant.category-card :category="$category" />
             @endforeach
         </div>
     </div>
@@ -91,49 +70,7 @@ use Illuminate\Support\Facades\Storage;
     <div class="row g-3">
         <div class="owl-carousel owl-theme products mt-4">
             @foreach ($products as $product)
-            <div class="item my-2">
-                <div class="offer-card p-3 h-100">
-                    <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}" class="text-decoration-none text-dark d-block">
-                        @php
-                        $off = $product->price - $product->getFinalPrice();
-                        @endphp
-                        @if($off > 0)
-                        <div class="btn btn-sm btn-primary">
-                            {{ $off }} ETB OFF
-                        </div>
-                        @endif
-                        @php
-                        // Safely extract relative storage path from full URL or asset path
-                        $parsedPath = $product->image ? parse_url($product->image, PHP_URL_PATH) : null;
-                        $relativePath = $parsedPath ? str_replace('storage/', '', ltrim($parsedPath, '/')) : null;
-                        @endphp
-
-                        @if($relativePath && Storage::disk('public')->exists($relativePath))
-                        <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
-                        @else
-                        <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" alt="No Image">
-                        @endif
-
-                        <h6 class="text-dark">{{ $product->name }}</h6>
-                        <p class="mb-0">
-                            <span class="price">{{ $product->getFinalPrice() }} ETB</span>
-                            <span class="price-old">{{ $product->price }} ETB</span>
-                        </p>
-                    </a>
-                    <div class="hover-buttons">
-                        <button onclick="window.location.href='{{ url('restaurant/product-detail/'.encrypt($product->id)) }}'" class="btn-view">
-                            <i class="bi bi-eye-fill"></i>
-                        </button>
-                        <button class="btn-cart add-to-cart" data-product="{{ $product->id }}" data-product-price="{{ $product->price }}">
-                            <i class="bi bi-cart-check-fill"></i>
-                        </button>
-                        <button class="btn-wishlist add-to-wishlist" data-product="{{ $product->id }}">
-                            <i class="bi bi-heart text-white"></i>
-                        </button>
-                    </div>
-                </div>
-
-            </div>
+                <x-restaurant.product-card :product="$product" />
             @endforeach
         </div>
     </div>
@@ -152,45 +89,7 @@ use Illuminate\Support\Facades\Storage;
     <div class="row g-3">
         <div class="owl-carousel owl-theme products mt-4">
             @foreach ($most_popular_products as $product)
-            <div class="item my-2">
-                <div class="offer-card p-3 h-100">
-                    <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}" class="text-decoration-none text-dark d-block">
-
-                        <span class="btn btn-sm btn-info text-white">
-                            Popular
-                        </span>
-                        @php
-                        // Safely extract relative storage path from full URL or asset path
-                        $parsedPath = $product->image ? parse_url($product->image, PHP_URL_PATH) : null;
-                        $relativePath = $parsedPath ? str_replace('storage/', '', ltrim($parsedPath, '/')) : null;
-                        @endphp
-
-                        @if($relativePath && Storage::disk('public')->exists($relativePath))
-                        <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
-                        @else
-                        <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" alt="No Image">
-                        @endif
-
-                        <h6 class="text-dark">{{ $product->name }}</h6>
-                        <p class="mb-0">
-                            <span class="price">{{ $product->getFinalPrice() }} ETB</span>
-                            <span class="price-old">{{ $product->price }} ETB</span>
-                        </p>
-                    </a>
-                    <div class="hover-buttons">
-                        <button onclick="window.location.href='{{ url('restaurant/product-detail/'.encrypt($product->id)) }}'" class="btn-view">
-                            <i class="bi bi-eye-fill"></i>
-                        </button>
-                        <button class="btn-cart add-to-cart" data-product="{{ $product->id }}" data-product-price="{{ $product->price }}">
-                            <i class="bi bi-cart-check-fill"></i>
-                        </button>
-                        <button class="btn-wishlist add-to-wishlist" data-product="{{ $product->id }}">
-                            <i class="bi bi-heart text-white"></i>
-                        </button>
-                    </div>
-                </div>
-
-            </div>
+            <x-restaurant.normal-product-card :product="$product" badge="Most Popular" bgColor="btn-info" />
             @endforeach
         </div>
     </div>
@@ -210,45 +109,7 @@ use Illuminate\Support\Facades\Storage;
     <div class="row g-3">
         <div class="owl-carousel owl-theme products mt-4">
             @foreach ($best_seller_products as $product)
-            <div class="item my-2">
-                <div class="offer-card p-3 h-100">
-                    <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}" class="text-decoration-none text-dark d-block">
-
-                        <span class="btn btn-sm btn-warning text-white">
-                            Best seller
-                        </span>
-                        @php
-                        // Safely extract relative storage path from full URL or asset path
-                        $parsedPath = $product->image ? parse_url($product->image, PHP_URL_PATH) : null;
-                        $relativePath = $parsedPath ? str_replace('storage/', '', ltrim($parsedPath, '/')) : null;
-                        @endphp
-
-                        @if($relativePath && Storage::disk('public')->exists($relativePath))
-                        <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
-                        @else
-                        <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" alt="No Image">
-                        @endif
-
-                        <h6 class="text-dark">{{ $product->name }}</h6>
-                        <p class="mb-0">
-                            <span class="price">{{ $product->getFinalPrice() }} ETB</span>
-                            <span class="price-old">{{ $product->price }} ETB</span>
-                        </p>
-                    </a>
-                    <div class="hover-buttons">
-                        <button onclick="window.location.href='{{ url('restaurant/product-detail/'.encrypt($product->id)) }}'" class="btn-view">
-                            <i class="bi bi-eye-fill"></i>
-                        </button>
-                        <button class="btn-cart add-to-cart" data-product="{{ $product->id }}" data-product-price="{{ $product->price }}">
-                            <i class="bi bi-cart-check-fill"></i>
-                        </button>
-                        <button class="btn-wishlist add-to-wishlist" data-product="{{ $product->id }}">
-                            <i class="bi bi-heart text-white"></i>
-                        </button>
-                    </div>
-                </div>
-
-            </div>
+             <x-restaurant.normal-product-card :product="$product" badge="Best Seller" bgColor="btn-warning" />
             @endforeach
         </div>
     </div>
@@ -268,43 +129,7 @@ use Illuminate\Support\Facades\Storage;
     <div class="row g-3">
         <div class="owl-carousel owl-theme products mt-4">
             @foreach ($latest_products as $product)
-            <div class="item my-2">
-                <div class="offer-card p-3 h-100">
-                    <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}" class="text-decoration-none text-dark d-block">
-                        <div class="btn btn-sm btn-danger text-white">
-                            Latest
-                        </div>
-                        @php
-                        // Safely extract relative storage path from full URL or asset path
-                        $parsedPath = $product->image ? parse_url($product->image, PHP_URL_PATH) : null;
-                        $relativePath = $parsedPath ? str_replace('storage/', '', ltrim($parsedPath, '/')) : null;
-                        @endphp
-
-                        @if($relativePath && Storage::disk('public')->exists($relativePath))
-                        <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
-                        @else
-                        <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" alt="No Image">
-                        @endif
-                        <h6 class="text-dark">{{ $product->name }}</h6>
-                        <p class="mb-0">
-                            <span class="price">{{ $product->getFinalPrice() }} ETB</span>
-                            <span class="price-old">{{ $product->price }} ETB</span>
-                        </p>
-                    </a>
-                    <div class="hover-buttons">
-                        <button onclick="window.location.href='{{ url('restaurant/product-detail/'.encrypt($product->id)) }}'" class="btn-view">
-                            <i class="bi bi-eye-fill"></i>
-                        </button>
-                        <button class="btn-cart add-to-cart" data-product="{{ $product->id }}" data-product-price="{{ $product->price }}">
-                            <i class="bi bi-cart-check-fill"></i>
-                        </button>
-                        <button class="btn-wishlist add-to-wishlist" data-product="{{ $product->id }}">
-                            <i class="bi bi-heart text-white"></i>
-                        </button>
-                    </div>
-                </div>
-
-            </div>
+              <x-restaurant.normal-product-card :product="$product" badge="Latest" bgColor="btn-danger" />
             @endforeach
         </div>
     </div>
@@ -426,11 +251,13 @@ use Illuminate\Support\Facades\Storage;
         restaurants.forEach(restaurant => {
             container.innerHTML += `
                 <div class="col-md-6">
-                    <div class=" offer-card mb-3 p-2">
+                    <div class="offer-card mb-4 p-2">
                         <div class="row g-0">
                             <div class="col-md-6">
                             <a href="{{ url('restaurant/${restaurant.id}/detail') }}">
-                                <img src="${restaurant.cover}" class="img-fluid rounded-start" alt="Restaurant">
+                                <img src="${restaurant.cover}" class="img-fluid rounded-start" alt="Restaurant" style="max-height:230px;"
+                                 onerror="this.onerror=null; this.src='{{ asset('restaurant_frontend/default-image.png') }}';"
+                                >
                             </a>
                             </div>
                             <div class="col-md-6">
@@ -438,7 +265,8 @@ use Illuminate\Support\Facades\Storage;
                                     <h5 class="card-title">${restaurant.name}</h5>
                                     <p class="mb-1">${restaurant.description.substring(0, 50)}...</p>
                                     <div class="mb-2">
-                                        <span class="badge resturant_badge p-2">Around ${restaurant.distance.toFixed(2)} km</span>
+                                        <span class="badge resturant_badge p-2">Around ${ restaurant.distance } km</span>
+                                        <span class="badge resturant_badge p-2">Around ${ restaurant.time } min</span>
                                     </div>
                                     <p class="mb-1"> <i class="bi bi-pin-map-fill text-primary"></i> ${restaurant.address}</p>
                                     <div class="d-flex justify-content-between align-items-center mt-3">

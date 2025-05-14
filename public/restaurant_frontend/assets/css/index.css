@@ -10,6 +10,12 @@
     width: 80px;
     border-radius: 50%;
 }
+.fix-banner-box {
+    background-size: cover;
+    background-position: center;
+    min-height: 200px !important;
+}
+
 
 .category-item p {
     margin-top: 8px;
@@ -719,6 +725,7 @@ input[type="number"] {
     /* position: relative; */
   }
 
+
   .payment-method input {
     position: absolute;
     opacity: 0;
@@ -743,27 +750,34 @@ input[type="number"] {
     transform: scale(1.1);
   }
 
+  .tip-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 20px 0;
+    }
 
-.tip-options {
-  display: flex;
-  justify-content: space-between;
-  margin: 20px 0;
-}
+    .tip-option {
+        padding: 5px 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background-color: white;
+    }
 
-.tip-option {
-  padding: 10px 20px;
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  text-align: center;
-  cursor: pointer;
-}
+    .tip-option.selected {
+        background-color: #17BE18;
+        color: white;
+        border: none;
+    }
 
-.tip-option.selected {
-  background-color: #17BE18;
-  color: white;
-  border: none;
-}
-
+    #custom-tip-container {
+        display: none;
+        margin-top: 10px;
+        width: 80px;
+    }
 .btn-pay {
   background-color: #17BE18;
   color: white;
@@ -993,6 +1007,9 @@ input[type="number"] {
         height: 40px !important;
         /* Reduce image size */
     }
+     .pb-6 {
+    padding-bottom: 5rem !important;
+}
     .delivery_text{
         font-size:12px !important;
     }
@@ -1068,9 +1085,9 @@ input[type="number"] {
 }
 
 
-.fix-banner-box {
+/* .fix-banner-box {
     min-height: 300px !important;
-}
+} */
 
 @media (max-width: 768px) {
     .fix-banner-box {

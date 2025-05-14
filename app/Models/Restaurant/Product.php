@@ -12,7 +12,7 @@ class Product extends Model
     protected $table="restaurant_products";
     protected $fillable = [
         'name', 'slug', 'description', 'category_id', 'city_id', 'menu_id', 'code',
-        'price', 'discount_type', 'discount', 'image', 'admin_id',
+        'price','product_tax', 'discount_type', 'discount', 'image', 'weight','admin_id',
         'most_populer', 'best_seller','is_free','delivery_fee','delivery_time', 'is_active'
     ];
     public function restaurant(){

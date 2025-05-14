@@ -14,6 +14,12 @@ use function Clue\StreamFilter\fun;
 class Helper
 {
 
+     public static function calculateDeliveryCommission($order)
+    {
+        $commissionRate = 0.02;
+        // dd($total_commuction);
+        return round($order->total * $commissionRate, 2);
+    }
     public static function totalCartItems()
     {
         if (Auth::check()) {

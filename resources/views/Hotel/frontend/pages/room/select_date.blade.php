@@ -136,7 +136,7 @@
     }
 </style>
 
-<div class="container py-4">
+<div class="container pb-sm-3 pb-6">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <button class="btn btn-link text-dark me-2" onclick="history.back()">
             <i class="bi bi-arrow-left fs-5"></i>
@@ -153,7 +153,13 @@
                 <div>
                     <h5 class="fw-bold">{{ $room->room_type }}</h5>
                     <p class="text-muted mb-1"><i class="bi bi-geo-alt-fill text-primary"></i> {{ $room->hotel->location }}</p>
-                    <p class="text-muted mb-1">⭐ 4.8 • 1.0 km away</p>
+                    <p class="text-muted mb-1">
+                        @if($av_rating)
+                <i class="bi bi-star-fill text-primary"></i> {{ number_format($av_rating,1) }} Reviews
+                @else
+                    <span class="text-muted">No reviews yet</span>
+                @endif
+                        • 1.0 km away</p>
                     <p class="text-muted">Capacity: {{ $room->capacity }}</p>
                 </div>
                 <div class="text-md-end mt-3 mt-md-0">

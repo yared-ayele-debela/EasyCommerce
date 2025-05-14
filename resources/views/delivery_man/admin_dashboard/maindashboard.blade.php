@@ -23,6 +23,9 @@
 
       @notifyCss
       <style>
+        .bg-custom-primary{
+            background-color:#17BE18 !important;
+        }
         .bg-c-blue {
             background: linear-gradient(45deg,#4099ff,#73b4ff);
         }

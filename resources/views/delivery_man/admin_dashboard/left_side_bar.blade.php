@@ -19,17 +19,16 @@ $user = Auth::guard('deliverymen')->user();
 <aside id="sidebar" class="sidebar">
     <ul class="sidebar-nav" id="sidebar-nav">
        <li class="nav-item"> <a class="nav-link " href="{{ url('delivery-boy/dashboard') }}"> <i class="bi bi-grid"></i> <span>Dashboard</span> </a></li>
-       @if ($user && $user->hasPermissionByRole('view_orders'))
-       <li class=" {{ request()->is('delivery-boy/orders')?'nav-item active':'' }}  {{ request()->is('delivery-boy/order-detail*')?'nav-item active':''}} ">
-        <a class="nav-link  {{ request()->is('delivery-boy/orders')||('delivery-boy/order-detail*')?'':'collapsed'}}" data-bs-target="#charts-nav" data-bs-toggle="collapse" href="javascript:void(0)" aria-expanded="false"> <i class="bi bi-cart-check "></i><span>Orders</span>&nbsp; @if($count_order)<span class="badge bg-danger">{{$count_order}}</span>@endif<i class="bi bi-chevron-down  ms-auto"></i> </a>
-        <ul id="charts-nav" class="nav-content collapse {{ request()->is('delivery-boy/orders')?'show':'' }} {{ request()->is('delivery-boy/order-detail*')?'show':'' }}" data-bs-parent="" style="">
-            @if ($user && $user->hasPermissionByRole('view_orders'))
-            <li> <a href="{{ url('delivery-boy/orders') }}" class=" {{ request()->is('delivery-boy/orders')?' nav-link active':'' }} {{ request()->is('delivery-boy/order-detail*')?' nav-link active':'' }}"> <i class="bi bi-circle"></i><span>List of Orders</span> </a></li>
-            @endif
-        </ul>
+       @if ($user && $user->hasPermissionByRole('view transfered stock product'))
+       <li class="nav-item active">
+           <a href="{{ url('delivery-boy/orders') }}" class="nav-link" href="javascript:void(0)"> <i class="bx bxs-building-house  "></i><span>List of Goods Orders</span></a>
        </li>
        @endif
-
+       @if ($user && $user->hasPermissionByRole('view transfered stock product'))
+       <li class=" {{ request()->is('delivey-boy/stock-products')?'nav-item active':'' }} {{ request()->is('delivery-boy/stock-product/detail/*')?'nav-item active':'' }} ">
+           <a href="{{ route('delivery.restaurant-orders') }}" class="nav-link" href="javascript:void(0)"> <i class="bx bxs-building-house  "></i><span>Restaurant Orders</span></a>
+       </li>
+       @endif
        @if ($user && $user->hasPermissionByRole('view custom order'))
        <li class=" {{ request()->is('delivery-boy/custom-orders')?'nav-item active':'' }} {{ request()->is('delivery-boy/custom-orders/*')?'nav-item active':'' }}  ">
            <a class="nav-link" data-bs-target="#custom_order-nav" data-bs-toggle="collapse" href="javascript:void(0)"> <i class="bx bxs-shopping-bag-alt  "></i><span>Custom Orders</span>&nbsp; @if($count_custom_order)<span class="badge bg-danger">{{$count_custom_order}}</span>@endif<i class="bi bi-chevron-down ms-auto"></i> </a>
@@ -38,21 +37,12 @@ $user = Auth::guard('deliverymen')->user();
            </ul>
        </li>
        @endif
-       <hr>
-       <h6 class="text-muted">Transfer Stock</h6>
        @if ($user && $user->hasPermissionByRole('view transfered stock product'))
        <li class=" {{ request()->is('delivey-boy/stock-products')?'nav-item active':'' }} {{ request()->is('delivery-boy/stock-product/detail/*')?'nav-item active':'' }} ">
            <a class="nav-link" data-bs-target="#stock_products-nav" data-bs-toggle="collapse" href="javascript:void(0)"> <i class="bx bxs-building-house  "></i><span>Stock Transfer Product</span>&nbsp; @if($assigneedproduct>0)<span class="badge bg-danger">{{$assigneedproduct}}</span> @endif<i class="bi bi-chevron-down ms-auto"></i> </a>
            <ul id="stock_products-nav" class="nav-content collapse {{ request()->is('delivey-boy/stock-products')?'show':'' }} {{ request()->is('delivey-boy/stock-product/detail/*')?'show':'' }} " data-bs-parent="#sidebar-nav">
                <li> <a href="{{ route('delivery-boy-stock-products') }}" class="{{ request()->is('delivey-boy/stock-products')?'nav-link active':'' }} {{ request()->is('delivey-boy/stock-product/detail/*')?'nav-link active':'' }} "> <i class=" bi bi-circle active "></i><span>List of stock transfer products</span></a></li>
            </ul>
-       </li>
-       @endif
-       <hr>
-       @if ($user && $user->hasPermissionByRole('view transfered stock product'))
-       <h6 class="text-muted">Restaurant Orders</h6>
-       <li class=" {{ request()->is('delivey-boy/stock-products')?'nav-item active':'' }} {{ request()->is('delivery-boy/stock-product/detail/*')?'nav-item active':'' }} ">
-           <a class="nav-link" href="javascript:void(0)"> <i class="bx bxs-building-house  "></i><span>Restaurant Orders</span></a>
        </li>
        @endif
        <li class="{{ request()->is('delivery-boy/update-profile')?'nav-item active':'' }}  ">

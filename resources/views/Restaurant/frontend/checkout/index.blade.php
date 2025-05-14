@@ -54,6 +54,7 @@ use App\Models\Restaurant\Product;
             </div>
             <form action="{{ route('restaurant.checkout.placeOrder') }}" id="checkoutForm" method="POST" enctype="multipart/form-data">
                 @csrf
+                <input type="hidden" name="tax" value="{{ $totalTax }}">
                 <div class="row" id="addressContainer">
                     <p class="text-muted text-center">Click "Load Addresses" to view your addresses.</p>
                 </div>
@@ -122,10 +123,12 @@ use App\Models\Restaurant\Product;
 
         </div>
         @php
-        $delivery_fee = 15;
+        $delivery_fee = $totalShipping;
         $discount = session('discount', 0);
         $subtotal = session('cart_subtotal', 0);
-        $total = max(($subtotal - $discount), 0) + $delivery_fee;
+        $tax= $totalTax;
+
+        $total = max(($subtotal - $discount), 0) + $tax + $delivery_fee;
         @endphp
 
         <div class="col-lg-4 mb-2">
@@ -150,26 +153,45 @@ use App\Models\Restaurant\Product;
                     <span><strong>Delivery Fee</strong></span>
                     <span><strong>{{ $delivery_fee }} ETB</strong></span>
                 </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span><strong>Tax</strong></span>
+                    <span><strong>{{ $tax }} ETB</strong></span>
+                </div>
                 <div class="line"></div>
                 <div class="d-flex justify-content-between">
                     <span><strong>Total</strong></span>
                     <span class="total"><strong>{{ $total }} ETB</strong></span>
                 </div>
+                <input type="hidden" name="delivery_fee" value="{{ $delivery_fee }}">
                 <div class="delivery-location mt-3 p-3">
                     <h6 class="fw-bold text-dark mb-2">Payment Method</h6>
                     <div class="payment-methods">
-                        <label type="button" class="payment-method shadow-sm rounded-3 p-3 text-center" data-bs-toggle="modal" data-bs-target="#modalId">
+                        <label type="button" class="payment-method shadow-sm bg-white rounded-3 p-3 text-center" data-bs-toggle="modal" data-bs-target="#modalId">
                             <input type="radio" name="payment_method" value="bank_transfer" class="d-none">
-                            <img src="{{ asset('restaurant_frontend/assets/img/bank.png') }}" alt="Bank Transfer" width="35" class="mb-2">
+                            <img src="{{ asset('restaurant_frontend/assets/img/bank.jpg') }}" alt="Bank Transfer" width="200" class="mb-2">
                             <div class="fw-semibold">Bank Transfer</div>
                         </label>
-                        <label class="payment-method shadow-sm rounded-3 p-3 text-center">
+                        <label class="payment-method shadow-sm rounded-3 bg-white p-3 text-center">
                             <input type="radio" name="payment_method" value="cash_on_delivery" class="d-none">
                             <img src="{{ asset('restaurant_frontend/assets/img/cash.png') }}" alt="Cash on Delivery" width="35" class="mb-2">
                             <div class="fw-semibold">Cash on Delivery</div>
                         </label>
                     </div>
                     <span id="payment-error" class="text-danger d-none">Please select a payment method.</span>
+                    <h6 class="fw-bold text-dark mb-2">Tip For Driver</h6>
+                    <input type="hidden" name="tip_option" id="selected_tip" value="0"> <!-- Default selected -->
+                    <div class="tip-options" id="tipOptions">
+                        <div class="tip-option shadow-sm selected" data-tip="0">No</div>
+                        @foreach($tips as $tip)
+                            <div class="tip-option shadow-sm" data-tip="{{ $tip->amount }}">
+                                {{ $tip->amount }} Birr
+                            </div>
+                        @endforeach
+                        <div class="tip-option shadow-sm" data-tip="custom">Custom</div>
+                    </div>
+                    <div id="custom-tip-container">
+                        <input type="number" name="custom_tip_amount" class="form-control w-100 shadow-sm" id="custom_tip_amount" placeholder="0" min="1">
+                    </div>
                 </div>
 
                 <!-- Modal Body -->
@@ -183,20 +205,26 @@ use App\Models\Restaurant\Product;
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <div class="mb-2">
-                                    <input type="hidden" name="id" value="">
-                                    <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
-                                    <label for="bank" class="form-label">Select Bank</label>
-                                    <select class="form-select" name="bank_name" required>
-                                        <option value="" selected disabled>-- Choose Bank --</option>
-                                        <option value="CBE">Commercial Bank of Ethiopia</option>
-                                        <option value="Awash">Awash Bank</option>
-                                        <option value="Dashen">Dashen Bank</option>
-                                    </select>
-                                    @error('bank_name')
-                                    <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
+                                 <div class="mb-2">
+                                        <input type="hidden" name="id" value="">
+                                        <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
+                                        <label for="bank" class="form-label">Select Bank</label>
+                                        <select class="form-select" name="bank_name" id="bank-select">
+                                            <option value="" selected disabled>-- Choose Bank --</option>
+                                            @foreach ($banks as $bank)
+                                            <option value="{{ $bank->bank_name }}" data-account="{{ $bank->account_number }}">{{ $bank->bank_name }} | {{ $bank->account_number }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('bank_name')
+                                        <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    <div id="account-info" class="my-2 alert alert-light" style="display: none;">
+                                        <div class="d-flex justify-content-between">
+                                        <span>Account Number: <strong id="account-number"></strong></span>
+                                        <button type="button" class="btn btn-sm btn-outline-primary ms-2" onclick="copyAccountNumber()"><i class="bi bi-copy"></i></button>
+                                        </div>
+                                    </div>
                                 <div class="mb-2">
                                     <label for="transaction_number" class="form-label">Transaction Number</label>
                                     <input type="text" name="transaction_number" class="form-control">
@@ -237,6 +265,57 @@ use App\Models\Restaurant\Product;
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 @include('all_frontend_layouts.partials.delivery_address_modal')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tipOptions = document.querySelectorAll('.tip-option');
+        const selectedTipInput = document.getElementById('selected_tip');
+        const customInputContainer = document.getElementById('custom-tip-container');
+        const customInputField = customInputContainer.querySelector('input[name="custom_tip_amount"]');
+
+        const subtotal = parseFloat(@json($subtotal));
+        const discount = parseFloat(@json($discount));
+        const deliveryFee = parseFloat(@json($delivery_fee));
+        const tax = parseFloat(@json($tax));
+        const totalDisplay = document.querySelector('.total');
+
+        function updateTotal(tipAmount = 0) {
+            const total = Math.max((subtotal - discount), 0) + tax + deliveryFee + parseFloat(tipAmount || 0);
+            totalDisplay.innerHTML = `<strong>${total.toFixed(2)} ETB</strong>`;
+        }
+
+        tipOptions.forEach(option => {
+            option.addEventListener('click', function () {
+                tipOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+
+                const tipValue = this.dataset.tip;
+
+                if (tipValue === 'custom') {
+                    selectedTipInput.value = customInputField.value || 'custom';
+                    customInputContainer.style.display = 'block';
+                    customInputField.focus();
+                    updateTotal(customInputField.value); // update with current input value
+                } else {
+                    selectedTipInput.value = tipValue;
+                    customInputContainer.style.display = 'none';
+                    updateTotal(tipValue);
+                }
+            });
+        });
+
+        customInputField.addEventListener('input', function () {
+            if (document.querySelector('.tip-option.selected')?.dataset.tip === 'custom') {
+                selectedTipInput.value = this.value;
+                updateTotal(this.value);
+            }
+        });
+
+        // Init total with default selected tip
+        const initialTip = document.querySelector('.tip-option.selected')?.dataset.tip || 0;
+        updateTotal(initialTip);
+    });
+</script>
+
 
 <script>
     // JavaScript to handle payment method selection
@@ -323,8 +402,6 @@ use App\Models\Restaurant\Product;
             $("#selected_address_id").val(selectedAddress);
             $("#placeOrderBtn").prop("disabled", false); // Enable Place Order button
         });
-
-
 
         $('#country').change(function() {
             let countryId = $(this).val();

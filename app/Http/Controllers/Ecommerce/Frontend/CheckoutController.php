@@ -6,6 +6,7 @@ use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Mail\OrderPlaced;
 use App\Models\AppSetting;
+use App\Models\Bank;
 use App\Models\Cart;
 use App\Models\Category;
 use App\Models\CmsPage;
@@ -21,6 +22,7 @@ use App\Models\Restaurant\OrderPaymentInfo;
 use App\Models\SalesCommission;
 use App\Models\SalesMainCommission;
 use App\Models\ShippingCharge;
+use App\Models\Tip;
 use App\Models\Vendor;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -34,56 +36,69 @@ use RealRashid\SweetAlert\Facades\Alert;
 class CheckoutController extends Controller
 {
     public function showOrderSummary(Request $request)
-    {
-
-        $countries = Country::where('status', 1)->get();
-        $getCartItems = Cart::getCartItems();
-
-        if (count($getCartItems) == 0) {
-            Alert::toast('Shopping Cart is empty! Please add products to checkout', 'error');
-            return redirect('my-cart');
-        }
-
-        $total_price = 0;
-        $total_weight = 0;
-        $totalTax = 0;
-
-        foreach ($getCartItems as $item) {
-            $getDiscountAttributePrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
-            $product_price = $getDiscountAttributePrice['final_price'];
-            $product_quantity = $item['quantity'];
-
-            $product_total_price = $product_price * $product_quantity;
-            $product_weight = $item['product']['product_weight'];
-            $total_weight += $product_weight;
-
-            $discount = Discount::where('product_id', $item['product_id'])
-                ->where('min_product', '<=', $product_quantity)
-                ->where('max_product', '>=', $product_quantity)
-                ->where('status', 1)
-                ->first();
-
-            $product_total_price_after_discount = $discount
-                ? ($discount->discount_type === "Discounted Price"
-                    ? $product_total_price - $discount->amount
-                    : $product_total_price - ($product_total_price * ($discount->amount / 100)))
-                : $product_total_price;
-
-            $total_price += $product_total_price_after_discount;
-
-            $get_tax_percent = Product::select('product_tax')->where('id', $item['product_id'])->first();
-            $tax_percent = $get_tax_percent->product_tax;
-            $totalTax += round($product_total_price_after_discount * $tax_percent / 100, 2);
-        }
-        $deliveryAddresses = DeliveryAddress::where('user_id', Auth::id())->get();
-
-        return view('Ecommerce.checkout.index', compact(
-            'countries',
-            'getCartItems',
-            'total_price',
-            'totalTax'
-        ));
+{
+    $getCartItems = Cart::getCartItems();
+    if (count($getCartItems)==0) {
+        return redirect('my-cart')->with('error', 'Shopping Cart is empty! Please add products to checkout.');
     }
+
+    $countries = Country::where('status', 1)->get();
+    $deliveryAddresses = DeliveryAddress::where('user_id', Auth::id())->get();
+
+    $totalPrice = 0;
+    $totalTax = 0;
+    $totalShipping = 0;
+
+    foreach ($getCartItems as $item) {
+        $product = Product::with('vendor')->find($item['product_id']);
+        $discountPriceData = Product::getDiscountAttributePrice($product->id, $item['size']);
+
+        $quantity = $item['quantity'];
+        $basePrice = $discountPriceData['final_price'];
+        $itemTotal = $basePrice * $quantity;
+
+        // Apply volume discount if available
+        $discount = Discount::where('product_id', $product->id)
+            ->where('min_product', '<=', $quantity)
+            ->where('max_product', '>=', $quantity)
+            ->where('status', 1)
+            ->first();
+
+        if ($discount) {
+            $itemTotal -= $discount->discount_type === "Discounted Price"
+                ? $discount->amount
+                : $itemTotal * ($discount->amount / 100);
+        }
+
+        $totalPrice += $itemTotal;
+
+        // Calculate tax
+        $taxPercent = $product->product_tax;
+        $totalTax += round($itemTotal * $taxPercent / 100, 2);
+
+        // Calculate shipping
+        $weight = $item['product']['product_weight'];
+        $zone = $product->vendor->zone;
+        $shipping = ShippingCharge::getShippingCharges($weight, $zone);
+        $totalShipping += $shipping;
+    }
+    $banks=Bank::all();
+    // dd($totalShipping);
+
+    $totalPrice += $totalShipping;
+    $tips=Tip::all();
+
+    return view('Ecommerce.checkout.index', compact(
+        'countries',
+        'getCartItems',
+        'totalPrice',
+        'totalTax',
+        'totalShipping',
+        'tips',
+        'banks'
+    ));
+}
+
 
     // Place the Order
     public function placeOrder(Request $request)
@@ -96,14 +111,14 @@ class CheckoutController extends Controller
                 'bank_name' => 'nullable|string|max:255',
                 'transaction_number' => 'nullable|string|max:255',
                 'receipt' => 'nullable|file|mimes:jpeg,png,pdf|max:2048',
-                'accept' => 'required',
+                // 'accept' => 'required',
             ]);
         }else{
             // dd("other");
             $request->validate([
                 'address_id' => 'required',
                 'payment_method' => 'required',
-                'accept' => 'required',
+                // 'accept' => 'required',
             ]);
         }
 
@@ -118,19 +133,20 @@ class CheckoutController extends Controller
                 'redirect_url' => url('my-cart')
             ]);
         }
+        $totalShipping = 0;
         $total_price = 0;
-        $total_weight = 0;
         $totalTax = 0;
         foreach ($getCartItems as $item) {
+            $totalWeight = 0;
+
             $getDiscountAttributePrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
             $product_price = $getDiscountAttributePrice['final_price'];
             $product_quantity = $item['quantity'];
 
-            // Calculate product total price without discount
             $product_total_price = $product_price * $product_quantity;
 
             $product_weight = $item['product']['product_weight'];
-            $total_weight += $product_weight;
+            $totalWeight += $product_weight;
 
             $discount = Discount::where('product_id', $item['product_id'])
                 ->where('min_product', '<=', $product_quantity)
@@ -156,6 +172,15 @@ class CheckoutController extends Controller
             $tax_percent = $get_tax_percent->product_tax;
             $tax_amount = round($product_total_price_after_discount * $tax_percent / 100, 2);
             $totalTax += $tax_amount;
+
+            $product=Product::where('id',$item['product_id'])->first();
+            // dd($product);
+            $vendor_city=Vendor::where('id',$product->vendor_id)->first();
+            $city=$vendor_city->city;
+
+            $shipping = ShippingCharge::getShippingCharges($totalWeight, $city);
+            // dd($shipping);
+            $totalShipping += $shipping;
 
         }
         foreach ($getCartItems as $item) {
@@ -190,7 +215,6 @@ class CheckoutController extends Controller
             //Prevent disabled Categories product to order
             $getCategoryStatus = Category::getCategoryStatus($item['product']['category_id']);
             if ($getCategoryStatus == 0) {
-
                 return response()->json([
                     'status' => 'error',
                     'message' => $item['product']['product_name'] . " with " . $item['size'] . " Size is not available. Please remove from cart and choose some other product.",
@@ -212,18 +236,19 @@ class CheckoutController extends Controller
             $order_status = "Pending";
         }
 
+        $tipAmount = 0;
+        if ($request->tip_option) {
+            if (is_numeric($request->tip_option)) {
+                $tipAmount = $request->tip_option;
+            }
+        }
+        // dd($tipAmount);
         DB::beginTransaction();
 
-        $shipping_charges = 0;
 
-        $shipping_charges = ShippingCharge::getShippingCharges($total_weight, $deliveryAddresses['city']);
+        $grand_total = $total_price + $totalShipping + $tipAmount+ $totalTax - Session::get('couponAmount');
 
-        $grand_total = $total_price + $shipping_charges + $totalTax - Session::get('couponAmount');
-
-        $grand_total = $grand_total;
-
-        $grand_total =  Helper::final_amount_currency_converter($grand_total);
-
+        // dd($grand_total);
         $get_currency = Session::get('currency_code');
         Session::put('grand_total', $grand_total);
 
@@ -239,7 +264,7 @@ class CheckoutController extends Controller
         $order->pincode = $deliveryAddresses['pincode'];
         $order->mobile = $deliveryAddresses['mobile'];
         $order->email = Auth::user()->email;
-        $order->shipping_charges = $shipping_charges;
+        $order->shipping_charges = $totalShipping;
         $order->tax_charge = $totalTax;
         $order->coupon_code = Session::get('couponCode');
         $order->coupon_amount = Session::get('couponAmount');
@@ -247,6 +272,7 @@ class CheckoutController extends Controller
         $order->payment_method = $payment_method;
         $order->payment_method = $data['payment_method'];
         $order->grand_total = $grand_total;
+        $order->tip_amount= $tipAmount;
         $order->save();
 
         $order_id = DB::getPdo()->lastInsertId();
@@ -340,7 +366,7 @@ class CheckoutController extends Controller
         $pdf->save($pdfPath); // Save to storage
 
 
-        Mail::to($order->email)->send(new OrderPlaced($order, $pdfPath));
+        // Mail::to($order->email)->send(new OrderPlaced($order, $pdfPath));
 
         return response()->json([
             'status' => 'success',
@@ -378,7 +404,6 @@ class CheckoutController extends Controller
             $shipping = ShippingCharge::getShippingCharges($totalWeight, $city);
             // dd($shipping);
             $totalShipping += $shipping;
-
         }
 
         return response()->json(['fee' => $totalShipping]);

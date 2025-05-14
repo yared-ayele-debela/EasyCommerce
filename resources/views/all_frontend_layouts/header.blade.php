@@ -33,8 +33,6 @@ use Illuminate\Support\Facades\Storage;
                 padding-left: 3px;
             }
         }
-
-
         .toggle-btn {
             display: flex;
             justify-content: space-between;
@@ -49,7 +47,6 @@ use Illuminate\Support\Facades\Storage;
             border: 1px solid #17BE18 !important;
 
         }
-
         .toggle {
             flex: 1;
             text-align: center;
@@ -102,6 +99,77 @@ use Illuminate\Support\Facades\Storage;
             font-weight: 600 !important;
             border-bottom: 2px solid #17BE18 !important;
         }
+  .goog-te-banner-frame.skiptranslate,
+  .goog-te-gadget-icon {
+    display: none !important;
+  }
+
+  body {
+    top: 0px !important;
+  }
+  .VIpgJd-ZVi9od-ORHb-OEVmcd {
+    display: none !important;
+  }
+  .goog-te-gadget-simple{
+    display: inline-block !important;
+    font-weight: 400 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    vertical-align: middle !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    border: 1px solid transparent !important;
+    padding: .12rem .45rem !important;
+    font-size: 1rem !important;
+    line-height: 1.5 !important;
+    border-radius: .25rem !important;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out !important;
+    background-color: #17BE18 !important;
+    color: white !important;
+  }
+  .goog-te-gadget-simple span a{
+    color: white !important;
+  }
+
+/* Remove Google icon */
+.goog-te-gadget-icon {
+  display: none !important;
+}
+/* Dropdown arrow */
+.goog-te-gadget-simple span[aria-hidden="true"] {
+  color: #fdfdfd !important;
+}
+/* Make sure the language menu is visible and styled */
+.VIpgJd-ZVi9od-vH1Gmf {
+  display: block !important;
+  visibility: visible !important;
+  background-color: #fff !important;
+  border: 1px solid #ddd !important;
+  padding: 5px 0 !important;
+  width: auto !important;
+  min-width: 120px !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+  z-index: 9999 !important;
+  font-family: Arial, sans-serif !important;
+}
+
+/* Style each language item */
+.VIpgJd-ZVi9od-vH1Gmf a {
+  display: block !important;
+  padding: 6px 12px !important;
+  text-decoration: none !important;
+  color: #333 !important;
+  font-size: 14px !important;
+  transition: background-color 0.2s ease-in-out;
+}
+
+/* On hover */
+.VIpgJd-ZVi9od-vH1Gmf a:hover {
+  background-color: #f0f0f0 !important;
+  color: #000 !important;
+}
 
     </style>
 </head>
@@ -111,30 +179,43 @@ use Illuminate\Support\Facades\Storage;
     <header>
         <!-- Top Bar -->
         <div class="bg-light border-bottom py-2">
-            <div class="container d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <small class="me-3 text-muted"><i class="bi bi-telephone-fill text-primary me-1 text-decoration-none"></i>{{ $appsetting['phone_no'] }}</small>
-                    <small class="me-3 text-muted"><i class="bi bi-envelope-fill text-primary me-1 text-decoration-none"></i>{{ $appsetting['email_address'] }}</small>
-                </div>
-                <div class="d-flex align-items-center">
-                    {{-- <div class="dropdown me-3">
-                <a class="text-muted dropdown-toggle text-decoration-none small" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Language</a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">English</a></li>
-                  <li><a class="dropdown-item" href="#">Amharic</a></li>
-                </ul>
-              </div> --}}
-                    <div>
-                        <a href="{{ url('track-custom-order') }}" class="btn btn-outline-primary btn-sm me-2">Track Custom Order</a>
+    <div class="container">
+        <div class="row align-items-center text-center text-md-start">
 
-                        <button type="button" class="btn btn-primary btn-sm me-2 custom-order-btn" data-bs-toggle="modal" data-bs-target="#customOrder">
-                            Custom Order
-                        </button>
-
-                    </div>
+            {{-- Contact Info --}}
+            <div class="col-md-6 d-none d-md-block  mb-2 mb-md-0">
+                <div class="d-flex flex-column flex-md-row justify-content-center justify-content-md-start align-items-center gap-2">
+                    <small class="text-muted">
+                        <i class="bi bi-telephone-fill text-primary me-1"></i>{{ $appsetting['phone_no'] }}
+                    </small>
+                    <small class="text-muted">
+                        <i class="bi bi-envelope-fill text-primary me-1"></i>{{ $appsetting['email_address'] }}
+                    </small>
                 </div>
             </div>
+
+            {{-- Actions --}}
+            <div class="col-md-6">
+                <div class="d-flex flex-md-row justify-content-between justify-content-md-end align-items-center gap-2">
+
+                    {{-- Language Translator --}}
+                    <div id="google_translate_element" class="text-md-end text-center"></div>
+
+                    {{-- Buttons --}}
+                    <a href="{{ url('track-custom-order') }}" class="btn btn-outline-primary btn-sm">
+                        Track Order
+                    </a>
+
+                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#customOrder">
+                        Custom Order
+                    </button>
+                </div>
+            </div>
+
         </div>
+    </div>
+</div>
+
 
         <!-- Main Header -->
         <div class="py-2 py-md-3 bg-white shadow-sm">
@@ -259,6 +340,18 @@ use Illuminate\Support\Facades\Storage;
         </div>
     </header>
     @include('all_frontend_layouts.custom_order.index')
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en'
+                , includedLanguages: 'en,am,om'
+                , layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+    </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -290,9 +383,9 @@ use Illuminate\Support\Facades\Storage;
                                     const div = document.createElement('div');
                                     div.className = 'search-item list-group-item list-group-item-action d-flex justify-content-between align-items-center';
 
-                                    const shortDescription = item.description.length > 10
-                                    ? item.description.substring(0, 30) + '...'
-                                    : item.description;
+                                    const shortDescription = item.description.length > 10 ?
+                                        item.description.substring(0, 30) + '...' :
+                                        item.description;
 
                                     div.innerHTML = `
                                         <div>
@@ -323,3 +416,4 @@ use Illuminate\Support\Facades\Storage;
         });
 
     </script>
+

@@ -56,14 +56,14 @@ use App\Models\Wishlist;
     <div class="row g-4 py-4">
         <div class="row">
                 <div class="col-12 col-md-5 order-1 order-md-2 mb-3 mb-md-0 mb-2">
-                    <img id="mainProductImage" src="{{ $product['product_image'] }}" class="img-fluid border-0 rounded w-100" alt="{{ $product->product_name }}" />
+                    <img id="mainProductImage" src="{{ $product['product_image'] ?? asset('restaurant_frontend/default-image.png') }}" class="img-fluid border-0 rounded w-100" alt="{{ $product->product_name }}" />
                 </div>
 
                 <!-- Thumbnails -->
                 <div class="col-12 col-md-1 d-flex flex-md-column gap-3 order-2 order-md-1 mb-2">
                     @foreach ($product['images'] as $image )
                     <img
-                        src="{{ $image['image'] }}"
+                        src="{{ $image['image'] ?? asset('restaurant_frontend/default-image.png') }}"
                         class="img-fluid border rounded thumbnail-image"
                         style="cursor: pointer; max-width: 80px;"
                         alt="{{ $product->product_name }}"
@@ -155,7 +155,7 @@ use App\Models\Wishlist;
                 </form>
                 @else
                 <button class="btn btn-outline-primary btn-sm mb-2 notify-vendor-btn" data-product-id="{{ $product->id }}">
-                    Notify Vendor
+                   <i class="bi bi-bell"></i> Notify Vendor
                 </button>
                 @include('Ecommerce.products.modal.out_of_stock')
                 @endif
@@ -178,9 +178,11 @@ use App\Models\Wishlist;
                             Customer Reviews ({{ $count? $count:'0' }})
                         </a>
                     </p>
+                    @if($check_ordered_by_current_user)
                     <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#EcommerceratingModal">
                         Leave a Review
                     </button>
+                    @endif
                 </div>
                 @include('Ecommerce.products.rating.rating')
                 <div class="collapse mb-2 show" id="RestaurantRating">
@@ -299,54 +301,7 @@ use App\Models\Wishlist;
     <div class="row g-4">
         <div class="owl-carousel owl-theme ecommerce_products mt-4">
             @foreach ($recentlyViewedProducts as $product)
-            <div class="item mb-2 h-100">
-                <div class="offer-card position-relative shadow-sm rounded-4 overflow-hidden h-100" style="z-index: 1100;">
-                    @php
-                    $hasStock = $product->attributes->sum('stock') > 0;
-                    @endphp
-                    @if(!$hasStock)
-                        <span class="bg-secondary position-absolute badge bg-danger top-0 end-0 p-2 m-2" style="z-index: 1100;">Out of Stock</span>
-                    @endif
-                    @php
-                    $getDiscountPrice = App\Models\Product::getDiscountPrice($product['id']);
-                    $hasDiscount = $getDiscountPrice > 0;
-                    @endphp
-                    @if($hasDiscount)
-                    <span class="badge bg-primary position-absolute top-0 start-0 p-2 m-2" style="z-index: 1100;">
-                        -{{ round(100 - ($getDiscountPrice / $product['product_price']) * 100) }}%
-                    </span>
-                    @endif
-                    <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
-                        <img src="{{ $product['product_image'] }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
-                    </a>
-                    <div class="card-body p-3">
-                        <p class="text-muted small mb-1">{{ $product['product_code'] }} • {{ $product['product_color'] }}</p>
-                        <h6 class="fw-semibold mb-2">
-                            <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}" class="text-dark text-decoration-none">
-                                {{ Str::limit($product['product_name'], 40) }}
-                            </a>
-                        </h6>
-                        @if($product['is_offer_price'] === "yes")
-                        <span class="text-primary fw-bold">Offer Price</span>
-                        @else
-                        <h5 class="text-primary fw-bold mb-1">
-                            {{ App\Helper\Helper::currency_converter($hasDiscount ? $getDiscountPrice : $product['product_price']) }}
-                            @if($hasDiscount)
-                            <small class="text-muted text-decoration-line-through ms-2">
-                                {{ App\Helper\Helper::currency_converter($product['product_price']) }}
-                            </small>
-                            @endif
-                        </h5>
-                        @endif
-                        <div class="text-warning small">
-                            <i class="fas fa-star"></i> <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i> <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                            <small class="text-muted">(88)</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
+             <x-product-card :product="$product" />
             @endforeach
         </div>
     </div>
@@ -356,54 +311,7 @@ use App\Models\Wishlist;
     <div class="row g-4">
         <div class="owl-carousel owl-theme ecommerce_products mt-4">
             @foreach ($similarProducts as $product)
-            <div class="item mb-2 h-100">
-                <div class="offer-card position-relative shadow-sm rounded-4 overflow-hidden h-100" style="z-index: 1100;">
-                    @php
-                    $hasStock = $product->attributes->sum('stock') > 0;
-                    @endphp
-                    @if(!$hasStock)
-                        <span class="bg-secondary position-absolute badge bg-danger top-0 end-0 p-2 m-2" style="z-index: 1100;">Out of Stock</span>
-                    @endif
-                    @php
-                    $getDiscountPrice = App\Models\Product::getDiscountPrice($product['id']);
-                    $hasDiscount = $getDiscountPrice > 0;
-                    @endphp
-                    @if($hasDiscount)
-                    <span class="badge bg-primary position-absolute top-0 start-0 p-2 m-2" style="z-index: 1100;">
-                        -{{ round(100 - ($getDiscountPrice / $product['product_price']) * 100) }}%
-                    </span>
-                    @endif
-                    <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
-                        <img src="{{ $product['product_image'] }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
-                    </a>
-                    <div class="card-body p-3">
-                        <p class="text-muted small mb-1">{{ $product['product_code'] }} • {{ $product['product_color'] }}</p>
-                        <h6 class="fw-semibold mb-2">
-                            <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}" class="text-dark text-decoration-none">
-                                {{ Str::limit($product['product_name'], 40) }}
-                            </a>
-                        </h6>
-                        @if($product['is_offer_price'] === "yes")
-                        <span class="text-primary fw-bold">Offer Price</span>
-                        @else
-                        <h5 class="text-primary fw-bold mb-1">
-                            {{ App\Helper\Helper::currency_converter($hasDiscount ? $getDiscountPrice : $product['product_price']) }}
-                            @if($hasDiscount)
-                            <small class="text-muted text-decoration-line-through ms-2">
-                                {{ App\Helper\Helper::currency_converter($product['product_price']) }}
-                            </small>
-                            @endif
-                        </h5>
-                        @endif
-                        <div class="text-warning small">
-                            <i class="fas fa-star"></i> <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i> <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                            <small class="text-muted">(88)</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <x-product-card :product="$product" />
             @endforeach
         </div>
     </div>

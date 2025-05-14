@@ -36,6 +36,7 @@ $user = Auth::guard('admin')->user();
                         <th>Menu</th>
                         <th>City</th>
                         <th>Price</th>
+                        <th>Tax</th>
                         <th>Discount Type</th>
                         <th>Discount</th>
                         <th>Cover Image</th>
@@ -62,6 +63,7 @@ $user = Auth::guard('admin')->user();
                         <td>{{ $product->menu? $product->menu->name:'' }}</td>
                         <td>{{ $product->city? $product->city->name:'' }}</td>
                         <td>{{ $product->price }} Birr</td>
+                        <td>{{ $product->product_tax }} Birr</td>
                         <td>{{ $product->discount_type }}</td>
                         <td>{{ $product->discount }} Birr</td>
                         <td>
@@ -169,11 +171,24 @@ $user = Auth::guard('admin')->user();
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div class="col-md-6">
+                                            <div class="col-md-3">
                                                 <div class="mb-3">
                                                     <label for="price" class="form-label">Price</label>
                                                     <input type="number" class="form-control" id="price" name="price" value="{{ $product->price }}" required>
                                                 </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="mb-3">
+                                                <label for="product_tax"  class="form-label">Product Tax</label>
+                                                <select class="form-control" name="product_tax" id="product_tax">
+                                                    @foreach ($taxs as $tax)
+                                                    <option @if($tax->percentage===$product->product_tax) selected @endif value="{{ $tax->percentage }}">{{ $tax->taxname }} ({{ $tax->percentage }}%)</option>
+                                                    @endforeach
+                                                </select>
+                                                </div>
+                                                @error('product_tax')
+                                                <small class="text-danger">{{ $message }}</small>
+                                                @enderror
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="mb-3">
@@ -188,7 +203,7 @@ $user = Auth::guard('admin')->user();
                                             <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label for="discount" class="form-label">Discount</label>
-                                                    <input type="number" class="form-control" id="discount" value="{{ $product->discount }}" name="discount">
+                                                    <input type="number" min="1" class="form-control" id="discount" value="{{ $product->discount }}" name="discount">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -341,6 +356,19 @@ $user = Auth::guard('admin')->user();
                                 <input type="number" class="form-control" id="price" name="price" required>
                             </div>
                         </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                            <label for="product_tax"  class="form-label">Product Tax</label>
+                            <select class="form-control" name="product_tax" id="product_tax">
+                                @foreach ($taxs as $tax)
+                                <option value="{{ $tax->percentage }}">{{ $tax->taxname }} ({{ $tax->percentage }}%)</option>
+                                @endforeach
+                            </select>
+                            </div>
+                            @error('product_tax')
+                            <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="discount_type" class="form-label">Discount Type</label>
@@ -354,7 +382,7 @@ $user = Auth::guard('admin')->user();
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="discount" class="form-label">Discount</label>
-                                <input type="number" class="form-control" id="discount" name="discount">
+                                <input type="number" min="1" class="form-control" id="discount" name="discount">
                             </div>
                         </div>
                         <div class="col-md-6">

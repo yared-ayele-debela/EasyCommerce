@@ -68,12 +68,17 @@ class ProductDisplay extends Component
                 return redirect('admin/updatevendordetails');
             }
         }
+     $productsQuery = Product::with([
+    'attributes',
+    'group' => function ($query) {
+        $query->select('id', 'name');
+    },
+    'category' => function ($query) {
+        $query->select('id', 'name');
+    },
+    'months'
+]);
 
-        $productsQuery = Product::with(['group' => function ($query) {
-            $query->select('id', 'name');
-        }, 'category' => function ($query) {
-            $query->select('id', 'name');
-        }, 'months']);
 
         if ($adminType == 'vendor') {
             $productsQuery = $productsQuery->where('vendor_id', $vendor_id);

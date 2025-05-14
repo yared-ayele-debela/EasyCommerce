@@ -5,7 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use App\Models\City;
+use App\Models\Delivery_Zone;
 use App\Models\ShippingCharge;
+use App\Models\State;
+use App\Models\Street;
+use App\Models\SubCity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -22,7 +26,7 @@ class ShippingChargeController extends Controller
             }
             $appsettings = AppSetting::all()->toArray();
 
-            $shippingCharges = ShippingCharge::get()->toArray();
+            $shippingCharges = ShippingCharge::latest()->paginate(20);
             //  dd($shippingCharges);
             return view('admin.shipping.shipping_charges', compact('appsettings', 'shippingCharges'));
         } catch (\Exception $e) {
@@ -35,16 +39,17 @@ class ShippingChargeController extends Controller
     public function create($id)
     {
         try {
-            $city = City::all()->where('status', 1);
+
 
             $user = Auth::guard('admin')->user();
             if (!$user || !$user->hasPermissionByRole('create_shipping_charge')) {
                 return view('admin.errors.unauthorized');
             }
 
+            $delivery_zoons=Delivery_Zone::all();
             $appsettings = AppSetting::all()->toArray();
             $shipping_charges = ShippingCharge::findOrFail($id);
-            return view('admin.shipping.edit_shipping_charges', compact('appsettings', 'shipping_charges', 'city'));
+            return view('admin.shipping.edit_shipping_charges', compact('appsettings', 'shipping_charges','delivery_zoons'));
         } catch (\Exception $e) {
             // Log or handle the exception as needed
             Alert::toast('something is wrong!!', 'error');
@@ -64,7 +69,7 @@ class ShippingChargeController extends Controller
                 return view('admin.errors.unauthorized');
             }
             $data = $this->validate($request, [
-                'city' => 'required|string',
+                'zone' => 'required|string',
                 '0_500g' => 'required|numeric',
                 '501_1000g' => 'required|numeric',
                 '1001_2000g' => 'required|numeric',
@@ -79,7 +84,7 @@ class ShippingChargeController extends Controller
                     '1001_2000g' => $data['1001_2000g'],
                     '2001_5000g' => $data['2001_5000g'],
                     'above_5000g' => $data['above_5000g'],
-                    'city' => $data['city'],
+                    'zone' => $data['zone'],
                 ]);
 
             Alert::toast('shipping charges is updated!', 'success');
@@ -97,14 +102,14 @@ class ShippingChargeController extends Controller
     public function display()
     {
         try {
-            $city = City::all()->where('status', 1);
             $user = Auth::guard('admin')->user();
             if (!$user || !$user->hasPermissionByRole('create_shipping_charge')) {
                 return view('admin.errors.unauthorized');
             }
             $appsettings = AppSetting::all()->toArray();
+            $delivery_zoons=Delivery_Zone::all();
 
-            return view('admin.shipping.add_shipping_charge', compact('appsettings', 'city'));
+            return view('admin.shipping.add_shipping_charge', compact('appsettings', 'delivery_zoons'));
         } catch (\Exception $e) {
             // Log or handle the exception as needed
             Alert::toast('something is wrong!!', 'error');
@@ -119,15 +124,21 @@ class ShippingChargeController extends Controller
                 return redirect()->back();
             }
             $data = $this->validate($request, [
-                'city' => 'required | string ',
+                'zone' => 'required | string ',
                 '0_500g' => 'required|numeric',
                 '501_1000g' => 'required|numeric',
                 '1001_2000g' => 'required|numeric',
                 '2001_5000g' => 'required|numeric',
                 'above_5000g' => 'required|numeric',
             ]);
+            $check=ShippingCharge::where('zone', $data['zone'])->first();
+            if ($check) {
+                Alert::toast('shipping charges is already exist!', 'error');
+                return redirect()->back();
+            }else{
+                     ShippingCharge::create($data);
+            }
             // dd($data);
-            ShippingCharge::create($data);
 
             Alert::toast('shipping charges is saved!', 'success');
             return redirect('admin/shipping-charges');

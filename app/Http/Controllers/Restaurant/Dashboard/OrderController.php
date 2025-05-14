@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Restaurant\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Mail\Restaurant\OrderStatusUpdateMail;
 use App\Models\DeliveryMan;
+use App\Models\DeliveryNotification;
 use App\Models\Restaurant\Order;
 use App\Models\Restaurant\Restaurant;
 use Illuminate\Http\Request;
@@ -22,12 +23,14 @@ class OrderController extends Controller
         $adminType = Auth::guard('admin')->user()->type;
         if ($adminType === "Super Admin") {
             $orders = Order::with('orderItems.product','paymentInfo')->latest()->get();
-        } else {
+        }
+        else
+        {
             $orders = Order::with('paymentInfo')->whereHas('orderItems.product', function ($query) use ($restaurantId) {
                 $query->whereIn('restaurant_id', $restaurantId);
             })->with('orderItems.product')->latest()->get();
-
         }
+
 
         return view('Restaurant.dashboard.orders.index', compact('orders'));
     }
@@ -41,9 +44,9 @@ class OrderController extends Controller
         // dd($order);
         $delivery_man="";
         $delivery_man=DeliveryMan::where('id',$order->delivery_man_id)->first();
-        
+        $notifications=DeliveryNotification::with('deliveryman')->where('order_id',$order->id)->latest()->get();
 
-        return view('Restaurant.dashboard.orders.show', compact('order','delivery_mans','delivery_man'));
+        return view('Restaurant.dashboard.orders.show', compact('notifications','order','delivery_mans','delivery_man'));
     }
 
     // Update order status and delivery status
@@ -53,8 +56,8 @@ class OrderController extends Controller
 
         // Validate request data
         $request->validate([
-            'order_status' => 'required|string|in:pending,processing,completed,canceled',
-            'delivery_status' => 'required|string|in:pending,shipped,delivered'
+            'order_status' => 'required|string',
+            'delivery_status' => 'required|string'
         ]);
 
 
@@ -65,7 +68,7 @@ class OrderController extends Controller
             'delivery_status' => $request->delivery_status
         ]);
 
-        Mail::to($order->user->email)->send(new OrderStatusUpdateMail($order));
+        // Mail::to($order->user->email)->send(new OrderStatusUpdateMail($order));
 
 
         return redirect()->route('restaurant.orders.show', $order->id)->with('success', 'Order status updated successfully.');

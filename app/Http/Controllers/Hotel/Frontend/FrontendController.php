@@ -18,6 +18,7 @@ class FrontendController extends Controller
 
         $banners = HotelSlider::where('is_active', 1)->latest()->get();
         $categories = HotelCategory::latest()->get();
+        // dd($categories);
         $rooms = Room::where('is_available', 1)->latest()
             ->get();
         $discounted_hotels=Hotel::where('discount','>','0')->latest()->get();
