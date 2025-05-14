@@ -112,7 +112,7 @@ $user = Auth::guard('admin')->user();
                                 <a id="popoverButton" href="{{ url('admin/products/add_attribute/'.$product['id']) }}" style="background-color:rgb(239, 239, 239) " class=" btn btn-sm"> <i class="bx bx-add-to-queue"></i></a>
                                 <div id="popover" class="popover">
                                     <div class="popover-content">
-                                        <p>Add Produt Size</p>
+                                        <p>Add Produt To Stock</p>
                                     </div>
                                 </div>
                             </i>
