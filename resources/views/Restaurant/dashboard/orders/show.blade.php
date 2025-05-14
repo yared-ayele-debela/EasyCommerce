@@ -175,7 +175,7 @@ $user = Auth::guard('admin')->user();
 
                                 <div class="text-center mt-3">
                                     <p>Pickup Status: <strong class="{{ $status === 'Picked' ? 'text-success' : 'text-danger' }}">{{ $status }}</strong></p>
-                                    @if($firstcode)
+                                    @if($firstCode)
                                      {!! QrCode::size(130)->generate($firstCode) !!}
                                     <p class="mt-2 mb-0"><strong>Pickup Code:</strong> {{ $firstCode }}</p>
                                     @endif
