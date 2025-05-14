@@ -170,13 +170,13 @@ $user = Auth::guard('admin')->user();
                                 <hr>
                                 @php
                                     $status = $items->every(fn($item) => $item->picked_status === 'picked') ? 'Picked' : 'Pending';
-                                    $firstCode = $items->first()->picked_code;
+                                    $firstCode = $items->first()->picked_code? $items->first()->picked_code : null;
                                 @endphp
 
                                 <div class="text-center mt-3">
                                     <p>Pickup Status: <strong class="{{ $status === 'Picked' ? 'text-success' : 'text-danger' }}">{{ $status }}</strong></p>
                                     @if($firstcode)
-                                    {!! QrCode::size(130)->generate($firstCode) !!}
+                                     {!! QrCode::size(130)->generate($firstCode) !!}
                                     <p class="mt-2 mb-0"><strong>Pickup Code:</strong> {{ $firstCode }}</p>
                                     @endif
                                 </div>
