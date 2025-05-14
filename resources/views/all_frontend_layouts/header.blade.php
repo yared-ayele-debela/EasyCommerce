@@ -181,8 +181,6 @@ use Illuminate\Support\Facades\Storage;
         <div class="bg-light border-bottom py-2">
     <div class="container">
         <div class="row align-items-center text-center text-md-start">
-
-            {{-- Contact Info --}}
             <div class="col-md-6 d-none d-md-block  mb-2 mb-md-0">
                 <div class="d-flex flex-column flex-md-row justify-content-center justify-content-md-start align-items-center gap-2">
                     <small class="text-muted">
@@ -194,14 +192,10 @@ use Illuminate\Support\Facades\Storage;
                 </div>
             </div>
 
-            {{-- Actions --}}
             <div class="col-md-6">
                 <div class="d-flex flex-md-row justify-content-between justify-content-md-end align-items-center gap-2">
-
-                    {{-- Language Translator --}}
                     <div id="google_translate_element" class="text-md-end text-center"></div>
 
-                    {{-- Buttons --}}
                     <a href="{{ url('track-custom-order') }}" class="btn btn-outline-primary btn-sm">
                         Track Order
                     </a>
