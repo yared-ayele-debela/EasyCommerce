@@ -46,6 +46,7 @@ class AddProduct extends Component
             'brand_id' => 'required',
             'product_name' => 'required|string|max:255',
             'product_code' => 'required|string|max:255|unique:products',
+            'product_discount' => 'nullable|numeric|min:0|max:100',
             // 'product_price' => 'required|numeric',
             'product_image' => 'image|max:1024', // 1MB Max
             // 'product_video' => 'mimetypes:video/avi,video/mpeg,video/quicktime,video/mp4|max:20480', // 20MB Max
