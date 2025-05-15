@@ -19,7 +19,7 @@ class GoogleAuthController extends Controller
 
     public function handleGoogleCallback()
     {
-        try {
+        // try {
             $googleUser = Socialite::driver('google')->stateless()->user();
 
             // Check if the user already exists
@@ -39,8 +39,8 @@ class GoogleAuthController extends Controller
 
             return redirect('/my-cart');
 
-        } catch (Exception $e) {
-            return redirect('/login')->with('error', 'Something went wrong: ' . $e->getMessage());
-        }
+        // } catch (Exception $e) {
+        //     return redirect('/login')->with('error', 'Something went wrong: ' . $e->getMessage());
+        // }
     }
 }
