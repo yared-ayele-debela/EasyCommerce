@@ -1186,13 +1186,13 @@ Route::group(['middleware' => ['admin', 'check.admin:Hotel Manager']], function 
 Route::get('/', [FrontendController::class, 'index'])->name('restaurant.index.page');
 
 // Authentication Routes
-Route::prefix('auth')->group(function () {
+Route::prefix('auth')->middleware('guest')->group(function () {
     Route::get('login', [UserController::class, 'loginRegister'])->name('auth.login');
     Route::post('login', [UserController::class, 'userLogin'])->name('auth.login.submit');
     Route::post('register', [UserController::class, 'userRegister'])->name('auth.register');
     Route::match(['get', 'post'], 'forgot-password', [UserController::class, 'forgotPassword']);
     Route::get('google', [GoogleAuthController::class, 'redirectToGoogle'])->name('google.login');
-    Route::get('google/callback', [GoogleAuthController::class, 'handleGoogleCallback']);
+    Route::get('google/callback', [GoogleAuthController::class, 'handleGoogleCallback'])->middleware('web');;
 
     Route::get('/verify-otp', [UserController::class, 'showOTPVerification'])->name('verify-otp');
     Route::post('/verify-otp', [UserController::class, 'verifyOTP'])->name('user-verify-otp');

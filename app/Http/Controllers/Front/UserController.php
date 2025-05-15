@@ -374,6 +374,7 @@ class UserController extends Controller
     public function createuserAccount()
     {
         try {
+            
             $cms_pages = CmsPage::get()->toArray();
             $appsettings = AppSetting::all()->toArray();
             $countries = Country::where('status', 1)->get()->toArray();

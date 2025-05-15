@@ -50,8 +50,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(Reservation::class);
     }
-    public function getAuthIdentifierName()
-    {
-        return 'mobile';
-    }
+    // public function getAuthIdentifierName()
+    // {
+    //     return 'mobile';
+    // }
 }
