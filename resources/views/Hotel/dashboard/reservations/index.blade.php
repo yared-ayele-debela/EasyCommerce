@@ -224,8 +224,6 @@
                                                         <select name="status" id="status" class="form-control">
                                                             <option value="Pending" @if($reservation->status == 'Pending') selected @endif>Pending</option>
                                                             <option value="Confirmed" @if($reservation->status == 'Confirmed') selected @endif>Confirmed</option>
-                                                            <option value="Checked_in" @if($reservation->status == 'Checked_in') selected @endif>Checked In</option>
-                                                            <option value="Completed" @if($reservation->status == 'Completed') selected @endif>Completed</option>
                                                             <option value="Cancelled" @if($reservation->status == 'Cancelled') selected @endif>Cancelled</option>
                                                         </select>
                                                     </div>

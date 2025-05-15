@@ -257,16 +257,16 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::prefix('admin')->group(function () {
 
-    Route::get('login/google', [AuthController::class, 'redirectToGoogle'])->name('login.google');
-    Route::get('login/google/callback', [AuthController::class, 'handleGoogleCallback']);
+    // Route::get('login/google', [AuthController::class, 'redirectToGoogle'])->name('login.google');
+    // Route::get('login/google/callback', [AuthController::class, 'handleGoogleCallback']);
 
-    // Github login
-    Route::get('login/github', [AuthController::class, 'redirectToGithub'])->name('login.github');
-    Route::get('login/github/callback', [AuthController::class, 'handleGithubCallback']);
+    // // Github login
+    // Route::get('login/github', [AuthController::class, 'redirectToGithub'])->name('login.github');
+    // Route::get('login/github/callback', [AuthController::class, 'handleGithubCallback']);
 
-    // Github login
-    Route::get('login/linkedin', [AuthController::class, 'redirectToLinkedIn'])->name('login.linkedin');
-    Route::get('login/linkedin/callback', [AuthController::class, 'handleLinkedInCallback']);
+    // // Github login
+    // Route::get('login/linkedin', [AuthController::class, 'redirectToLinkedIn'])->name('login.linkedin');
+    // Route::get('login/linkedin/callback', [AuthController::class, 'handleLinkedInCallback']);
 
 
     Route::get('login', [AdminController::class, 'loginpage'])->name('admin_login');
@@ -1196,8 +1196,6 @@ Route::prefix('auth')->group(function () {
 
     Route::get('/verify-otp', [UserController::class, 'showOTPVerification'])->name('verify-otp');
     Route::post('/verify-otp', [UserController::class, 'verifyOTP'])->name('user-verify-otp');
-
-
 
 });
 

@@ -14,14 +14,20 @@ class GoogleAuthController extends Controller
     //
     public function redirectToGoogle()
     {
+        // dd("hello");
+    $url = Socialite::driver('google')->redirect()->getTargetUrl();
+
+            // dd($url); // Make sure it’s pointing to Google OAuth
+
         return Socialite::driver('google')->redirect();
     }
 
     public function handleGoogleCallback()
     {
-        try {
+        // try {
             $googleUser = Socialite::driver('google')->stateless()->user();
 
+            // dd($googleUser);
             // Check if the user already exists
             $user = User::where('email', $googleUser->getEmail())->first();
 
@@ -31,17 +37,20 @@ class GoogleAuthController extends Controller
                     'name' => $googleUser->getName(),
                     'email' => $googleUser->getEmail(),
                     'provider_id' => $googleUser->getId(),
-                    'password' => bcrypt(uniqid()), // random password
+                    'password' => bcrypt(uniqid()),
+                    'status' =>1,
                 ]);
             }
+
+            // dd($user);
 
             Auth::login($user);
 
             return redirect()->intended('/my-cart');
 
-        } catch (Exception $e) {
-            dd($e);
-            return redirect('/login')->with('error', 'Something went wrong: ' . $e->getMessage());
-        }
+        // } catch (Exception $e) {
+        //     dd($e);
+        //     return redirect('/login')->with('error', 'Something went wrong: ' . $e->getMessage());
+        // }
     }
 }
