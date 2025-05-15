@@ -7,6 +7,7 @@
 <div class="row g-4">
     <!-- Cart Table Section -->
     <div class="col-lg-8">
+        @if(!empty($getCartItems))
         <form>
             <div class="table-responsive mb-4">
                 <table class="table table-borderless align-middle">
@@ -65,6 +66,9 @@
                 </table>
             </div>
         </form>
+        @else
+                <p class="text-center">No items in your cart.</p>
+        @endif
         <hr>
         <div class="d-flex justify-content-start align-items-center gap-2">
             <a href="{{ url('/ecommerce') }}" class="btn btn-secondary w-sm-auto">Continue Shopping</a>

@@ -172,7 +172,6 @@ $user = Auth::guard('admin')->user();
                                     $status = $items->every(fn($item) => $item->picked_status === 'picked') ? 'Picked' : 'Pending';
                                     $firstCode = $items->first()->picked_code? $items->first()->picked_code : null;
                                 @endphp
-
                                 <div class="text-center mt-3">
                                     <p>Pickup Status: <strong class="{{ $status === 'Picked' ? 'text-success' : 'text-danger' }}">{{ $status }}</strong></p>
                                     @if($firstCode)
