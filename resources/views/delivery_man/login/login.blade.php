@@ -42,7 +42,7 @@
              <div class="container">
                 <div class="row justify-content-center">
                    <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
-                      <div class="card mb-3" style="border-radius:1rem; box-shadow:1px 1px 11px 1px rgb(161, 241, 159);">
+                      <div class="card mb-3" style="border-radius:1rem; box-shadow:1px 1px 11px 1px rgb(238, 238, 238);">
                          <div class="card-body">
                             <div class="d-flex justify-content-center py-4">
                                 <img src="{{ $appsettings[0]['logo'] }}"  class="app-brand-logo">
@@ -68,8 +68,8 @@
                                   <label for="password" class="form-label">Password</label> <input type="password" name="password" pattern=".{8,}" title="Only eight or more characters" class="form-control" id="yourPassword" required="">
                                   <div class="invalid-feedback">Please enter your password!</div>
                                </div>
-                               <div class="col-12"> <button class="btn bg-custom-primary text-white w-100" type="submit">Login with your Account</button></div>
-                                 <div class="col-12"><p class="text-center"></p><a href="{{ url('admin/forget-password') }}">Forget your password</a> </div>
+                               <div class="col-12"> <button class="btn bg-custom-primary text-white w-100" type="submit">Login</button></div>
+                                 <div class="col-12"><p class="text-center"></p><a class="text-dark text-muted" href="{{ url('admin/forget-password') }}">Forget your password</a> </div>
                             </form>
                          </div>
                       </div>

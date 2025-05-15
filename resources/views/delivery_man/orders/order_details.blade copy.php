@@ -30,127 +30,132 @@ $user = Auth::guard('deliverymen')->user();
     </nav>
     <div class="row">
         <div class="col-lg-5">
-            <div class="card border-0 shadow-sm mb-4">
-    <div class="card-body">
-        <h4 class="card-title mb-4 font-weight-bold">Order Details</h4>
-        <div class="bg-light p-4 rounded">
-            <div class="row">
-                <div class="col-md-6 mb-2">
-                    <strong>Order ID:</strong> {{ $orderDetails['id'] }}
-                </div>
-                <div class="col-md-6 mb-2">
-                    <strong>Order Date:</strong> {{ $orderDetails['created_at'] ?? '-' }}
-                </div>
-                <div class="col-md-6 mb-2">
-                    <strong>Order Status:</strong> {{ $orderDetails['order_status'] }}
-                </div>
-                <div class="col-md-6 mb-2">
-                    <strong>Order Total:</strong> {{ $orderDetails['grand_total'] }} ETB
-                </div>
-                <div class="col-md-6 mb-2">
-                    <strong>Shipping Charges:</strong> {{ $orderDetails['shipping_charges'] }} ETB
-                </div>
-                <div class="col-md-6 mb-2">
-                    <strong>Order Tax:</strong> {{ $orderDetails['tax_charge'] }} ETB
-                </div>
-                @if(!empty($orderDetails['coupon_code']))
-                <div class="col-md-6 mb-2">
-                    <strong>Coupon Code:</strong> {{ $orderDetails['coupon_code'] }}
-                </div>
-                <div class="col-md-6 mb-2">
-                    <strong>Coupon Amount:</strong> {{ $orderDetails['coupon_amount'] }} ETB
-                </div>
-                @endif
-                @if(!empty($orderDetails['courier_name']))
-                <div class="col-md-6 mb-2">
-                    <strong>Courier Name:</strong> {{ $orderDetails['courier_name'] }}
-                </div>
-                <div class="col-md-6 mb-2">
-                    <strong>Tracking Number:</strong> {{ $orderDetails['tracking_number'] }}
-                </div>
-                @endif
-                <div class="col-md-6 mb-2">
-                    <strong>Payment Method:</strong> {{ $orderDetails['payment_method'] }}
-                </div>
-                <div class="col-md-6 mb-2">
-                    <strong>Payment Gateway:</strong> {{ $orderDetails['payment_gateway'] }}
-                </div>
-            </div>
-        </div>
-
-        @if ($user && $user->hasPermissionByRole('update_order_status') && Auth::guard('deliverymen')->user())
-        <hr class="my-4">
-
-        <h4 class="card-title font-weight-bold">Update Order Status</h4>
-        <form action="{{ url('delivery-boy/update-order-status') }}" method="post" class="mt-3">
-            @csrf
-            <input type="hidden" name="order_id" value="{{ $orderDetails['id'] }}">
-            <div class="form-group">
-                <label for="order_status"><strong>Select Status:</strong></label>
-                <select name="order_status" id="order_status" class="form-control" required>
-                    <option value="">-- Select Status --</option>
-                    @foreach ($orderStatus as $status)
-                        <option value="{{ $status['name'] }}" @if($orderDetails['order_status'] == $status['name']) selected @endif>
-                            {{ $status['name'] }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="form-group mt-3" style="display: none;" id="user_code">
-                <label for="user_code"><strong>Customer Verification Code</strong></label>
-                <input type="text" name="user_code" class="form-control" id="user_code" placeholder="Enter Customer Code">
-            </div>
-
-            @if($orderDetails['order_status'] === "delivered")
-                <div class="alert alert-info mt-3">Order delivered successfully!</div>
-            @else
-                <div class="d-flex flex-wrap gap-2 mt-3">
-                    <button type="submit" class="btn btn-primary">Update Order Status</button>
-                    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exampleModal">
-                        Update Acceptance
-                    </button>
-                </div>
-            @endif
-        </form>
-
-        <div class="mt-4">
-            <h5 class="mb-3"><strong>Order Status History</strong></h5>
-            @foreach ($orderLog as $log)
-                <div class="border-left pl-3 mb-3">
-                    <strong>{{ $log['order_status'] }}</strong>
-                    @if($log['order_status'] == "Shipped")
-                        @if(!empty($log['order_item_id']))
-                            @php $getItemDetails = OrderLog::getItemDetails($log['order_item_id']); @endphp
-                            - for item {{ $getItemDetails['product_code'] ?? '-' }}
-                            @if(!empty($getItemDetails['courier_name']))
-                                <br>Courier: {{ $getItemDetails['courier_name'] }}
-                            @endif
-                            @if(!empty($getItemDetails['tracking_number']))
-                                <br>Tracking #: {{ $getItemDetails['tracking_number'] }}
-                            @endif
-                        @else
-                            @if(!empty($orderDetails['courier_name']))
-                                <br>Courier: {{ $orderDetails['courier_name'] }}
-                            @endif
-                            @if(!empty($orderDetails['tracking_number']))
-                                <br>Tracking #: {{ $orderDetails['tracking_number'] }}
-                            @endif
+            <div class="card border-0 shadow-sm">
+                <div class="card-body pt-3">
+                    <h1 class=" card-title"> <b>Order Details</b> </h1>
+                    <div class="bg-light p-3">
+                        <div class="col-md-8 pt-1">
+                            <label for="" class="form-label"><b>Order ID:</b></label>
+                            <label for="">{{ $orderDetails['id'] }} </label>
+                        </div>
+                        <div class="col-md-8 pt-1">
+                            <label for="" class="form-label"><b>Order Date:</b></label>
+                            <label for="">{{ $orderDetails['id'] }}</label>
+                        </div>
+                        <div class="col-md-8 pt-1">
+                            <label for="" class="form-label"><b>Order Status:</b></label>
+                            <label for="">{{ $orderDetails['order_status'] }}</label>
+                        </div>
+                        <div class="col-md-8 pt-1">
+                            <label for="" class="form-label"><b>Order Total:</b></label>
+                            <label for="">{{ $orderDetails['grand_total'] }} .Birr</label>
+                        </div>
+                        <div class="col-md-8 pt-1">
+                            <label for="" class="form-label"><b>Shipping Charges:</b></label>
+                            <label for="">{{ $orderDetails['shipping_charges'] }} .Birr</label>
+                        </div>
+                        <div class="col-md-8 pt-1">
+                            <label for="" class="form-label"><b>Order Tax:</b></label>
+                            <label for="">{{ $orderDetails['tax_charge'] }} .Birr</label>
+                        </div>
+                        @if(!empty($orderDetails['coupon_amount']))
+                        <div class="col-md-8 pt-1">
+                            <label for="" class="form-label"><b>Coupon Code:</b></label>
+                            <label for="">{{ $orderDetails['coupon_amount'] }}</label>
+                        </div>
+                        <div class="col-md-8 pt-1">
+                            <label for="" class="form-label"><b>Coupon Amount:</b></label>
+                            <label for="">{{ $orderDetails['coupon_amount'] }} .Birr</label>
+                        </div>
                         @endif
+                        @if($orderDetails['courier_name']!="")
+                        <div class="col-md-8 pt-1">
+                            <label for="" class="form-label"><b>Courier Name:</b></label>
+                            <label for="">{{ $orderDetails['courier_name'] }}</label>
+                        </div>
+                        <div class="col-md-8 pt-1">
+                            <label for="" class="form-label"><b>Tracking Number:</b></label>
+                            <label for="">{{ $orderDetails['tracking_number'] }} .Birr</label>
+                        </div>
+                        @endif
+                        <div class="col-md-8 pt-1">
+                            <label for="" class="form-label"><b>Payment Method:</b></label>
+                            <label for="">{{ $orderDetails['payment_method'] }}</label>
+                        </div>
+                        <div class="col-md-8 pt-1">
+                            <label for="" class="form-label"><b>Payment Gateway:</b></label>
+                            <label for="">{{ $orderDetails['payment_gateway'] }}</label>
+                        </div>
+                    </div>
+
+                    <hr>
+                    <h1 class=" card-title">Update Order Status</h1>
+                    @if ($user && $user->hasPermissionByRole('update_order_status'))
+                    @if(Auth::guard('deliverymen')->user())
+                    <form action="{{ url('delivery-boy/update-order-status') }}" class="mt-4" method="post">
+                        @csrf
+                        <div class="form-group">
+                            <input type="hidden" name="order_id" value="{{ $orderDetails['id'] }}">
+                            <select name="order_status" id="order_status" class="form-control" required="">
+                                <option value="" selected>Select</option>
+                                @foreach ($orderStatus as $status )
+                                <option value="{{ $status['name'] }}" @if(!empty($orderDetails['order_status']) && $orderDetails['order_status']==$status['name']) selected="" @endif>{{ $status['name'] }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group mt-3">
+                            <input type="text" style="display: none;" name="courier_name" class="form-control" id="courier_name" placeholder="Courier Name">
+                        </div>
+                        <div class="form-group mt-3">
+                            <input type="text" style="display: none;" name="tracking_number" class="form-control" id="tracking_number" placeholder="Tracking Number">
+                        </div>
+                        <div class="form-group mt-3" style="display: none;" id="user_code">
+                            <label for="user_code" class="pb-2" id="user_code_label">Enter Customer Order Code to Verify Order Delivered</label>
+                            <input type="text" name="user_code" class="form-control" id="user_code" placeholder="Enter Customer Code">
+                        </div>
+                        @if($orderDetails['order_status']==="delivered")
+                        <p class="text-lg p-2 btn-success shadow-none text-white text-center rounded w-50">Order delivered successfully!</p>
+                        @else
+                        <input class="mt-3 btn btn-primary " type="submit" value="Update order status">
+                        <button type="button" class="btn btn-primary btn-sm  mt-3" style="width: 200px;" data-toggle="modal" data-target="#exampleModal">
+                            Update Acceptance
+                        </button>
+                        @endif
+                    </form>
+
+                    <br>
+                    @foreach ( $orderLog as $key=>$log)
+                    <strong>{{ $log['order_status'] }}</strong>
+                    @if($log['order_status']=="Shipped")
+                    @if(isset($log['order_item_id'])&&$log['order_item_id']>0)
+                    @php $getItemDetails=OrderLog::getItemDetails($log['order_item_id']) @endphp
+                    - for item {{$getItemDetails['product_code']}}
+                    @if(!empty($getItemDetails['courier_name']))
+                    <br><span>Courier Name: {{ $getItemDetails['courier_name'] }}</span>
                     @endif
-                    <br>Date: {{ date('Y-m-d h:i:s', strtotime($log['created_at'])) }}
-                    @if(!empty($log['reason']))
-                        <br>Reason: {{ $log['reason'] }}
+                    @if(!empty($getItemDetails['tracking_number']))
+                    <br><span>Tracking Number: {{ $getItemDetails['tracking_number'] }}</span>
+                    @endif
+                    @else
+                    @if(!empty($orderDetails['courier_name']))
+                    <br><span>Courier Name: {{ $orderDetails['courier_name'] }}</span>
+                    @endif
+                    @if(!empty($orderDetails['tracking_number']))
+                    <br><span>Tracking Number: {{ $orderDetails['tracking_number'] }}</span>
+                    @endif
+                    @endif
+                    @endif
+                    <br> Date:
+                    {{$log['reason']}}
+                    {{ date('Y-m-d h:i:s', strtotime($log['created_at'])); }} <br>
+                    <br>
+                    @endforeach
+                    @else
+                    This feature is restricted
+                    @endif
                     @endif
                 </div>
-            @endforeach
-        </div>
-        @else
-            <div class="alert alert-warning mt-4">This feature is restricted.</div>
-        @endif
-    </div>
-</div>
-
+            </div>
         </div>
         <div class="col-lg-7">
             <div class="card border-0 shadow-sm">
@@ -400,9 +405,8 @@ $user = Auth::guard('deliverymen')->user();
                                         @endif
                                     </td>
                                     <td>
-                                        <strong>{{ $product['item_status'] }}</strong>
-                                        @if($product['item_status']==="delivered")
-                                        <button class="btn btn-sm btn-success text-white" disabled>Delivered</button>
+                                        @if($product['item_status']==="Completed")
+                                        <button class="btn btn-sm btn-success text-white" disabled>Completed</button>
                                         @else
                                         <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal{{ $product['id'] }}">
                                             Update
@@ -422,21 +426,16 @@ $user = Auth::guard('deliverymen')->user();
                                                         <form action="{{ url('delivery-boy/update-order-item-status') }}" class="" method="post">
                                                             @csrf
                                                             <input type="hidden" name="order_item_id" value="{{ $product['id'] }}">
-                                                            <select name="order_item_status" id="order_item_status_{{ $product['id'] }}" class="form-control mb-2 order-status-dropdown" required="" data-product-id="{{ $product['id'] }}">
+                                                            <select name="order_item_status" id="order_item_status" class="form-control mb-2" required="">
                                                                 <option value="">Select</option>
                                                                 @foreach ($orderItemStatus as $status)
                                                                 <option value="{{ $status['name'] }}" @if(!empty($product['item_status']) && $product['item_status']==$status['name']) selected="" @endif>{{ $status['name'] }}</option>
                                                                 @endforeach
                                                             </select>
-                                                             <div class="form-group mt-3 item_vendor_code" id="vendor_code_wrapper_{{ $product['id'] }}" style="display: none;">
-                                                                <label for="vendor_code"><strong>Vendor Verification Code</strong></label>
-                                                                 <input type="number" name="vendor_code" class="form-control  mb-2" placeholder="Enter Vendor Code">
-                                                            </div>
-                                                            @error('vendor_code')
-                                                             <br>
-                                                            <span class="text-danger">{{ $message }}</span>
-                                                            @enderror
-                                                            @if($product['item_status']==="delivered")
+                                                            <input type="number" name="vendor_code" style="display: none;" class="form-control item_courier_name mb-2" placeholder="Enter Vendor Code">
+                                                            <input type="text" name="item_courier_name" style="display: none;" class="form-control item_courier_name mb-2" placeholder="Item Courier Name" @if(!empty($product['item_courier_name'])) value="{{ $product['courier_name'] }}" @endif>
+                                                            <input type="text" name="item_tracking_number" style="display: none;" class="form-control item_tracking_number mb-2" placeholder="Item Tracking Number">
+                                                            @if($product['item_status']==="Completed")
                                                             @else
                                                             <input class="ml-2 btn btn-primary text-white " type="submit" value="Update Order Status">
                                                             @endif
@@ -503,6 +502,18 @@ $user = Auth::guard('deliverymen')->user();
 @section('script')
 <script>
     $(document).ready(function() {
+        $("#courier_name").hide();
+        $("#tracking_number").hide();
+        $("#order_status").on("change", function() {
+            if (this.value == "picked") {
+                $("#courier_name").show();
+                $("#tracking_number").show();
+            } else {
+                $("#courier_name").hide();
+                $("#tracking_number").hide();
+            }
+        })
+
         $("#user_code").hide();
         $("#user_code_lable").hide();
         $("#order_status").on("change", function() {
@@ -515,22 +526,19 @@ $user = Auth::guard('deliverymen')->user();
             }
         })
         //show item courier name and tracking nuber in case of shipped order item status
-         $('.order-status-dropdown').on('change', function () {
-        let productId = $(this).data('product-id');
-        let selectedStatus = $(this).val();
-
-        if (selectedStatus === 'picked') {
-            $('#vendor_code_wrapper_' + productId).show();
-        } else {
-            $('#vendor_code_wrapper_' + productId).hide();
-        }
-        });
-
-        // Optional: Trigger change on page load if needed
-        $('.order-status-dropdown').each(function () {
-            $(this).trigger('change');
-        });
-        });
+        // order_item_status
+        $(".item_courier_name").hide();
+        $(".item_tracking_number").hide();
+        $("#order_item_status").on("change", function() {
+            if (this.value == "Picked") {
+                $(".item_courier_name").show();
+                $(".item_tracking_number").show();
+            } else {
+                $(".item_courier_name").hide();
+                $(".item_tracking_number").hide();
+            }
+        })
+    });
 
 </script>
 @endsection

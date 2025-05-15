@@ -3,24 +3,26 @@
 @php
 $user = Auth::guard('deliverymen')->user();
 @endphp
-<div class="pagetitle">
-    <h1>Dashboard</h1>
-    <nav>
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-            <li class="breadcrumb-item active">Dashboard</li>
+<div class="container">
+     <nav class="breadcrumb bg-white shadow-sm py-3 px-4 rounded d-flex justify-content-between align-items-center">
+        <button class="btn btn-outline-primary btn-sm d-flex align-items-center" onclick="history.back()">
+            <i class="bi bi-arrow-left mr-2"></i> &nbsp;
+            <span>Back</span>
+        </button>
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+                <a href="{{ url('delivery-boy/dashboard') }}">Home</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Orders</li>
         </ol>
     </nav>
-</div>
-
-<div class="card  shadow-sm border-0 p-5">
+<div class="card  shadow-sm border-0 p-2">
     <table id="" class="table datatable">
         <thead>
             <tr>
                 <th scope="col">ID</th>
                 <th scope="col"> Date</th>
-                <th scope="col">Customer Name</th>
-                <th scope="col">Customer Email</th>
+                <th scope="col">Customer Info</th>
                 <th scope="col"> Products</th>
                 <th scope="col">Payment Method</th>
                 <th scope="col"> Status</th>
@@ -30,14 +32,12 @@ $user = Auth::guard('deliverymen')->user();
         <tbody>
             @foreach ($orders as $k => $order)
             @if($order['orders_products'])
-
             <tr>
                 <td>{{ $order['id']}}</td>
                 <td>
                     {{ date('Y-m-d h:i:s',strtotime($order['created_at'])) }}
                 </td>
-                <td>{{ $order['name'] }}</td>
-                <td>{{ $order['email'] }}
+                <td>Name: {{ $order['name'] }} Phone: {{ $order['mobile'] }}</td>
                 </td>
                 <td>
                     @foreach ($order['orders_products'] as $product)
@@ -67,6 +67,9 @@ $user = Auth::guard('deliverymen')->user();
             @endforeach
         </tbody>
     </table>
+    <div>
+        {{ $orders->links() }}
+    </div>
 </div>
 @endsection
 

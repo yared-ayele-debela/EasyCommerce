@@ -1202,9 +1202,7 @@ Route::prefix('auth')->middleware('guest')->group(function () {
 // User Account Routes (Requires Authentication)
 Route::middleware('auth')->group(function () {
     Route::put('account', [UserController::class, 'userAccount'])->name('account.update');
-
     Route::post('/products/{product}/request-stock', [ProductRequestController::class, 'store'])->name('product.request-stock');
-
     Route::delete('/user/delete', [UserController::class, 'destroy'])->name('user.destroy');
 });
 

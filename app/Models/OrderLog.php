@@ -9,17 +9,18 @@ class OrderLog extends Model
 {
     use HasFactory;
     protected $table="orders_logs";
+    protected $fillable=['order_id','order_status'];
 
     public function orders_products(){
         return $this->hasMany('App\Models\OrderProduct','id','order_item_id');
     }
 
     public static function getItemDetails($order_item_id){
-        
+
         $getItemDetails=OrderProduct::where('id',$order_item_id)->first()->toArray();
-        
-        return $getItemDetails;   
+
+        return $getItemDetails;
     }
-    
-    
+
+
 }

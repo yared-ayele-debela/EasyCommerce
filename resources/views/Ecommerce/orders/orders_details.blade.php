@@ -14,30 +14,31 @@
         <h5 class="my-4 text-dark text-center">Order detail</h5>
     </div>
     @if($check_return_order)
-        <button type="button" class="btn btn-outline-primary mb-4" data-bs-toggle="modal" data-bs-target="#returnStatusModal">
-            View Return Status
-        </button>
+    <button type="button" class="btn btn-outline-primary mb-4" data-bs-toggle="modal" data-bs-target="#returnStatusModal">
+        View Return Status
+    </button>
 
-        <div class="modal fade" id="returnStatusModal" tabindex="-1">
-            <div class="modal-dialog modal-dialog-scrollable">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        @foreach($return_order as $order)
-                            <div class="mb-3 border-bottom pb-2">
-                                <strong>Order ID:</strong> {{ $order->order_id }} <br>
-                                <strong>Product:</strong> {{ $order->product_code }} <br>
-                                <strong>Size:</strong> {{ $order->product_size }} <br>
-                                <strong>Status:</strong>
-                                <span class="badge bg-success">{{ $order->return_status }}</span>
-                            </div>
-                        @endforeach
+    <div class="modal fade" id="returnStatusModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-body">
+
+                    @foreach($return_order as $order)
+                    <div class="mb-3 border-bottom pb-2">
+                        <strong>Order ID:</strong> {{ $order->order_id }} <br>
+                        <strong>Product:</strong> {{ $order->product_code }} <br>
+                        <strong>Size:</strong> {{ $order->product_size }} <br>
+                        <strong>Status:</strong>
+                        <span class="badge bg-success">{{ $order->return_status }}</span>
                     </div>
-                    <div class="modal-footer border-0">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
+                    @endforeach
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
+    </div>
     @endif
 
     <div class="row">
@@ -49,57 +50,70 @@
                 </div>
 
                 <div class="card-body p-3">
-                    <div class="d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">Date:</span>
-                        <span>{{ \Carbon\Carbon::parse($orderDetails['created_at'])->format('d M Y, h:i A') }}</span>
-                    </div>
-
-                    <div class="d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">Status:</span>
-                        <span class="badge bg-secondary text-white">{{ $orderDetails['order_status'] }}</span>
-                    </div>
-
-                    <div class="d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">Total:</span>
-                        <span>{{ App\Helper\Helper::currency_converter($orderDetails['grand_total']) }}</span>
-                    </div>
-
-                    <div class="d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">Shipping:</span>
-                        <span>{{ App\Helper\Helper::currency_converter($orderDetails['shipping_charges']) }}</span>
-                    </div>
-
-                    <div class="d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">Tax:</span>
-                        <span>{{ App\Helper\Helper::currency_converter($orderDetails['tax_charge']) }}</span>
-                    </div>
-
-                    @if($orderDetails['coupon_code'])
-                        <div class="d-flex justify-content-between py-2 border-bottom">
-                            <span class="text-muted">Coupon:</span>
-                            <span>{{ $orderDetails['coupon_code'] }}</span>
+                    <div class="row">
+                        <div class="col-md-6">
+                            @if($orderDetails['order_code'])
+                            <p><strong>Delivery Code:</strong> {{ $orderDetails['order_code'] }}</p>
+                            <div class="mb-2">
+                                {!! QrCode::size(100)->generate($orderDetails['order_code']) !!}
+                            </div>
+                            @endif
                         </div>
-                        <div class="d-flex justify-content-between py-2 border-bottom">
-                            <span class="text-muted">Discount:</span>
-                            <span>{{ App\Helper\Helper::currency_converter($orderDetails['coupon_amount']) }}</span>
-                        </div>
-                    @endif
+                        <div class="col-md-6">
+                            <div class="d-flex justify-content-between py-2 border-bottom">
+                                <span class="text-muted">Date:</span>
+                                <span>{{ \Carbon\Carbon::parse($orderDetails['created_at'])->format('d M Y, h:i A') }}</span>
+                            </div>
 
-                    @if($orderDetails['courier_name'])
-                        <div class="d-flex justify-content-between py-2 border-bottom">
-                            <span class="text-muted">Courier:</span>
-                            <span>{{ $orderDetails['courier_name'] }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between py-2 border-bottom">
-                            <span class="text-muted">Tracking #:</span>
-                            <span>{{ $orderDetails['tracking_number'] }}</span>
-                        </div>
-                    @endif
+                            <div class="d-flex justify-content-between py-2 border-bottom">
+                                <span class="text-muted">Status:</span>
+                                <span class="badge bg-secondary text-white">{{ $orderDetails['order_status'] }}</span>
+                            </div>
 
-                    <div class="d-flex justify-content-between py-2">
-                        <span class="text-muted">Payment:</span>
-                        <span>{{ $orderDetails['payment_method'] }}</span>
+                            <div class="d-flex justify-content-between py-2 border-bottom">
+                                <span class="text-muted">Total:</span>
+                                <span>{{ App\Helper\Helper::currency_converter($orderDetails['grand_total']) }}</span>
+                            </div>
+
+                            <div class="d-flex justify-content-between py-2 border-bottom">
+                                <span class="text-muted">Shipping:</span>
+                                <span>{{ App\Helper\Helper::currency_converter($orderDetails['shipping_charges']) }}</span>
+                            </div>
+
+                            <div class="d-flex justify-content-between py-2 border-bottom">
+                                <span class="text-muted">Tax:</span>
+                                <span>{{ App\Helper\Helper::currency_converter($orderDetails['tax_charge']) }}</span>
+                            </div>
+
+                            @if($orderDetails['coupon_code'])
+                            <div class="d-flex justify-content-between py-2 border-bottom">
+                                <span class="text-muted">Coupon:</span>
+                                <span>{{ $orderDetails['coupon_code'] }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between py-2 border-bottom">
+                                <span class="text-muted">Discount:</span>
+                                <span>{{ App\Helper\Helper::currency_converter($orderDetails['coupon_amount']) }}</span>
+                            </div>
+                            @endif
+
+                            @if($orderDetails['courier_name'])
+                            <div class="d-flex justify-content-between py-2 border-bottom">
+                                <span class="text-muted">Courier:</span>
+                                <span>{{ $orderDetails['courier_name'] }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between py-2 border-bottom">
+                                <span class="text-muted">Tracking #:</span>
+                                <span>{{ $orderDetails['tracking_number'] }}</span>
+                            </div>
+                            @endif
+
+                            <div class="d-flex justify-content-between py-2">
+                                <span class="text-muted">Payment:</span>
+                                <span>{{ $orderDetails['payment_method'] }}</span>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </div>
 
@@ -152,42 +166,41 @@
 
         </div>
         <div class="col-md-6">
-        @if($checkorderproductavailable)
+            @if($checkorderproductavailable)
             @if($getOrderStatus == "Delivered")
-             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#return_request">
+            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#return_request">
                 Return Request
-             </button>
-             <div class="modal fade" id="return_request" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
-                 <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
-                     <div class="modal-content">
-                         <div class="modal-header">
-                             <h5 class="modal-title" id="modalTitleId">
+            </button>
+            <div class="modal fade" id="return_request" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalTitleId">
                                 Return Request
-                             </h5>
-                             <button type="button" class="btn-close btn" data-bs-dismiss="modal" aria-label="Close"></button>
-                         </div>
-                         <div class="modal-body">
+                            </h5>
+                            <button type="button" class="btn-close btn" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
                             <form method="POST" action="{{ url('admin/orders/'.$orderDetails['id'].'/return') }}">
                                 @csrf
                                 <div class="form-group mb-3">
                                     <label for="returnProduct">Select Product</label>
                                     <select class="form-control select2" name="product_info[]" multiple required>
                                         @foreach($orderDetails['orders_products'] as $product)
-                                            @php
-                                                $productModel = \App\Models\Product::find($product['product_id']);
-                                                $isReturnable = $productModel?->is_returnable;
-                                                $returnableDate = $productModel?->returnable_time;
-                                                $productStatus = $product['item_status'];
-                                                $deliveryDate = $product['created_at'];
-                                                $daysSinceDelivery = now()->diffInDays($deliveryDate);
-                                            @endphp
+                                        @php
+                                        $productModel = \App\Models\Product::find($product['product_id']);
+                                        $isReturnable = $productModel?->is_returnable;
+                                        $returnableDate = $productModel?->returnable_time;
+                                        $productStatus = $product['item_status'];
+                                        $deliveryDate = $product['created_at'];
+                                        $daysSinceDelivery = now()->diffInDays($deliveryDate);
+                                        @endphp
 
-                                            @if($isReturnable && $daysSinceDelivery <= $returnableDate && $productStatus != "Return Initiated")
-                                                <option value="{{ $product['product_code'] }}--{{ $product['product_size'] }}">
-                                                    {{ $product['product_code'] }} -- {{ $product['product_size'] }}
-                                                </option>
+                                        @if($isReturnable && $daysSinceDelivery <= $returnableDate && $productStatus !="Return Initiated" ) <option value="{{ $product['product_code'] }}--{{ $product['product_size'] }}">
+                                            {{ $product['product_code'] }} -- {{ $product['product_size'] }}
+                                            </option>
                                             @endif
-                                        @endforeach
+                                            @endforeach
                                     </select>
                                 </div>
                                 <div class="form-group mb-3">
@@ -209,41 +222,41 @@
 
                                 <button type="submit" class="btn btn-primary">Submit Return Request</button>
                             </form>
-                         </div>
-                         <div class="modal-footer">
-                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                 Close
-                             </button>
-                         </div>
-                     </div>
-                 </div>
-             </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-             <!-- Optional: Place to the bottom of scripts -->
-             <script>
-                 const myModal = new bootstrap.Modal(
-                     document.getElementById("modalId")
-                     , options
-                 , );
+            <!-- Optional: Place to the bottom of scripts -->
+            <script>
+                const myModal = new bootstrap.Modal(
+                    document.getElementById("modalId")
+                    , options
+                , );
 
-             </script>
+            </script>
 
 
             @endif
             @if($getOrderStatus == "New")
-             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#reason">
+            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#reason">
                 Cancellation Reason
-             </button>
-             <div class="modal fade" id="reason" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
-                 <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
-                     <div class="modal-content">
-                         <div class="modal-header">
-                             <h5 class="modal-title" id="modalTitleId">
-                                 Cancellation Reason
-                             </h5>
-                             <button type="button" class="btn-close btn" data-bs-dismiss="modal" aria-label="Close"></button>
-                         </div>
-                         <div class="modal-body">
+            </button>
+            <div class="modal fade" id="reason" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalTitleId">
+                                Cancellation Reason
+                            </h5>
+                            <button type="button" class="btn-close btn" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
                             <form method="POST" action="{{ url('admin/orders/'.$orderDetails['id'].'/cancel') }}">
                                 @csrf
                                 <div class="form-group mb-3">
@@ -259,25 +272,26 @@
                                 </div>
                                 <button type="submit" class="btn btn-danger rounded rounded-1">Cancel Order</button>
                             </form>
-                         </div>
-                         <div class="modal-footer">
-                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                 Close
-                             </button>
-                         </div>
-                     </div>
-                 </div>
-             </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-             <!-- Optional: Place to the bottom of scripts -->
-             <script>
-                 const myModal = new bootstrap.Modal(
-                     document.getElementById("modalId")
-                     , options
-                 , );
-             </script>
+            <!-- Optional: Place to the bottom of scripts -->
+            <script>
+                const myModal = new bootstrap.Modal(
+                    document.getElementById("modalId")
+                    , options
+                , );
+
+            </script>
             @endif
-        @endif
+            @endif
         </div>
     </div>
     <hr>
@@ -305,37 +319,37 @@
 @endsection
 
 @section('script')
-    <script>
-        $(document).ready(function(){
-            $(document).on('click','.btnCancelOrder',function (){
-                var reason=$("#cancelReason").val();
-                if(reason==""){
-                    alert("Please select Reason for canceling the Order");
-                    return false;
-                }
-               var result=confirm("Want to cancel this Order?");
-               if(!result){
-                   return false;
-               }
-            });
-
-            $(document).on('click','.btnReturnOrder',function (){
-                var reason=$("#returnReason").val();
-                var product=$("#returnProduct").val();
-                if(product==""){
-                    alert("Please select Product you want to return");
-                    return false;
-                }
-                if(reason==""){
-                    alert("Please select Reason for return the Order");
-                    return false;
-                }
-                var result=confirm("Want to return this Order?");
-                if(!result){
-                    return false;
-                }
-            });
+<script>
+    $(document).ready(function() {
+        $(document).on('click', '.btnCancelOrder', function() {
+            var reason = $("#cancelReason").val();
+            if (reason == "") {
+                alert("Please select Reason for canceling the Order");
+                return false;
+            }
+            var result = confirm("Want to cancel this Order?");
+            if (!result) {
+                return false;
+            }
         });
+
+        $(document).on('click', '.btnReturnOrder', function() {
+            var reason = $("#returnReason").val();
+            var product = $("#returnProduct").val();
+            if (product == "") {
+                alert("Please select Product you want to return");
+                return false;
+            }
+            if (reason == "") {
+                alert("Please select Reason for return the Order");
+                return false;
+            }
+            var result = confirm("Want to return this Order?");
+            if (!result) {
+                return false;
+            }
+        });
+    });
 
 
     var toggleButton = document.getElementById('toggleButton');
@@ -343,10 +357,12 @@
 
     toggleButton.addEventListener('click', function() {
         if (content.style.display === 'none') {
-        content.style.display = 'block';
+            content.style.display = 'block';
         } else {
-        content.style.display = 'none';
+            content.style.display = 'none';
         }
     });
-    </script>
+
+</script>
 @endsection
+
