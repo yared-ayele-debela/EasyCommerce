@@ -120,6 +120,6 @@
         </div>
     </div>
         @else
-            <p class="text-center">No items in your cart.</p>
+            <p class="text-left">No items in your cart.</p>
     @endif
 </div>

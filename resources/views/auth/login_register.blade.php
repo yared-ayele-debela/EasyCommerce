@@ -116,7 +116,7 @@
                         <div class="text-center">
                             <p class="my-2">Login with</p>
                         </div>
-                        <a href="{{ route('login.google') }}" class="btn border border-1 w-100 text-dark"><img src="{{ asset('restaurant_frontend/Logo-google-icon-PNG.png') }}" width="25"></img> Sign in with Google</a>
+                        <a href="{{ route('google.login') }}" class="btn border border-1 w-100 text-dark"><img src="{{ asset('restaurant_frontend/Logo-google-icon-PNG.png') }}" width="25"></img> Sign in with Google</a>
                         <div class="py-2">
                             <a href="{{ url('auth/forgot-password') }}" class="text-dark">Forget Password</a>
                         </div>
