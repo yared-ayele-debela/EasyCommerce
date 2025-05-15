@@ -37,7 +37,7 @@ class GoogleAuthController extends Controller
 
             Auth::login($user);
 
-            return redirect()->intended('/my-cart');
+            return redirect('/my-cart');
 
         } catch (Exception $e) {
             return redirect('/login')->with('error', 'Something went wrong: ' . $e->getMessage());
