@@ -26,6 +26,44 @@
 
     @livewireStyles
     <style>
+    .popover-container {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .popover-content {
+      visibility: hidden;
+      width: 200px;
+      background-color: #504d4d;
+      color: #fff !important;
+      text-align: left;
+      border-radius: 6px;
+      padding: 10px;
+      position: absolute;
+      z-index: 100;
+      bottom: 125%; /* Position above the trigger */
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .popover-content::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 6px;
+      border-style: solid;
+      border-color: #333 transparent transparent transparent;
+    }
+
+    .popover-container:hover .popover-content {
+      visibility: visible;
+      opacity: 1;
+    }
         .btn-close-white {
             filter: invert(1);
         }

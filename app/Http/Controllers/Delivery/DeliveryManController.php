@@ -14,7 +14,7 @@ use App\Models\CustomOrder;
 use App\Models\Delivery_Man_Type;
 use App\Models\Delivery_Zone;
 use App\Models\DeliveryMan;
-use App\Models\DeliveryManCommission;
+use App\Models\DeliveryManTip;
 use App\Models\DeliveryManWithdrawRequest;
 use App\Models\Email;
 use App\Models\EmailTemplate;
@@ -407,15 +407,15 @@ class DeliveryManController extends Controller
 
             $deliveryManId = Auth::guard('deliverymen')->user()->id;
 
-            $deliveryBoy = DeliveryMan::where('id',Auth::guard('deliverymen')->user()->id)->first();
-        $orders = Order::with('orders_products')->where('delivery_boy_id',$deliveryBoy->id)->orderBy( 'created_at', 'desc')->take(4)->get()->toArray();
-        $picked_orders = Order::with('orders_products')->where('delivery_boy_id',$deliveryBoy->id)->where('order_status','picked')->count();
-        $allorders= Order::with('orders_products')->where('delivery_boy_id',$deliveryBoy->id)->count();
-        $deliverd_orders = Order::with('orders_products')->where('delivery_boy_id',$deliveryBoy->id)->where('order_status','delivered')->count();
-        $pending_orders = Order::with('orders_products')->where('delivery_boy_id',$deliveryBoy->id)->where('order_status','pending')->count();
-        $delivering_orders = Order::with('orders_products')->where('delivery_boy_id',$deliveryBoy->id)->where('order_status','delivering')->count();
-        $new_orders = Order::with('orders_products')->where('delivery_boy_id',$deliveryBoy->id)->where('order_status','new')->count();
-        $custom_order= CustomOrder::all()->where('delivery_boy_id',$deliveryBoy->id)->count();
+            $deliveryBoy = DeliveryMan::where('id', Auth::guard('deliverymen')->user()->id)->first();
+            $orders = Order::with('orders_products')->where('delivery_boy_id', $deliveryBoy->id)->orderBy('created_at', 'desc')->take(4)->get()->toArray();
+            $picked_orders = Order::with('orders_products')->where('delivery_boy_id', $deliveryBoy->id)->where('order_status', 'picked')->count();
+            $allorders = Order::with('orders_products')->where('delivery_boy_id', $deliveryBoy->id)->count();
+            $deliverd_orders = Order::with('orders_products')->where('delivery_boy_id', $deliveryBoy->id)->where('order_status', 'delivered')->count();
+            $pending_orders = Order::with('orders_products')->where('delivery_boy_id', $deliveryBoy->id)->where('order_status', 'pending')->count();
+            $delivering_orders = Order::with('orders_products')->where('delivery_boy_id', $deliveryBoy->id)->where('order_status', 'delivering')->count();
+            $new_orders = Order::with('orders_products')->where('delivery_boy_id', $deliveryBoy->id)->where('order_status', 'new')->count();
+            $custom_order = CustomOrder::all()->where('delivery_boy_id', $deliveryBoy->id)->count();
 
             $stock_transfer_product = AssignStockProduct::all()->where('delivery_man_id', $deliveryBoy->id)->count();
 
@@ -425,13 +425,12 @@ class DeliveryManController extends Controller
             $men = DeliveryMan::where('id', $deliveryManId)->first();
             $available_to_withdraw = $men->total_earn;
 
-            $totalEarned = DeliveryManCommission::where('delivery_man_id', $deliveryManId)
+            $totalEarned = DeliveryManTip::where('delivery_man_id', $deliveryManId)
                 ->whereIn('status', ['earned', 'withdrawn', 'pending']) // total earned
-                ->sum('commission_amount');
+                ->sum('tip_amount');
 
             // Available for withdrawal
             $withdrawn = $totalEarned - $men->total_earn;
-
 
             // Pending withdraw requests
             $pendingWithdraw = DeliveryManWithdrawRequest::where('delivery_man_id', $deliveryManId)
@@ -441,7 +440,7 @@ class DeliveryManController extends Controller
             // Withdraw history
             $withdrawals = DeliveryManWithdrawRequest::where('delivery_man_id', $deliveryManId)
                 ->latest()->get();
-        return view('delivery_man.admin_dashboard.index',compact('available_to_withdraw','stock_transfer_product','custom_order','allorders','appsettings','orders','deliverd_orders','pending_orders','delivering_orders','new_orders','picked_orders', 'totalEarned', 'withdrawn', 'pendingWithdraw', 'withdrawals'));
+            return view('delivery_man.admin_dashboard.index', compact('available_to_withdraw', 'stock_transfer_product', 'custom_order', 'allorders', 'appsettings', 'orders', 'deliverd_orders', 'pending_orders', 'delivering_orders', 'new_orders', 'picked_orders', 'totalEarned', 'withdrawn', 'pendingWithdraw', 'withdrawals'));
         } catch (\Exception $e) {
             // Log or handle the exception as needed
             Alert::toast('something is wrong!!', 'error');
@@ -483,7 +482,6 @@ class DeliveryManController extends Controller
             $orderItemStatus = OrderItemStatus::where('status', 1)->get()->toArray();
             $orderLog = OrderLog::with('orders_products')->where('order_id', $order_id)->orderBy('id', 'Desc')->get()->toArray();
 
-            //Calculate Total Items in Cart
             $total_items = 0;
             foreach ($orderDetails['orders_products'] as $product) {
                 $total_items = $total_items + $product['product_qty'];
@@ -505,99 +503,100 @@ class DeliveryManController extends Controller
 
     public function updateOrderStatus(Request $request)
     {
-
         $user = Auth::guard('deliverymen')->user();
+
         if (!$user || !$user->hasPermissionByRole('update_order_status')) {
             return view('admin.errors.unauthorized');
         }
 
-        $data = $request->all();
-        $order = Order::with('orders_products')->find($data['order_id']);
+        $order = Order::with('orders_products')->find($request->order_id);
 
         if (!$order) {
             Alert::toast('Order not found!', 'error');
-            return redirect()->back();
+            return back();
         }
 
         $deliveryBoy = DeliveryMan::find($user->id);
+        $orderStatus = $request->order_status;
 
-        // Check user code for 'Delivered' or 'Paid' status
-        if ($data['order_status'] === 'delivered') {
-            if ($order->order_code !== $data['user_code']) {
+        // Handle 'delivered' status
+        if ($orderStatus === 'delivered') {
+            if ($order->order_code !== $request->user_code) {
                 Alert::toast('Invalid user code', 'error');
-                return redirect()->back();
+                return back();
             }
 
-            // Optional: Commission logic
-            /*
-        $commissionAmount = Helper::calculateDeliveryCommission($order);
-        if ($deliveryBoy) {
-            $deliveryBoy->status = "available";
-            $deliveryBoy->total_earn += $commissionAmount;
-            $deliveryBoy->save();
+            $existingCommission = DeliveryManTip::where([
+                ['order_id', $order->id],
+                ['order_type', 'goods']
+            ])->first();
 
-            DeliveryManCommission::create([
-                'delivery_man_id' => $deliveryBoy->id,
-                'order_type' => 'goods',
-                'order_id' => $order->id,
-                'commission_amount' => $commissionAmount,
-                'status' => 'pending'
-            ]);
-        }
-        */
-            $deliveryBoy->status = "avalilable";
-            $deliveryBoy->save();
-        }
+            $deliveryMan = DeliveryMan::find($order->delivery_boy_id);
 
-        // Change delivery boy status for "Shipped"
-        if ($data['order_status'] === 'picked' && $deliveryBoy) {
-            $deliveryBoy->status = "delivering";
-            $deliveryBoy->save();
+            if (!$existingCommission) {
+                // dd("avalilable");
+                DeliveryManTip::create([
+                    'delivery_man_id'    => $order->delivery_boy_id,
+                    'order_type'         => 'goods',
+                    'order_id'           => $order->id,
+                    'tip_amount'  => $order->tip_amount,
+                    'status'             => 'pending',
+                ]);
+
+                $deliveryMan->total_earn += $order->tip_amount;
+            }
+            // dd("unavalibale");
+
+            $deliveryMan->status = 'available';
+            $deliveryMan->save();
         }
 
-        // Update order fields
-        $updateData = ['order_status' => $data['order_status']];
+        // Handle 'picked' status
+        if ($orderStatus === 'picked' && $deliveryBoy) {
+            $deliveryBoy->update(['status' => 'delivering']);
+        }
 
-        $order->update($updateData);
+        // Update order status
+        $order->update(['order_status' => $orderStatus]);
 
-        // Create Order Log
+        // Log order update
         OrderLog::create([
             'order_id' => $order->id,
-            'order_status' => $data['order_status'],
+            'order_status' => $orderStatus,
         ]);
 
-        // Prepare email data
-        $deliveryDetails = $order->only(['email', 'mobile', 'name']);
-        $email_template = EmailTemplate::first();
-        $email = $deliveryDetails['email'];
+        // Email preparation
+        $email = $order->email;
+        if ($email) {
+            $emailTemplate = EmailTemplate::first();
+            $messageData = [
+                'email_template' => $emailTemplate,
+                'email' => $email,
+                'name' => $order->name,
+                'order_id' => $order->id,
+                'orderDetails' => $order->toArray(),
+                'order_status' => $orderStatus,
+            ];
 
-        $messageData = [
-            'email_template' => $email_template,
-            'email' => $email,
-            'name' => $deliveryDetails['name'],
-            'order_id' => $order->id,
-            'orderDetails' => $order->toArray(),
-            'order_status' => $data['order_status'],
-        ];
-
-        // Send email
-        Mail::send('emails.order_status', $messageData, function ($message) use ($email) {
-            $message->to($email)->subject('Order Status Updated');
-        });
+            Mail::send('emails.order_status', $messageData, function ($message) use ($email) {
+                $message->to($email)->subject('Order Status Updated');
+            });
+        }
 
         Alert::toast('Order status has been updated!', 'success');
-        return redirect()->back();
+        return back();
     }
+
 
 
     public function updateOrderItemStatus(Request $request)
     {
         try {
 
-            if($request['order_item_status'] === 'picked'){
-              $request->validate([
-                'vendor_code'=>'required'
-            ]);
+            if ($request['order_item_status'] === 'picked') {
+                $request->validate([
+                    'vendor_code' => 'required'
+                ]);
             }
 
 

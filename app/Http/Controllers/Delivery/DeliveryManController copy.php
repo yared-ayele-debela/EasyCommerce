@@ -478,7 +478,6 @@ class DeliveryManController extends Controller
         $orderItemStatus=OrderItemStatus::where('status',1)->get()->toArray();
         $orderLog=OrderLog::with('orders_products')->where('order_id',$order_id)->orderBy('id','Desc')->get()->toArray();
 
-         //Calculate Total Items in Cart
          $total_items=0;
          foreach ($orderDetails['orders_products'] as $product){
              $total_items=$total_items+$product['product_qty'];

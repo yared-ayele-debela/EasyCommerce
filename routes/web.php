@@ -543,6 +543,7 @@ Route::group(['middleware' => ['admin', 'check.admin:Ecommerce Manager,vendor']]
         Route::put('/delivery_boy/{id}', [DeliverymanController::class, 'update'])->name('delivery_boy.update');
         Route::delete('/delivery_boy/{id}', [DeliverymanController::class, 'destroy'])->name('delivery_boy.destroy');
 
+        Route::get('view-withdraw-detail/{id}',[DeliveryManController::class,'detail'])->name('view-withdraw-detail');
 
         //for role and permission
         Route::resource('roles', RolesController::class);

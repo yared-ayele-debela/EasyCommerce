@@ -37,6 +37,13 @@ $user = Auth::guard('admin')->user();
                             <small class=" text-danger">{{ $message }}</small>
                             @enderror
                         </div>
+                        <div class="form-group m-3">
+                            <label for="salary">Salary in (ETB)</label>
+                            <input type="number" name="salary" id="salary"  class="form-control" required>
+                            @error('salary')
+                            <small class=" text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
 
                         <div class="form-group m-3">
                             <label for="delivery_man_image" class="form-lable">Profile Image</label>
@@ -146,7 +153,7 @@ $user = Auth::guard('admin')->user();
                         @enderror
                     </div>
                 </div>
-              
+
             </div>
         </div>
     </div>

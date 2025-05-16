@@ -6,7 +6,7 @@ use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use App\Models\DeliveryMan;
-use App\Models\DeliveryManCommission;
+use App\Models\DeliveryManTip;
 use App\Models\DeliveryNotification;
 use App\Models\Restaurant\Order;
 use App\Models\Restaurant\OrderItem;
@@ -17,21 +17,22 @@ class OrderController extends Controller
 {
     //
 
-    public function orders(){
-        try{
+    public function orders()
+    {
+        try {
 
-        $appsettings=AppSetting::all()->toArray();
-        $deliveryManId = DeliveryMan::where('id',Auth::guard('deliverymen')->user()->id)->first();
-        $orders = Order::with('orderItems')->where('delivery_man_id',$deliveryManId->id)->orderBy( 'id', 'Desc')->get();
+            $appsettings = AppSetting::all()->toArray();
+            $deliveryManId = DeliveryMan::where('id', Auth::guard('deliverymen')->user()->id)->first();
+            $orders = Order::with('orderItems')->where('delivery_man_id', $deliveryManId->id)->orderBy('id', 'Desc')->get();
 
             // Notifications (unseen assigned orders)
-        $notifications = DeliveryNotification::where('delivery_man_id', $deliveryManId->id)
-        ->where('seen_status', 'new')
-        ->with('order')
-        ->latest()
-        ->get();
+            $notifications = DeliveryNotification::where('delivery_man_id', $deliveryManId->id)
+                ->where('seen_status', 'new')
+                ->with('order')
+                ->latest()
+                ->get();
 
-        return view('delivery_man.restaurant.index',compact('appsettings','orders','notifications'));
+            return view('delivery_man.restaurant.index', compact('appsettings', 'orders', 'notifications'));
         } catch (\Exception $e) {
             // Log or handle the exception as needed
 
@@ -78,7 +79,7 @@ class OrderController extends Controller
     public function verifyDeliveryCode(Request $request, $orderId)
     {
         $order = Order::findOrFail($orderId);
-        $orderItems=OrderItem::where('order_id',$order->id)->get();
+        $orderItems = OrderItem::where('order_id', $order->id)->get();
         if (Auth::guard('deliverymen')->user()->id !== $order->delivery_man_id) {
             abort(403, 'Unauthorized');
         }
@@ -94,22 +95,26 @@ class OrderController extends Controller
             $order->delivery_status = 'delivered';
             $order->status = 'delivered';
             $order->save();
-
-            $commissionAmount = Helper::calculateDeliveryCommission($order); // e.g., flat or % based
-
-            // dd($commissionAmount);
-            DeliveryManCommission::create([
-                'delivery_man_id' => $order->delivery_man_id,
-                'order_type' =>'restaurant',
-                'order_id' => $order->id,
-                'commission_amount' => $commissionAmount,
-                'status' => 'pending'
-            ]);
-
-            $delivery_men=DeliveryMan::where('id',$order->delivery_man_id)->first();
-            $delivery_men->status='available';
-            $delivery_men->total_earn+=$commissionAmount;
-            $delivery_men->save();
+            $check = DeliveryManTip::where('order_id', $order->id)->where('type','restaurant')->first();
+            if (!$check) {
+                // dd($order->tip_amount);
+                DeliveryManTip::create([
+                    'delivery_man_id' => $order->delivery_man_id,
+                    'order_type' => 'restaurant',
+                    'order_id' => $order->id,
+                    'commission_amount' => $order->tip_amount,
+                    'status' => 'pending'
+                ]);
+                $delivery_men = DeliveryMan::where('id', $order->delivery_man_id)->first();
+                $delivery_men->status = 'available';
+                $delivery_men->total_earn += $order->tip_amount;
+                $delivery_men->save();
+            }else{
+                // dd("available");
+                $delivery_men = DeliveryMan::where('id', $order->delivery_man_id)->first();
+                $delivery_men->status = 'available';
+                $delivery_men->save();
+            }
 
             return redirect()->back()->with('success', 'Delivery confirmed successfully.');
         }
@@ -149,5 +154,4 @@ class OrderController extends Controller
 
         return back()->with('success', 'Pickup confirmed for restaurant ID ' . $restaurantId);
     }
-
 }

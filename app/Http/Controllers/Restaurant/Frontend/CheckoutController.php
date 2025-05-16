@@ -62,6 +62,7 @@ class CheckoutController extends Controller
     public function placeOrder(Request $request)
     {
         // dd($request->all());
+        try{
         if ($request->payment_method === "manual") {
             $validator = Validator::make($request->all(), [
                 'payment_method' => 'required|string',
@@ -103,7 +104,6 @@ class CheckoutController extends Controller
         // dd($total);
         DB::beginTransaction();
 
-        // try {
         $order = Order::create([
             'user_id' => Auth::user()->id,
             'subtotal' => $subtotal,
@@ -147,10 +147,10 @@ class CheckoutController extends Controller
 
         return redirect()->route('restaurant.order.success', ['order' => $order->id])
             ->with('success', 'Your order has been placed successfully.');
-        // } catch (\Exception $e) {
-        //     DB::rollBack(); // Rollback transaction on error
-        //     return back()->with('error', 'Something went wrong. Please try again.')->withErrors($e->getMessage());
-        // }
+        } catch (\Exception $e) {
+            DB::rollBack(); // Rollback transaction on error
+            return back()->with('error', 'Something went wrong. Please try again.')->withErrors($e->getMessage());
+        }
     }
 
     public function orderNowPage()

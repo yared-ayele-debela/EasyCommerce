@@ -9,6 +9,8 @@ use App\Models\Country;
 use App\Models\Delivery_Man_Type;
 use App\Models\Delivery_Zone;
 use App\Models\DeliveryMan;
+use App\Models\DeliveryManTip;
+use App\Models\DeliveryManWithdrawRequest;
 use App\Models\State;
 use App\Models\Vehicle_Type;
 use GrahamCampbell\ResultType\Success;
@@ -89,6 +91,7 @@ class DeliveryManController extends Controller
                 'identity_number' => 'required',
                 'identity_image' => 'required|image',
                 'phone' => 'required',
+                'salary' => 'required',
                 'email' => 'required|email',
                 'password' => 'required|min:6',
                 'confirm_password' => 'required|same:password',
@@ -110,6 +113,7 @@ class DeliveryManController extends Controller
             $deliveryBoy->identity_type = $validatedData['identity_type'];
             $deliveryBoy->identity_number = $validatedData['identity_number'];
             $deliveryBoy->phone = $validatedData['phone'];
+            $deliveryBoy->salary = $validatedData['salary'];
             $deliveryBoy->email = $validatedData['email'];
             $deliveryBoy->password = bcrypt($validatedData['password']);
             $deliveryBoy->delivery_man_type = $validatedData['delivery_man_type'];
@@ -224,6 +228,7 @@ class DeliveryManController extends Controller
             $deliveryBoy->identity_type = $request->input('identity_type');
             $deliveryBoy->identity_number = $request->input('identity_number');
             $deliveryBoy->phone = $request->input('phone');
+            $deliveryBoy->salary = $request['salary'];
             $deliveryBoy->email = $request->input('email');
             $deliveryBoy->password = bcrypt($request->input('password'));
             $deliveryBoy->delivery_man_type = $request->input('delivery_man_type');
@@ -316,5 +321,32 @@ class DeliveryManController extends Controller
             Alert::toast('something is wrong!!', 'error');
             return redirect()->back();
         }
+    }
+
+    public function detail($id){
+        $delivery_men=DeliveryMan::findOrFail($id);
+
+        $men = DeliveryMan::where('id', $delivery_men->id)->first();
+        $available_to_withdraw = $men->total_earn;
+
+        $totalEarned = DeliveryManTip::where('delivery_man_id', $delivery_men->id)
+            ->whereIn('status', ['earned', 'withdrawn', 'pending']) // total earned
+            ->sum('tip_amount');
+
+        // Available for withdrawal
+        $withdrawn = $totalEarned - $men->total_earn;
+
+        // Pending withdraw requests
+        $pendingWithdraw = DeliveryManWithdrawRequest::where('delivery_man_id', $delivery_men->id)
+            ->where('status', 'pending')
+            ->sum('amount');
+
+        // Withdraw history
+        $withdrawals = DeliveryManWithdrawRequest::where('delivery_man_id', $delivery_men->id)
+            ->latest()->get();
+
+                // dd(1);
+      return view('admin.deliverymen.view_detail',compact('men','totalEarned','withdrawn','pendingWithdraw','withdrawals','available_to_withdraw'));
+
     }
 }

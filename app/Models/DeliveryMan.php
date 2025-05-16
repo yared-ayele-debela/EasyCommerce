@@ -19,7 +19,7 @@ class DeliveryMan extends Authenticable
     protected $table="deliverymen";
 
     protected $fillable = [
-        'first_name', 'email', 'password','total_earn'
+        'first_name', 'email', 'password','total_earn','salary'
     ];
 
     protected $hidden = [
