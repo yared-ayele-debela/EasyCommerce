@@ -1,95 +1,80 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Admin Login</title>
-
-    <!-- Bootstrap 4 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: #f8f9fa;
-        }
-        .card {
-            border-radius: 1rem;
-            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
-            border: none;
-        }
-        .app-brand-logo {
-            width: 100px;
-            height: auto;
-        }
-        .btn-primary {
-            background: #17BE18;
-            border: none;
-            transition: 0.3s;
-        }
-        .btn-primary:hover {
-            background: #14a914;
-        }
-        .form-control {
-            border-radius: 0.5rem;
-        }
-        .text-muted a {
-            text-decoration: none;
-            color: #17BE18;
-        }
-        .text-muted a:hover {
-            text-decoration: underline;
-        }
-    </style>
-</head>
+@include('admindashboard.css.css_file')
 <body>
     @include('sweetalert::alert')
-
-<div class="container vh-100 d-flex justify-content-center align-items-center">
-    <div class="col-lg-5 col-md-6">
-        <div class="card p-4">
-            <div class="card-body">
-                <div class="pb-3 text-center">
-                    <img src="{{ $appsettings[0]['logo'] }}" class="app-brand-logo">
+<div class="container vh-100 d-flex justify-content-center align-items-center bg-light px-3">
+    <div class="col-lg-4 col-md-6">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body p-4">
+                
+                {{-- Logo --}}
+                <div class="text-center mb-3">
+                    <img src="{{ $appsettings[0]['logo'] }}" class="img-fluid" style="max-height: 60px;" alt="Logo">
                 </div>
-                <h4 class="font-weight-bold text-dark text-center">Admin Login</h4>
-                <p class="text-muted text-center">Enter your credentials to access your account</p>
 
+                <h4 class="fw-bold text-center mb-1">Admin Login</h4>
+                <p class="text-muted text-center mb-4">Enter your credentials to access your account</p>
+
+                {{-- Flash Messages --}}
                 @if(session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                 @endif
 
                 @if(session('error'))
-                    <div class="alert alert-danger">{{ session('error') }}</div>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                 @endif
 
                 @if(session('info'))
-                    <div class="alert alert-info">{{ session('info') }}</div>
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                        {{ session('info') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                 @endif
 
+                {{-- Login Form --}}
                 <form method="POST" action="{{ url('admin/login') }}" class="needs-validation" novalidate>
                     @csrf
-                    <div class="form-group text-left">
-                        <label for="email">Email</label>
-                        <input type="email" name="email" class="form-control" id="email" required>
+
+                    {{-- Email --}}
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" id="email" name="email" class="form-control @error('email') is-invalid @enderror" required placeholder="Enter your email">
                         @error('email')
-                        <span class="text-danger">{{ $message }}</span>
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
                     </div>
-                    <div class="form-group text-left">
-                        <label for="yourPassword">Password</label>
-                        <input type="password" name="password" class="form-control" id="yourPassword" pattern=".{8,}" title="At least 8 characters required" required>
+
+                    {{-- Password --}}
+                    <div class="mb-4">
+                        <label for="yourPassword" class="form-label">Password</label>
+                        <input type="password" id="yourPassword" name="password" class="form-control @error('password') is-invalid @enderror" pattern=".{8,}" title="At least 8 characters required" required placeholder="Enter your password">
                         @error('password')
-                        <span class="text-danger">{{ $message }}</span>
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
-                                        </div>
-                    <button class="btn btn-primary btn-block" type="submit">Login</button>
+                    </div>
+
+                    {{-- Submit --}}
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                    </div>
+
+                    {{-- Forgot Password --}}
+                    <div class="text-center">
+                        <a href="{{ url('admin/forgot-password') }}" class="small text-decoration-none text-primary">Forgot your password?</a>
+                    </div>
+
                 </form>
-                <div class="mt-3">
-                    <p class="text-muted"><a href="{{ url('admin/forget-password') }}">Forgot your password?</a></p>
-                </div>
             </div>
         </div>
     </div>
 </div>
+
+
 @if(session('error'))
     <script>
         Swal.fire({
@@ -99,8 +84,6 @@
         });
     </script>
 @endif
-
-<!-- Bootstrap 4 JS -->
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -121,6 +104,4 @@
         }, false);
     })();
 </script>
-
-</body>
-</html>
+  @include('admindashboard.js.js_file')

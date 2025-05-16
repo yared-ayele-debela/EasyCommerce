@@ -18,7 +18,6 @@
       <link href="{{asset('backend/css/remixicon.css')}}" rel="stylesheet">
       <link href="{{asset('backend/css/simple-datatables.css')}}" rel="stylesheet">
       <link href="{{asset('backend/css/style.css')}}" rel="stylesheet">
-      @notifyCss
  </head>
  <body>
     <main>
@@ -79,11 +78,8 @@
                      </div>
                   </div>
                </div>
-               <x:notify-messages />
             </section>
          </div>
-         @include('sweetalert::alert')
-
       </main>
       <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
       <script>
@@ -126,7 +122,6 @@
       <script src="{{asset('backend/js/simple-datatables.js')}}"></script>
       <script src="{{asset('backend/js/tinymce.min.js')}}"></script>
       <script src="{{asset('backend/js/validate.js')}}"></script>
-      @notifyJs
       <script src="{{asset('backend/js/main.js')}}"></script>
       <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <svg id="SvgjsSvg1001" width="2" height="0" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev" style="overflow: hidden; top: -100%; left: -100%; position: absolute; opacity: 0;"><defs id="SvgjsDefs1002"></defs><polyline id="SvgjsPolyline1003" points="0,0"></polyline><path id="SvgjsPath1004" d="M0 0 "></path></svg></body></html>

@@ -23,9 +23,7 @@ class CustomOrderController extends Controller
             return view('admin.errors.unauthorized');
         }
         $appsettings=AppSetting::all()->toArray();
-
         $deliveryBoy = DeliveryMan::where('id',Auth::guard('deliverymen')->user()->id)->first();
-
         $custom_orders=CustomOrder::with('custom_order_product')->where('delivery_boy_id',$deliveryBoy->id)->get()->toArray();
         // dd($fast_orders);
         return view('delivery_man.custom_order.index',compact('custom_orders','appsettings'));

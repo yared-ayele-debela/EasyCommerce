@@ -4,6 +4,7 @@ use App\Http\Controllers\AddressController;
 use App\Http\Controllers\Admin\AdminActivityLogController;
 use App\Http\Controllers\Admin\AdminController as AdminAdminController;
 use App\Http\Controllers\Admin\AdminLoginInToVendorController;
+use App\Http\Controllers\Admin\AdminResetController;
 use App\Http\Controllers\Admin\AdminRolesController;
 use App\Http\Controllers\Admin\AdminWithdrawRequestController;
 use App\Http\Controllers\Admin\BannerController;
@@ -251,6 +252,13 @@ Route::get('/foo', function () {
 });
 
 
+Route::prefix('admin')->group(function () {
+    Route::get('forgot-password', [AdminResetController::class, 'ForgetPassword'])->name('admin.forgot.password');
+    Route::post('forgot-password', [AdminResetController::class, 'ForgetPasswordStore'])->name('admin.forgot.password.store');
+    Route::get('reset-password/{token}', [AdminResetController::class, 'ResetPassword'])->name('admin.reset.password');
+    Route::post('reset-password', [AdminResetController::class, 'ResetPasswordStore'])->name('admin.reset.password.store');
+});
+
 // Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -271,10 +279,10 @@ Route::prefix('admin')->group(function () {
 
     Route::get('login', [AdminController::class, 'loginpage'])->name('admin_login');
     //forget password
-    Route::get('forget-password', [AdminController::class, 'ForgetPassword'])->name('ForgetPasswordGet');
-    Route::post('forget-password', [AdminController::class, 'ForgetPasswordStore'])->name('ForgetPasswordPost');
-    Route::get('reset-password/{token}', [AdminController::class, 'ResetPassword'])->name('ResetPasswordGet');
-    Route::match(['get', 'post'], 'reset-password', [AdminController::class, 'ResetPasswordStore'])->name('ResetPasswordPost');
+    // Route::get('forget-password', [AdminController::class, 'ForgetPassword'])->name('ForgetPasswordGet');
+    // Route::post('forget-password', [AdminController::class, 'ForgetPasswordStore'])->name('ForgetPasswordPost');
+    // Route::get('reset-password/{token}', [AdminController::class, 'ResetPassword'])->name('ResetPasswordGet');
+    // Route::match(['get', 'post'], 'reset-password', [AdminController::class, 'ResetPasswordStore'])->name('ResetPasswordPost');
 
     Route::post('login', [AdminController::class, 'loginvalidate'])->name('login_admin');
     Route::group(['middleware' => ['admin']], function () {

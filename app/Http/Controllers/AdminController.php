@@ -845,23 +845,18 @@ class AdminController extends Controller
 
     public function ForgetPassword()
     {
-        try {
+        // try {
             $appsettings = AppSetting::all()->toArray();
+
             return view('admin.forget_password.forget', compact('appsettings'));
-        } catch (\Exception $e) {
-            // Log or handle the exception as needed
-            Alert::toast('something is wrong!!', 'error');
-            return redirect()->back();
-        }
+        // } catch (\Exception $e) {
+        //     // Log or handle the exception as needed
+        //     Alert::toast('something is wrong!!', 'error');
+        //     return redirect()->back();
+        // }
     }
     public function ForgetPasswordStore(Request $request)
     {
-        if (!$request->isMethod('post')) {
-            // Display an error or handle the incorrect request method
-            Alert::toast('Invalid request method!', 'error');
-            return back();
-        }
-
         $request->validate([
             'email' => 'required|email|exists:admins',
         ]);
