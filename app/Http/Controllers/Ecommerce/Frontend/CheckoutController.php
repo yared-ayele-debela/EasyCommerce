@@ -225,16 +225,16 @@ class CheckoutController extends Controller
 
         $deliveryAddresses = DeliveryAddress::where('id', $data['address_id'])->first()->toArray();
 
-        if ($data['payment_method'] == "COD") {
-            $payment_method = "COD";
-            $order_status = "New";
-        } elseif ($data['payment_method'] == "Chapa") {
-            $payment_method = "Chapa";
-            $order_status = "Pending";
-        } else {
-            $payment_method = "Paypal";
-            $order_status = "Pending";
-        }
+        // if ($data['payment_method'] == "COD") {
+        //     $payment_method = "COD";
+        //     $order_status = "New";
+        // } elseif ($data['payment_method'] == "Chapa") {
+        //     $payment_method = "Chapa";
+        //     $order_status = "Pending";
+        // } else {
+        //     $payment_method = "Paypal";
+        //     $order_status = "Pending";
+        // }
 
         $tipAmount = 0;
         if ($request->tip_option) {
@@ -268,9 +268,9 @@ class CheckoutController extends Controller
         $order->tax_charge = $totalTax;
         $order->coupon_code = Session::get('couponCode');
         $order->coupon_amount = Session::get('couponAmount');
-        $order->order_status = $order_status;
-        $order->payment_method = $payment_method;
+        $order->order_status = 'new';
         $order->payment_method = $data['payment_method'];
+        $order->payment_gateway = $data['payment_method'];
         $order->grand_total = $grand_total;
         $order->tip_amount= $tipAmount;
         $order->save();
