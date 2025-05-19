@@ -338,7 +338,7 @@ use Illuminate\Support\Facades\Storage;
         function googleTranslateElementInit() {
             new google.translate.TranslateElement({
                 pageLanguage: 'en'
-                , includedLanguages: 'en,am,om'
+                , includedLanguages: 'en,am,om,ti,so'
                 , layout: google.translate.TranslateElement.InlineLayout.SIMPLE
             }, 'google_translate_element');
         }

@@ -6,7 +6,6 @@
 </style>
 <div class="row g-4">
      @if(!empty($getCartItems))
-
     <!-- Cart Table Section -->
     <div class="col-lg-8">
         <form>
@@ -119,7 +118,7 @@
             </div>
         </div>
     </div>
-        @else
+    @else
             <p class="text-left">No items in your cart.</p>
     @endif
 </div>
