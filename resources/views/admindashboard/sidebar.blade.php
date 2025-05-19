@@ -56,6 +56,22 @@
        </script>
        <hr>
        @endif
+       @if ($adminType === "Hotel Manager")
+        <li class=" {{ request()->is('admin/hotel/dashboard')?'nav-item active':'' }}">
+        <a href="{{ url('admin/hotel/dashboard') }}" class="nav-link {{request()->is('admin/hotel/dashboard')}}"> <i class="bi bi-menu-button-fill"></i><span>Dashboard</span> </a>
+        </li>
+        @endif
+        @if ($adminType === "Restaurant Manager")
+        <li class=" {{ request()->is('admin/restaurant/dashboard')?'nav-item active':'' }}">
+        <a href="{{ url('admin/restaurant/dashboard') }}" class="nav-link {{request()->is('admin/restaurant/dashboard')}}"> <i class="bi bi-menu-button-fill"></i><span>Dashboard</span> </a>
+        </li>
+        @endif
+        @if($adminType === "Ecommerce Manager" || $adminType === "vendor")
+        <li class=" {{ request()->is('admin/dashboard')?'nav-item active':'' }}">
+           <a href="{{ url('admin/dashboard') }}" class="nav-link {{request()->is('admin/dashboard')}}"> <i class="bi bi-menu-button-fill"></i><span>Dashboard</span> </a>
+        </li>
+        @endif
+
 
         @if(Auth::guard('admin')->user()->type=="vendor" || Auth::guard('admin')->user()->type=="Ecommerce Manager")
         @if ($user && $user->hasPermissionByRole('view withdrawal request'))
