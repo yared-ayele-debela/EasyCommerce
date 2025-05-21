@@ -498,14 +498,17 @@
             @endforeach
         </div>
     </div>
+
+    @if($ad_after_featured_products)
      <div class="my-3">
-        <a href="{{ $ad_after_featured_products->adv_links?$ad_after_featured_products->adv_links:'' }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none d-block">
+        <a href="{{ $ad_after_featured_products->adv_links??'' }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none d-block">
             <div class="fix-banner-box rounded-3 overflow-hidden position-relative"
                  style="background: url('{{ $ad_after_featured_products->image }}') center center / cover no-repeat; min-height: 200px;">
-                <span class="visually-hidden">{{ $ad_after_featured_products->title? $ad_after_featured_products->title:'' }}</span>
+                <span class="visually-hidden">{{ $ad_after_featured_products->title??'' }}</span>
             </div>
         </a>
     </div>
+    @endif
 
     <div class="d-flex justify-content-between align-items-center mt-2 pt-4">
         <h3 class="fw-bold">Latest Products</h3>
@@ -548,15 +551,16 @@
             @endforeach
         </div>
     </div>
+    @if($ad_after_discounted_products)
      <div class="my-3">
-        <a href="{{ $ad_after_discounted_products->adv_links?$ad_after_discounted_products->adv_links:'' }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none d-block">
+        <a href="{{ $ad_after_discounted_products->adv_links??'' }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none d-block">
             <div class="fix-banner-box rounded-3 overflow-hidden position-relative"
                  style="background: url('{{ $ad_after_discounted_products->image }}') center center / cover no-repeat; min-height: 200px;">
-                <span class="visually-hidden">{{ $ad_after_discounted_products->title?$ad_after_discounted_products->title:'' }}</span>
+                <span class="visually-hidden">{{ $ad_after_discounted_products->title??'' }}</span>
             </div>
         </a>
     </div>
-
+   @endif
 </div>
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mt-2 pt-4">
@@ -572,14 +576,16 @@
             @endforeach
         </div>
     </div>
+    @if($ad_after_vendors)
      <div class="my-3">
-        <a href="{{ $ad_after_vendors->adv_links?$ad_after_vendors->adv_links:'' }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none d-block">
+        <a href="{{$ad_after_vendors->adv_links?? '' }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none d-block">
             <div class="fix-banner-box rounded-3 overflow-hidden position-relative"
                  style="background: url('{{ $ad_after_vendors->image }}') center center / cover no-repeat; min-height: 200px;">
-                <span class="visually-hidden">{{ $ad_after_vendors->title?$ad_after_vendors->title:'' }}</span>
+                <span class="visually-hidden">{{ $ad_after_vendors->title??'' }}</span>
             </div>
         </a>
     </div>
+    @endif
 </div>
 
 <div class="container-fluid pb-4">
