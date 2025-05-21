@@ -36,7 +36,7 @@
     }
 
 </style>
-<div class="container p-6 p-sm-2">
+<div class="container">
     <div class="header">
         <button class="btn btn-link text-dark" onclick="history.back()">
             <i class="bi bi-arrow-left"></i>

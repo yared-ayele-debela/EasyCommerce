@@ -21,7 +21,7 @@
     <div class="container" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;">
         <!-- Header Section -->
         <div class="text-center p-4  pb-2 border-bottom">
-            <img src="{{ asset('/storage/appsettings/'.$setting->logo) }}" alt="Company Logo" style="max-height: 60px;">
+            <img src="{{ $setting->logo }}" alt="Company Logo" style="max-height: 60px;">
             <h4 class="mt-2">{{ $setting->application_title }}</h4>
         </div>
         <div class="bg-success text-white text-center p-2">

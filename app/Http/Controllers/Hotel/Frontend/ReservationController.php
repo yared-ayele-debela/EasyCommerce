@@ -53,7 +53,6 @@ class ReservationController extends Controller
             'check_out_date' => Carbon::parse($request->check_out_date),
             'discount_amount'=>$request->discount_amount,
             'total_price' => $request->total_price,
-            'discount_amount' => $request->discount_amount,
             'final_price' => $request->final_price,
             'total_adult' => $request->total_adult,
             'total_child' => $request->total_child,

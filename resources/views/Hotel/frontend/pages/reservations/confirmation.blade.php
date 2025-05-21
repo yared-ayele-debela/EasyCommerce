@@ -2,7 +2,7 @@
 @extends('all_frontend_layouts.layouts')
 @section('title', 'Reservation Confirmation')
 @section('content')
-<div class="container d-flex justify-content-center align-items-center">
+<div class="container d-flex justify-content-center align-items-center py-4">
     <div class="row w-100">
         <div class="col-md-6 mx-auto">
             <div class="offer-card my-5">

@@ -136,7 +136,7 @@
     }
 </style>
 
-<div class="container pb-sm-3 pb-6">
+<div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <button class="btn btn-link text-dark me-2" onclick="history.back()">
             <i class="bi bi-arrow-left fs-5"></i>

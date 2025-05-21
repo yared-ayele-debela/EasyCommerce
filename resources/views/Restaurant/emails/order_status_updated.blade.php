@@ -36,7 +36,7 @@
     <div class="container py-5 d-flex justify-content-center align-items-center min-vh-100">
         <div class="card shadow-lg border-0" style="max-width: 600px;">
             <div class="text-center p-4 pb-2 border-bottom">
-                <img src="{{ asset('/storage/appsettings/'.$setting->logo) }}" alt="Company Logo" style="max-height: 60px;">
+                <img src="{{ $setting->logo }}" alt="Company Logo" style="max-height: 60px;">
                 <h4 class="mt-2">{{ $setting->application_title }}</h4>
             </div>
             <div class="card-header">

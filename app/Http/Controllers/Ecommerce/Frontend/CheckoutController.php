@@ -365,9 +365,7 @@ class CheckoutController extends Controller
         $pdfPath = storage_path('app/public/receipts/order_' . $order->order_code . '.pdf');
         $pdf->save($pdfPath); // Save to storage
 
-
-        Mail::to($order->email)->send(new OrderPlaced($order, $pdfPath));
-
+        Mail::to($order->email)->queue(new OrderPlaced($order, $pdfPath));
         return response()->json([
             'status' => 'success',
             'message' => 'Order placed successfully!',

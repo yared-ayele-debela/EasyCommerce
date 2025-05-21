@@ -17,7 +17,7 @@
 </style>
 
 </style>
-<div class="container pb-sm-0 pb-6">
+<div class="container py-4">
     <div class="header">
         <button class="btn btn-link text-dark" onclick="history.back()">
             <i class="bi bi-arrow-left"></i>

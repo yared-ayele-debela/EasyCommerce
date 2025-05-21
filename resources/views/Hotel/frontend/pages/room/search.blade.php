@@ -124,7 +124,7 @@
                         <div class="col-md-3 mb-4">
                             <div class="offer-card h-100">
                                 <a href="{{ url('hotel/room/${room.id}/detail') }}">
-                                <img src="/storage/${room.image}" class="card-img-top" alt="Room Image" style="height:200px; object-fit:cover;">
+                                <img src="${room.image}" class="card-img-top" alt="Room Image" style="height:200px; object-fit:cover;">
                                 </a>
                                 <div class="card-body">
                                     <h5 class="card-title">${room.room_type} (No: ${room.room_number})</h5>

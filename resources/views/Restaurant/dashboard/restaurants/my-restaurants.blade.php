@@ -56,9 +56,9 @@ $user = Auth::guard('admin')->user();
                 </div>
                 <div class="col-md-4">
                     <div class="p-3 bg-light rounded shadow-sm">
-                        <strong><i class="bi bi-toggle-on me-2"></i>Status:</strong><br>
-                        <span class="badge bg-{{ $restaurant->is_active ? 'success' : 'danger' }} px-3 py-2">
-                            {{ $restaurant->is_active ? 'Active' : 'Inactive' }}
+                        <strong><i class="bi bi-toggle-on me-2"></i>Is Open:</strong><br>
+                        <span class="badge bg-{{ $restaurant->is_open ? 'success' : 'danger' }} px-3 py-2">
+                            {{ $restaurant->is_open ? 'Open' : 'Close' }}
                         </span>
                     </div>
                 </div>

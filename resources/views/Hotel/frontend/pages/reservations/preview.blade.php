@@ -1,6 +1,6 @@
 @extends('all_frontend_layouts.layouts')
 @section('content')
-<div class="container pb-sm-3 pb-6">
+<div class="container py-3">
       <div class="header">
         <button class="btn btn-link text-dark" onclick="history.back()">
             <i class="bi bi-arrow-left"></i>

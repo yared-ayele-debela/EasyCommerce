@@ -121,7 +121,7 @@ $setting = AppSetting::first();
         <div class="header d-flex justify-content-between align-items-center">
             <div>
                 <div class="text-center p-4 pb-2 border-bottom">
-                    <img src="{{ asset('/storage/appsettings/'.$setting->logo) }}" alt="Company Logo" style="max-height: 60px;">
+                    <img src="{{ $setting->logo }}" alt="Company Logo" style="max-height: 60px;">
                     <h4 class="mt-2">{{ $setting->application_title }}</h4>
                 </div>
             </div>

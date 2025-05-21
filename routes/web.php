@@ -149,6 +149,9 @@ use App\Http\Controllers\Hotel\Frontend\FrontendController as FrontendFrontendCo
 use App\Http\Controllers\Hotel\Frontend\HotelController as FrontendHotelController;
 use App\Http\Controllers\Hotel\Frontend\ReservationController;
 use App\Http\Controllers\Hotel\Frontend\RoomController as FrontendRoomController;
+use App\Http\Controllers\MapController;
+use App\Http\Controllers\NearbyDeliveryMenMapController;
+use App\Http\Controllers\OrderRouteMapController;
 use App\Http\Controllers\Restaurant\Dashboard\AssignOrderController;
 use App\Http\Controllers\SalesUserAuth\DashboardController as SalesUserAuthDashboardController;
 use App\Http\Controllers\SalesUserAuth\ForgotPasswordController;
@@ -1425,3 +1428,23 @@ Route::get('/custom-orders/{id}', [CustomController::class, 'showOrderDetails'])
 Route::get('register/vendor',[VendorRegistrationController::class,'index'])->name('vendor-register');
 Route::post('/vendor/register', [VendorRegistrationController::class, 'RegisterVendor'])->name('vendor_register');
 Route::get('/vendor/confirm/{code}', [VendorRegistrationController::class, 'confirmVendor'])->name('confirm_vendor');
+
+
+Route::get('map',[MapController::class,'index'])->name('map');
+Route::get('/api/reverse-geocode', [MapController::class, 'reverse']);
+Route::get('/api/forward-geocode', [MapController::class, 'forward']);
+
+Route::get('/nearby-deliverymen',[NearbyDeliveryMenMapController::class,'index']);
+
+Route::get('/api/orders/{order}/nearby-deliverymen', [NearbyDeliveryMenMapController::class, 'getNearbyDeliveryMen']);
+
+Route::get('/orders/route-map', [OrderRouteMapController::class, 'show']);
+Route::get('/order/route', [OrderRouteMapController::class, 'getRoute']);
+
+Route::get('/live-location', function () {
+    // Replace this with dynamic DB/Redis fetch
+    return response()->json([
+        'lat' => 38.7492,
+        'lng' => 8.9911
+    ]);
+});
