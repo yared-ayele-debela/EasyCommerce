@@ -41,7 +41,7 @@ $user = Auth::guard('admin')->user();
                         <td>{{ $ad['title'] }}</td>
                         <td><img src="{{ $ad['image'] }}" style="width: 80px; height:40px; box-shadow:1px 1px 2px 1px gray" alt=""></td>
                         <td>{{ $ad['description'] }}</td>
-                        <td>{{ $ad['adv_links'] }}</td>
+                        <td>{{ \Illuminate\Support\Str::limit($ad['adv_links'], 20) }}</td>
                         <td>
                         @if ($user && $user->hasPermissionByRole('edit_advertisment'))
                            @if($ad['is_approved']==1)
