@@ -50,6 +50,16 @@ class AdvertisementController extends Controller
     public function store(Request $request)
     {
         try {
+            $all_ad=Advertisement::count();
+            if($all_ad >=3){
+                Alert::toast('Maximum amount you can add is 3 advertisement banners','error');
+                return redirect()->back();
+            }
+            $check=Advertisement::where('position',$request->position)->first();
+            if($check){
+                 Alert::toast('You already link this position with another advertisement, please select another position','error');
+                return redirect()->back();
+            }
             $user = Auth::guard('admin')->user();
             if (!$user || !$user->hasPermissionByRole('create_advertisment')) {
                 return view('admin.errors.unauthorized');
@@ -57,6 +67,7 @@ class AdvertisementController extends Controller
 
             $request->validate([
                 'title' => 'required|string|max:255',
+                'position' =>'required',
                 'description' => 'required|string',
                 'image' => 'required|image',
                 'adver_links' => 'required|string',
@@ -64,6 +75,7 @@ class AdvertisementController extends Controller
 
             $adver = new Advertisement();
             $adver->title = $request->input('title');
+            $adver->position = $request->input('position');
             $adver->description = $request->input('description');
             $adver->adv_links = $request->input('adver_links');
             $adver->is_approved = 0;
@@ -126,12 +138,17 @@ class AdvertisementController extends Controller
                 'adver_links' => 'required|string',
             ]);
             $user = Auth::guard('admin')->user();
-
+            $check=Advertisement::where('position',$request->position)->where('id','!=',$request->input('adver_id'))->first();
+            if($check){
+                 Alert::toast('You already link this position with another advertisement, please select another position','error');
+                return redirect()->back();
+            }
             if (!$user || !$user->hasPermissionByRole('edit_advertisment')) {
                 return view('admin.errors.unauthorized');
             }
             $adver = Advertisement::find($request->input('adver_id'));
             $adver->title = $request->input('title');
+            $adver->position = $request->input('position');
             $adver->description = $request->input('description');
             $adver->adv_links = $request->input('adver_links');
 

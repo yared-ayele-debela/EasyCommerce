@@ -80,7 +80,7 @@ class AddProduct extends Component
         //     }
         // }
 
-        if ($adminType == "vendor") {
+        if ($adminType === "vendor" || $adminType==="Ecommerce Manager") {
             $product->vendor_id = $vendor_id;
         } else {
             $product->vendor_id = 1;

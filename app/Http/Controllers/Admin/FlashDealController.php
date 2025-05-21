@@ -51,6 +51,13 @@ class FlashDealController extends Controller
         if (!$user || !$user->hasPermissionByRole('add_flashdeal')) {
             return view('admin.errors.unauthorized');
         }
+
+        $request->validate([
+            'title'=>'required|string',
+            'start_date'=>'required',
+            'end_date'=>'required'
+        ]);
+        
         $flash_deal = new FlashDeal();
         $flash_deal->title = $request->title;
         $flash_deal->start_date = Carbon::createFromFormat('d-m-Y H:i:s', $request->start_date)->format('Y-m-d H:i:s');

@@ -47,7 +47,20 @@ $user = Auth::guard('admin')->user();
                             <small class=" text-danger">{{ $message }}</small>
                             @enderror
                         </div>
-
+                         <div class="col-md-6">
+                             <div class="form-group">
+                               <label for="position">Select Position To Display</label>
+                               <select class="form-control" name="position" id="position">
+                                  <option value="">Select Position</option>
+                                 <option @if($adver->position==="after featured products") selected @endif value="after featured products">After Featured Product</option>
+                                 <option @if($adver->position==="after discounted products") selected @endif value="after discounted products">After Discounted Products</option>
+                                 <option @if($adver->position==="after vendors") selected @endif value="after vendors">After Vendor Lists</option>
+                               </select>
+                             </div>
+                            @error('adver_links')
+                            <small class=" text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
                          <div class="col-md-6">
                             <label for="description" class="form-label">Description</label><br>
                             <textarea name="description" class="form-control form-textarea" id="description" cols="60"  rows="5">

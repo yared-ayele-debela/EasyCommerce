@@ -68,6 +68,11 @@ class FrontendController extends Controller
         $auto_scroll_products = Product::with('attributes')->withAvg('ratings', 'rating')->where('status', 1)
         ->latest()
         ->paginate(12);
-        return view('all_frontend_layouts.ecommerce', compact('auto_scroll_products','allbrands','new_arrival','alladvertisement', 'getCategory', 'isfeatured', 'discountedproduct', 'banners', 'fixbanners', 'group', 'new_products', 'all_products', 'getVendorShop', 'allvendor', 'vendorRatingsCount', 'featured_flash_deal', 'flash_deal_products'));
+
+        $ad_after_discounted_products=Advertisement::where('position','after discounted products')->where('is_approved',1)->first();
+        $ad_after_featured_products=Advertisement::where('position','after featured products')->where('is_approved',1)->first();
+        $ad_after_vendors=Advertisement::where('position','after vendors')->where('is_approved',1)->first();
+
+        return view('all_frontend_layouts.ecommerce', compact('ad_after_vendors','ad_after_featured_products','ad_after_discounted_products','auto_scroll_products','allbrands','new_arrival','alladvertisement', 'getCategory', 'isfeatured', 'discountedproduct', 'banners', 'fixbanners', 'group', 'new_products', 'all_products', 'getVendorShop', 'allvendor', 'vendorRatingsCount', 'featured_flash_deal', 'flash_deal_products'));
     }
 }

@@ -43,6 +43,20 @@ $user = Auth::guard('admin')->user();
                             <small class=" text-danger">{{ $message }}</small>
                             @enderror
                         </div>
+                        <div class="col-md-6">
+                             <div class="form-group">
+                               <label for="position">Select Position To Display</label>
+                               <select class="form-control" name="position" id="position">
+                                 <option value="">Select Position</option>
+                                 <option value="after featured products">After Featured Product</option>
+                                 <option value="after discounted products">After Discounted Products</option>
+                                 <option value="after vendors">After Vendor Lists</option>
+                               </select>
+                             </div>
+                            @error('adver_links')
+                            <small class=" text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
 
                          <div class="col-md-6">
                             <label for="description" class="form-label">Description</label><br>

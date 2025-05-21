@@ -23,6 +23,7 @@ $user = Auth::guard('admin')->user();
                   <thead>
                      <tr>
                         <th scope="col">ID</th>
+                        <th scope="col">Position</th>
                         <td scope="col">title</td>
                         <th scope="col">Image</th>
                         <th scope="col">description</th>
@@ -36,6 +37,7 @@ $user = Auth::guard('admin')->user();
 
                      <tr>
                         <td>{{ $ad['id'] }}</td>
+                        <td>{{ $ad['position'] }}</td>
                         <td>{{ $ad['title'] }}</td>
                         <td><img src="{{ $ad['image'] }}" style="width: 80px; height:40px; box-shadow:1px 1px 2px 1px gray" alt=""></td>
                         <td>{{ $ad['description'] }}</td>

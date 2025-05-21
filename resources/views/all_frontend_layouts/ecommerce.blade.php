@@ -498,8 +498,14 @@
             @endforeach
         </div>
     </div>
-
-       <x-fixed-banner :image="$fixbanners[0]['image'] ?? ''" :link="$fixbanners[0]['link'] ?? '#'"/>
+     <div class="my-3">
+        <a href="{{ $ad_after_featured_products->adv_links }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none d-block">
+            <div class="fix-banner-box rounded-3 overflow-hidden position-relative"
+                 style="background: url('{{ $ad_after_featured_products->image }}') center center / cover no-repeat; min-height: 200px;">
+                <span class="visually-hidden">{{ $ad_after_featured_products->title }}</span>
+            </div>
+        </a>
+    </div>
 
     <div class="d-flex justify-content-between align-items-center mt-2 pt-4">
         <h3 class="fw-bold">Latest Products</h3>
@@ -519,6 +525,8 @@
             @endforeach
         </div>
     </div>
+           <x-fixed-banner :image="$fixbanners[0]['image'] ?? ''" :link="$fixbanners[0]['link'] ?? '#'"/>
+
     <div class="d-flex justify-content-between align-items-center mt-2 pt-4">
         <h3 class="fw-bold">Discounted Products</h3>
         <div class="d-flex gap-3 text-center">
@@ -540,7 +548,14 @@
             @endforeach
         </div>
     </div>
-    <x-fixed-banner :image="$fixbanners[1]['image'] ?? ''" :link="$fixbanners[1]['link'] ?? '#'"/>
+     <div class="my-3">
+        <a href="{{ $ad_after_discounted_products->adv_links }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none d-block">
+            <div class="fix-banner-box rounded-3 overflow-hidden position-relative"
+                 style="background: url('{{ $ad_after_discounted_products->image }}') center center / cover no-repeat; min-height: 200px;">
+                <span class="visually-hidden">{{ $ad_after_discounted_products->title }}</span>
+            </div>
+        </a>
+    </div>
 
 </div>
 <div class="container-fluid">
@@ -557,7 +572,16 @@
             @endforeach
         </div>
     </div>
+     <div class="my-3">
+        <a href="{{ $ad_after_vendors->adv_links }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none d-block">
+            <div class="fix-banner-box rounded-3 overflow-hidden position-relative"
+                 style="background: url('{{ $ad_after_vendors->image }}') center center / cover no-repeat; min-height: 200px;">
+                <span class="visually-hidden">{{ $ad_after_vendors->title }}</span>
+            </div>
+        </a>
+    </div>
 </div>
+
 <div class="container-fluid pb-4">
     <div class="d-flex justify-content-between align-items-center mt-3">
         <h3 class="fw-bold">Brands</h3>
@@ -571,6 +595,8 @@
             @endforeach
         </div>
     </div>
+    <x-fixed-banner :image="$fixbanners[1]['image'] ?? ''" :link="$fixbanners[1]['link'] ?? '#'"/>
+
     <div class="d-flex justify-content-between align-items-center mt-3">
         <h3 class="fw-bold">All Products</h3>
         <div class="d-flex gap-3 text-center">
