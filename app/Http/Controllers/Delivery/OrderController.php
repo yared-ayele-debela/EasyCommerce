@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Delivery;
 use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
+use App\Models\DeliveryAddress;
 use App\Models\DeliveryMan;
 use App\Models\DeliveryManTip;
 use App\Models\DeliveryNotification;
 use App\Models\Restaurant\Order;
 use App\Models\Restaurant\OrderItem;
+use App\Models\Restaurant\Restaurant;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -153,5 +156,28 @@ class OrderController extends Controller
             ->update(['picked_status' => 'picked']);
 
         return back()->with('success', 'Pickup confirmed for restaurant ID ' . $restaurantId);
+    }
+
+    public function pickupView($orderId,$RestaurantId)
+    {
+        $order = Order::findOrFail($orderId);
+        $restaurant=Restaurant::findOrFail($RestaurantId);
+        $appsettings = AppSetting::all()->toArray();
+
+        return view( 'delivery_man.restaurant.delivery.pickup', [
+            'order' => $order,
+            'restaurant' => $restaurant,
+            'appsettings' => $appsettings,
+        ]);
+    }
+
+
+    public function getCustomerLocation($orderId){
+        $order = Order::findOrFail($orderId);
+        $delivery_address=DeliveryAddress::where('id',operator: $order->delivery_address_id)->first();
+        $appsettings = AppSetting::all()->toArray();
+
+        $customer=User::where('id',$order->user_id)->first();
+        return view(view: 'delivery_man.restaurant.customer.customer_location',data: compact('delivery_address','order','customer','appsettings'));
     }
 }

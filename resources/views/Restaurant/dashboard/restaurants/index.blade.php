@@ -192,7 +192,7 @@ $user = Auth::guard('admin')->user();
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="address" class="form-label">Address</label>
-                               <textarea name="address" id="address" class=" form-control" cols="20" rows="5">
+                               <textarea name="address" id="address" class=" form-control location" cols="20" rows="5">
                                 Enter Restaurant Address
                                </textarea>
                                @error('address')
@@ -299,33 +299,28 @@ $user = Auth::guard('admin')->user();
                             </div>
                             <input type="hidden" name="admin_id" value="{{ $user->id }}">
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="latitude" class="form-label">Latitude</label>
-                                <input type="text" id="latitude" name="latitude" class="form-control" placeholder="Enter Latitude" required>
+                                <input type="text" id="latitude" name="latitude" class="form-control latitude" placeholder="Enter Latitude" required>
                                 @error('latitude')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="longitude" class="form-label">Longitude</label>
-                                <input type="text" id="longitude" name="longitude" class="form-control" placeholder="Enter Longitude" required>
+                                <input type="text" id="longitude" name="longitude" class="form-control longitude" placeholder="Enter Longitude" required>
                                 @error('longitude')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <button type="button" onclick="getLocation()" class="btn btn-secondary">Use My Location</button>
-                            </div>
-                        </div>
+                        
                         <div class="col-md-12">
                             <div class="mb-3">
-                                <label for="map">Select Location on Map</label>
-                                <div id="map" style="height: 300px;"></div>
+                               @include('restaurant.dashboard.restaurants.partials.map')
                             </div>
                         </div>
                         <div class="col-md-12">
@@ -405,7 +400,7 @@ $user = Auth::guard('admin')->user();
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="address" class="form-label">Address</label>
-                               <textarea name="address" id="address" class=" form-control"  cols="20" rows="5">
+                               <textarea name="address" id="address" class=" form-control location"  cols="20" rows="5">
                                 {{ $restaurant->address }}
                                </textarea>
                                @error('address')
@@ -527,7 +522,7 @@ $user = Auth::guard('admin')->user();
                         <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="latitude" class="form-label">Latitude</label>
-                                <input type="text" id="latitudes" name="latitude" value="{{ $restaurant->latitude }}" class="form-control" placeholder="Enter Latitude" required>
+                                <input type="text" id="latitudes" name="latitude" value="{{ $restaurant->latitude }}" class="form-control latitude" placeholder="Enter Latitude" required>
                                 @error('latitude')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
@@ -536,18 +531,14 @@ $user = Auth::guard('admin')->user();
                         <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="longitudes" class="form-label">Longitude</label>
-                                <input type="text" id="longitudes" name="longitude" value="{{ $restaurant->longitude }}" class="form-control" placeholder="Enter Longitude" required>
+                                <input type="text" id="longitudes" name="longitude" value="{{ $restaurant->longitude }}" class="form-control longitude" placeholder="Enter Longitude" required>
                                 @error('longitude')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
                         </div>
                         <div class="col-md-12">
-                            <button type="button" onclick="getLocations()" class="btn btn-secondary">Use My Location</button>
-                            <div class="mb-3">
-                                <label for="map">Select Location on Map</label>
-                                <div id="map" style="height: 300px;"></div>
-                            </div>
+                       @include('restaurant.dashboard.restaurants.partials.map')
                         </div>
                         <div class="col-md-12">
                             <div id="locationMessage" class="text-success"></div>
@@ -564,10 +555,119 @@ $user = Auth::guard('admin')->user();
 </div>
 @endforeach
 
-<!-- Leaflet CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let initializedMaps = new Set();
+
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('shown.bs.modal', function () {
+                const modalId = this.getAttribute('id');
+                if (initializedMaps.has(modalId)) return;
+
+                const container = this;
+                const mapDiv = container.querySelector('.map');
+                const searchInput = container.querySelector('.search-address');
+                const resultsContainer = container.querySelector('.map-search-results');
+                const spinner = container.querySelector('.loading-spinner');
+                const latField = container.querySelector('.delivery-lat');
+                const lngField = container.querySelector('.delivery-lng');
+                const latitude = container.querySelector('.latitude');
+                const longtidue = container.querySelector('.longitude');
+                const location = container.querySelector('.location');
+                const addressField = container.querySelector('.delivery-address');
+                const selectedText = container.querySelector('.selected-address-text');
+
+                const map = L.map(mapDiv).setView([8.9806, 38.7578], 13);
+
+                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+                const icon = L.icon({
+                    iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+                    shadowSize: [41, 41]
+                });
+
+                let marker;
+
+                map.on('click', async function (e) {
+                    const lat = e.latlng.lat;
+                    const lng = e.latlng.lng;
+                    try {
+                        const res = await fetch(`/api/reverse-geocode?lat=${lat}&lon=${lng}`);
+                        const data = await res.json();
+                        if (data.data?.length) {
+                            const address = data.data[0].name + ", " + data.data[0].City;
+                            setLocation(lat, lng, address);
+                        }
+                    } catch (err) {
+                        console.error('Reverse geocoding error:', err);
+                    }
+                });
+
+                if (searchInput) {
+                    searchInput.addEventListener('keyup', async function () {
+                        const q = this.value.trim();
+                        if (q.length < 3) return;
+
+                        spinner.style.display = 'inline-block';
+                        resultsContainer.innerHTML = '';
+
+                        try {
+                            const res = await fetch(`/api/forward-geocode?name=${encodeURIComponent(q)}`);
+                            const data = await res.json();
+                            spinner.style.display = 'none';
+
+                            if (data.data?.length) {
+                                data.data.forEach(loc => {
+                                    const item = document.createElement('a');
+                                    item.href = "#";
+                                    item.className = 'list-group-item list-group-item-action';
+                                    item.textContent = `${loc.name}, ${loc.City}`;
+                                    item.onclick = () => {
+                                        setLocation(loc.latitude, loc.longitude, `${loc.name}, ${loc.City}`);
+                                        resultsContainer.innerHTML = '';
+                                    };
+                                    resultsContainer.appendChild(item);
+                                });
+                            } else {
+                                resultsContainer.innerHTML = '<div class="list-group-item">No results found</div>';
+                            }
+
+                        } catch (err) {
+                            spinner.style.display = 'none';
+                            resultsContainer.innerHTML = '<div class="list-group-item text-danger">Error</div>';
+                        }
+                    });
+                }
+
+                function setLocation(lat, lng, address) {
+                    if (marker) map.removeLayer(marker);
+                    marker = L.marker([lat, lng], { icon }).addTo(map).bindPopup(address).openPopup();
+                    map.setView([lat, lng], 15);
+
+                    selectedText.textContent = address;
+                    latField.value = lat;
+                    lngField.value = lng;
+                    latitude.value=lat;
+                    longtidue.value=lng;
+                    location.value=address;
+                    addressField.value = address;
+                }
+
+                initializedMaps.add(modalId);
+
+                // Fix map size rendering after modal animation
+                setTimeout(() => {
+                    map.invalidateSize();
+                }, 300);
+            });
+        });
+    });
+</script>
 <script>
     $(document).ready(function () {
         // Listen for any modal being shown
@@ -602,6 +702,8 @@ $user = Auth::guard('admin')->user();
             function(position) {
                 document.getElementById('latitude').value = position.coords.latitude;
                 document.getElementById('longitude').value = position.coords.longitude;
+                document.getElementById('latitudes').value = position.coords.latitude;
+                document.getElementById('longitudes').value = position.coords.longitude;
                 document.getElementById('locationMessage').innerText = "Location captured!";
             },
             function(error) {
@@ -612,71 +714,7 @@ $user = Auth::guard('admin')->user();
         document.getElementById('locationMessage').innerText = "Geolocation is not supported by this browser.";
     }
 }
-    function getLocations() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            function(position) {
-                document.getElementById('latitudes').value = position.coords.latitude;
-                document.getElementById('longitudes').value = position.coords.longitude;
-                document.getElementById('locationMessages').innerText = "Location captured!";
-            },
-            function(error) {
-                document.getElementById('locationMessages').innerText = "Error: Unable to retrieve location.";
-            }
-        );
-    } else {
-        document.getElementById('locationMessage').innerText = "Geolocation is not supported by this browser.";
-    }
-}
-    document.addEventListener("DOMContentLoaded", function () {
-        // Default location: Addis Ababa, Ethiopia
-        var defaultLat = 9.03;
-        var defaultLng = 38.74;
-
-        var map = L.map('map').setView([defaultLat, defaultLng], 13);
-
-        // Add OpenStreetMap (OSM) tile layer
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-
-        // Add marker at default location (Addis Ababa)
-        var marker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(map);
-
-        // Function to update coordinates in input fields
-        function updateCoordinates(lat, lng) {
-            document.getElementById('latitude').value = lat;
-            document.getElementById('longitude').value = lng;
-            document.getElementById('locationMessage').innerText = `Selected: ${lat}, ${lng}`;
-        }
-
-        // Set default coordinates
-        updateCoordinates(defaultLat, defaultLng);
-
-        // Update coordinates when clicking on the map
-        map.on('click', function (e) {
-            var lat = e.latlng.lat;
-            var lng = e.latlng.lng;
-            marker.setLatLng([lat, lng]); // Move marker
-            updateCoordinates(lat, lng);
-        });
-
-        var mapModal = document.getElementById('addRestaurantModal');
-        mapModal.addEventListener('shown.bs.modal', function () {
-            if (!map) {
-                initMap(); // Initialize map only once
-            } else {
-                setTimeout(() => {
-                    map.invalidateSize();
-                }, 200);
-            }
-        });
-
-        marker.on('dragend', function (e) {
-            var position = marker.getLatLng();
-            updateCoordinates(position.lat, position.lng);
-        });
-    });
+    
     </script>
     <script>
         $(document).ready(function () {

@@ -49,7 +49,7 @@
                         <div class="mb-3">
                             <label for="emails" class="form-label">Email</label>
                             <input type="email" class="form-control" id="emails" name="email" placeholder="Enter your email" required>
-                            @error('emails')
+                            @error('email')
                             <small class=" text-danger">{{ $message }}</small>
                             @enderror
                         </div>

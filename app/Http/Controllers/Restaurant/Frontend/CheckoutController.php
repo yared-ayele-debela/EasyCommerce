@@ -140,7 +140,7 @@ class CheckoutController extends Controller
             $payment->amount_paid = $total;
             $payment->save();
         }
-        // Mail::to(Auth::user()->email)->send(new OrderConfirmationMail($order));
+        Mail::to(Auth::user()->email)->send(new OrderConfirmationMail($order));
 
         DB::commit();
         session()->forget(['cart', 'cart_subtotal', 'discount']); // Clear cart session after successful order

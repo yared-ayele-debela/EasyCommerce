@@ -972,6 +972,9 @@ Route::group(['middleware' => 'deliverymen'], function () {
         Route::get('delivery-boy/stock-product/detail/{id}', [StockTransferProductController::class, 'detail'])->name('delivery-boy-stock-product-detail');
         Route::post('delivery-boy/update-stock-product-transfer-status', [StockTransferProductController::class, 'update_status'])->name('updata_stock_transfer_status');
     });
+
+    Route::get('pickup-order/{orderId}/{restaurantId}',[DeliveryOrderController::class,'pickupView']);
+    Route::get('get-customer-location/{orderId}',[DeliveryOrderController::class,'getCustomerLocation']);
 });
 
 // // for frontend user

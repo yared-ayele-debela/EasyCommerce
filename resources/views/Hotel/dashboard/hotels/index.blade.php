@@ -1,6 +1,32 @@
 <!-- resources/views/amenities/index.blade.php -->
 @extends('Hotel.dashboard.layouts')
 @section('hotel-dashboard')
+<style>
+    #map-search-results {
+        display: block;
+        max-height: 250px;
+        overflow-y: auto;
+        z-index: 1000;
+        position: absolute;
+        width: 100%;
+    }
+
+    #loading-spinner {
+        display: none;
+        text-align: center;
+        padding: 10px;
+    }
+
+    #loading-spinner .spinner-border {
+        width: 1.5rem;
+        height: 1.5rem;
+    }   #map {
+            width: 100%;
+            height: 70vh;
+            border-radius: 10px;
+        }
+
+</style>
 
 <div class="container">
     <nav class="breadcrumb bg-white shadow-sm py-3 px-4 rounded d-flex justify-content-between align-items-center">
@@ -182,11 +208,19 @@
                                     <div class="modal-body">
                                         <div class="row">
                                             <div class="col-md-6">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                         @include('Hotel.dashboard.hotels.partials.map')
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="row">
+                                                    <div class="col-md-6">
                                                 <div class="mb-2">
                                                     <label class="form-label">Name</label>
                                                     <input type="text" name="name" class="form-control" value="{{  $hotel->name ? $hotel->name : old('name') }}" required>
                                                 </div>
-
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="mb-2">
@@ -205,7 +239,7 @@
                                             <div class="col-md-6">
                                                 <div class="mb-2">
                                                     <label class="form-label">Location</label>
-                                                    <input type="text" name="location" class="form-control" value="{{ $hotel ? $hotel->location : old('location') }}" required>
+                                                    <input type="text" name="location" class="form-control location" value="{{ $hotel ? $hotel->location : old('location') }}" required>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -229,45 +263,32 @@
                                                     @endif
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label for="latitudes" class="form-label">Latitude</label>
-                                                    <input type="text" id="latitudes" name="latitude" class="form-control" value="{{ $hotel->latitude }}" placeholder="Enter Latitude" required>
+                                                    <input type="text" id="latitudes" name="latitude" class="form-control latitude" value="{{ $hotel->latitude }}" placeholder="Enter Latitude" required>
                                                     @error('latitude')
                                                     <small class="text-danger">{{ $message }}</small>
                                                     @enderror
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label for="longitudes" class="form-label">Longitude</label>
-                                                    <input type="text" id="longitudes" name="longitude" class="form-control" value="{{ $hotel->longitude }}" placeholder="Enter Longitude" required>
+                                                    <input type="text" id="longitudes" name="longitude" class="form-control longitude" value="{{ $hotel->longitude }}" placeholder="Enter Longitude" required>
                                                     @error('longitude')
                                                     <small class="text-danger">{{ $message }}</small>
                                                     @enderror
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
-                                                <div class="mb-3">
-                                                    <label for="location" class="form-label">Location</label>
-                                                    <br>
-                                                    <button type="button" onclick="getLocation()" class="btn btn-secondary">Use My Location</button>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <div class="mb-3">
-                                                    <label for="map{{ $hotel->id }}">Select Location on Map</label>
-                                                    <div id="map{{ $hotel->id }}" style="height: 300px;"></div>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-12">
-                                                <div id="locationMessages" class="text-success"></div>
-                                            </div>
+                                            
+                             
                                             <div class="col-md-12">
                                                 <div class="mb-2">
                                                     <label class="form-label">Description</label>
                                                     <textarea name="description" class="form-control">{{ $hotel ? $hotel->description : old('description') }}</textarea>
+                                                </div>
+                                            </div>
                                                 </div>
                                             </div>
 
@@ -299,19 +320,9 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="col-md-12">
-                                        <div class="mb-3">
-                                            <label for="map">Select Location on Map</label>
-                                            <div id="map" style="height: 300px;"></div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="location" class="form-label">Location</label>
-                                            <br>
-                                            <button type="button" onclick="getLocation()" class="btn btn-secondary">Use My Location</button>
-                                        </div>
-                                    </div>
 
+                                      @include('Hotel.dashboard.hotels.partials.map')
+                                    </div>
                                 </div>
 
                                 <div class="col-md-6">
@@ -340,7 +351,7 @@
                                         <div class="col-md-6">
                                             <div class="mb-2">
                                                 <label class="form-label">Address</label>
-                                                <input type="text" name="location" class="form-control" required>
+                                                <input type="text" name="location" id="location" class="form-control location" required>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -364,7 +375,7 @@
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="latitude" class="form-label">Latitude</label>
-                                                <input type="text" id="latitude" name="latitude" class="form-control" placeholder="Enter Latitude" required disabled>
+                                                <input type="text" id="latitude" name="latitude" class="form-control latitude" placeholder="Enter Latitude" required disabled>
                                                 @error('latitude')
                                                 <small class="text-danger">{{ $message }}</small>
                                                 @enderror
@@ -373,7 +384,7 @@
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="longitude" class="form-label">Longitude</label>
-                                                <input type="text" id="longitude" name="longitude" class="form-control" placeholder="Enter Longitude" required disabled>
+                                                <input type="text" id="longitude" name="longitude" class="form-control  longitude" placeholder="Enter Longitude" required disabled>
                                                 @error('longitude')
                                                 <small class="text-danger">{{ $message }}</small>
                                                 @enderror
@@ -465,87 +476,122 @@
     </div>
 
 </div>
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
 <script>
-    function getLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                function(position) {
-                    document.getElementById('latitude').value = position.coords.latitude;
-                    document.getElementById('longitude').value = position.coords.longitude;
-                    document.getElementById('locationMessage').innerText = "Location captured!";
-                    document.getElementById('latitudes').value = position.coords.latitude;
-                    document.getElementById('longitudes').value = position.coords.longitude;
-                    document.getElementById('locationMessages').innerText = "Location captured!";
+    document.addEventListener('DOMContentLoaded', function () {
+        let initializedMaps = new Set();
+
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('shown.bs.modal', function () {
+                const modalId = this.getAttribute('id');
+                if (initializedMaps.has(modalId)) return;
+
+                const container = this;
+                const mapDiv = container.querySelector('.map');
+                const searchInput = container.querySelector('.search-address');
+                const resultsContainer = container.querySelector('.map-search-results');
+                const spinner = container.querySelector('.loading-spinner');
+                const latField = container.querySelector('.delivery-lat');
+                const lngField = container.querySelector('.delivery-lng');
+                const latitude = container.querySelector('.latitude');
+                const longtidue = container.querySelector('.longitude');
+                const location = container.querySelector('.location');
+                const addressField = container.querySelector('.delivery-address');
+                const selectedText = container.querySelector('.selected-address-text');
+
+                const map = L.map(mapDiv).setView([8.9806, 38.7578], 13);
+
+                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+                const icon = L.icon({
+                    iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+                    shadowSize: [41, 41]
+                });
+
+                let marker;
+
+                map.on('click', async function (e) {
+                    const lat = e.latlng.lat;
+                    const lng = e.latlng.lng;
+                    try {
+                        const res = await fetch(`/api/reverse-geocode?lat=${lat}&lon=${lng}`);
+                        const data = await res.json();
+                        if (data.data?.length) {
+                            const address = data.data[0].name + ", " + data.data[0].City;
+                            setLocation(lat, lng, address);
+                        }
+                    } catch (err) {
+                        console.error('Reverse geocoding error:', err);
+                    }
+                });
+
+                if (searchInput) {
+                    searchInput.addEventListener('keyup', async function () {
+                        const q = this.value.trim();
+                        if (q.length < 3) return;
+
+                        spinner.style.display = 'inline-block';
+                        resultsContainer.innerHTML = '';
+
+                        try {
+                            const res = await fetch(`/api/forward-geocode?name=${encodeURIComponent(q)}`);
+                            const data = await res.json();
+                            spinner.style.display = 'none';
+
+                            if (data.data?.length) {
+                                data.data.forEach(loc => {
+                                    const item = document.createElement('a');
+                                    item.href = "#";
+                                    item.className = 'list-group-item list-group-item-action';
+                                    item.textContent = `${loc.name}, ${loc.City}`;
+                                    item.onclick = () => {
+                                        setLocation(loc.latitude, loc.longitude, `${loc.name}, ${loc.City}`);
+                                        resultsContainer.innerHTML = '';
+                                    };
+                                    resultsContainer.appendChild(item);
+                                });
+                            } else {
+                                resultsContainer.innerHTML = '<div class="list-group-item">No results found</div>';
+                            }
+
+                        } catch (err) {
+                            spinner.style.display = 'none';
+                            resultsContainer.innerHTML = '<div class="list-group-item text-danger">Error</div>';
+                        }
+                    });
                 }
-                , function(error) {
-                    document.getElementById('locationMessage').innerText = "Error: Unable to retrieve location.";
+
+                function setLocation(lat, lng, address) {
+                    if (marker) map.removeLayer(marker);
+                    marker = L.marker([lat, lng], { icon }).addTo(map).bindPopup(address).openPopup();
+                    map.setView([lat, lng], 15);
+
+                    selectedText.textContent = address;
+                    latField.value = lat;
+                    lngField.value = lng;
+                    latitude.value=lat;
+                    longtidue.value=lng;
+                    location.value=address;
+                    addressField.value = address;
                 }
-            );
-        } else {
-            document.getElementById('locationMessage').innerText = "Geolocation is not supported by this browser.";
-        }
-    }
 
+                initializedMaps.add(modalId);
 
-    document.addEventListener("DOMContentLoaded", function() {
-        // Default location: Addis Ababa, Ethiopia
-        var defaultLat = 9.03;
-        var defaultLng = 38.74;
-
-        var map = L.map('map').setView([defaultLat, defaultLng], 13);
-
-        // Add OpenStreetMap (OSM) tile layer
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-
-        // Add marker at default location (Addis Ababa)
-        var marker = L.marker([defaultLat, defaultLng], {
-            draggable: true
-        }).addTo(map);
-
-        // Function to update coordinates in input fields
-        function updateCoordinates(lat, lng) {
-            document.getElementById('latitude').value = lat;
-            document.getElementById('longitude').value = lng;
-            document.getElementById('latitudes').value = lat;
-            document.getElementById('longitudes').value = lng;
-            document.getElementById('locationMessage').innerText = `Selected: ${lat}, ${lng}`;
-        }
-
-        updateCoordinates(defaultLat, defaultLng);
-
-        // Update coordinates when clicking on the map
-        map.on('click', function(e) {
-            var lat = e.latlng.lat;
-            var lng = e.latlng.lng;
-            marker.setLatLng([lat, lng]); // Move marker
-            updateCoordinates(lat, lng);
-        });
-
-        var mapModal = document.getElementById('createHotelModal');
-        mapModal.addEventListener('shown.bs.modal', function() {
-            if (!map) {
-                initMap(); // Initialize map only once
-            } else {
+                // Fix map size rendering after modal animation
                 setTimeout(() => {
                     map.invalidateSize();
-                }, 200);
-            }
-        });
-
-
-        // Update coordinates when dragging marker
-        marker.on('dragend', function(e) {
-            var position = marker.getLatLng();
-            updateCoordinates(position.lat, position.lng);
+                }, 300);
+            });
         });
     });
-
 </script>
+
+
+
 <script>
     $(document).ready(function() {
         $(document).on("click", ".delete-restaurant", function(e) {
@@ -568,5 +614,24 @@
         });
     });
 </script>
-
+<script>
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                document.getElementById('latitude').value = position.coords.latitude;
+                document.getElementById('longitude').value = position.coords.longitude;
+                document.getElementById('latitudes').value = position.coords.latitude;
+                document.getElementById('longitudes').value = position.coords.longitude;
+                document.getElementById('locationMessage').innerText = "Location captured!";
+            },
+            function(error) {
+                document.getElementById('locationMessage').innerText = "Error: Unable to retrieve location.";
+            }
+        );
+    } else {
+        document.getElementById('locationMessage').innerText = "Geolocation is not supported by this browser.";
+    }
+}
+</script>
 @endsection

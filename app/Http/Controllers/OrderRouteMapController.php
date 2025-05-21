@@ -19,12 +19,12 @@ class OrderRouteMapController extends Controller
         ]);
     }
 
-    public function getRoute()
+    public function getRoute(Request $request)
     {
-        $order = Order::findOrFail(23);
+        $origin = $request->input('origin');
+        $destination = $request->input('destination');
 
-        $origin = "8.9877454,38.704482";
-        $destination = "9.0088381,38.7451636";
+
         $apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55bmFtZSI6IkVhc3kgZS1jb21tZXJjZSBob3RlbCBib29raW5nIGFuZCBkZWxpdmVyeSIsImRlc2NyaXB0aW9uIjoiMGU4ZDhhZDMtZmJhYy00OTJkLWE4OWYtZGFiZjQxNTFlNDc2IiwiaWQiOiI3OWY1ODRlYy0yZDA3LTRjNWQtYTI2Ny00MjBhNzVlMDY2NzMiLCJ1c2VybmFtZSI6ImJlZmk3NzU2In0.JgSoBiAoa4Te6ccg-jSJSifq26PZV4FnGbkhQKiTnuo';
 
         $response = Http::get("https://mapapi.gebeta.app/api/route/direction", [
@@ -33,12 +33,9 @@ class OrderRouteMapController extends Controller
             'apiKey' => $apiKey
         ]);
 
-
-
     if ($response->successful()) {
         return response()->json(data: $response->json());
     }
-
         return response()->json(['error' => 'Route fetch failed'], 500);
     }
 }

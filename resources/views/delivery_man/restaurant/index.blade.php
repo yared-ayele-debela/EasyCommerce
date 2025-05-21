@@ -1,7 +1,7 @@
 @extends('delivery_man.admin_dashboard.maindashboard')
 @section('delivery_man_dashboard')
 @php
-$user = Auth::guard('admin')->user();
+$user = Auth::guard('deliverymen')->user();
 use App\Models\DeliveryNotification;
 $notifications_histories=DeliveryNotification::where('delivery_man_id',Auth::guard('deliverymen')->user()->id)->latest()->take(5)->get();
 @endphp
@@ -91,7 +91,7 @@ $notifications_histories=DeliveryNotification::where('delivery_man_id',Auth::gua
                                                 <p><strong>State:</strong> {{ $order->address->state }}</p>
                                                 <p><strong>Country:</strong> {{ $order->address->country }}</p>
                                                 <p><strong>Pincode:</strong> {{ $order->address->pincode }}</p>
-
+                                                 <a href="{{ url('get-customer-location/'.$order->id) }}" class="btn btn-primary">Get Customer Location</a>
                                             </div>
                                         </div>
                                     </div>
@@ -139,6 +139,7 @@ $notifications_histories=DeliveryNotification::where('delivery_man_id',Auth::gua
                                                                     <img src="{{ $item->product->restaurant->cover }}" class="rounded" style="width: 60px; height: 40px; object-fit: cover;">
                                                                 </div>
                                                                 <hr>
+                                                                <a href="{{ url('pickup-order/'.$order->id.'/'.$item->product->restaurant->id) }}" class="btn btn-primary">Get Restaurant Location</a>
                                                                 <p class="mt-3">
                                                                    <strong>Pickup Status: </strong> <div class="btn btn-sm btn-primary">
                                                                     {{ $item->picked_status }}
