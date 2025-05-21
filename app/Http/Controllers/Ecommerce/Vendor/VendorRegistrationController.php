@@ -25,78 +25,73 @@ class VendorRegistrationController extends Controller
 
     public function RegisterVendor(Request $request)
     {
-        try {
+        $validated = $request->validate([
+        'name'     => 'required|string',
+        'phone'    => 'required|string|size:10',
+        'email'    => 'required|email',
+        'password' => 'required|string|min:8',
+    ]);
 
-            $this->validate($request, [
-                'name' => 'required|string',
-                'phone' => 'required|string',
-                'email' => 'required|email',
-                'password' => 'required|min:8',
-            ]);
+    $phone = $validated['phone'];
+    $email = $validated['email'];
 
-            $email = $request->input('email');
-            $phone = $request->input('phone');
+    // Step 2: Check if phone or email already exists
+    $phoneExists = Vendor::where('mobile', $phone)->exists() || Admin::where('mobile', $phone)->exists();
+    $emailExists = Vendor::where('email', $email)->exists() || Admin::where('email', $email)->exists();
 
-            if (strlen($request->input('phone')) !== 10) {
-                return redirect()->back()->with('error','Phone number should be exactly 10 digits');
-            }
-            if (Vendor::where('mobile', $phone)->exists() || Admin::where('mobile', $email)->exists()) {
-                return redirect()->back()->with('error','Phone number already exists');
-            }
-            // Check if the email already exists in the table
-            if (Vendor::where('email', $email)->exists() || Admin::where('email', $email)->exists()) {
-                return redirect()->back()->with('Eamil already exists');
-            }
-            // dd($request->all());
+    if ($phoneExists) {
+        return redirect()->back()->with('error', 'Phone number already exists');
+    }
 
-            DB::beginTransaction();
-            $vendor = new Vendor();
-            $vendor->name = $request->input('name');
-            $vendor->mobile = $request->input('phone');
-            $vendor->email = $request->input('email');
-            $vendor->status = 1;
-            $vendor->confirm="Yes";
+    if ($emailExists) {
+        return redirect()->back()->with('error', 'Email already exists');
+    }
 
-            $vendor->save();
+    try {
+        DB::beginTransaction();
 
+        // Step 3: Create vendor
+        $vendor = Vendor::create([
+            'name'    => $validated['name'],
+            'mobile'  => $validated['phone'],
+            'email'   => $validated['email'],
+            'status'  => 1,
+            'confirm' => 'Yes',
+        ]);
 
-            $vendor_id = DB::getPdo()->lastInsertId();
+        // Step 4: Create corresponding admin
+        Admin::create([
+            'type'      => 'vendor',
+            'vendor_id' => $vendor->id,
+            'name'      => $validated['name'],
+            'mobile'    => $validated['phone'],
+            'email'     => $validated['email'],
+            'password'  => bcrypt($validated['password']),
+            'status'    => 1,
+            'confirm'   => 'Yes',
+        ]);
 
-            $admin = new Admin();
-            $admin->type = 'vendor';
-            $admin->vendor_id = $vendor_id;
-            $admin->name = $request->input('name');
-            $admin->mobile = $request->input('phone');
-            $admin->email = $request->input('email');
-            $admin->password = bcrypt($request->input('password'));
-            $admin->status = 1;
-            $admin->confirm="Yes";
-            $admin->save();
+        // Step 5: Optional email sending (currently commented)
+        /*
+        $emailTemplate = EmailTemplate::first();
+        $messageData = [
+            'email_template' => $emailTemplate,
+            'email'          => $email,
+            'name'           => $validated['name'],
+            'code'           => base64_encode($email),
+        ];
+        Mail::send('emails.vendor_confirmation', $messageData, function ($message) use ($email) {
+            $message->to($email)->subject('Confirm your Vendor Account');
+        });
+        */
 
+        DB::commit();
+        return redirect()->back()->with('success', 'Vendor registered successfully');
 
-            $email = $request->input('email');
-            $email_template = EmailTemplate::first();
-
-            // $messageData = [
-            //     'email_template' => $email_template,
-            //     'email' => $request->input('email'),
-            //     'name' => $request->input('name'),
-            //     'code' => base64_encode($request->input('email')),
-            // ];
-            // Mail::send('emails.vendor_confirmation', $messageData, function ($message) use ($email) {
-            //     $message->to($email)->subject('Confirm your Vendor Account ');
-            // });
-            DB::commit();
-
-            return redirect()->back()->with('success','Thanks for registering as Vendor. Please confirm your email to activate your account');
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Laravel's built-in validation exception
-            return redirect()->back()->withErrors($e->validator->errors())->withInput();
-
-        } catch (\Exception $e) {
-            // Log or handle the exception as needed
-            return redirect()->back();
-        }
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return redirect()->back()->with('error', 'Something went wrong: ' . $e->getMessage());
+    }
     }
 
     public function confirmVendor($email)
