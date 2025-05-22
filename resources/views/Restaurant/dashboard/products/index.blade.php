@@ -194,7 +194,6 @@ $user = Auth::guard('admin')->user();
                                                 <div class="mb-3">
                                                     <label for="discount_type" class="form-label">Discount Type</label>
                                                     <select class="form-control" id="discount_type" name="discount_type">
-                                                        <option @if($product->discount_type==="none") selected @endif value="none">None</option>
                                                         <option @if($product->discount_type==="fixed") selected @endif value="fixed">Fixed</option>
                                                         <option @if($product->discount_type==="percentage") selected @endif value="percentage">Percentage</option>
                                                     </select>
@@ -373,7 +372,6 @@ $user = Auth::guard('admin')->user();
                             <div class="mb-3">
                                 <label for="discount_type" class="form-label">Discount Type</label>
                                 <select class="form-control" id="discount_type" name="discount_type">
-                                    <option value="">None</option>
                                     <option value="fixed">Fixed</option>
                                     <option value="percentage">Percentage</option>
                                 </select>
