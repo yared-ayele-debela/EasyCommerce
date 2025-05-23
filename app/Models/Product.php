@@ -29,6 +29,7 @@ class Product extends Model
         'product_code',
         'product_color',
         'product_price',
+        'quantity',
         'product_selling_price',
         'product_discount',
         'product_weight',
@@ -135,8 +136,44 @@ class Product extends Model
     }
 
 
+public static function getDiscountProductPrice($product_id)
+        {
+            $product = Product::select('product_price', 'product_discount', 'category_id')->where('id', $product_id)->first();
+
+            if (!$product) {
+                return null; // or throw exception
+            }
+
+            $category = Category::select('discount')->where('id', $product->category_id)->first();
+
+            $original_price = $product->product_price;
+
+            if ($product->product_discount > 0) {
+                $final_price = $original_price - ($original_price * $product->product_discount / 100);
+                $discount = $original_price - $final_price;
+            } elseif ($category && $category->discount > 0) {
+                $final_price = $original_price - ($original_price * $category->discount / 100);
+                $discount = $original_price - $final_price;
+            } else {
+                $final_price = $original_price;
+                $discount = 0;
+            }
+
+            return [
+                'product_price' => $original_price,
+                'final_price' => $final_price,
+                'discount' => $discount,
+                'product_detail_price' => Helper::final_amount_currency_converter($original_price),
+                'final_price_product_detail' => Helper::final_amount_currency_converter($final_price),
+                'discount_product_detail' => Helper::final_amount_currency_converter($discount)
+            ];
+        }
 
 
+  public static function getProductStock($product_id){
+    $getProductStrok=Product::select('quantity')->where(['id'=>$product_id])->first();
+    return $getProductStrok->quantity;
+  }
     public static function getProductImage($product_id){
         $getProductImage=Product::select('product_image')->where('id',$product_id)->first()->toArray();
         return $getProductImage['product_image'];

@@ -3,7 +3,7 @@
 <div class="col-md-2 col-6 mb-2 h-100">
     <div class="offer-card position-relative shadow-sm rounded-4 overflow-hidden h-100">
         @php
-            $hasStock = $product->attributes->sum('stock') > 0;
+            $hasStock = $product->quantity > 0;
             $discountedPrice = App\Models\Product::getDiscountPrice($product->id);
             $hasDiscount = $discountedPrice > 0;
             $averageRating = round($product->ratings_avg_rating ?? 0, 1);

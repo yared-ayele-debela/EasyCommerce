@@ -64,6 +64,38 @@
          <script src="{{ asset('dashboard/js/main.js')}}"></script>
          <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
          <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+         <script>
+    const deliverymanId = 1; // or use a variable passed to Blade
+
+    function updateLocation(position) {
+        fetch('/api/deliveryman/update-location', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}' // if using web.php
+            },
+            body: JSON.stringify({
+                id: deliverymanId,
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            })
+        }).then(response => response.json())
+          .then(data => console.log(data.message))
+          .catch(err => console.error('Update failed', err));
+    }
+
+    function trackLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(updateLocation);
+        } else {
+            console.log("Geolocation is not supported by this browser.");
+        }
+    }
+
+    // Update every 10 seconds
+    setInterval(trackLocation, 5000);
+</script>
+
             <script>
                 $(document).ready(function() {
                 $('#example').DataTable( {

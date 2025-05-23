@@ -56,19 +56,15 @@ $user = Auth::guard('admin')->user();
                </div>
                <div class="col-md-4 pt-3">
                <div class="row">
-                  <img src="{{ asset('/storage/products/'.$product->product_image) }}" style="width:180px; margin-left:15px;  box-shadow:1px 1px 2px gray; height:200px" class=" rounded" alt="">
+                  <img src="{{ $product->product_image}}" style="width:180px; margin-left:15px;  box-shadow:1px 1px 2px gray; height:200px" class=" rounded" alt="">
                </div>
                </div>
                <div class="form-group">
                 <div class="field_wrapper">
-                        <input type="text"  name="size[]" placeholder="Size" style="width: 120px; " required="">
-                        <input type="text" placeholder="Sku" style="width: 120px;"  name="sku[]" required=""/>
-                        @if($product->is_offer_price==="yes")
-
-                        @else
-                        <input type="text" placeholder="Price"style="width: 120px;"  placeholder="Price" name="price[]" required=""/>
-                        @endif
-                        <input type="text" placeholder="Stock" style="width: 120px;"  placeholder="Stock" name="stock[]" value=""/>
+                        <input type="text"  name="size[]" placeholder="Size" style="width: 120px; " required>
+                        <input type="text" placeholder="Sku" style="width: 120px;"  name="sku[]" required/>
+                        <input type="number" placeholder="Price"style="width: 120px;"  placeholder="Price" name="price[]" required/>
+                        <input type="number" placeholder="Stock" style="width: 120px;"  placeholder="Stock" name="stock[]" required/>
                         <a href="javascript:void(0);" class="add_button btn btn-primary" title="Add field">Add</a>
                     </div>
                 </div>
@@ -88,10 +84,7 @@ $user = Auth::guard('admin')->user();
                           <th scope="col">ID</th>
                           <th scope="col">Size</th>
                           <th scope="col">SKU</th>
-                          @if($product->is_offer_price=="yes")
-                          @else
                           <th scope="col">Price</th>
-                          @endif
                           <th scope="col">Stock</th>
                           <th scope="col">Status</th>
                           <th scope="col">Action</th>
@@ -104,11 +97,9 @@ $user = Auth::guard('admin')->user();
                           <td>{{ $attribute['id'] }}</td>
                           <td>{{ $attribute['size'] }}</td>
                           <td>{{ $attribute['sku'] }}</td>
-                          @if($product->is_offer_price=="yes")
-                          @else
+
                           <td><input type="number" name="price[]"  value="{{ $attribute['price'] }}" required="" style="width: 120px">
                           </td>
-                          @endif
                           <td>
                             <input type="number" name="stock[]"  value="{{ $attribute['stock'] }}" required="" style="width: 120px">
                           <td>

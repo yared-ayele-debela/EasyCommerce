@@ -46,7 +46,7 @@ class ProductsController extends Controller
     });
 
     // Total available stock (optimized with aggregation)
-    $totalStock = $product->attributes->sum('stock');
+    $totalStock = $product->quantity;
 
     // Similar products (optimized by reducing number of queries)
     $similarProducts = Product::with(['attributes', 'brand', 'ratings'])

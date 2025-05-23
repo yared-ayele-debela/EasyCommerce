@@ -67,25 +67,24 @@
                 <div id="itemsSection" class="mt-3 d-none">
                     <h4 class="text-dark">Items details</h4>
                     <div class="row my-3">
-                        @foreach($getCartItems as $item)
+                        @foreach($cartItems as $item)
                         <div class="col-md-4">
                             @php
                             if(!empty($cartItems['size'])){
-                            $getDiscountAttributePrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
+                            $getDiscountAttributePrice = Product::getDiscountAttributePrice($item['product']['id'], $item['size']);
                             }else{
-                            $getDiscountAttributePrice = Product::getDiscountProductPrice(product_id: $item['product_id']);
+                            $getDiscountAttributePrice = Product::getDiscountProductPrice($item['product']['id']);
                             }
                             $product_quantity = $getDiscountAttributePrice['final_price'] * $item['quantity'];
                             $total_price += $product_quantity;
                             @endphp
                             <div class=" offer-card p-3 mb-3">
                                 <div class=" d-flex align-items-center">
-                                    <a href="{{ url('product/' . $item['product_id']) }}" class="me-3">
+                                    <a href="{{ url('product/' . $item['product']['id']) }}" class="me-3">
                                         @if($item['product']['product_image'])
                                         <img src="{{ $item['product']['product_image']}}" alt="{{ $item['product']['product_name'] }}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
                                         @else
                                         <img src="{{ asset('restaurant_frontend/default-image.png') }}" alt="{{ $item['product']['product_name'] }}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
-
                                         @endif
                                     </a>
                                     <div class="flex-grow-1">
@@ -94,7 +93,7 @@
                                     </div>
                                     <div>
                                         <h6 class="mb-0">
-                                            {{ App\Helper\Helper::currency_converter($product_quantity) }}
+                                            {{ $product_quantity }}
                                         </h6>
                                     </div>
                                 </div>
@@ -109,7 +108,7 @@
                 <div class="summary-card mt-3">
                     <div class="d-flex justify-content-between mb-2">
                         <span><strong>Subtotal</strong></span>
-                        <span><strong>{{ $total_price }} ETB</strong></span>
+                        <span><strong>{{ $total }} ETB</strong></span>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span><strong>Shipping</strong></span>
@@ -133,7 +132,7 @@
                     </div>
                     <div class="line"></div>
                     @php
-                    $discount = Session::has('couponAmount',0);
+                    $discount = Session::has( 'couponAmount',0);
                     $grand_total = $total_price + $totalShipping+ $totalTax - Session::get('couponAmount');
                     @endphp
                     <div class="d-flex justify-content-between">
@@ -229,6 +228,12 @@
                             </div>
                         </div>
                     </div>
+                    <input type="hidden" name="product_id" value="{{ $cartItems[0]['product']->id }}">
+                    <input type="hidden" name="quantity" value="{{ $cartItems[0]['quantity'] }}">
+                    <input type="hidden" name="size" value="{{ $cartItems[0]['size'] }}">
+                    <input type="hidden" name="final_price" value="{{ $cartItems[0]['total'] }}">
+                    <input type="hidden" name="shipping" value="{{ $totalShipping }}">
+                    <input type="hidden" name="tax" value="{{ $totalTax }}">
                     <button type="submit" class="checkout-btn border-0 bg-primary w-100 mt-3 text-white py-2">Place Order</button>
                     <div id="orderResponse"></div>
                 </div>
@@ -348,7 +353,7 @@
     const formData = new FormData(form);
 
     $.ajax({
-        url: "{{ route('ecommerce.checkout.placeOrder') }}",
+        url: "{{ route('checkout.submit.direct') }}",
         method: "POST",
         data: formData,
         processData: false, // Don't process the files
@@ -385,28 +390,6 @@
             $("#itemsSection").toggleClass("d-none");
             let isVisible = !$("#itemsSection").hasClass("d-none");
             $(this).html(isVisible ? '<i class="bi bi-eye-slash"></i> Hide Items' : '<i class="bi bi-eye"></i> Show Items');
-        });
-
-        var map = L.map('map').setView([9.03, 38.74], 12);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
-        var marker;
-        map.on('click', function(e) {
-            var lat = e.latlng.lat.toFixed(6);
-            var lng = e.latlng.lng.toFixed(6);
-            updateMarker(lat, lng);
-
-        });
-        var mapModal = document.getElementById('addressModal');
-        mapModal.addEventListener('shown.bs.modal', function() {
-            if (!map) {
-                initMap(); // Initialize map only once
-            } else {
-                setTimeout(() => {
-                    map.invalidateSize(); // Fix hidden modal issue
-                }, 200); // Delay ensures proper resizing
-            }
         });
     });
 

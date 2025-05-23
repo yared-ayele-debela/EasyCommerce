@@ -1,4 +1,5 @@
 <?php use App\Models\Product; ?>
+
 <style>
     .checkout-btn{
         width: 100% !important;
@@ -6,7 +7,6 @@
 </style>
 <div class="row g-4">
      @if(!empty($getCartItems))
-    <!-- Cart Table Section -->
     <div class="col-lg-8">
         <form>
             <div class="table-responsive mb-4">
@@ -24,7 +24,12 @@
                         @php $total_price = 0; @endphp
                         @foreach($getCartItems as $item)
                             @php
-                                $getDiscountAttributePrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
+                                if(!empty($item['size'])){
+                                $getDiscountAttributePrice =Product::getDiscountAttributePrice($item['product_id'], $item['size']);
+                                }
+                                else{
+                                 $getDiscountAttributePrice =Product::getDiscountProductPrice($item['product_id']);
+                                }
                             @endphp
                             <tr>
                                 <td>
@@ -34,7 +39,7 @@
                                     </a>
                                 </td>
                                 <td>
-                                    {{ App\Helper\Helper::currency_converter($getDiscountAttributePrice['final_price']) }}
+                                  {{ number_format($getDiscountAttributePrice['final_price'],2) }} ETB
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center justify-content-center flex-nowrap">
@@ -52,7 +57,7 @@
                                 </td>
                                 <td>
                                     @php $subtotal = $getDiscountAttributePrice['final_price'] * $item['quantity']; @endphp
-                                    {{ App\Helper\Helper::currency_converter($subtotal) }}
+                                    {{ number_format($subtotal,2) }} ETB
                                 </td>
                                 <td>
                                     <button class="btn btn-sm btn-danger deleteCarts" data-cartid="{{ $item['id'] }}">

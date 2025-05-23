@@ -66,7 +66,7 @@
                                 <label for="price_type" class="pb-2">Price Type</label>
                                 <select wire:model="priceType" class="form-control" id="price_type">
                                     <option value="regular">Regular Price</option>
-                                    <option value="offer">Offer Price</option>
+                                    {{-- <option value="offer">Offer Price</option> --}}
                                 </select>
                                 @error('priceType')
                                 <small class="text-danger">{{ $message }}</small>
@@ -78,6 +78,13 @@
                             <label for="product_price" class="form-label">Product Price</label>
                             <input type="number" min="0" class="form-control" wire:model="product_price" >
                             @error('product_price')
+                            <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+                        <div class="col-md-3 pt-2">
+                            <label for="quantity" class="form-label">Product Quantity</label>
+                            <input type="number" min="0" class="form-control" wire:model="quantity" >
+                            @error('quantity')
                             <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>

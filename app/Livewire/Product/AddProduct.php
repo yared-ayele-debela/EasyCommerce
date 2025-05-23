@@ -24,6 +24,7 @@ class AddProduct extends Component
      public $product_name;
      public $product_code;
      public $product_price;
+     public $quantity;
      public $product_discount;
      public $product_tax;
      public $product_weight;
@@ -53,11 +54,10 @@ class AddProduct extends Component
         ]);
 
         $product = new Product;
-        if($this->priceType=="offer"){
-            $product->is_offer_price="yes";
-        }else{
-            $product->product_price = $this->product_price;
-        }
+
+        $product->product_price = $this->product_price;
+        $product->quantity = $this->quantity;
+
         $categoryDetails = Category::find($this->category);
         $product->group_id = $categoryDetails->group_id;
         $product->category_id = $this->category;

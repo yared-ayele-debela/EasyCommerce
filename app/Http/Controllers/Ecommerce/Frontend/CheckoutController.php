@@ -41,6 +41,8 @@ class CheckoutController extends Controller
     if (count($getCartItems)==0) {
         return redirect('my-cart')->with('error', 'Shopping Cart is empty! Please add products to checkout.');
     }
+        // dd($getCartItems);
+
 
     $countries = Country::where('status', 1)->get();
     $deliveryAddresses = DeliveryAddress::where('user_id', Auth::id())->get();
@@ -51,7 +53,11 @@ class CheckoutController extends Controller
 
     foreach ($getCartItems as $item) {
         $product = Product::with('vendor')->find($item['product_id']);
-        $discountPriceData = Product::getDiscountAttributePrice($product->id, $item['size']);
+        if(!empty($item['size'])){
+                $discountPriceData = Product::getDiscountAttributePrice($product->id, $item['size']);    
+        }else{
+            $discountPriceData=Product::getDiscountProductPrice($item['product_id']);
+        }
 
         $quantity = $item['quantity'];
         $basePrice = $discountPriceData['final_price'];
@@ -78,7 +84,12 @@ class CheckoutController extends Controller
 
         // Calculate shipping
         $weight = $item['product']['product_weight'];
-        $zone = $product->vendor->zone;
+        
+        $vendor_city=Vendor::where('id',$product->vendor_id)->first();
+
+        // dd($vendor_city);
+        $zone = $vendor_city->zone;
+        // dd(vars: $zone);
         $shipping = ShippingCharge::getShippingCharges($weight, $zone);
         $totalShipping += $shipping;
     }
@@ -139,7 +150,12 @@ class CheckoutController extends Controller
         foreach ($getCartItems as $item) {
             $totalWeight = 0;
 
-            $getDiscountAttributePrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
+            if(!empty($item['size'])){
+              $getDiscountAttributePrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
+            }else{
+              $getDiscountAttributePrice = Product::getDiscountProductPrice($item['product_id']);
+    
+            }
             $product_price = $getDiscountAttributePrice['final_price'];
             $product_quantity = $item['quantity'];
 
@@ -176,13 +192,13 @@ class CheckoutController extends Controller
             $product=Product::where('id',$item['product_id'])->first();
             // dd($product);
             $vendor_city=Vendor::where('id',$product->vendor_id)->first();
-            $city=$vendor_city->city;
+            $city=$vendor_city->zone;
 
             $shipping = ShippingCharge::getShippingCharges($totalWeight, $city);
-            // dd($shipping);
             $totalShipping += $shipping;
 
         }
+
         foreach ($getCartItems as $item) {
             $product_status = Product::getProductStatus($item['product_id']);
             if ($product_status == 0) {
@@ -193,16 +209,18 @@ class CheckoutController extends Controller
                 ]);
 
             }
-            //prvent sold out product to order
-            $getProductStock = ProductAttribute::isStokAvailable($item['product_id'], $item['size']);
-            if ($getProductStock == 0) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => $item['product']['product_name'] . " with " . $item['size'] . " Size is not available. Please remove from cart and choose some other product.",
-                    'redirect_url' => url('my-cart')
-                ]);
+            if(!empty($item['size'])){
+                //prvent sold out product to order
+                $getProductStock = ProductAttribute::isStokAvailable($item['product_id'], $item['size']);
+                if ($getProductStock == 0) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => $item['product']['product_name'] . " with " . $item['size'] . " Size is not available. Please remove from cart and choose some other product.",
+                        'redirect_url' => url('my-cart')
+                    ]);
 
-            }
+                }
+         
             //Prevent Disabled out ProductAttributes to Order
             $getAttributeStatus = ProductAttribute::getAttributeStatus($item['product_id'], $item['size']);
             if ($getAttributeStatus == 0) {
@@ -212,6 +230,7 @@ class CheckoutController extends Controller
                     'redirect_url' => url('my-cart')
                 ]);
             }
+              }
             //Prevent disabled Categories product to order
             $getCategoryStatus = Category::getCategoryStatus($item['product']['category_id']);
             if ($getCategoryStatus == 0) {
@@ -224,17 +243,6 @@ class CheckoutController extends Controller
         }
 
         $deliveryAddresses = DeliveryAddress::where('id', $data['address_id'])->first()->toArray();
-
-        // if ($data['payment_method'] == "COD") {
-        //     $payment_method = "COD";
-        //     $order_status = "New";
-        // } elseif ($data['payment_method'] == "Chapa") {
-        //     $payment_method = "Chapa";
-        //     $order_status = "Pending";
-        // } else {
-        //     $payment_method = "Paypal";
-        //     $order_status = "Pending";
-        // }
 
         $tipAmount = 0;
         if ($request->tip_option) {
@@ -301,9 +309,14 @@ class CheckoutController extends Controller
             $cartItem->product_code = $getProductDetails['product_code'];
             $cartItem->product_name = $getProductDetails['product_name'];
             $cartItem->product_color = $getProductDetails['product_color'];
-            $cartItem->product_size = $item['size'];
+            $cartItem->product_size = $item['size']??'';
 
-            $getDiscountAttributePrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
+             if(!empty($item['size'])){
+              $getDiscountAttributePrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
+            }else{
+              $getDiscountAttributePrice = Product::getDiscountProductPrice($item['product_id']);
+    
+            }
             $discount = Discount::where('product_id', $item['product_id'])
                 ->where('min_product', '<=', $product_quantity)
                 ->where('max_product', '>=', $product_quantity)
@@ -339,10 +352,16 @@ class CheckoutController extends Controller
                 $cartItem->specail_discount = $discount->amount;
             }
             $cartItem->save();
-            $getProductStock = ProductAttribute::isStokAvailable($item['product_id'], $item['size']);
-            $newStock = $getProductStock - $item['quantity'];
-            ProductAttribute::where(['product_id' => $item['product_id'], 'size' => $item['size']])->update(['stock' => $newStock]);
-
+            if ($item['size']) {
+                $getProductStock = ProductAttribute::isStokAvailable(product_id: $item['product_id'], size: $item['size']);
+                $newStock = $getProductStock - $item['quantity'];
+                ProductAttribute::where(['product_id' => $item['product_id'], 'size' => $item['size']])->update(['stock' => $newStock]);
+            }else{
+                $getProductStock = Product::getProductStock($item['product_id']); // your custom method
+                $newStock = $getProductStock - $item['quantity'];
+                Product::where('id', operator: $item['product_id'])->update(['quantity' => $newStock]);
+            }
+          
             if (Session::has('referral_token')) {
                 $commission_amount = SalesMainCommission::first();
                 $token = Session::get('referral_token');

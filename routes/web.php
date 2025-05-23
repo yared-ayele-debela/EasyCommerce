@@ -111,6 +111,7 @@ use App\Http\Controllers\Ecommerce\Frontend\CheckoutController as FrontendChecko
 use App\Http\Controllers\Ecommerce\Frontend\CmsController as FrontendCmsController;
 use App\Http\Controllers\Ecommerce\Frontend\CustomController;
 use App\Http\Controllers\Ecommerce\Frontend\DeliveryAddressController;
+use App\Http\Controllers\Ecommerce\Frontend\DirectCheckoutController;
 use App\Http\Controllers\Ecommerce\Frontend\FrontendController as EcommerceFrontendFrontendController;
 use App\Http\Controllers\Ecommerce\Frontend\NewslettersController;
 use App\Http\Controllers\Ecommerce\Frontend\OrderController as EcommerceFrontendOrderController;
@@ -1394,6 +1395,9 @@ Route::prefix('/ecommerce')->group(function () {
 
     Route::get('/checkout', [FrontendCheckoutController::class, 'showOrderSummary'])->name('ecommerce.checkout.summary');
     Route::post('/checkout', [FrontendCheckoutController::class, 'placeOrder'])->name('ecommerce.checkout.placeOrder');
+
+    Route::post('/checkout/direct', action: [DirectCheckoutController::class, 'directCheckout'])->name('direct.checkout');
+    Route::post('/checkout/direct/submit', [DirectCheckoutController::class, 'placeOrder'])->name('checkout.submit.direct');
 
     Route::post('/rate-ecommerce-product', [EcommerceFrontendRatingController::class, 'product_rating_store'])->name('ecommerce.product.rate');
 

@@ -34,6 +34,7 @@
                             <th scope="col">ID</th>
                             <th scope="col">Name</th>
                             <th scope="col">Product Code</th>
+                            <th scope="col">Product Price</th>
                             <th scope="col">Image</th>
                             <th scope="col">Category</th>
                             <th scope="col">Group</th>
@@ -57,6 +58,7 @@
                                     @endif
                             </td>
                             <td>{{ $product['product_code']}}</td>
+                            <td>{{ $product['product_price']}} ETB | Qty: {{ $product['quantity'] }}</td>
                             <td>
                                 @if (!empty($product['product_image']))
                                 <img src="{{ $product['product_image'] }}" alt="Product Image" style="max-width: 50px;">

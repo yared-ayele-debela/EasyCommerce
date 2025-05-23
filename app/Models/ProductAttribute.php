@@ -32,6 +32,7 @@ class ProductAttribute extends Model
     return $getProductStrok->stock;
   }
 
+
   public static function getAttributeStatus($product_id,$size){
     $getProductStatus=ProductAttribute::select('status')->where(['product_id'=>$product_id,'size'=>$size])->first();
     return $getProductStatus->status;

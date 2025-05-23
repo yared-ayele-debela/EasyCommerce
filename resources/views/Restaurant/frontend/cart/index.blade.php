@@ -193,42 +193,48 @@ use App\Models\Restaurant\Product;
 </script>
 <script>
     $(document).ready(function() {
-        $(document).on('click', '.updateCartItem', function() {
-            if ($(this).hasClass('plus-a')) {
-                var quantity = $(this).data('qty');
-                new_qty = parseInt(quantity) + 1;
-            }
-            if ($(this).hasClass('minus-a')) {
-                var quantity = $(this).data('qty');
-                if (quantity <= 1) {
-                    showAlert('Oops...', 'Item quantity must be 1 or greater!');
-                    return false;
-                }
-                new_qty = parseInt(quantity) - 1;
-            }
-            var cartid = $(this).data('cartid');
-            $.ajax({
-                data: {
-                    cartid: cartid
-                    , qty: new_qty
-                    , _token: '{{csrf_token()}}'
-                }
-                , url: '/cart/update/'
-                , type: 'post'
-                , success: function(resp) {
-                    $(".totalCartItems").html(resp.totalCartItems);
+        $(document).on('click', '.updateCartItem', function () {
+    const $btn = $(this);
+    const currentQty = parseInt($btn.data('qty'), 10);
+    const cartId = $btn.data('cartid');
+    let newQty;
 
-                    if (resp.status == false) {
-                        showAlert('Oops...', resp.message);
-                    }
-                    $("#appendCartItems").html(resp.view);
-                    $("#appendHeaderCartItems").html(resp.headerview);
-                }
-                , error: function() {
-                    showAlert('Oops...', 'Error');
-                }
-            })
-        });
+    if ($btn.hasClass('plus-a')) {
+        newQty = currentQty + 1;
+    } else if ($btn.hasClass('minus-a')) {
+        if (currentQty <= 1) {
+            showAlert('Oops...', 'Item quantity must be 1 or greater!');
+            return;
+        }
+        newQty = currentQty - 1;
+    } else {
+        console.error("Unknown action type.");
+        return;
+    }
+
+    $.ajax({
+        url: '/cart/update',
+        type: 'POST',
+        data: {
+            cartid: cartId,
+            qty: newQty,
+            _token: $('meta[name="csrf-token"]').attr('content') // safer csrf
+        },
+        success: function (resp) {
+            if (resp.status === false) {
+                showAlert('Oops...', resp.message || 'Failed to update cart.');
+                return;
+            }
+            $('.totalCartItems').html(resp.totalCartItems ?? 0);
+            $('#appendCartItems').html(resp.view);
+        },
+        error: function (xhr, status, error) {
+            console.error("AJAX Error:", status, error);
+            showAlert('Oops...', 'An error occurred while updating the cart.');
+        }
+    });
+});
+
         $(document).on('click', '.deleteCarts', function(e) {
             e.preventDefault();
             var cartid = $(this).data('cartid');

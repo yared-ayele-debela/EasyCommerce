@@ -14,10 +14,15 @@ class OutOfStockProductController extends Controller
     {
           $vendor_id = Auth::guard('admin')->user()->vendor_id;
 
-          $outOfStockProducts = Product::with('category','brand','group')->where('vendor_id', $vendor_id)->whereDoesntHave('attributes') // or use your custom logic
-                        ->orWhereHas('attributes', function($q){
-                            $q->where('stock', '<=', 0);
-                     })->paginate(10);
+          if(Auth::guard('admin')->user()->type==="Super Admin")
+          {
+            // dd("hello");
+          $outOfStockProducts = Product::with('category','brand','group')->where('quantity','<','1')->paginate(10);
+
+          }else{
+                $outOfStockProducts = Product::with('category','brand','group')->where('vendor_id', $vendor_id)->where('quantity','<','1')->paginate(10);
+      
+          }
 
         return view('admin.product.index', compact('outOfStockProducts'));
     }

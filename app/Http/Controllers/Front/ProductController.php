@@ -372,34 +372,26 @@ class ProductController extends Controller
     }
 
     public function cartUpdate(Request $request)
-    {
-        try {
-            if ($request->ajax()) {
-                $data = $request->all();
-                // echo "<pre>";print_r($data); die;
-                //Forget the coupon sessions
-                Session::forget('couponAmount');
-                Session::forget('couponCode');
-                //get cart details
-                $cartDetails = Cart::find($data['cartid']);
-                //get Available Product Stock
-                $availableStock = ProductAttribute::select('stock')->where(['product_id' => $cartDetails['product_id'], 'size' => $cartDetails['size']])->first()->toArray();
-                // echo "<pre>"; print_r($availableStock); die;
+{
+    try {
+        if ($request->ajax()) {
+            $data = $request->all();
 
-                if ($data['qty'] > $availableStock['stock']) {
-                    $getCartItems = Cart::getCartItems();
-                    return response()->json([
-                        'status' => false,
-                        'message' => 'Product Stock is not available',
-                        'view' => (string)View::make('Restaurant.frontend.cart.cart_item')->with(compact('getCartItems'))
-                    ]);
-                }
+            Session::forget('couponAmount');
+            Session::forget('couponCode');
 
-                //get Available Product size is available
-                $avaliableSize = ProductAttribute::where(['product_id' => $cartDetails['product_id'], 'size' => $cartDetails['size'], 'status' => 1])->count();
-                // echo "<pre>"; print_r($availableStock); die;
+            $cartDetails = Cart::find($data['cartid']);
+            $product = Product::find($cartDetails['product_id']);
 
-                if ($avaliableSize == 0) {
+            // If product has size (meaning the cart item has size)
+            if (!empty($cartDetails['size'])) {
+                $productAttribute = ProductAttribute::where([
+                    'product_id' => $cartDetails['product_id'],
+                    'size' => $cartDetails['size'],
+                    'status' => 1
+                ])->first();
+
+                if (!$productAttribute) {
                     $getCartItems = Cart::getCartItems();
                     return response()->json([
                         'status' => false,
@@ -408,28 +400,49 @@ class ProductController extends Controller
                     ]);
                 }
 
-                Cart::where('id', $data['cartid'])->update(['quantity' => $data['qty']]);
-                $getCartItems = Cart::getCartItems();
-                 $totalCartItems=Helper::totalCartItems();
-                Session::forget('couponAmount');
-                Session::forget('couponCode');
-                return response()->json([
-                    'status' => true,
-                    'totalCartItems' => $totalCartItems,
-                    'view' => (string)View::make('Restaurant.frontend.cart.cart_item')->with(compact('getCartItems')),
-                    'headerview' => (string)View::make('fontend.layout.min_cart')->with(compact('getCartItems'))
-                ]);
+                if ($data['qty'] > $productAttribute->stock) {
+                    $getCartItems = Cart::getCartItems();
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Product Stock is not available',
+                        'view' => (string)View::make('Restaurant.frontend.cart.cart_item')->with(compact('getCartItems'))
+                    ]);
+                }
+            } else {
+                // No size, so check stock from product directly
+                if ($data['qty'] > $product->quantity) {
+                    $getCartItems = Cart::getCartItems();
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Product Stock is not available',
+                        'view' => (string)View::make('Restaurant.frontend.cart.cart_item')->with(compact('getCartItems'))
+                    ]);
+                }
             }
 
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Laravel's built-in validation exception
-            return redirect()->back()->withErrors($e->validator->errors())->withInput();
-        } catch (\Exception $e) {
-            // Log or handle the exception as needed
-            Alert::toast('something is wrong!!', 'error');
-            return redirect()->back();
+            // Update quantity
+            Cart::where('id', operator: $data['cartid'])->update(['quantity' => $data['qty']]);
+
+            $getCartItems = Cart::getCartItems();
+            $totalCartItems = Helper::totalCartItems();
+
+            return response()->json([
+                'status' => true,
+                'totalCartItems' => $totalCartItems,
+                'view' => (string)View::make('Restaurant.frontend.cart.cart_item')->with(compact('getCartItems')),
+                // 'headerview' => (string)View::make('fontend.layout.min_cart')->with(compact('getCartItems'))
+            ]);
         }
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return redirect()->back()->withErrors($e->validator->errors())->withInput();
+    } catch (\Exception $e) {
+        Alert::toast('something is wrong!!', 'error');
+        return redirect()->back();
     }
+}
+
+
 
     public function cartDelete(Request $request)
     {
@@ -689,7 +702,6 @@ class ProductController extends Controller
                 }
                 //check validation for address_id
                 if (empty($data['address_id'])) {
-
                     Alert::toast('Please select Delivery Address!', 'error');
                     return redirect()->back();
                 }
@@ -727,8 +739,6 @@ class ProductController extends Controller
 
                 //Calculate Grand Total
                 $grand_total = $total_price + $shipping_charges + $totalTax - Session::get('couponAmount');
-
-                $grand_total = $grand_total;
 
                 $grand_total=  Helper::final_amount_currency_converter($grand_total);
 

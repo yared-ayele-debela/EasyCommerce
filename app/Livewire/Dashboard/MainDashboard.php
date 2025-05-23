@@ -93,10 +93,8 @@ class MainDashboard extends Component
     {
         // Generate report for users
         $this->orders = Order::with(['orders_products', 'orders_products.product'])->get();
-        $this->outOfStockProducts = Product::whereDoesntHave('attributes') // or use your custom logic
-                        ->orWhereHas('attributes', function($q){
-                            $q->where('stock', '<=', 0);
-                        })->get();
+                   $this->outOfStockProducts = Product::where('quantity','<','1')->get();
+
 
         $this->appsettings = AppSetting::all()->toArray();
 
@@ -221,10 +219,7 @@ class MainDashboard extends Component
             $this->deliverdorderproducts = OrderProduct::where('vendor_id', $vendor_id)->where('item_status', 'delivered')->count();
             $this->paidorderproducts = OrderProduct::where('vendor_id', $vendor_id)->where('item_status', 'paid')->count();
             $this->latestOrdersproducts = OrderProduct::where('vendor_id', $vendor_id)->orderBy('created_at', 'desc')->take(5)->get();
-            $this->outOfStockProducts = Product::where('vendor_id', $vendor_id)->whereDoesntHave('attributes') // or use your custom logic
-                        ->orWhereHas('attributes', function($q){
-                            $q->where('stock', '<=', 0);
-                        })->get();
+            $this->outOfStockProducts = Product::where('vendor_id', $vendor_id)->where('quantity','<','1')->get();
             $this->latestproducts = Product::where('vendor_id', $vendor_id)->orderBy('created_at', 'desc')->take(5)->get();
         }
 

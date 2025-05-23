@@ -233,7 +233,8 @@ class UserController extends Controller
         'mobile' => [
             'required',
             'string',
-            'max:15',
+            'max:13',
+            'min:10',
             Rule::exists('users', 'mobile')
         ],
         'passwords' => 'required|string|min:6',
@@ -374,7 +375,7 @@ class UserController extends Controller
     public function createuserAccount()
     {
         try {
-            
+
             $cms_pages = CmsPage::get()->toArray();
             $appsettings = AppSetting::all()->toArray();
             $countries = Country::where('status', 1)->get()->toArray();

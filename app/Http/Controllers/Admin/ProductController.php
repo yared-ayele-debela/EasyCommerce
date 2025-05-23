@@ -119,6 +119,7 @@ class ProductController extends Controller
             $product->product_code = $data['product_code'];
             $product->product_color = $data['product_color'];
             $product->product_price = $data['product_price'];
+            $product->quantity = $data['quantity'];
             $product->product_selling_price = $data['product_selling_price'];
             $product->product_discount = $data['product_discount'];
             $product->product_tax = $data['product_tax'];
@@ -251,6 +252,7 @@ class ProductController extends Controller
             $product->product_code = $data['product_code'];
             $product->product_color = $data['product_color'];
             $product->product_price = $data['product_price'];
+            $product->quantity = $data['quantity'];
             $product->product_discount = $data['product_discount'];
             $product->product_tax = $data['product_tax'];
             $product->product_weight = $data['product_weight'];
@@ -347,17 +349,11 @@ class ProductController extends Controller
             if (!$user || !$user->hasPermissionByRole('add_attribute')) {
                 return view('admin.errors.unauthorized');
             }
-
-            if (!$request->method('post')) {
-                Alert::toast('something is wrong!!', 'error');
-                return redirect()->back();
-            }
             $data = $request->all();
             // dd($data);
             foreach ($data['sku'] as $key => $value) {
                 if (!empty($value)) {
                     $skuCount = ProductAttribute::where('sku', $value)->count();
-
                     if ($skuCount > 0) {
                         return redirect()->back()->with('error_message', 'Sku already exists Please add another SKU !!');
                     }
@@ -371,9 +367,7 @@ class ProductController extends Controller
                     $attribute->product_id = $data['id'];
                     $attribute->sku = $value;
                     $attribute->size = $data['size'][$key];
-                    if($product->is_offer_price=="no"){
                     $attribute->price = $data['price'][$key];
-                    }
                     $attribute->stock = $data['stock'][$key];
                     $attribute->status = 1;
                     $user_id=Auth::guard('admin')->user()->id;
@@ -392,7 +386,6 @@ class ProductController extends Controller
                 }
             }
             Alert::toast('Attribute has been created!', 'success');
-
             return redirect()->back();
         // } catch (\Illuminate\Validation\ValidationException $e) {
         //     // Laravel's built-in validation exception
@@ -410,10 +403,6 @@ class ProductController extends Controller
     {
         try {
 
-            if (!$request->method('post')) {
-                Alert::toast('something is wrong!!', 'error');
-                return redirect()->back();
-            }
             $user = Auth::guard('admin')->user();
             if (!$user || !$user->hasPermissionByRole('edit_attribute')) {
                 return view('admin.errors.unauthorized');

@@ -143,15 +143,25 @@ use App\Models\Wishlist;
                     <input type="hidden" id="final_price_input" name="final_price" value="{{ $product->product_price }}">
                     <input type="hidden" id="unit_price_hidden" value="{{ $product->product_price }}">
 
-                    <div class="d-flex align-items-center mb-4">
-                        <button type="button" class="btn btn-secondary" id="decrement">−</button>
+                    <div class="d-flex align-items-center mb-2">
+                        <button type="button" class="btn btn-secondary shadow-sm" id="decrement">−</button>
                         <input type="number" id="quantity" class="form-control mx-2 text-center" value="1" min="1" style="width: 60px;">
-                        <button type="button" class="btn bg-primary text-white" id="increment">+</button>
-                        <button type="submit" class="btn btn-primary ms-3 px-2 px-sm-4" id="addToCartBtn">Add to Cart</button>
-                        <button class="btn btn-outline-primary ms-2 wishlist-btn" data-product-id="{{ $product->id }}" title="Add to Wishlist">
+                        <button type="button" class="btn bg-primary text-white shadow-sm" id="increment">+</button>
+                        <button type="submit" class="btn btn-primary shadow-sm ms-2 px-2 px-sm-4" id="addToCartBtn">Add to Cart</button>
+
+                        <button class="btn btn-outline-primary ms-2 wishlist-btn  shadow-sm" data-product-id="{{ $product->id }}" title="Add to Wishlist">
                             <i class="far fa-heart"></i>
                         </button>
                     </div>
+                </form>
+                <form action="{{ route('direct.checkout', ['product_id' => $product->id]) }}" method="POST">
+                    @csrf
+                    <input type="hidden" id="final_price_inputs" name="final_price" value="{{ $product->product_price }}">
+                    <input type="hidden" id="unit_price_hiddens" name="unit_price" value="{{ $product->product_price }}">
+                    <input type="hidden" id="direct_size" name="size" value="">
+                    <button type="submit" class="btn btn-primary shadow-sm">
+                        <img src="{{ asset('restaurant_frontend/ordernow.png') }}" height="25" alt="">    Order Now
+                    </button>
                 </form>
                 @else
                 <button class="btn btn-outline-primary btn-sm mb-2 notify-vendor-btn" data-product-id="{{ $product->id }}">
@@ -159,7 +169,7 @@ use App\Models\Wishlist;
                 </button>
                 @include('Ecommerce.products.modal.out_of_stock')
                 @endif
-                <div class="border rounded p-3 mb-2">
+                <div class="border rounded p-3 my-2">
                     <i class="fas fa-truck me-2"></i><strong>Free Delivery</strong>
                     <p class="mb-0 small text-muted">Enter your postal code for Delivery Availability</p>
                 </div>
@@ -347,6 +357,9 @@ $(document).on('click', '.notify-vendor-btn', function () {
                         $('.dynamic-price').html(unitPrice + " ETB");
                         $('#final_price_input').val(unitPrice);
                         $('#unit_price_hidden').val(unitPrice);
+                        $('#final_price_inputs').val(unitPrice);
+                        $('#unit_price_hiddens').val(unitPrice);
+                        $('#direct_size').val(size);
 
                         updateFinalPrice();
                     }
@@ -385,6 +398,7 @@ $(document).on('click', '.notify-vendor-btn', function () {
             let finalPrice = quantity * unitPrice;
             $('.dynamic-price').html(finalPrice.toFixed(2) + " ETB");
             $('#final_price_input').val(finalPrice.toFixed(2));
+            $('#final_price_inputs').val(finalPrice.toFixed(2));
         }
     });
     $('#addToCartBtn').on('click', function(e) {
