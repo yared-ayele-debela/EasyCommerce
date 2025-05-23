@@ -37,7 +37,7 @@
                                         {{  App\Helper\Helper::currency_converter(App\Helper\Helper::currency_converter($order['grand_total'])) }}
                                     </td>
                                     <td>
-                                        {{ date('Y-m-d j:i:s', strtotime($order['created_at'])); }}
+                                        {{ date('Y-m-d j:i:s', strtotime($order['created_at'])) }}
                                     </td>
                                     <td>
                                         <a href="{{ url('user/orders/'.$order['id']) }}" class=" btn btn-sm bg-light  text-dark" >
