@@ -42,7 +42,7 @@ $user = Auth::guard('admin')->user();
                                 <td>{{ $color->id }}</td>
                                 <td>{{ $color->name }}</td>
                                 <td class="d-flex">
-                                    <div style="height: 30px; width:30px; background-color:{{ $color->color; }}">
+                                    <div style="height: 30px; width:30px; background-color:{{ $color->color }}">
                                     </div>{{ $color->color }}</td>
                                 <td>
                                     @if ($user && $user->hasPermissionByRole('edit_color'))
