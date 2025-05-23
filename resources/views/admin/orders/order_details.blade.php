@@ -150,7 +150,7 @@ $user = Auth::guard('admin')->user();
                     @endif
                     <br>
                      Date:
-                    {{ date('Y-m-d h:i:s', strtotime($log['created_at'])); }} <br>
+                    {{ date('Y-m-d h:i:s', strtotime($log['created_at'])) }} <br>
                     <br>
                     @endforeach
                     @else
