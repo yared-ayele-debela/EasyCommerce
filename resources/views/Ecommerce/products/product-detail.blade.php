@@ -141,13 +141,13 @@ use App\Models\Wishlist;
                 <form id="addToCartForm">
                     <input type="hidden" id="product_id" name="product_id" value="{{ $product->id }}">
                     <input type="hidden" id="final_price_input" name="final_price" value="{{ $product->product_price }}">
-                    <input type="hidden" id="unit_price_hidden" value="0">
+                    <input type="hidden" id="unit_price_hidden" value="{{ $product->product_price }}">
 
                     <div class="d-flex align-items-center mb-4">
                         <button type="button" class="btn btn-secondary" id="decrement">−</button>
                         <input type="number" id="quantity" class="form-control mx-2 text-center" value="1" min="1" style="width: 60px;">
                         <button type="button" class="btn bg-primary text-white" id="increment">+</button>
-                        <button type="submit" class="btn btn-primary ms-3 px-4" id="addToCartBtn">Add to Cart</button>
+                        <button type="submit" class="btn btn-primary ms-3 px-2 px-sm-4" id="addToCartBtn">Add to Cart</button>
                         <button class="btn btn-outline-primary ms-2 wishlist-btn" data-product-id="{{ $product->id }}" title="Add to Wishlist">
                             <i class="far fa-heart"></i>
                         </button>
@@ -389,15 +389,9 @@ $(document).on('click', '.notify-vendor-btn', function () {
     });
     $('#addToCartBtn').on('click', function(e) {
         e.preventDefault();
-
         let product_id = $('#product_id').val();
-        let size = $('input[name="product_size"]:checked').val();
+        let size = $('input[name="product_size"]:checked').val() || null;
         let quantity = parseInt($('#quantity').val()) || 1;
-
-        if (!size) {
-            showAlert('error', 'Please select a size.');
-            return;
-        }
 
         $.ajax({
             url: '/add-to-cart'
@@ -411,8 +405,8 @@ $(document).on('click', '.notify-vendor-btn', function () {
             , success: function(response) {
                 if (response.status === 'success') {
                     showAlert('success', 'Product added to cart');
-                } else {
-                    showAlert('error', 'Failed to add product to cart.');
+                } else if(response.status==="error") {
+                    showAlert('info', response.message);
                 }
                 updateCartCount();
             }
