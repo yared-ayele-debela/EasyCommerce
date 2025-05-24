@@ -64,7 +64,7 @@ $cartCount = $sessionCount + $helperCount;
                 <h5 class="text-uppercase text-white top-0">Download App</h5>
                 <div class="row mb-2">
                     <div class="col-4 col-md-4">
-                        <img src="{{ asset('restaurant_frontend/assets/img/qr.jpeg') }}" alt="QR Code" class="img-fluid">
+                        <img src="{{ asset('restaurant_frontend/assets/img/apk.png') }}" alt="QR Code" class="img-fluid">
                     </div>
                     <div class="col-8 col-md-8">
                         <div class="d-grid gap-2 col-8 mx-auto">
