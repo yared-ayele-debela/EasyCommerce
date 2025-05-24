@@ -9,7 +9,7 @@
         <a href="{{ url('ecommerce/category/' . encrypt($category->id)) }}">
             <img src="{{ $image }}"
                  class="p-2 shadow"
-                 style="border:4px solid rgb(162, 159, 159);"
+                 style="border:4px solid rgb(162, 159, 159); min-width: 90px; max-width: 90px;"
                  alt="{{ $category->name }}"
                  loading="lazy">
             <p class="text-dark">{{ $category->name }}</p>
