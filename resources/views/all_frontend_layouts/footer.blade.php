@@ -68,8 +68,12 @@ $cartCount = $sessionCount + $helperCount;
                     </div>
                     <div class="col-8 col-md-8">
                         <div class="d-grid gap-2 col-8 mx-auto">
+                            <a href="https://myeasyhub.com/apk/myeasyhub.apk" class="btn btn-primary" target="_blank">
                             <img src="{{ asset('restaurant_frontend/assets/img/playstore.png') }}" alt="Google Play" class="img-fluid" style="width: 100px;">
+                            </a>
+                            <a href="https://myeasyhub.com/apk/myeasyhub.apk" class="btn btn-primary" target="_blank">
                             <img src="{{ asset('restaurant_frontend/assets/img/appstore.png') }}" alt="App Store" class="img-fluid" style="width: 100px;">
+                            </a>
                         </div>
                     </div>
                 </div>
