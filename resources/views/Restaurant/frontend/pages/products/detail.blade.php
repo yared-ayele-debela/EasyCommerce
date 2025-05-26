@@ -6,13 +6,13 @@
         width: 50px;
         height: 50px;
         border-radius: 50%;
-        border: 2px solid #12f512;
+        border: 2px solid #055935;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: bold;
         font-size: 18px;
-        color: #12f512;
+        color: #055935;
         cursor: pointer;
     }
 
@@ -25,7 +25,7 @@
     }
 
     .size-option input:checked+span {
-        background-color: #12f512;
+        background-color: #055935;
         color: white;
         border-radius: 50%;
         width: 100%;

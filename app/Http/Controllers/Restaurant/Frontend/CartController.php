@@ -7,8 +7,10 @@ use App\Models\Cart;
 use App\Models\Country;
 use App\Models\Restaurant\Coupon;
 use App\Models\Restaurant\Product;
+use App\Models\Restaurant\RestaurantCartItem;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
@@ -19,12 +21,24 @@ class CartController extends Controller
         // dd($request->all());
         $cart = session()->get('cart', []);
 
-        $cart[] = [
+        $cart=[
             'product_id' => $request->product_id,
             'size' => $request->size? $request->size : '',
             'price' => $request->price,
             'quantity' => $request->quantity
         ];
+        //  if (Auth::check()) {
+        //     // User is logged in, store in DB
+        //     RestaurantCartItem::create([
+        //         'user_id' => Auth::id(),
+        //         ...$cartItem
+        //     ]);
+        // } else {
+        //     // Guest user, store in session
+        //     $cart = session()->get('cart', []);
+        //     $cart[] = $cartItem;
+        //     session()->put('cart', $cart);
+        // }
         session()->put('cart', $cart);
 
         return response()->json(['status' => 'success', 'message' => 'Product added to cart!']);

@@ -9,7 +9,7 @@
 </head>
 <body style="font-family: Arial, sans-serif; background-color: #f6f6f6; margin: 0; padding: 20px;">
     <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
-        <tr style="background-color: #17BE18;">
+        <tr style="background-color: #055935;">
             <td style="padding: 20px; text-align: center;">
                 <img src="{{ $setting->logo }}" alt="Company Logo" style="max-width: 100px;">
                 <h4 style="color: white !important;margin:7px !important;">{{ $setting->application_title }}</h4>
@@ -19,7 +19,7 @@
             <td style="padding: 30px;">
                 <h2 style="color: #333;">Thank you for your order, {{ $order['name'] }}!</h2>
                 <p style="color: #555;">Your order <strong>#{{ $order['order_code'] }}</strong> has been placed successfully.</p>
-                <h3 style="color: #17BE18;">Order Summary:</h3>
+                <h3 style="color: #055935;">Order Summary:</h3>
                 <ul style="color: #555; padding-left: 20px;">
                     @foreach ($order['orders_products'] as $product)
                         <li style="margin-bottom: 8px;">
@@ -33,8 +33,8 @@
 
                 <p style="color: #555;">We will notify you once your order is shipped. Thank you for shopping with us!</p>
 
-                <p style="margin-top: 30px; color: #17BE18;"><strong>Need Help?</strong></p>
-                <p style="color: #555;">Contact us at: <a href="mailto:{{ $setting->email_address }}" style="color: #17BE18;">{{ $setting->email_address }}</a> or call us at <a href="tel:{{ $setting->phone_no }}" style="color: #17BE18;">{{ $setting->phone_no }}</a></p>
+                <p style="margin-top: 30px; color: #055935;"><strong>Need Help?</strong></p>
+                <p style="color: #555;">Contact us at: <a href="mailto:{{ $setting->email_address }}" style="color: #055935;">{{ $setting->email_address }}</a> or call us at <a href="tel:{{ $setting->phone_no }}" style="color: #055935;">{{ $setting->phone_no }}</a></p>
             </td>
         </tr>
 

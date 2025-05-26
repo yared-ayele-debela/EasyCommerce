@@ -194,6 +194,7 @@ use App\Http\Controllers\Restaurant\Frontend\RestaurantController as FrontendRes
 use App\Http\Controllers\Restaurant\Frontend\SubCategoryController as FrontendSubCategoryController;
 use App\Http\Controllers\Restaurant\Frontend\SuCategoryController;
 use App\Http\Controllers\Restaurant\Frontend\WishController;
+use App\Http\Controllers\User\ForgetPasswordController;
 use App\Http\Controllers\User\GoogleAuthController;
 use App\Http\Controllers\UserDeliveryAddressController;
 use App\Models\Hotel\Hotel;
@@ -1220,7 +1221,13 @@ Route::middleware('auth')->group(function () {
     Route::put('account', [UserController::class, 'userAccount'])->name('account.update');
     Route::post('/products/{product}/request-stock', [ProductRequestController::class, 'store'])->name('product.request-stock');
     Route::delete('/user/delete', [UserController::class, 'destroy'])->name('user.destroy');
+
 });
+ Route::post('/forgot-password/send-otp', [ForgetPasswordController::class, 'sendOTPForReset'])->name('forgot.sendotp');
+    Route::get('/verify-otp', [ForgetPasswordController::class, 'showOTPVerifyForm'])->name('forgot.verify.form');
+    Route::post('/verify-otp', [ForgetPasswordController::class, 'verifyResetOTP'])->name('forgot.verify');
+    Route::get('/reset-password', [ForgetPasswordController::class, 'showResetPasswordForm'])->name('reset.password.form');
+    Route::post('/reset-password', [ForgetPasswordController::class, 'resetPassword'])->name('reset.password');
 
 // Pages
 Route::get('restaurants', [FrontendRestaurantController::class, 'index'])->name('restaurants');
@@ -1391,19 +1398,22 @@ Route::prefix('/ecommerce')->group(function () {
         Route::match(['GET', 'POST'], '/orders/{id}/return', [EcommerceFrontendOrderController::class, 'orderreturn']);
         Route::get('/orders/{id?}', [EcommerceFrontendOrderController::class, 'orders'])->name('ecommerce.order.detail');
     });
+
+    Route::middleware('auth')->group(function () {
+
     Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 
     Route::get('/checkout', [FrontendCheckoutController::class, 'showOrderSummary'])->name('ecommerce.checkout.summary');
     Route::post('/checkout', [FrontendCheckoutController::class, 'placeOrder'])->name('ecommerce.checkout.placeOrder');
 
-    Route::post('/checkout/direct', action: [DirectCheckoutController::class, 'directCheckout'])->name('direct.checkout');
+    Route::post(uri: '/checkout/direct', action: [DirectCheckoutController::class, 'directCheckout'])->name('direct.checkout');
     Route::post('/checkout/direct/submit', [DirectCheckoutController::class, 'placeOrder'])->name('checkout.submit.direct');
 
     Route::post('/rate-ecommerce-product', [EcommerceFrontendRatingController::class, 'product_rating_store'])->name('ecommerce.product.rate');
 
         // routes/web.php
     Route::post('/calculate-shipping', [FrontendCheckoutController::class, 'calculateShipping']);
-
+    });
 });
 
 

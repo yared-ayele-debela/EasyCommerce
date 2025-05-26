@@ -35,9 +35,9 @@ use App\Models\Wishlist;
     }
 
     .custom-size-checkbox:checked+.custom-size-label {
-        background-color: #17BE18;
+        background-color: #055935;
         color: white;
-        border-color: #17BE18;
+        border-color: #055935;
     }
 
     .qty-btn {

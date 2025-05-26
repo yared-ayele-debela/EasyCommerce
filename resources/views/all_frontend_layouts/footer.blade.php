@@ -622,11 +622,11 @@ $cartCount = $sessionCount + $helperCount;
         , responsiveClass: true
         , responsive: {
             0: {
-                items: 4
+                items: 2
                 , nav: false
             }
             , 1024: {
-                items: 13
+                items: 8
             }
         }
     });

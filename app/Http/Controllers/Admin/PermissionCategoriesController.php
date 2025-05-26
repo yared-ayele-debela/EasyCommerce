@@ -18,7 +18,7 @@ class PermissionCategoriesController extends Controller
             if (!$user || !$user->hasPermissionByRole('view permission category')) {
                 return view('admin.errors.unauthorized');
             }
-            $permission_categories = PermissionCategory::all();
+            $permission_categories = PermissionCategory::latest()->paginate(10);
             $appsettings = AppSetting::all()->toArray();
 
             return view('admin.role_and_permissions.permissions.category.index', compact('permission_categories', 'appsettings'));

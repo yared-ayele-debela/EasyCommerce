@@ -82,7 +82,7 @@ $setting = AppSetting::first();
         }
 
         th {
-            background-color: #17BE18;
+            background-color: #055935;
             color: #fff;
         }
 

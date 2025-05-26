@@ -236,7 +236,7 @@ class CustomOrderController extends Controller
             $custom_order = CustomOrder::find($request->input('order_id'));
             // dd($custom_order);
             if (($custom_order->delivery_boy_id) == ($request->input('delivery_boy_id'))) {
-                notify()->error('This custom_order is already assigned to this delivery boy', 'Error');
+                Alert::toast('This custom_order is already assigned to this delivery boy','error');
                 return back();
             }
 
@@ -256,34 +256,19 @@ class CustomOrderController extends Controller
 
             // dd($orderDetails);
             //Send Order Status Update Email
-            $email = $deliveryDetails['email'];
-            $messageData = [
-                'email_template' => $email_template,
-                'email' => $email,
-                'first_name' => $deliveryDetails['first_name'],
-                'last_name' => $deliveryDetails['last_name'],
-                'order_id' => $request->input('order_id'),
-                'orderDetails' => $orderDetails,
-                'status' => $request->input('order_status'),
-            ];
-
-            Mail::send('emails.assing_custom_order_to_delivery_boy', $messageData, function ($message) use ($email) {
-                $message->to($email)->subject('New custom order has been assigned to you for delivery - Byt Developers.in');
-            });
-
-
-            // $email=$orderDetails['user']['email'];
-            // // dd($email);
-            // $messageData=[
-            // 'email'=>$email,
-            // 'name'=>$orderDetails['user']['name'],
-            // 'order_id'=>$request->input('order_id'),
-            // 'orderDetails'=>$orderDetails,
-            // 'status'=>$request->input('order_status'),
+            // $email = $deliveryDetails['email'];
+            // $messageData = [
+            //     'email_template' => $email_template,
+            //     'email' => $email,
+            //     'first_name' => $deliveryDetails['first_name'],
+            //     'last_name' => $deliveryDetails['last_name'],
+            //     'order_id' => $request->input('order_id'),
+            //     'orderDetails' => $orderDetails,
+            //     'status' => $request->input('order_status'),
             // ];
 
-            // Mail::send('emails.send_to_user_fast_order',$messageData,function($message)use ($email){
-            //     $message->to($email)->subject('Order Confirmation - Your Recent Purchase with BYT Developers');
+            // Mail::send('emails.assing_custom_order_to_delivery_boy', $messageData, function ($message) use ($email) {
+            //     $message->to($email)->subject('New custom order has been assigned to you for delivery - Byt Developers.in');
             // });
 
 

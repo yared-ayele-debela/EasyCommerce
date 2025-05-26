@@ -154,7 +154,14 @@
               <p><b>Customer information</b></p>
               <p class="card-text mt-2"><b>Name:</b> </b> {{$custom_order->customer_name }}</p>
               <p class="card-text"><b>Mobile number:</b></b> {{$custom_order->phone_number }}</p>
-              <p class="card-text"><b>Delivery by:</b></b> {{$custom_order->deliveryBoy->first_name  }} {{$custom_order->deliveryBoy->last_name  }}</p>
+              <p class="card-text"><b>Delivery by:</b>
+                 @if($custom_order->deliveryBoy)
+                 {{$custom_order->deliveryBoy->first_name  }} {{$custom_order->deliveryBoy->last_name  }}
+                 @else
+
+                 @endif
+                </p>
+
             </div>
           </div>
         <div class="table-responsive mt-4" >

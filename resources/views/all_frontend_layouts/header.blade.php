@@ -43,7 +43,7 @@ use Illuminate\Support\Facades\Storage;
             width: 150px;
             height: 40px;
             box-shadow: 1px 0px 1px 2px rgba(247, 247, 247, 0.74);
-            border: 1px solid #17BE18 !important;
+            border: 1px solid #055935 !important;
 
         }
 
@@ -68,7 +68,7 @@ use Illuminate\Support\Facades\Storage;
             bottom: 5px;
             left: 5px;
             width: 70px;
-            background: linear-gradient(90deg, #17BE18, #32CB32) !important;
+            background: linear-gradient(90deg, #055935, #32CB32) !important;
             border-radius: 50px;
             transition: left 0.3s ease;
             z-index: 1;
@@ -95,9 +95,9 @@ use Illuminate\Support\Facades\Storage;
         }
 
         .custom-nav-active {
-            color: #17BE18 !important;
+            color: #055935 !important;
             font-weight: 600 !important;
-            border-bottom: 2px solid #17BE18 !important;
+            border-bottom: 2px solid #055935 !important;
         }
 
         .goog-te-banner-frame.skiptranslate,
@@ -129,7 +129,7 @@ use Illuminate\Support\Facades\Storage;
             line-height: 1.5 !important;
             border-radius: .25rem !important;
             transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out !important;
-            background-color: #17BE18 !important;
+            background-color: #055935 !important;
             color: white !important;
         }
 

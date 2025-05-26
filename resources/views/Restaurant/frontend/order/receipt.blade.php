@@ -81,7 +81,7 @@
         }
 
         th {
-            background-color: #17BE18;
+            background-color: #055935;
             color: #fff;
         }
 
@@ -113,7 +113,7 @@
             }
         }
         .custom-btn{
-            background-color:#17BE18;
+            background-color:#055935;
             color: white;
         }
 

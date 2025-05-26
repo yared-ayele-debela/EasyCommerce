@@ -20,7 +20,7 @@
 
     .product-card {
         position: relative;
-        border: 1px solid #17BE18;
+        border: 1px solid #055935;
         border-radius: 7px;
         overflow: hidden;
         box-shadow: 0 4px 8px rgba(65, 255, 23, 0.1);
@@ -49,7 +49,7 @@
     .product-card .discount-price {
         font-size: 1.2rem;
         font-weight: bold;
-        color: #17BE18;
+        color: #055935;
     }
 
     .product-card .icons {
@@ -66,7 +66,7 @@
     }
 
     .product-card-banner {
-        background-color: #17BE18;
+        background-color: #055935;
         color: white;
         padding: 20px;
         border-radius: 10px;
@@ -110,14 +110,14 @@
     }
 
     .scrollable-list::-webkit-scrollbar-thumb {
-        background: #17BE18;
+        background: #055935;
         /* Scroll thumb (handle) color */
         border-radius: 10px;
         /* Rounded edges */
     }
 
     .scrollable-list::-webkit-scrollbar-thumb:hover {
-        background: #17BE18;
+        background: #055935;
         /* Darker shade on hover */
     }
 
@@ -146,7 +146,7 @@
 
     .category-box.active,
     .category-box:hover {
-        background: #17BE18;
+        background: #055935;
         color: white;
     }
 
@@ -182,7 +182,7 @@
     }
 
     .subcategory-dropdown li a:hover {
-        color: #27b40b;
+        color: #055935;
         font-weight: 500;
     }
 
@@ -580,7 +580,7 @@
      <div class="my-3">
         <a href="{{$ad_after_vendors->adv_links?? '' }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none d-block">
             <div class="fix-banner-box rounded-3 overflow-hidden position-relative"
-                 style="background: url('{{ $ad_after_vendors->image }}') center center / cover no-repeat; min-height: 200px;">
+                 style="background: url('{{ $ad_after_vendors->image??asset('restaurant_frontend/default-image.png') }}') center center / cover no-repeat; min-height: 200px;">
                 <span class="visually-hidden">{{ $ad_after_vendors->title??'' }}</span>
             </div>
         </a>

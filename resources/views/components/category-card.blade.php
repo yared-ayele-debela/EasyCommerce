@@ -9,10 +9,10 @@
         <a href="{{ url('ecommerce/category/' . encrypt($category->id)) }}">
             <img src="{{ $image }}"
                  class="p-2 shadow"
-                 style="border:4px solid rgb(162, 159, 159); min-width: 90px; max-width: 90px;"
+                 style="border:4px solid #bcd4ca; min-width: 140px; min-height: 140px; max-width: 140px; max-height: 140px;" 
                  alt="{{ $category->name }}"
                  loading="lazy">
-            <p class="text-dark">{{ $category->name }}</p>
+            <p class="text-dark text-center">{{ $category->name }}</p>
         </a>
     </div>
 </div>

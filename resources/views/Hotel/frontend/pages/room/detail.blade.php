@@ -11,7 +11,7 @@
     .amenity-box:hover {
         background-color: #f5f8ff;
         transform: translateY(-3px);
-        border: 2px solid #17BE18 !important;
+        border: 2px solid #055935 !important;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
     }
 </style>

@@ -17,12 +17,12 @@
             border-radius: 10px;
         }
         .card-header {
-            background-color: #17BE18;
+            background-color: #055935;
             color: white;
             font-weight: bold;
         }
         .btn-custom {
-            background-color: #17BE18;
+            background-color: #055935;
             color: white;
             border: none;
         }

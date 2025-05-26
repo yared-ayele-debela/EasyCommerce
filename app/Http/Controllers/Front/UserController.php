@@ -323,29 +323,18 @@ class UserController extends Controller
             $appsettings = AppSetting::all()->toArray();
             if ($request->ajax()) {
                 $data = $request->all();
-                $validator = Validator::make(
-                    $request->all(),
-                    [
-                        'email' => 'required|email|max:150|exists:users',
+                // dd($data);
+                $validator = $request->validate(['identifier' => 'required|email']);
 
-                    ],
-                    [
-                        'email.exists' => 'Email does not exits'
-                    ]
-                );
-                if ($validator->fails()) {
-
-                    return response()->json(['type' => 'error', 'errors' => $validator->errors()]);
-                } else {
                     $new_password = Str::random(16);
 
-                    User::where('email', $data['email'])->update(['password' => bcrypt($new_password)]);
-                    $userDetails = User::where('email', $data['email'])->first()->toArray();
+                    User::where('email', operator: $data['identifier'])->update(['password' => bcrypt($new_password)]);
+                    $userDetails = User::where('email', $data['identifier'])->first()->toArray();
 
                     //Send Email to User
                     $email_template = EmailTemplate::first();
 
-                    $email = $data['email'];
+                    $email = $data['identifier'];
                     $messageData = [
                         'email_template' => $email_template,
                         'name' => $userDetails['name'],
@@ -358,7 +347,6 @@ class UserController extends Controller
                     });
 
                     return response()->json(['type' => 'success', 'message' => 'New Password sent to your registered email.']);
-                }
             } else {
                 return view('auth.forget_password', compact('cms_pages', 'appsettings'));
             }

@@ -9,7 +9,7 @@
         <a href="{{ url('ecommerce/brand/' . encrypt($brand['id'])) }}" class="text-decoration-none">
             <img src="{{ $image }}"
                  class="p-2 shadow"
-                 style="border:4px solid #ccc; max-height: 100px;"
+                 style="border:4px solid #ccc; max-height: 150px; min-height: 150px; min-width: 150px; max-width: 150px;"
                  alt="{{ $brand['name'] }}"
                  loading="lazy">
             <p class="text-dark mt-2">{{ $brand['name'] }}</p>

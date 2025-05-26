@@ -10,7 +10,7 @@ input[type="range"] {
     width: 100%;
     height: 6px;
     border-radius: 5px;
-    background: linear-gradient(90deg, #12f512 50%, #ddd 50%);
+    background: linear-gradient(90deg, #055935 50%, #ddd 50%);
     outline: none;
     transition: background 0.3s;
 }
@@ -21,7 +21,7 @@ input[type="range"]::-webkit-slider-thumb {
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: #12f512;
+    background: #055935;
     cursor: pointer;
     transition: transform 0.2s;
 }
@@ -30,7 +30,7 @@ input[type="range"]::-moz-range-thumb {
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: #12f512;
+    background: #055935;
     cursor: pointer;
 }
 
