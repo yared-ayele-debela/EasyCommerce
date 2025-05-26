@@ -319,7 +319,7 @@
     </div>
 </div>
 
-<div class="container-fluid pb-5">
+<div class="container-fluid pb-2">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
         <h3 class="fw-bold mb-0">
             <i class="bi bi-fire text-danger me-2"></i> Flash Sales
