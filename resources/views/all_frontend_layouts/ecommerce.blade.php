@@ -319,6 +319,7 @@
     </div>
 </div>
 
+@if ($featured_flash_deal && $flash_deal_products->count())
 <div class="container-fluid pb-2">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
         <h3 class="fw-bold mb-0">
@@ -355,7 +356,6 @@
         </div>
     </div>
 
-    @if ($featured_flash_deal && $flash_deal_products->count())
     <div class="row g-4">
         <div class="owl-carousel owl-theme ecommerce_products mt-4">
             @foreach ($flash_deal_products as $item)
@@ -457,8 +457,9 @@
         });
 
     </script>
-    @endif
 </div>
+    @endif
+
 
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mt-3">
