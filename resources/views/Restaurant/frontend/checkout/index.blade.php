@@ -164,20 +164,6 @@ use App\Models\Restaurant\Product;
                 </div>
                 <input type="hidden" name="delivery_fee" value="{{ $delivery_fee }}">
                 <div class="delivery-location mt-3 p-3">
-                    <h6 class="fw-bold text-dark mb-2">Payment Method</h6>
-                    <div class="payment-methods">
-                        <label type="button" class="payment-method shadow-sm bg-white rounded-3 p-3 text-center" data-bs-toggle="modal" data-bs-target="#modalId">
-                            <input type="radio" name="payment_method" value="bank_transfer" class="d-none">
-                            <img src="{{ asset('restaurant_frontend/assets/img/bank.jpg') }}" alt="Bank Transfer" width="200" class="mb-2">
-                            <div class="fw-semibold">Bank Transfer</div>
-                        </label>
-                        <label class="payment-method shadow-sm rounded-3 bg-white p-3 text-center">
-                            <input type="radio" name="payment_method" value="cash_on_delivery" class="d-none">
-                            <img src="{{ asset('restaurant_frontend/assets/img/cash.png') }}" alt="Cash on Delivery" width="35" class="mb-2">
-                            <div class="fw-semibold">Cash on Delivery</div>
-                        </label>
-                    </div>
-                    <span id="payment-error" class="text-danger d-none">Please select a payment method.</span>
                     <h6 class="fw-bold text-dark mb-2">Tip For Driver</h6>
                     <input type="hidden" name="tip_option" id="selected_tip" value="0"> <!-- Default selected -->
                     <div class="tip-options" id="tipOptions">
@@ -192,6 +178,21 @@ use App\Models\Restaurant\Product;
                     <div id="custom-tip-container">
                         <input type="number" name="custom_tip_amount" class="form-control w-100 shadow-sm" id="custom_tip_amount" placeholder="0" min="1">
                     </div>
+                    <h6 class="fw-bold text-dark mb-2">Payment Method</h6>
+                    <div class="payment-methods">
+                        <label type="button" class="payment-method shadow-sm bg-white rounded-3 p-3 text-center" data-bs-toggle="modal" data-bs-target="#modalId">
+                            <input type="radio" name="payment_method" value="bank_transfer" class="d-none">
+                            <img src="{{ asset('restaurant_frontend/assets/img/bank.jpg') }}" alt="Bank Transfer" width="200" class="mb-2">
+                            <div class="fw-semibold">Bank Transfer</div>
+                        </label>
+                        <label class="payment-method shadow-sm rounded-3 bg-white p-3 text-center">
+                            <input type="radio" name="payment_method" value="cash_on_delivery" class="d-none">
+                            <img src="{{ asset('restaurant_frontend/assets/img/cash.png') }}" alt="Cash on Delivery" width="35" class="mb-2">
+                            <div class="fw-semibold">Cash on Delivery</div>
+                        </label>
+                    </div>
+                    <span id="payment-error" class="text-danger d-none">Please select a payment method.</span>
+                    
                 </div>
 
                 <!-- Modal Body -->

@@ -157,8 +157,10 @@ class CheckoutController extends Controller
     {
 
         $countries = Country::all();
+        $banks=Bank::all();
+        $tips=Tip::all(); 
 
-        return view('Restaurant.frontend.checkout.order_now.index', compact('countries'));
+        return view('Restaurant.frontend.checkout.order_now.index', compact('countries', 'banks', 'tips'));
     }
 
     public function orderNow(Request $request)

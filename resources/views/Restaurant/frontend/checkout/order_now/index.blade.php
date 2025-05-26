@@ -140,15 +140,29 @@ use App\Models\Restaurant\Product;
 
                 <!-- Payment Method Selection -->
                 <div class="delivery-location mt-3 p-3">
+                    <h6 class="fw-bold text-dark mb-2">Tip For Driver</h6>
+                    <input type="hidden" name="tip_option" id="selected_tip" value="0"> <!-- Default selected -->
+                    <div class="tip-options" id="tipOptions">
+                        <div class="tip-option shadow-sm selected" data-tip="0">No</div>
+                        @foreach($tips as $tip)
+                            <div class="tip-option shadow-sm" data-tip="{{ $tip->amount }}">
+                                {{ $tip->amount }} Birr
+                            </div>
+                        @endforeach
+                        <div class="tip-option shadow-sm" data-tip="custom">Custom</div>
+                    </div>
+                    <div id="custom-tip-container">
+                        <input type="number" name="custom_tip_amount" class="form-control w-100 shadow-sm" id="custom_tip_amount" placeholder="0" min="1">
+                    </div>
                     <h6 class="fw-bold text-dark mb-2">Payment Method</h6>
                     <div class="payment-methods">
-                        <label type="button" class="payment-method shadow-sm rounded-3 p-3 text-center" data-bs-toggle="modal" data-bs-target="#modalId">
+                        <label type="button" class="payment-method shadow-sm rounded-3 p-3 text-center bg-white" data-bs-toggle="modal" data-bs-target="#modalId">
                             <input type="radio" name="payment_method" value="bank_transfer" class="d-none">
-                            <img src="{{ asset('restaurant_frontend/assets/img/bank.png') }}" alt="Bank Transfer" width="35" class="mb-2">
+                                <img src="{{ asset('restaurant_frontend/assets/img/bank.jpg') }}" alt="Bank Transfer" width="200" class="mb-2">
                             <div class="fw-semibold">Bank Transfer</div>
                         </label>
 
-                        <label class="payment-method shadow-sm rounded-3 p-3 text-center">
+                        <label class="payment-method shadow-sm rounded-3 p-3 text-center bg-white">
                             <input type="radio" name="payment_method" value="cash_on_delivery" class="d-none">
                             <img src="{{ asset('restaurant_frontend/assets/img/cash.png') }}" alt="Cash on Delivery" width="35" class="mb-2">
                             <div class="fw-semibold">Cash on Delivery</div>
@@ -171,19 +185,25 @@ use App\Models\Restaurant\Product;
                             <div class="mb-2">
                                 <input type="hidden" name="id" value="">
                                 <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
-                                <label for="bank" class="form-label">Select Bank</label>
-                                <select class="form-select" name="bank_name" required>
-                                    <option value="" selected disabled>-- Choose Bank --</option>
-                                    <option value="CBE">Commercial Bank of Ethiopia</option>
-                                    <option value="Awash">Awash Bank</option>
-                                    <option value="Dashen">Dashen Bank</option>
-                                </select>
+                                 <label for="bank" class="form-label">Select Bank</label>
+                                        <select class="form-select" name="bank_name" id="bank-select">
+                                            <option value="" selected disabled>-- Choose Bank --</option>
+                                            @foreach ($banks as $bank)
+                                            <option value="{{ $bank->bank_name }}" data-account="{{ $bank->account_number }}">{{ $bank->bank_name }} | {{ $bank->account_number }}</option>
+                                            @endforeach
+                                        </select>
                                 @error('bank_name')
                                 <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
+                             <div id="account-info" class="my-2 alert alert-light" style="display: none;">
+                                <div class="d-flex justify-content-between">
+                                <span>Account Number: <strong id="account-number"></strong></span>
+                                <button type="button" class="btn btn-sm btn-outline-primary ms-2" onclick="copyAccountNumber()"><i class="bi bi-copy"></i></button>
+                                </div>
+                            </div>
                             <div class="mb-2">
-                                <label for="transaction_number" class="form-label">Transaction Number</label>
+                                <label for="transaction_number" class="form-label">Transaction Number (Optional)</label>
                                 <input type="text" name="transaction_number" class="form-control">
                                 @error('transaction_number')
                                 <span class="text-danger">{{ $message }}</span>

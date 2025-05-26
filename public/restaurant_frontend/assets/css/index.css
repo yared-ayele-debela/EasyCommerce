@@ -43,6 +43,59 @@
     padding: 0.25rem 0;
 }
 
+ @media (max-width: 576px) {
+    .restaurant-product-image {
+      max-width: 135px;
+      max-height: 135px;
+      min-width: 135px;
+      min-height: 135px;
+    }
+  }
+
+  @media (min-width: 577px) {
+    .restaurant-product-image {
+      max-width: 150px;
+      max-height: 150px;
+      min-width: 150px;
+      min-height: 150px;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .restaurant-product-image {
+      max-width: 190px;
+      max-height: 190px;
+      min-width: 190px;
+      min-height: 190px;
+    }
+  }
+ @media (max-width: 576px) {
+    .restaurant-category-image {
+      max-width: 100px;
+      max-height: 100px;
+      min-width: 100px;
+      min-height: 100px;
+    }
+  }
+
+  @media (min-width: 577px) {
+    .restaurant-category-image {
+      max-width: 120px;
+      max-height: 120px;
+      min-width: 120px;
+      min-height: 120px;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .restaurant-category-image {
+      max-width: 140px;
+      max-height: 140px;
+      min-width: 140px;
+      min-height: 140px;
+    }
+  }
+
 /* Smooth fade-in animation */
 .fade-in {
     animation: fadeInUp 0.3s ease-out forwards;
