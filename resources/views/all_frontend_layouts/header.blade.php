@@ -226,7 +226,7 @@ use Illuminate\Support\Facades\Storage;
             <div class="py-2 py-md-3 bg-white shadow-sm">
                 <div class="container d-flex align-items-center justify-content-between">
                     <a href="{{ url('/') }}" class="d-flex align-items-center text-decoration-none">
-                        <img src="{{ asset('restaurant_frontend/assets/img/logo.png') }}" alt="Logo" style="height: 40px;">
+                        <img src="{{ $appsetting['logo']?? asset('restaurant_frontend/assets/img/logo.png') }}" alt="Logo" style="height: 40px;">
                     </a>
 
                     <form class="d-none d-md-flex w-50 mx-4" style="position: relative;">
