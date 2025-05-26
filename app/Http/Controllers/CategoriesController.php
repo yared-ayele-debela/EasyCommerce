@@ -33,7 +33,7 @@ class CategoriesController extends Controller
             
             $products=Product::where('brand_id',$id)->simplePaginate(20);
 
-        return view('NewFrontEndPage.product_brands.product_brands',compact('products','brand','cms_pages','appsettings'));
+        return view('Ecommerce.brands.index',compact('products','brand','cms_pages','appsettings'));
 
         } catch (\Exception $e) {
             Alert::toast('something is wrong!!', 'error');

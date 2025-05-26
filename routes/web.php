@@ -1083,7 +1083,6 @@ Route::get('currency-converter', [FontendController::class, 'currency'])->name('
 Route::get('faq', [FaqController::class, 'index'])->name('faq');
 
 
-Route::get('product/brand/{id}', [ControllersCategoriesController::class, 'bybrands'])->name('product_by_brands');
 
 
 
@@ -1382,15 +1381,17 @@ Route::get('/get-nearby-hotels', [FrontendHotelController::class, 'getNearbyHote
 Route::prefix('/ecommerce')->group(function () {
 
     Route::get('/', [EcommerceFrontendFrontendController::class, 'index'])->name('ecommerce.index');
-    Route::get('/categories', [FrontendCategoriesController::class, 'index'])->name('ecommerce.categories.index');
+    Route::get('/categories', action: [FrontendCategoriesController::class, 'index'])->name('ecommerce.categories.index');
     Route::get('/category/{id}', [FrontendCategoriesController::class, 'show'])->name('ecommerce.category.show');
     Route::get('/products/latest', [ProductsController::class, 'latest'])->name('ecommerce.products.latest');
     Route::get('/products/featured', [ProductsController::class, 'featured'])->name('ecommerce.products.featured');
     Route::get('/flash-sales/products', [ProductsController::class, 'flash'])->name('ecommerce.products.flash.sales');
     Route::get('/product/{id}',[ProductsController::class, 'detail'])->name('ecommerce.product.detail');
-    Route::get('/products/discounted', [ProductsController::class, 'discounted'])->name('ecommerce.products.discounted');
+    Route::get('/products/discounted', action: [ProductsController::class, 'discounted'])->name('ecommerce.products.discounted');
     Route::get('/all-products', [ProductsController::class, 'all'])->name('ecommerce.products.all');
     Route::get('/ecommerce/products/load', [ProductsController::class, 'fetchMore'])->name('ecommerce.products.load');
+
+    Route::get('brand/{id}', [FrontendCategoriesController::class, 'bybrands'])->name('product_by_brands');
 
     Route::get('/vendors', [FrontendVendorController::class, 'index'])->name('ecommerce.vendors.index');
     Route::middleware('auth')->group(function () {
