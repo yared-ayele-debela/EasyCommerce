@@ -17,7 +17,7 @@
                 {{ $off }} ETB OFF
             </div>
             @endif
-            <img src="{{ $imageSrc }}" class="img-fluid mb-2" alt="{{ $product->name }}">
+            <img src="{{ $imageSrc }}" class="img-fluid mb-2" alt="{{ $product->name }}" style="max-height:190px;min-height:190px;min-width:190px;max-width:190px;">
             <h6 class="text-dark">{{ $product->name }}</h6>
             <p class="mb-0">
                 <span class="price">{{ $product->getFinalPrice() }} ETB</span>
