@@ -74,6 +74,16 @@ use Illuminate\Support\Facades\Storage;
             @endforeach
         </div>
     </div>
+     @if($after_special_offer_product_list)
+     <div class="my-3">
+        <a href="{{ $after_special_offer_product_list->adv_links??'' }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none d-block">
+            <div class="fix-banner-box rounded-3 overflow-hidden position-relative"
+                 style="background: url('{{ $after_special_offer_product_list->image }}') center center / cover no-repeat; min-height: 200px;">
+                <span class="visually-hidden">{{ $after_special_offer_product_list->title??'' }}</span>
+            </div>
+        </a>
+    </div>
+    @endif
     <div class="d-flex justify-content-between align-items-center">
         <h4 class="mt-5 mb-2">Most Popular</h4>
         <h5 class="mt-5 mb-2">
@@ -113,6 +123,16 @@ use Illuminate\Support\Facades\Storage;
             @endforeach
         </div>
     </div>
+     @if($after_best_seller_product_list)
+     <div class="my-3">
+        <a href="{{ $after_best_seller_product_list->adv_links??'' }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none d-block">
+            <div class="fix-banner-box rounded-3 overflow-hidden position-relative"
+                 style="background: url('{{ $after_best_seller_product_list->image }}') center center / cover no-repeat; min-height: 200px;">
+                <span class="visually-hidden">{{ $after_best_seller_product_list->title??'' }}</span>
+            </div>
+        </a>
+    </div>
+    @endif
     <div class="d-flex justify-content-between align-items-center">
         <h4 class="mt-5 mb-2">Latest Product</h4>
         <h5 class="mt-5 mb-2">
@@ -171,6 +191,16 @@ use Illuminate\Support\Facades\Storage;
             <span class="visually-hidden">Loading...</span>
         </div>
     </div>
+     @if($after_all_restaurants)
+     <div class="my-3">
+        <a href="{{ $after_all_restaurants->adv_links??'' }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none d-block">
+            <div class="fix-banner-box rounded-3 overflow-hidden position-relative"
+                 style="background: url('{{ $after_all_restaurants->image }}') center center / cover no-repeat; min-height: 200px;">
+                <span class="visually-hidden">{{ $after_all_restaurants->title??'' }}</span>
+            </div>
+        </a>
+    </div>
+    @endif
 
     <div class="d-flex justify-content-between align-items-center">
         <h4 class="mt-5 mb-3">All Restaurants Nearby</h4>

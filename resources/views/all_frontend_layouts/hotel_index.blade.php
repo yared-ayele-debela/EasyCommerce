@@ -163,12 +163,21 @@
             @endforeach
         </div>
     </div>
-
-<div class="container-fluid p-0">
-    <div id="nearby-hotels">
-        <p>Loading nearby hotels...</p>
+     @if($after_discount_hotels)
+     <div class="my-3">
+        <a href="{{ $after_discount_hotels->adv_links??'' }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none d-block">
+            <div class="fix-banner-box rounded-3 overflow-hidden position-relative"
+                 style="background: url('{{ $after_discount_hotels->image }}') center center / cover no-repeat; min-height: 200px;">
+                <span class="visually-hidden">{{ $after_discount_hotels->title??'' }}</span>
+            </div>
+        </a>
     </div>
-</div>
+    @endif
+    <div class="container-fluid p-0">
+        <div id="nearby-hotels">
+            <p>Loading nearby hotels...</p>
+        </div>
+    </div>
 
 <div class="d-flex justify-content-between align-items-center">
     <h4 class="mt-2 mb-2">Latest Hotels</h4>
@@ -208,7 +217,16 @@
         @endforeach
     </div>
 </div>
-
+  @if($after_latest_hotels)
+     <div class="my-3">
+        <a href="{{ $after_latest_hotels->adv_links??'' }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none d-block">
+            <div class="fix-banner-box rounded-3 overflow-hidden position-relative"
+                 style="background: url('{{ $after_latest_hotels->image }}') center center / cover no-repeat; min-height: 200px;">
+                <span class="visually-hidden">{{ $after_latest_hotels->title??'' }}</span>
+            </div>
+        </a>
+    </div>
+    @endif
 <div class="d-flex justify-content-between align-items-center">
     <h4 class="mt-2 mb-2">Latest Rooms</h4>
     <h5 class="mt-2 mb-2">
@@ -220,6 +238,7 @@
         </form>
     </h5>
 </div>
+
 <div class="row g-3">
     <div class="owl-carousel owl-theme hotel mt-4">
         @foreach ($rooms as $room)
@@ -256,6 +275,17 @@
         @endforeach
     </div>
 </div>
+  @if($after_latest_rooms)
+     <div class="my-3">
+        <a href="{{ $after_latest_rooms->adv_links??'' }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none d-block">
+            <div class="fix-banner-box rounded-3 overflow-hidden position-relative"
+                 style="background: url('{{ $after_latest_rooms->image }}') center center / cover no-repeat; min-height: 200px;">
+                <span class="visually-hidden">{{ $after_latest_rooms->title??'' }}</span>
+            </div>
+        </a>
+    </div>
+    @endif
+
 @include('all_frontend_layouts.partial_index')
 
 </div>

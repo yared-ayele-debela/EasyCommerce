@@ -34,7 +34,8 @@ class FrontendController extends Controller
             ->map(fn($ratings) => $ratings->count());
 
         $group = Group::with('categories')->get();
-        $alladvertisement = Advertisement::where('is_approved', 1)->get();
+        $alladvertisement = Advertisement::where('is_approved', 1)->where('type','ecommerce')->get();
+        // dd($alladvertisement);
         $new_products = Product::with('attributes')->where('status', 1)->orderByDesc('id')->get();
 
         $getCategory = Category::where('parent_id', 0)->where('status', 1)->get();
@@ -69,9 +70,9 @@ class FrontendController extends Controller
         ->latest()
         ->paginate(12);
 
-        $ad_after_discounted_products=Advertisement::where('position','after discounted products')->where('is_approved',1)->first();
-        $ad_after_featured_products=Advertisement::where('position','after featured products')->where('is_approved',1)->first();
-        $ad_after_vendors=Advertisement::where('position','after vendors')->where('is_approved',1)->first();
+        $ad_after_discounted_products=Advertisement::where('position','after_discounted_products')->where('is_approved',1)->first();
+        $ad_after_featured_products=Advertisement::where('position','after_featured_products')->where('is_approved',1)->first();
+        $ad_after_vendors=Advertisement::where('position','after_vendors')->where('is_approved',1)->first();
 
         return view('all_frontend_layouts.ecommerce', compact('ad_after_vendors','ad_after_featured_products','ad_after_discounted_products','auto_scroll_products','allbrands','new_arrival','alladvertisement', 'getCategory', 'isfeatured', 'discountedproduct', 'banners', 'fixbanners', 'group', 'new_products', 'all_products', 'getVendorShop', 'allvendor', 'vendorRatingsCount', 'featured_flash_deal', 'flash_deal_products'));
     }

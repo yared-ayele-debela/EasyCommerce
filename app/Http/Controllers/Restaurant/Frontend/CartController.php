@@ -21,7 +21,7 @@ class CartController extends Controller
         // dd($request->all());
         $cart = session()->get('cart', []);
 
-        $cart=[
+        $cart[]=[
             'product_id' => $request->product_id,
             'size' => $request->size? $request->size : '',
             'price' => $request->price,

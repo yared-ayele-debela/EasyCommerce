@@ -1283,7 +1283,7 @@ Route::prefix('/restaurant')->group(function () {
 
 
         Route::post('/checkout/place-order', [CheckoutController::class, 'placeOrder'])->name('restaurant.checkout.placeOrder');
-        Route::get('/order/success/{order}', [FrontendOrderController::class, 'success'])->name('restaurant.order.success');
+        Route::post('/checkout/place-order-now', [CheckoutController::class, 'placeOrderNow'])->name('restaurant.checkout.placeOrderNow');        Route::get('/order/success/{order}', [FrontendOrderController::class, 'success'])->name('restaurant.order.success');
         Route::post('/order-receipt', [FrontendOrderController::class, 'receipt']);
 
         Route::get('/order/{order}/track', [FrontendOrderController::class, 'track'])->name('order.track');

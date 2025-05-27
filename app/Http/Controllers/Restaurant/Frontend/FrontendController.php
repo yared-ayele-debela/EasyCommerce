@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Restaurant\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Advertisement;
 use App\Models\Restaurant\Category;
 use App\Models\Restaurant\Product;
 use App\Models\Restaurant\Restaurant;
@@ -43,6 +44,11 @@ class FrontendController extends Controller
             return view('all_frontend_layouts.partials.product-cards', compact('auto_scroll_products'))->render();
         }
 
-        return view('all_frontend_layouts.index', compact('banners', 'categories', 'menus','auto_restaurants', 'products','restaurants','most_popular_products','auto_scroll_products','best_seller_products','latest_products'));
+        $after_special_offer_product_list=Advertisement::where('position','after_special_offer_product_list')->where('is_approved',1)->first();
+        $after_best_seller_product_list=Advertisement::where('position','after_best_seller_product_list')->where('is_approved',1)->first();
+        $after_all_restaurants=Advertisement::where('position',operator: 'after_all_restaurants')->where('is_approved',1)->first();
+
+
+        return view('all_frontend_layouts.index', compact('banners', 'categories', 'menus','auto_restaurants', 'products','restaurants','most_popular_products','auto_scroll_products','best_seller_products','latest_products','after_special_offer_product_list','after_best_seller_product_list','after_all_restaurants'));
     }
 }

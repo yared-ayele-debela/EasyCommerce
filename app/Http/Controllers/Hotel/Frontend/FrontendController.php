@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Hotel\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Advertisement;
 use App\Models\Hotel;
 use App\Models\HotelCategory;
 use App\Models\HotelSlider;
@@ -42,8 +43,11 @@ class FrontendController extends Controller
         ->where('is_active', true)
         ->take(10)
         ->get();
-        // dd($nearbyHotels);
-        // dd($discounted_hotels);
-        return view('all_frontend_layouts.hotel_index', compact('banners', 'categories',  'hotels','rooms','discounted_hotels','nearbyHotels'));
+
+        $after_discount_hotels=Advertisement::where('position','after_discount_hotels')->where('is_approved',1)->first();
+        $after_latest_rooms=Advertisement::where('position','after_latest_rooms')->where('is_approved',1)->first();
+        $after_latest_hotels=Advertisement::where('position','after_latest_hotels')->where('is_approved',1)->first();
+
+        return view('all_frontend_layouts.hotel_index', compact('banners', 'categories',  'hotels','rooms','discounted_hotels','nearbyHotels','after_discount_hotels','after_latest_rooms','after_latest_hotels'));
     }
 }

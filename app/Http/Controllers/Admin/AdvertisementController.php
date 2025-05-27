@@ -49,13 +49,13 @@ class AdvertisementController extends Controller
 
     public function store(Request $request)
     {
-        try {
-            $all_ad=Advertisement::count();
+        // try {
+            $all_ad=Advertisement::where('type',$request->type)->count();
             if($all_ad >=3){
                 Alert::toast('Maximum amount you can add is 3 advertisement banners','error');
                 return redirect()->back();
             }
-            $check=Advertisement::where('position',$request->position)->first();
+            $check=Advertisement::where(column: 'position',operator: $request->position)->first();
             if($check){
                  Alert::toast('You already link this position with another advertisement, please select another position','error');
                 return redirect()->back();
@@ -71,14 +71,16 @@ class AdvertisementController extends Controller
                 'description' => 'required|string',
                 'image' => 'required|image',
                 'adver_links' => 'required|string',
+                'type' => 'required|in:restaurant,hotel,ecommerce',
             ]);
 
             $adver = new Advertisement();
             $adver->title = $request->input('title');
             $adver->position = $request->input('position');
+            $adver->type = $request->type;
             $adver->description = $request->input('description');
             $adver->adv_links = $request->input('adver_links');
-            $adver->is_approved = 0;
+            $adver->is_approved = 1;
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
                 $fileNameWithExt = $file->getClientOriginalName();
@@ -95,13 +97,13 @@ class AdvertisementController extends Controller
 
             Alert::toast('Advertisement has been added successfully!', 'success');
             return redirect('admin/adverstisements');
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Laravel's built-in validation exception
-            return redirect()->back()->withErrors($e->validator->errors())->withInput();
-        } catch (\Exception $e) {
-            // Handle other exceptions
-            return redirect()->back()->withErrors([$e->getMessage()])->withInput();
-        }
+        // } catch (\Illuminate\Validation\ValidationException $e) {
+        //     // Laravel's built-in validation exception
+        //     return redirect()->back()->withErrors($e->validator->errors())->withInput();
+        // } catch (\Exception $e) {
+        //     // Handle other exceptions
+        //     return redirect()->back()->withErrors([$e->getMessage()])->withInput();
+        // }
     }
 
 
@@ -138,7 +140,7 @@ class AdvertisementController extends Controller
                 'adver_links' => 'required|string',
             ]);
             $user = Auth::guard('admin')->user();
-            $check=Advertisement::where('position',$request->position)->where('id','!=',$request->input('adver_id'))->first();
+             $check=Advertisement::where(column: 'position',operator: $request->position)->first();
             if($check){
                  Alert::toast('You already link this position with another advertisement, please select another position','error');
                 return redirect()->back();
@@ -149,6 +151,7 @@ class AdvertisementController extends Controller
             $adver = Advertisement::find($request->input('adver_id'));
             $adver->title = $request->input('title');
             $adver->position = $request->input('position');
+            $adver->type = $request->type;
             $adver->description = $request->input('description');
             $adver->adv_links = $request->input('adver_links');
 

@@ -44,19 +44,41 @@ $user = Auth::guard('admin')->user();
                             @enderror
                         </div>
                         <div class="col-md-6">
-                             <div class="form-group">
-                               <label for="position">Select Position To Display</label>
-                               <select class="form-control" name="position" id="position">
-                                 <option value="">Select Position</option>
-                                 <option value="after featured products">After Featured Product</option>
-                                 <option value="after discounted products">After Discounted Products</option>
-                                 <option value="after vendors">After Vendor Lists</option>
-                               </select>
-                             </div>
-                            @error('adver_links')
-                            <small class=" text-danger">{{ $message }}</small>
+                            <label for="type" class="form-label">Advertisement Type</label>
+                            <select class="form-control" name="type" id="type" onchange="filterPositionOptions()">
+                                <option value="">Select Type</option>
+                                <option value="restaurant">Restaurant</option>
+                                <option value="hotel">Hotel</option>
+                                <option value="ecommerce">Ecommerce</option>
+                            </select>
+                            @error('type')
+                            <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
+
+                       <div class="col-md-6">
+                            <label for="position" class="form-label">Select Position To Display</label>
+                            <select class="form-control" name="position" id="position">
+                                <option value="">Select Position</option>
+
+                                <option value="after_special_offer_product_list" data-type="restaurant">After Special Offer Products List</option>
+                                <option value="after_best_seller_product_list" data-type="restaurant">After Best Seller Product Lists</option>
+                                <option value="after_all_restaurants" data-type="restaurant">After All Restaurant Lists</option>
+
+                                {{-- Hotel Positions --}}
+                                <option value="after_discount_hotels" data-type="hotel">After Discount Hotels</option>
+                                <option value="after_latest_rooms" data-type="hotel">After Latest Rooms</option>
+                                <option value="after_latest_hotels" data-type="hotel">Under Latest Hotels</option>
+
+                                {{-- Ecommerce Positions --}}
+                                <option value="after_featured_products" data-type="ecommerce">After Featured Products</option>
+                                <option value="after_discounted_products" data-type="ecommerce">After Discounted Products</option>
+                                <option value="after_vendors" data-type="ecommerce">After Vendor Lists</option>
+                            </select>
+                            @error('position')
+                            <small class="text-danger">{{ $message }}</small>
+                            @enderror
+</div>
 
                          <div class="col-md-6">
                             <label for="description" class="form-label">Description</label><br>
@@ -76,35 +98,26 @@ $user = Auth::guard('admin')->user();
       </div>
  </section>
  <script>
-    // Form validation function
-    function validateForm() {
-        const price = document.getElementById("price");
-        const title = document.getElementById("title");
-        const description=document.getElementById("description");
-        const links=document.getElementById("links");
+    function filterPositionOptions() {
+        const type = document.getElementById('type').value;
+        const positionSelect = document.getElementById('position');
+        const allOptions = positionSelect.querySelectorAll('option');
 
-        if (!/^[A-Za-z\s]+$/.test(title.value)) {
-            alert("Invalid Title! Only characters are allowed.");
-            title.focus();
-            event.preventDefault();
-            return false;
-        }
-                  // Validation for mobile (accept only 10 digits)
-        if (!/^[0-9]/.test(price.value)) {
-            alert("Invalid Price number! Please enter only digit number.");
-            price.focus();
-            event.preventDefault();
-            return false;
-        }
+        allOptions.forEach(option => {
+            const optionType = option.getAttribute('data-type');
+            if (!optionType || optionType === type) {
+                option.style.display = 'block';
+            } else {
+                option.style.display = 'none';
+            }
+        });
 
-        return true; // Form will be submitted if everything is valid
+        // Reset selected position
+        positionSelect.value = "";
     }
 
-    // Event listener for form submission
-    document.getElementById("loginForm").addEventListener("submit", function (event) {
-        if (!validateForm()) {
-            event.preventDefault(); // Prevent form submission if validation fails
-        }
-    });
+    // Run once on page load to apply initial filtering
+    document.addEventListener('DOMContentLoaded', filterPositionOptions);
 </script>
+
 @endsection

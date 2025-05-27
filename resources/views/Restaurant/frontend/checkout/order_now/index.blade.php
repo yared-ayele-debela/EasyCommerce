@@ -3,6 +3,10 @@
 @php
 use App\Models\Restaurant\Product;
 @endphp
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    #map { height: 400px; width: 100%; margin-bottom: 20px; }
+</style>
 <style>
     .card {
         box-shadow: none !important;
@@ -49,7 +53,7 @@ use App\Models\Restaurant\Product;
                     </a>
                 </div>
             </div>
-            <form action="{{ route('restaurant.checkout.placeOrder') }}" id="checkoutForm" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('restaurant.checkout.placeOrderNow') }}" id="checkoutForm" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="row" id="addressContainer">
                     <p class="text-muted text-center">Click "Load Addresses" to view your addresses.</p>
@@ -79,11 +83,15 @@ use App\Models\Restaurant\Product;
                                         </thead>
                                         <tbody>
                                             @php $subtotal = 0; @endphp
-                                            @foreach(session('cart') as $key => $item)
+                                            @foreach(session('order_now_cart') as $key => $item)
                                                 @php
                                                     $itemSubtotal = $item['price'];
                                                     $subtotal += $itemSubtotal;
                                                     $product = Product::find($item['product_id']);
+                                                    $discount = session('order_now_discount', 0);
+                                                    $delivery_fee= $totalShipping;
+                                                    $tax= $totalTax;
+
                                                 @endphp
                                                 <tr>
                                                     <td class="d-flex align-items-center">
@@ -122,20 +130,24 @@ use App\Models\Restaurant\Product;
             <div class="summary-card mt-3">
                 <div class="d-flex justify-content-between mb-2">
                     <span><strong>SubTotal</strong></span>
-                    <span><strong id="subtotal_value">{{ session('cart_subtotal', 0) }} ETB</strong></span>
+                    <span><strong id="subtotal_value">{{ session('order_now_cart_subtotal', 0) }} ETB</strong></span>
                 </div>
                 <div class="d-flex justify-content-between mb-2">
                     <span><strong>Discount</strong></span>
-                    <span id="discount_value"><strong>{{ session('discount', 0) }} ETB</strong></span>
+                    <span id="discount_value"><strong>{{ session('order_now_discount', 0) }} ETB</strong></span>
                 </div>
                 <div class="d-flex justify-content-between mb-2">
                     <span><strong>Delivery Fee</strong></span>
-                    <span><strong>15.00 ETB</strong></span>
+                    <span><strong>{{ $totalShipping }}</strong></span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span><strong>Tax</strong></span>
+                    <span><strong>{{ $totalTax }}</strong></span>
                 </div>
                 <div class="line"></div>
                 <div class="d-flex justify-content-between">
                     <span><strong>Total</strong></span>
-                    <span class="total"><strong>{{ $total = max($subtotal - session('discount', 0), 0) + 15 }} ETB</strong></span>
+                    <span class="total"><strong>{{ $total = max($subtotal - session('order_now_discount', 0), 0) + $totalTax + $totalShipping }} ETB</strong></span>
                 </div>
 
                 <!-- Payment Method Selection -->
@@ -168,8 +180,8 @@ use App\Models\Restaurant\Product;
                             <div class="fw-semibold">Cash on Delivery</div>
                         </label>
                     </div>
-
                     <span id="payment-error" class="text-danger d-none">Please select a payment method.</span>
+                    {{-- <input type="hidden" name="delivery_fee" value="{{ $totalShipping }}"> --}}
                 </div>
             </div>
             <div class="modal fade" id="modalId" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
@@ -237,120 +249,61 @@ use App\Models\Restaurant\Product;
             <button type="submit" class="checkout-btn border-0 bg-primary w-100 mt-3" id="placeOrder">Place Order</button>
         </div>
     </div>
-    <div class="modal fade" id="addressModal" tabindex="-1" aria-labelledby="addressModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-fullscreen modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addressModalLabel">Add Delivery Address</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-7">
-                            <div class="mb-3">
-                                <input type="text" id="searchBox" class="form-control" placeholder="Search for an address..." />
-                            </div>
-                            <div id="map" style="height: 600px;"></div>
-                        </div>
-                        <div class="col-md-5">
-                            <form id="addressForm">
-                                @csrf
-                                <div class="row">
-                                    <div class="col-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Full Name</label>
-                                            <input type="text" class="form-control" name="name" required>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Address</label>
-                                            <input type="text" class="form-control" name="address" required>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="country" class="form-label">Country</label>
-                                            <select id="country" class="form-select" name="country">
-                                                <option value="">Select Country</option>
-                                                @foreach ($countries as $country)
-                                                <option value="{{ $country->id }}">{{ $country->country_name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="state" class="form-label">State</label>
-                                            <select id="state" class="form-select" name="state">
-                                                <option value="">Select State</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="city" class="form-label">City</label>
-                                            <select id="city" class="form-select" name="city">
-                                                <option value="">Select City</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="sub_city" class="form-label">Sub City</label>
-                                            <select id="sub_city" class="form-select" name="sub_city">
-                                                <option value="">Select Sub City</option>
-                                            </select>
-                                        </div>
-
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="street" class="form-label">Street</label>
-                                            <select id="street" class="form-select" name="street">
-                                                <option value="">Select Street</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Pincode</label>
-                                            <input type="text" class="form-control w-100" name="pincode">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="mb-3">
-                                            <label class="form-label">Mobile</label>
-                                            <input type="number" class="form-control w-100" name="mobile" required>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Latitude</label>
-                                            <input type="number" class="form-control w-100" name="latitude" id="latitude" readonly>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Longitude</label>
-                                            <input type="number" class="form-control w-100" name="longitude" id="longitude" readonly>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button type="submit" class="btn bg-primary text-white">Save Address</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+@include('all_frontend_layouts.partials.delivery_address_modal')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tipOptions = document.querySelectorAll('.tip-option');
+        const selectedTipInput = document.getElementById('selected_tip');
+        const customInputContainer = document.getElementById('custom-tip-container');
+        const customInputField = customInputContainer.querySelector('input[name="custom_tip_amount"]');
+
+        const subtotal = parseFloat(@json($subtotal));
+        const discount = parseFloat(@json($discount));
+        const deliveryFee = parseFloat(@json($delivery_fee));
+        const tax = parseFloat(@json($tax));
+        const totalDisplay = document.querySelector('.total');
+
+        function updateTotal(tipAmount = 0) {
+            const total = Math.max((subtotal - discount), 0) + tax + deliveryFee + parseFloat(tipAmount || 0);
+            totalDisplay.innerHTML = `<strong>${total.toFixed(2)} ETB</strong>`;
+        }
+
+        tipOptions.forEach(option => {
+            option.addEventListener('click', function () {
+                tipOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+
+                const tipValue = this.dataset.tip;
+
+                if (tipValue === 'custom') {
+                    selectedTipInput.value = customInputField.value || 'custom';
+                    customInputContainer.style.display = 'block';
+                    customInputField.focus();
+                    updateTotal(customInputField.value); // update with current input value
+                } else {
+                    selectedTipInput.value = tipValue;
+                    customInputContainer.style.display = 'none';
+                    updateTotal(tipValue);
+                }
+            });
+        });
+
+        customInputField.addEventListener('input', function () {
+            if (document.querySelector('.tip-option.selected')?.dataset.tip === 'custom') {
+                selectedTipInput.value = this.value;
+                updateTotal(this.value);
+            }
+        });
+
+        // Init total with default selected tip
+        const initialTip = document.querySelector('.tip-option.selected')?.dataset.tip || 0;
+        updateTotal(initialTip);
+    });
+</script>
+
+
 <script>
     // JavaScript to handle payment method selection
     document.querySelectorAll('.payment-method').forEach(method => {
@@ -379,8 +332,6 @@ use App\Models\Restaurant\Product;
     paymentError.classList.add("d-none");
     addressError.classList.add("d-none");
 
-
-
     if (!selectedAddress) {
         addressError.classList.remove("d-none");
         return;
@@ -391,43 +342,9 @@ use App\Models\Restaurant\Product;
     }
     document.getElementById("checkoutForm").submit();
 
-
 });
 </script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        $("#toggleItems").click(function() {
-            $("#itemsSection").toggleClass("d-none");
-            let isVisible = !$("#itemsSection").hasClass("d-none");
-            $(this).html(isVisible ? '<i class="bi bi-eye-slash"></i> Hide Items ({{ count(session('
-                cart ', [])) }})' : '<i class="bi bi-eye"></i> Show Items ({{ count(session('
-                cart ', [])) }})');
-        });
 
-        var map = L.map('map').setView([9.03, 38.74], 12);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
-        var marker;
-        map.on('click', function(e) {
-            var lat = e.latlng.lat.toFixed(6);
-            var lng = e.latlng.lng.toFixed(6);
-            updateMarker(lat, lng);
-
-        });
-        var mapModal = document.getElementById('addressModal');
-        mapModal.addEventListener('shown.bs.modal', function() {
-            if (!map) {
-                initMap(); // Initialize map only once
-            } else {
-                setTimeout(() => {
-                    map.invalidateSize(); // Fix hidden modal issue
-                }, 200); // Delay ensures proper resizing
-            }
-        });
-    });
-
-</script>
 <script>
     $(document).ready(function() {
         $('#loadAddresses').click(function() {
@@ -472,8 +389,6 @@ use App\Models\Restaurant\Product;
             $("#selected_address_id").val(selectedAddress);
             $("#placeOrderBtn").prop("disabled", false); // Enable Place Order button
         });
-
-
 
         $('#country').change(function() {
             let countryId = $(this).val();
@@ -540,24 +455,70 @@ use App\Models\Restaurant\Product;
 
 </script>
 <script>
-     document.getElementById('apply_coupon').addEventListener('click', function() {
-        let coupon_code = document.getElementById('coupon_code').value;
-        fetch("{{ route('restaurant.checkout.orderNow.applyCoupon') }}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': "{{ csrf_token() }}"
-            },
-            body: JSON.stringify({ coupon_code: coupon_code })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showAlert('success','Coupon applied successfully!');
-                location.reload();
-            } else {
-                document.getElementById('coupon_error_message').innerHTML = data.message;
-            }
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll(".remove-item").forEach(button => {
+            button.addEventListener("click", function() {
+                let key = this.getAttribute("data-key");
+
+                fetch(`/restaurant/cart/remove/${key}`, {
+                        method: "GET"
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload(); // Refresh the cart page
+                        } else {
+                            alert("Failed to remove item from cart.");
+                        }
+                    });
+            });
+        });
+        document.getElementById("apply_coupon").addEventListener("click", function() {
+            let couponCode = document.getElementById("coupon_code").value;
+            let messageDiv = document.getElementById("coupon_message");
+
+            fetch("{{ route('restaurant.apply.coupon') }}", {
+                    method: "POST"
+                    , headers: {
+                        "Content-Type": "application/json"
+                        , "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                    }
+                    , body: JSON.stringify({
+                        coupon_code: couponCode
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        messageDiv.classList.remove("text-danger");
+                        messageDiv.classList.add("text-success");
+                        messageDiv.innerText = "Coupon applied successfully!";
+
+                        document.querySelector(".total").innerText = data.new_total + " ETB"; // Update total
+                        document.getElementById("discount_value").innerText = "-" + data.discount + " ETB"; // Update discount
+                    } else {
+                        messageDiv.classList.remove("text-success");
+                        messageDiv.classList.add("text-danger");
+                        messageDiv.innerText = data.message; // Show error message
+                    }
+                });
+        });
+    });
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll(".add, .subtract").forEach(button => {
+            button.addEventListener("click", function() {
+                let key = this.getAttribute("data-key");
+                let action = this.classList.contains("add") ? "increase" : "decrease";
+                fetch(`/restaurant/cart/update/${key}/${action}`, {
+                        method: "GET"
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        }
+                    });
+            });
         });
     });
 </script>
