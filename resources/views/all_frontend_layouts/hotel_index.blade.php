@@ -163,16 +163,20 @@
             @endforeach
         </div>
     </div>
-     @if($after_discount_hotels)
-     <div class="my-3">
-        <a href="{{ $after_discount_hotels->adv_links??'' }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none d-block">
-            <div class="fix-banner-box rounded-3 overflow-hidden position-relative"
-                 style="background: url('{{ $after_discount_hotels->image }}') center center / cover no-repeat; min-height: 200px;">
-                <span class="visually-hidden">{{ $after_discount_hotels->title??'' }}</span>
+    @if($after_discount_hotels)
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-12">
+            <div class="card border-0 rounded-3 shadow-sm overflow-hidden">
+                <a href="{{ $after_discount_hotels->adv_links??'' }}" target="_blank">
+                <img src="{{ $after_discount_hotels->image }}"
+                    alt="{{ $after_discount_hotels->title??'' }}"
+                    class="img-fluid w-100 d-block" style="max-height: 250px; ">
+                </a>
             </div>
-        </a>
-    </div>
+            </div>
+        </div>
     @endif
+     
     <div class="container-fluid p-0">
         <div id="nearby-hotels">
             <p>Loading nearby hotels...</p>
@@ -217,16 +221,20 @@
         @endforeach
     </div>
 </div>
-  @if($after_latest_hotels)
-     <div class="my-3">
-        <a href="{{ $after_latest_hotels->adv_links??'' }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none d-block">
-            <div class="fix-banner-box rounded-3 overflow-hidden position-relative"
-                 style="background: url('{{ $after_latest_hotels->image }}') center center / cover no-repeat; min-height: 200px;">
-                <span class="visually-hidden">{{ $after_latest_hotels->title??'' }}</span>
+ @if($after_latest_hotels)
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-12">
+            <div class="card border-0 rounded-3 shadow-sm overflow-hidden">
+                <a href="{{ $after_latest_hotels->adv_links??'' }}" target="_blank">
+                <img src="{{ $after_latest_hotels->image }}"
+                    alt="{{ $after_latest_hotels->title??'' }}"
+                    class="img-fluid w-100 d-block" style="max-height: 250px; ">
+                </a>
             </div>
-        </a>
-    </div>
+            </div>
+        </div>
     @endif
+
 <div class="d-flex justify-content-between align-items-center">
     <h4 class="mt-2 mb-2">Latest Rooms</h4>
     <h5 class="mt-2 mb-2">
@@ -275,16 +283,21 @@
         @endforeach
     </div>
 </div>
-  @if($after_latest_rooms)
-     <div class="my-3">
-        <a href="{{ $after_latest_rooms->adv_links??'' }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none d-block">
-            <div class="fix-banner-box rounded-3 overflow-hidden position-relative"
-                 style="background: url('{{ $after_latest_rooms->image }}') center center / cover no-repeat; min-height: 200px;">
-                <span class="visually-hidden">{{ $after_latest_rooms->title??'' }}</span>
+
+@if($after_latest_rooms)
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-12">
+            <div class="card border-0 rounded-3 shadow-sm overflow-hidden">
+                <a href="{{ $after_latest_rooms->adv_links??'' }}" target="_blank">
+                <img src="{{ $after_latest_rooms->image }}"
+                    alt="{{ $after_latest_rooms->title??'' }}"
+                    class="img-fluid w-100 d-block" style="max-height: 250px; ">
+                </a>
             </div>
-        </a>
-    </div>
+            </div>
+        </div>
     @endif
+
 
 @include('all_frontend_layouts.partial_index')
 

@@ -32,6 +32,8 @@ $user = Auth::guard('admin')->user();
                          </div>
                         <div class="col-md-6">
                             <label for="image" class="form-label">Image</label>
+                            <br>
+                            <span class="text-danger">Size width: 1280px height: 250px </span>
                              <input type="file" class="form-control" id="image" name="image">
                              @error('image')
                              <small class=" text-danger">{{ $message }}</small>

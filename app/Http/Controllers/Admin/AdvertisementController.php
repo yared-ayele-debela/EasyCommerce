@@ -150,8 +150,8 @@ class AdvertisementController extends Controller
             }
             $adver = Advertisement::find($request->input('adver_id'));
             $adver->title = $request->input('title');
-            $adver->position = $request->input('position');
-            $adver->type = $request->type;
+            $adver->position = $request->input('position')?? $adver->position;
+            $adver->type = $request->type??$adver->type;
             $adver->description = $request->input('description');
             $adver->adv_links = $request->input('adver_links');
 
