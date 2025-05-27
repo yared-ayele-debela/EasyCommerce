@@ -538,7 +538,7 @@ $user = Auth::guard('admin')->user();
                             </div>
                         </div>
                         <div class="col-md-12">
-                       @include('restaurant.dashboard.restaurants.partials.map')
+                       @include('Restaurant.dashboard.restaurants.partials.map')
                         </div>
                         <div class="col-md-12">
                             <div id="locationMessage" class="text-success"></div>
