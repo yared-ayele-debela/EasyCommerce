@@ -197,6 +197,11 @@ $user = Auth::guard('admin')->user();
                     </tr>
                 </thead>
                 <tbody>
+                    @if(!empty($notifications))
+                    <tr>
+                        <td colspan="3" class="text-center">No Assign History Found</td>
+                    </tr>
+                    @else
                     @foreach ($notifications as $notification)
                     <tr>
                         <td scope="row">Name: {{ $notification->deliveryman->first_name }}
@@ -210,6 +215,7 @@ $user = Auth::guard('admin')->user();
                         <td>{{ $notification->created_at }}</td>
                     </tr>
                     @endforeach
+                    @endif
                 </tbody>
             </table>
         </div>
