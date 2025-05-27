@@ -156,6 +156,7 @@
                             @enderror
                         </div>
                         <div class="col-md-4 pt-2">
+                            <span class="text-danger">(Recommend Size : 500px x 500px)</span>
                             <div class="file-uploader" id="image-uploader">
                                 <div class="file-drop-area" id="image-drop-area">
                                     <p>Attach your images<br>or<br><button id="browseImagesButton" class="btn btn-sm btn-secondary shadow-none">Browse image</button></p>

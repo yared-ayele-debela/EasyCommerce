@@ -108,7 +108,7 @@ $user = Auth::guard('admin')->user();
                         @enderror
                     </div>
                     <div class="col-md-4 pt-3">
-                        <label for="image" class="form-label">Product Image (Recommend Size : 1000X1000)</label>
+                        <label for="image" class="form-label">Product Image <span class="text-danger">(Recommend Size : 500px x 500px)</span></label>
                         <input type="file" class="form-control" name="image">
                         @error('image')
                         <small class=" text-danger">{{ $message }}</small>

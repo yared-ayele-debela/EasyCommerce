@@ -59,8 +59,9 @@ $user = Auth::guard('admin')->user();
 
                             <label for="image" class="form-label">Banner Image</label>
                              <input type="file" class="form-control" name="image">
-                             <small class="text-sm ">Recomended size for silder (1920 x 720)</small><br>
-                             <small class="text-sm ">Recomended size for fixed(1110 x 192)</small>
+                             <small class="text-sm text-danger ">Recomended size for silder (683px x 407px)</small><br>
+                             <small class="text-sm text-danger">Recomended size for fixed(1280px x 250px)</small>
+                        
                              @error('image')
                              <small class=" text-danger">{{ $message }}</small>
                              @enderror
