@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Restaurant\Frontend;
 
+use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Mail\Restaurant\OrderConfirmationMail;
 use App\Models\Bank;
@@ -27,7 +28,12 @@ class CheckoutController extends Controller
 
     public function index()
     {
-        $cart = session()->get('cart', []);
+        $cart =Helper::RestaurantCartItems();
+        // Check if cart is empty
+        if (count($cart) === 0) {
+            return redirect()->back()->with('error', 'Your cart is empty.');
+        }
+
         $subtotal = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
         session(['cart_subtotal' => $subtotal]);
         $countries = Country::all();
@@ -81,14 +87,12 @@ class CheckoutController extends Controller
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
-                dd($request->all());
 
-
-        $cart = session()->get('cart', []);
-        if (empty($cart)) {
+        $cart = Helper::RestaurantCartItems();
+        // Check if cart is empty
+         if (count($cart) === 0) {
             return back()->with('error', 'Your cart is empty.');
         }
-
         $tipAmount = 0;
         if ($request->tip_option) {
             if (is_numeric($request->tip_option)) {

@@ -21,8 +21,20 @@ use App\Models\Restaurant\Product;
     </ul>
     <div class="tab-content" id="pills-tabContent">
         <div class="tab-pane fade show active" id="pills-cart" role="tabpanel" aria-labelledby="pills-cart-tab">
-            @if(session('cart') && count(session('cart')) > 0)
+            @if($cart)
             <div class="row">
+                <div class="col-md-8">
+                    @if(session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                    @endif
+                    @if(session('error'))
+                    <div class="alert alert-danger">
+                        {{ session('error') }}
+                    </div>
+                    @endif
+                </div>
                 <div class="col-lg-8 mb-2">
                     <div class="table-responsive">
                         <table class="table table-borderless">
@@ -38,12 +50,12 @@ use App\Models\Restaurant\Product;
                             <tbody>
                                 @php
                                 $subtotal = 0;
-                                $delivery_fee = 15; // Set default delivery fee
-                                $discount = 50; // Example discount amount
+                                $delivery_fee = 0; // Set default delivery fee
+                                $discount = 0; // Example discount amount
                                 @endphp
 
-                                @if(session('cart') && count(session('cart')) > 0)
-                                @foreach(session('cart') as $key => $item)
+                                @if($cart && count($cart) > 0)
+                                @foreach($cart as $key => $item)
                                 @php
                                 $itemSubtotal = $item['price'] * $item['quantity'];
                                 $subtotal += $itemSubtotal;
@@ -148,6 +160,7 @@ use App\Models\Restaurant\Product;
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
     $(document).ready(function() {
+       
         $(document).on('submit', '#ApplyCoupon', function(event) {
             event.preventDefault();
             var user = $(this).attr("user");

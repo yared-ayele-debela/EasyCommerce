@@ -10,7 +10,7 @@
 @endphp
 
 <div class="item my-2">
-    <div class="offer-card p-3 h-100">
+    <div class="offer-card p-1 h-100">
         <a href="{{ url('restaurant/product-detail/' . encrypt($product->id)) }}" class="text-decoration-none text-dark d-block">
             @if($off > 0)
             <div class="btn btn-sm btn-primary" style="z-index: 1100 !important;">

@@ -1428,7 +1428,7 @@ Route::post('/subscribe-newsletter', [NewslettersController::class, 'store']);
 Route::post('/add-to-cart', [FrontendCartController::class, 'addToCart']);
 Route::get('/my-cart', [CartController::class, 'viewCart'])->name('my.cart.view');
 Route::get('/cart/count', function () {
-    $sessionCount = count(session('cart', []));
+    $sessionCount = \App\Helper\Helper::totalRestaurantCartItems();
     $helperCount = \App\Helper\Helper::totalCartItems();
     return response()->json([
         'session' => $sessionCount,

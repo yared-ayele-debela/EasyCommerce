@@ -86,15 +86,12 @@ class CheckoutController extends Controller
         $weight = $item['product']['product_weight'];
         
         $vendor_city=Vendor::where('id',$product->vendor_id)->first();
-
-        // dd($vendor_city);
         $zone = $vendor_city->zone;
         // dd(vars: $zone);
         $shipping = ShippingCharge::getShippingCharges($weight, $zone);
         $totalShipping += $shipping;
     }
     $banks=Bank::all();
-    // dd($totalShipping);
 
     $totalPrice += $totalShipping;
     $tips=Tip::all();

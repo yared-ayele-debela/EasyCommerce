@@ -5,6 +5,7 @@ namespace App\Helper;
 
 use App\Models\Cart;
 use App\Models\Currencies;
+use App\Models\Restaurant\RestaurantCartItem;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
@@ -30,6 +31,26 @@ class Helper
             $totalCartItems = Cart::where('session_id', $session_id)->sum('quantity');
         }
         return $totalCartItems;
+    }
+  
+    public static function totalRestaurantCartItems()
+    {
+        if (Auth::check()) {
+            $user_id = Auth::user()->id;
+            $totalRestaurantCartItems = RestaurantCartItem::where('user_id', $user_id)->sum('quantity');
+        } else {
+            $totalRestaurantCartItems = collect(Session::get('cart', []))->sum('quantity');
+        }
+        return $totalRestaurantCartItems;
+    }
+    public static function RestaurantCartItems(){
+        if(Auth::check()){
+            $user_id = Auth::user()->id;
+            $RestaurantCartItems = RestaurantCartItem::where('user_id', $user_id)->get();
+            } else {
+              $RestaurantCartItems= collect(Session::get('cart', []));
+            }    
+            return $RestaurantCartItems;
     }
 
     public static function getCartItems()

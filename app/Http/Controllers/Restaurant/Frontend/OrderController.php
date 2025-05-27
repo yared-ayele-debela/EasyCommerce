@@ -37,8 +37,9 @@ class OrderController extends Controller
             abort(403, 'Unauthorized access');
         }
         
-        $order = Order::with('orderItems.product','deliveryman')->findOrFail($order->id);
+        $order = Order::with('orderItems.product','deliveryman','address')->findOrFail($order->id);
 
+        // dd($order);
 
         return view('Restaurant.frontend.order.track', compact('order'));
     }

@@ -1,5 +1,15 @@
 @extends('all_frontend_layouts.layouts')
 @section('content')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+
+<style>
+  #map {
+    height: 400px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+</style>
 <div class="container py-4">
      <div class="header">
         <button class="btn btn-link text-dark" onclick="history.back()">
@@ -11,11 +21,9 @@
         <!-- Map Section -->
         <div class="col-md-6 mb-2">
             <div class="offer-card">
-                <div class="card-body p-0">
-                    <!-- Embed Google Maps showing delivery location -->
-                    <iframe src="https://www.google.com/maps/embed?pb={{ $order->delivery_location }}"
-                        width="100%" height="500" style="border:0;" allowfullscreen="" loading="lazy">
-                    </iframe>
+                <div class="card-body p-3">
+                        <p class="mb-4 text-muted">Below is the map showing your delivery destination and the delivery man's real-time location.</p>
+                        <div id="map" class="mb-3"></div>
                 </div>
             </div>
         </div>
@@ -119,7 +127,81 @@
         </div>
     </div>
 </div>
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.min.js"></script>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const map = L.map('map').setView([8.9806, 38.7578], 13);
+    let deliveryMarker, customerMarker;
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Sample data (passed from controller)
+    const deliveryLat = {{ $order->address->latitude ?? 'null' }};
+    const deliveryLng = {{ $order->address->longitude ?? 'null' }};
+    const deliveryAddress = "{{ $deliveryAddress ?? '' }}";
+
+    const deliveryManLat = {{ $order->deliveryman->current_lat  ?? 'null' }};
+    const deliveryManLng = {{ $order->deliveryman->current_lng  ?? 'null' }};
+    const deliveryManImage ="{{ asset('/storage/delivery_man/'.$order->deliveryman->delivery_man_image) }}";
+
+    const markers = [];
+
+    const customerIcon = L.icon({
+    iconUrl: '/restaurant_frontend/assets/destination.png',
+    iconSize: [30, 40],
+    iconAnchor: [15, 40],
+});
+
+const deliveryIcon = L.icon({
+    iconUrl: `${deliveryManImage}`,
+    iconSize: [35, 45],
+    iconAnchor: [17, 45],
+});
+
+    if (deliveryLat && deliveryLng) {
+        customerMarker = L.marker([deliveryLat, deliveryLng], {
+            icon: customerIcon 
+        }).addTo(map).bindPopup(`<strong>Delivery Destination</strong><br>${deliveryAddress}`).openPopup();
+
+        markers.push(customerMarker);
+    }
+
+    if (deliveryManLat && deliveryManLng) {
+        deliveryMarker = L.marker([deliveryManLat, deliveryManLng], {
+           icon: deliveryIcon 
+        }).addTo(map).bindPopup("Delivery Man's Current Location");
+
+        markers.push(deliveryMarker);
+    }
+
+    if (markers.length > 1) {
+        // Draw route between delivery man and destination
+        routeControl = L.Routing.control({
+            waypoints: [
+                L.latLng(deliveryManLat, deliveryManLng),
+                L.latLng(deliveryLat, deliveryLng)
+            ],
+            routeWhileDragging: false,
+            draggableWaypoints: false,
+            addWaypoints: false,
+            show: false,
+            createMarker: () => null,
+            lineOptions: {
+                styles: [{ color: 'green', weight: 5 }]
+            }
+        }).addTo(map);
+
+        const group = new L.featureGroup(markers);
+        map.fitBounds(group.getBounds().pad(0.2));
+    } else if (markers.length === 1) {
+        map.setView(markers[0].getLatLng(), 14);
+    }
+});
+</script>
 <script>
     setInterval(function() {
         fetch("{{ route('order.track', $order->id) }}")

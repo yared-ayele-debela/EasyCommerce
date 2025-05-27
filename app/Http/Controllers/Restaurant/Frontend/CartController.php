@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Restaurant\Frontend;
 
+use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Country;
@@ -11,6 +12,8 @@ use App\Models\Restaurant\RestaurantCartItem;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class CartController extends Controller
 {
@@ -19,33 +22,60 @@ class CartController extends Controller
     {
 
         // dd($request->all());
-        $cart = session()->get('cart', []);
+        // $cart = session()->get('cart', []);
 
-        $cart[]=[
+        $cartItem=[
             'product_id' => $request->product_id,
             'size' => $request->size? $request->size : '',
             'price' => $request->price,
             'quantity' => $request->quantity
         ];
-        //  if (Auth::check()) {
-        //     // User is logged in, store in DB
-        //     RestaurantCartItem::create([
-        //         'user_id' => Auth::id(),
-        //         ...$cartItem
-        //     ]);
-        // } else {
-        //     // Guest user, store in session
-        //     $cart = session()->get('cart', []);
-        //     $cart[] = $cartItem;
-        //     session()->put('cart', $cart);
-        // }
-        session()->put('cart', $cart);
+         if (Auth::check()) {
+            // User is logged in, store in DB
+            RestaurantCartItem::create([
+                'user_id' => Auth::id(),
+                ...$cartItem
+            ]);
+        } else {
+            // Guest user, store in session
+            $cart = session()->get('cart', []);
+            $cart[] = $cartItem;
+            session()->put('cart', $cart);
+        }
+        // session()->put('cart', $cart);
 
         return response()->json(['status' => 'success', 'message' => 'Product added to cart!']);
     }
 
-    public function updateCart($key, $action)
-    {
+public function updateCart($key, $action)
+{
+    if (Auth::check()) {
+        $user_id = Auth::id();
+        $cartItem = RestaurantCartItem::where('user_id', $user_id)->skip($key)->take(1)->first();
+
+        if ($cartItem) {
+            if ($action === 'increase') {
+                $cartItem->quantity += 1;
+                $cartItem->save();
+            } elseif ($action === 'decrease') {
+                if ($cartItem->quantity > 1) {
+                    $cartItem->quantity -= 1;
+                    $cartItem->save();
+                } else {
+                    $cartItem->delete(); // Remove if quantity goes to 0
+                }
+            }
+        }
+
+        // Recalculate subtotal
+        $subtotal = RestaurantCartItem::where('user_id', $user_id)->sum(DB::raw('price * quantity'));
+        session(['cart_subtotal' => $subtotal]);
+
+        $cartCount = RestaurantCartItem::where('user_id', $user_id)->sum('quantity');
+
+        return response()->json(['success' => true, 'cart_count' => $cartCount]);
+    } else {
+        // Guest user – session cart
         $cart = session()->get('cart', []);
 
         if (isset($cart[$key])) {
@@ -54,46 +84,74 @@ class CartController extends Controller
             } elseif ($action == "decrease" && $cart[$key]['quantity'] > 1) {
                 $cart[$key]['quantity']--;
             } else {
-                unset($cart[$key]); // Remove if quantity is 0
+                unset($cart[$key]); // Remove if quantity is 0 or less
             }
         }
 
         session()->put('cart', $cart);
-        $subtotal = collect($cart)->sum(function ($item) {
-            return $item['price'] * $item['quantity'];
-        });
 
-        // Store the subtotal in session
+        $subtotal = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
         session(['cart_subtotal' => $subtotal]);
 
-        return response()->json(['success' => true, 'cart_count' => count($cart)]);
+        $cartCount = array_sum(array_column($cart, 'quantity'));
+
+        return response()->json(['success' => true, 'cart_count' => $cartCount]);
     }
+}
 
-    public function removeFromCart($key)
-    {
-        $cart = session()->get('cart', []);
+public function removeFromCart($key)
+{
+    if (Auth::check()) {
+        // Authenticated user: remove item from DB
+        $user_id = Auth::id();
+        $cartItems = RestaurantCartItem::where('user_id', $user_id)->get();
 
-        if (isset($cart[$key])) {
-            unset($cart[$key]); // Remove the item from the cart
-            session()->put('cart', $cart);
+        if (isset($cartItems[$key])) {
+            $cartItems[$key]->delete();
         }
 
-        session()->forget('discount');
+        Session::forget('discount');
 
+        $updatedItems = RestaurantCartItem::where('user_id', $user_id)->get();
+        $subtotal = $updatedItems->sum(fn($item) => $item->price * $item->quantity);
+        $cartCount = $updatedItems->sum('quantity');
 
         return response()->json([
             'success' => true,
             'message' => 'Item removed from cart.',
-            'cart_count' => count($cart),
-            'subtotal' => array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], $cart))
+            'cart_count' => $cartCount,
+            'subtotal' => $subtotal
+        ]);
+
+    } else {
+        // Guest user: remove item from session
+        $cart = Session::get('cart', []);
+
+        if (isset($cart[$key])) {
+            unset($cart[$key]); // Remove the item
+            Session::put('cart', $cart);
+        }
+
+        Session::forget('discount');
+
+        $subtotal = array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], $cart));
+        $cartCount = array_sum(array_column($cart, 'quantity'));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Item removed from cart.',
+            'cart_count' => $cartCount,
+            'subtotal' => $subtotal
         ]);
     }
+}
+
 
 
 
     public function viewCart()
     {
-        $cart = session()->get('cart', []);
+        $cart = Helper::RestaurantCartItems();
 
         $subtotal = collect($cart)->sum(function ($item) {
             return $item['price'] * $item['quantity'];

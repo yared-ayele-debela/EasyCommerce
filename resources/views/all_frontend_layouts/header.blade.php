@@ -255,7 +255,7 @@ use Illuminate\Support\Facades\Storage;
                         @php
                         $wishlistCount = Auth::check() ? \App\Models\Restaurant\Wishlist::where('user_id', Auth::id())->count() : 0;
                         $ecommerce_wishlistCount = Auth::check() ? \App\Models\Wishlist::where('user_id', Auth::id())->count() : 0;
-                        $sessionCount = count(session('cart', []));
+                        $sessionCount = \App\Helper\Helper::totalRestaurantCartItems();
                         $helperCount = \App\Helper\Helper::totalCartItems();
                         $cartCount = $sessionCount + $helperCount;
                         @endphp

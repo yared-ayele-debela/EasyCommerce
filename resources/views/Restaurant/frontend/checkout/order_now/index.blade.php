@@ -63,13 +63,13 @@ use App\Models\Restaurant\Product;
                 <input type="hidden" name="address_id" id="selected_address_id">
                 <div class="d-flex justify-content-between align-items-center">
                     <button type="button" class="btn btn-outline-primary fw-bold px-4 py-2" id="toggleItems">
-                        <i class="bi bi-eye"></i> Show Items ({{ count(session('cart', [])) }})
+                        <i class="bi bi-eye"></i> Show Items ({{ count(session('order_now_cart', [])) }})
                     </button>
                 </div>
                 <div id="itemsSection" class="mt-3 d-none">
                     <h4 class="text-dark">Items details</h4>
                     <div class="row my-3">
-                        @if(session('cart') && count(session('cart')) > 0)
+                        @if(session('order_now_cart') && count(session('order_now_cart')) > 0)
                         <div class="col-md-8">
                             <div class="card border-0 shadow-sm rounded-3">
                                 <div class="card-body p-1 table-responsive">
@@ -82,15 +82,18 @@ use App\Models\Restaurant\Product;
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @php $subtotal = 0; @endphp
+                                             @php 
+                                                $discount = session('order_now_discount', 0);
+                                                $delivery_fee= $totalShipping;
+                                                $tax= $totalTax;
+                                            $subtotal = 0;
+                                             @endphp
                                             @foreach(session('order_now_cart') as $key => $item)
                                                 @php
                                                     $itemSubtotal = $item['price'];
                                                     $subtotal += $itemSubtotal;
                                                     $product = Product::find($item['product_id']);
-                                                    $discount = session('order_now_discount', 0);
-                                                    $delivery_fee= $totalShipping;
-                                                    $tax= $totalTax;
+                                                    
 
                                                 @endphp
                                                 <tr>
@@ -254,6 +257,12 @@ use App\Models\Restaurant\Product;
 @include('all_frontend_layouts.partials.delivery_address_modal')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+          $("#toggleItems").click(function() {
+            $("#itemsSection").toggleClass("d-none");
+            let isVisible = !$("#itemsSection").hasClass("d-none");
+            $(this).html(isVisible ? '<i class="bi bi-eye-slash"></i> Hide Items' : '<i class="bi bi-eye"></i> Show Items');
+        });
+
         const tipOptions = document.querySelectorAll('.tip-option');
         const selectedTipInput = document.getElementById('selected_tip');
         const customInputContainer = document.getElementById('custom-tip-container');
