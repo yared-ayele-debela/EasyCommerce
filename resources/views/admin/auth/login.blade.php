@@ -5,10 +5,10 @@
     <div class="col-lg-4 col-md-6">
         <div class="card shadow-sm border-0 rounded-4">
             <div class="card-body p-4">
-                
+
                 {{-- Logo --}}
                 <div class="text-center mb-3">
-                    <img src="{{ $appsettings[0]['logo'] }}" class="img-fluid" style="max-height: 60px;" alt="Logo">
+                    <img src="{{ $appsettings[0]['logo'] }}" class="img-fluid"  style="max-height: 100px;"alt="Logo">
                 </div>
 
                 <h4 class="fw-bold text-center mb-1">Admin Login</h4>

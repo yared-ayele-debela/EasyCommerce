@@ -41,11 +41,11 @@
           <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
              <div class="container">
                 <div class="row justify-content-center">
-                   <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+                   <div class="col-lg-5 col-md-6 d-flex flex-column align-items-center justify-content-center">
                       <div class="card mb-3" style="border-radius:1rem; box-shadow:1px 1px 11px 1px rgb(238, 238, 238);">
                          <div class="card-body">
                             <div class="d-flex justify-content-center py-4">
-                                <img src="{{ $appsettings[0]['logo'] }}"  class="app-brand-logo">
+                                <img src="{{ $appsettings[0]['logo'] }}" style="max-height: 100px;"  class="app-brand-logo">
                             </div>
                               <h4 class="font-weight-bold text-dark text-center">Dellivery Man Login</h4>
                                 <p class="text-muted text-center">Enter your credentials to access your account</p>
