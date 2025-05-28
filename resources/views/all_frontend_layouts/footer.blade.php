@@ -159,21 +159,37 @@ $cartCount = $sessionCount + $helperCount;
         </a>
 
         @if(Auth::check())
-        <a href="{{ url('user/account/update') }}" class="nav-item text-dark">
-            @if(Auth::user()->profile_photo_path)
-            <img src="{{ auth()->user()->profile_photo_path }}" width="20" class="rounded-circle border shadow-sm">
-            @else
-            <i class="fas fa-user fa-lg"></i>
-            @endif
-            <div class="small">Profile</div>
-        </a>
+        <div class="dropdown">
+            <a class="text-dark" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                @if(Auth::user()->profile_photo_path)
+                <img src="{{ auth()->user()->profile_photo_path }}" width="20" class="rounded-circle border shadow-sm">
+                @else
+                <i class="bi bi-person-circle fs-5 text-primary"></i>
+                @endif
+                <div class="small text-dark">Profile</div>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end shadow">
+                <li><a class="dropdown-item" href="{{ url('user/account/update') }}"><i class="bi bi-gear text-primary"></i> My Profile</a></li>
+                <li><a class="dropdown-item" href="{{ url('my-orders') }}"><i class="bi bi-bag text-primary"></i> My Orders</a></li>
+                <li><a class="dropdown-item" href="{{ url('my-delivery-addresses') }}"><i class="bi bi-geo-alt text-primary"></i> My Addresses</a></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item text-danger" href="{{ url('user/logout') }}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+            </ul>
+        </div>
         @else
-        <a href="{{ route('auth.login') }}" class="nav-item text-dark">
-            <i class="fas fa-user fa-lg"></i>
-            <div class="small">Profile</div>
-        </a>
+        <div class="dropdown">
+            <a class="" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-person-circle text-primary fa-lg"></i>
+                <div class="small text-dark">Profile</div>
+            </a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{{ route('auth.login') }}">Login As Customer</a></li>
+                <li><a class="dropdown-item" href="{{ route('vendor-register') }}"> Become A Vendor</a></li>
+            </ul>
+        </div>
         @endif
-
     </div>
 </nav>
 

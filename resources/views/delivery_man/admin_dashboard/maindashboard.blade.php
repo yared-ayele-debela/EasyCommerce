@@ -68,7 +68,6 @@
     const deliverymanId = {{ Auth::guard('deliverymen')->user()->id }}; // or use a variable passed to Blade
 
     function updateLocation(position) {
-        // alert(deliverymanId);
         fetch('/api/deliveryman/update-location', {
             method: 'POST',
             headers: {
@@ -92,8 +91,6 @@
             console.log("Geolocation is not supported by this browser.");
         }
     }
-
-    // Update every 10 seconds
     setInterval(trackLocation, 5000);
 </script>
 

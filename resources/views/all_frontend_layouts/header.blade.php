@@ -182,6 +182,28 @@ use Illuminate\Support\Facades\Storage;
             /* Adjust this value based on nav height */
         }
 
+        .responsive-form {
+        width: 100%;
+        margin-left: 0.25rem;  /* mx-1 ≈ 0.25rem on each side */
+        margin-right: 0.25rem;
+        position: relative;
+        }
+
+         .search-type{
+            max-width: 100px !important;
+        }
+        @media (min-width: 768px) {
+        .responsive-form {
+            width: 50%;
+            margin-left: 1.5rem;  /* mx-4 ≈ 1.5rem on each side */
+            margin-right: 1.5rem;
+            display: flex; /* equivalent to d-md-flex */
+        }
+        .search-type{
+            max-width: 150px !important;
+        }
+        }
+
     </style>
 </head>
 
@@ -229,10 +251,10 @@ use Illuminate\Support\Facades\Storage;
                         <img src="{{ $appsetting['logo']?? asset('restaurant_frontend/assets/img/logo.png') }}" alt="Logo" style="height: 40px;">
                     </a>
 
-                    <form class="d-none d-md-flex w-50 mx-4" style="position: relative;">
+                    <form class="responsive-form" >
                         <div class="input-group position-relative border border-1 rounded rounded-2">
                             {{-- Search type selector --}}
-                            <select class="form-select w-auto border border-0" id="search-type" name="type" style="max-width: 150px;">
+                            <select class="form-select w-auto border border-0 search-type" id="search-type" name="type">
                                 <option value="restaurant" selected>Restaurant</option>
                                 <option value="hotel">Hotel</option>
                                 <option value="ecommerce">E-commerce</option>
@@ -250,7 +272,7 @@ use Illuminate\Support\Facades\Storage;
                     </form>
 
                     <!-- Icons -->
-                    <div class="d-flex align-items-center">
+                    <div class="d-none d-md-flex align-items-center">
 
                         @php
                         $wishlistCount = Auth::check() ? \App\Models\Restaurant\Wishlist::where('user_id', Auth::id())->count() : 0;
@@ -301,7 +323,6 @@ use Illuminate\Support\Facades\Storage;
                                 <li><a class="dropdown-item" href="{{ route('vendor-register') }}"> Become A Vendor</a></li>
                             </ul>
                         </div>
-
                         @endif
                         <button class="btn btn-light d-lg-none btn-sm ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu" aria-controls="mobileMenu">
                             <i class="bi bi-list fs-2"></i>
