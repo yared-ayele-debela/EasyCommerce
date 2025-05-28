@@ -65,9 +65,10 @@
          <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
          <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
          <script>
-    const deliverymanId = 1; // or use a variable passed to Blade
+    const deliverymanId = {{ Auth::guard('deliverymen')->user()->id }}; // or use a variable passed to Blade
 
     function updateLocation(position) {
+        // alert(deliverymanId);
         fetch('/api/deliveryman/update-location', {
             method: 'POST',
             headers: {
