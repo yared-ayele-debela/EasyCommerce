@@ -37,6 +37,7 @@
                         <span class="bi bi-clock-fill text-primary"> </span><span>20 min</span>
                     </div>
                     <!-- Add a rating button here -->
+                    
                     <button class="btn btn-outline-primary mt-3" data-bs-toggle="modal" data-bs-target="#ratingModal">
                         Leave a Review
                     </button>

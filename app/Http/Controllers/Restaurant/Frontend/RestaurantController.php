@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Restaurant\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Restaurant\Category;
+use App\Models\Restaurant\Order;
 use App\Models\Restaurant\Product;
 use App\Models\Restaurant\Restaurant;
 use App\Models\Restaurant\RestaurantMenu;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RestaurantController extends Controller
 {
@@ -41,6 +43,7 @@ class RestaurantController extends Controller
         })
         ->get();
 
+
         // // Get unique menus for this restaurant's products
         // $menus = RestaurantMenu::whereHas('products', function ($query) use ($id) {
         //     $query->where('restaurant_id', $id);
@@ -56,7 +59,7 @@ class RestaurantController extends Controller
         // $latitude = $request->latitude;
         // $longitude = $request->longitude;
 
-        $latitude = session('user_lat', 9.03); // fallback value
+        $latitude = session('user_lat', 9.03); 
         $longitude = session('user_lng', 38.74);
 
         if (!$latitude || !$longitude) {

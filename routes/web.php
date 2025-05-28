@@ -1341,6 +1341,7 @@ Route::get('/streets/{subCityId}', [UserDeliveryAddressController::class, 'getSt
 
 
 
+
 // hotel reservation
 
 Route::prefix('/hotel')->group(function () {

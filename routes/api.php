@@ -21,3 +21,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/deliveryman/update-location', [DeliveryManLocationUpdateController::class, 'updateLocation']);
+
+Route::get('/orders/{order}/deliveryman-location', action: [DeliveryManLocationUpdateController::class, 'getDeliverymanLocation']);

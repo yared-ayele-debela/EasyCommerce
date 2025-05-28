@@ -148,9 +148,11 @@
                         Customer Reviews ({{ $count? $count:'0' }})
                     </a>
                 </p>
+                @if($hasOrdered)
                 <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#ratingModal">
                     Leave a Review
                 </button>
+                @endif
             </div>
             @include('Restaurant.frontend.pages.products.rate')
             <div class="collapse mb-2 show" id="RestaurantRating">

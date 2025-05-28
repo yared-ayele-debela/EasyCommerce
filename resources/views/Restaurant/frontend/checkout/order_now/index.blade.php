@@ -82,7 +82,7 @@ use App\Models\Restaurant\Product;
                                             </tr>
                                         </thead>
                                         <tbody>
-                                             @php 
+                                             @php
                                                 $discount = session('order_now_discount', 0);
                                                 $delivery_fee= $totalShipping;
                                                 $tax= $totalTax;
@@ -93,8 +93,6 @@ use App\Models\Restaurant\Product;
                                                     $itemSubtotal = $item['price'];
                                                     $subtotal += $itemSubtotal;
                                                     $product = Product::find($item['product_id']);
-                                                    
-
                                                 @endphp
                                                 <tr>
                                                     <td class="d-flex align-items-center">
@@ -106,7 +104,7 @@ use App\Models\Restaurant\Product;
                                                     </td>
                                                     <td class="text-end fw-bold text-dark">{{ number_format($itemSubtotal, 2) }} ETB</td>
                                                 </tr>
-                                            @endforeach
+                                                @endforeach
                                         </tbody>
                                     </table>
                                 </div>
@@ -119,8 +117,6 @@ use App\Models\Restaurant\Product;
                 </div>
 
         </div>
-
-
         <div class="col-lg-4 mb-2">
             <!-- Promo Code Input -->
             <div class="promo-code">

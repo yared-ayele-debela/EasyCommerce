@@ -82,8 +82,6 @@ $cartCount = $sessionCount + $helperCount;
                 $twitter = $appsettings[0]['twitter'];
                 $youtube = $appsettings[0]['youtube'];
                 $whatsapp = $appsettings[0]['whatsapp'];
-
-
                 // Check if the URL has a scheme, if not, prepend 'http://'
                 if (!Str::startsWith($facebookUrl, ['http://', 'https://'])) {
                 $facebookUrl = 'http://' . $facebookUrl;
@@ -95,7 +93,6 @@ $cartCount = $sessionCount + $helperCount;
                 } if (!Str::startsWith($whatsapp, ['http://', 'https://'])) {
                 $whatsapp = 'http://' . $whatsapp;
                 }
-
                 @endphp
 
                 <div class="d-flex justify-content-start">
@@ -115,6 +112,21 @@ $cartCount = $sessionCount + $helperCount;
         </div>
     </div>
 </footer>
+<!-- Location Request Modal -->
+<div class="modal fade" id="locationModal" tabindex="-1" aria-labelledby="locationModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow">
+      <div class="modal-header">
+        <h5 class="modal-title" id="locationModalLabel">Enable Your Location</h5>
+      </div>
+      <div class="modal-body text-center">
+        <p>To give you a better experience, we need your location.</p>
+        <div id="locationError" class="text-danger mb-2" style="display: none;">Failed to access location. Please allow access.</div>
+        <button id="allowLocationBtn" class="btn btn-primary">Allow Location</button>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- Bottom Navigation Bar -->
 <nav class="bottom-nav d-md-none fixed-bottom bg-white shadow-sm">
     <div class="d-flex justify-content-around text-center py-2">
@@ -170,28 +182,38 @@ $cartCount = $sessionCount + $helperCount;
 <script src="{{ asset('restaurant_frontend/assets/js/index.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
 <script>
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            const userLat = position.coords.latitude;
-            const userLng = position.coords.longitude;
-
-            // Now send the coordinates to the server via AJAX
-            fetch(`/set-user-location`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ lat: userLat, lng: userLng })
-            })
-            .then(response => response.json())
-            .then(data => {
-                // location.reload(); // refresh to show distances
-            });
+ document.addEventListener('DOMContentLoaded', function () {
+    if (!localStorage.getItem('locationAllowed')) {
+        const modal = new bootstrap.Modal(document.getElementById('locationModal'));
+        modal.show();
+        document.getElementById('allowLocationBtn').addEventListener('click', function () {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    const userLat = position.coords.latitude;
+                    const userLng = position.coords.longitude;
+                    fetch(`/set-user-location`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ lat: userLat, lng: userLng })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        localStorage.setItem('locationAllowed', 'true');
+                        modal.hide();
+                        showAlert('success','Location saved')
+                    });
+                }, function () {
+                    document.getElementById('locationError').style.display = 'block';
+                });
+            } else {
+                // alert("Geolocation is not supported by this browser.");
+            }
         });
-    } else {
-        console.log("Geolocation is not supported by this browser.");
     }
+});
 </script>
 
 <script>
@@ -323,9 +345,6 @@ $cartCount = $sessionCount + $helperCount;
                 document.getElementById("wishlist-count").innerText = '0'; // fallback
             });
     }
-
-
-
     $(document).ready(function() {
         $('.wishlist-btn').click(function(e) {
             e.preventDefault();

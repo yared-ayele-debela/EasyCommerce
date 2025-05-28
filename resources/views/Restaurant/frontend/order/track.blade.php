@@ -19,17 +19,7 @@
     </div>
     <div class="row">
         <!-- Map Section -->
-        <div class="col-md-6 mb-2">
-            <div class="offer-card">
-                <div class="card-body p-3">
-                        <p class="mb-4 text-muted">Below is the map showing your delivery destination and the delivery man's real-time location.</p>
-                        <div id="map" class="mb-3"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Order Process Section -->
-        <div class="col-md-6 mb-2">
+         <div class="col-md-6 mb-2">
             <div class="offer-card">
                 <div class="card-body">
                     <!-- Order Process -->
@@ -83,9 +73,9 @@
                         <li class="list-group-item d-flex justify-content-between">
                             <span>
                                 @php
-                                      $imagePath = $item->product->image
-                                        ? str_replace(asset('storage') . '/', '', $item->product->image)
-                                        : null;
+                                    $imagePath = $item->product->image
+                                    ? str_replace(asset('storage') . '/', '', $item->product->image)
+                                    : null;
                                 @endphp
                                 @if($item->product->image && Storage::disk('public')->exists($imagePath))
                                     <img src="{{ $item->product->image }}"style="max-width: 60px; height:auto;">
@@ -122,67 +112,67 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-6 mb-2">
+            @if($order->delivery_status === 'delivering')
+            <div class="offer-card">
+                <div class="card-body p-3">
+                    <p class="mb-4 text-muted">Below is the map showing your delivery destination and the delivery man's real-time location.</p>
+                    <div id="map" class="mb-3"></div>
+                </div>
+            </div>
+            @endif
+        </div>
         <div class="col-12">
             <a  href="{{ route('user.orders') }}" class="btn btn-outline-primary rounded rounded-1">Back to your orders</a>
         </div>
     </div>
 </div>
+@if($order->deliveryman)
 <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.min.js"></script>
-
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const map = L.map('map').setView([8.9806, 38.7578], 13);
-    let deliveryMarker, customerMarker;
+    let deliveryMarker, customerMarker, routeControl;
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    // Sample data (passed from controller)
     const deliveryLat = {{ $order->address->latitude ?? 'null' }};
     const deliveryLng = {{ $order->address->longitude ?? 'null' }};
     const deliveryAddress = "{{ $deliveryAddress ?? '' }}";
+    const deliveryManImage = "{{ asset('/storage/delivery_man/'.$order->deliveryman->delivery_man_image) }}";
+    const orderId = {{ $order->id }};
 
-    const deliveryManLat = {{ $order->deliveryman->current_lat  ?? 'null' }};
-    const deliveryManLng = {{ $order->deliveryman->current_lng  ?? 'null' }};
-    const deliveryManImage ="{{ asset('/storage/delivery_man/'.$order->deliveryman->delivery_man_image) }}";
+    const customerIcon = L.icon({
+        iconUrl: '/restaurant_frontend/assets/destination.png',
+        iconSize: [30, 40],
+        iconAnchor: [15, 40],
+    });
+
+    const deliveryIcon = L.icon({
+        iconUrl: deliveryManImage,
+        iconSize: [35, 45],
+        iconAnchor: [17, 45],
+    });
 
     const markers = [];
 
-    const customerIcon = L.icon({
-    iconUrl: '/restaurant_frontend/assets/destination.png',
-    iconSize: [30, 40],
-    iconAnchor: [15, 40],
-});
-
-const deliveryIcon = L.icon({
-    iconUrl: `${deliveryManImage}`,
-    iconSize: [35, 45],
-    iconAnchor: [17, 45],
-});
-
     if (deliveryLat && deliveryLng) {
         customerMarker = L.marker([deliveryLat, deliveryLng], {
-            icon: customerIcon 
+            icon: customerIcon
         }).addTo(map).bindPopup(`<strong>Delivery Destination</strong><br>${deliveryAddress}`).openPopup();
-
         markers.push(customerMarker);
     }
 
-    if (deliveryManLat && deliveryManLng) {
-        deliveryMarker = L.marker([deliveryManLat, deliveryManLng], {
-           icon: deliveryIcon 
-        }).addTo(map).bindPopup("Delivery Man's Current Location");
-
-        markers.push(deliveryMarker);
-    }
-
-    if (markers.length > 1) {
-        // Draw route between delivery man and destination
+    function drawRoute(startLat, startLng) {
+        if (routeControl) {
+            map.removeControl(routeControl);
+        }
         routeControl = L.Routing.control({
             waypoints: [
-                L.latLng(deliveryManLat, deliveryManLng),
+                L.latLng(startLat, startLng),
                 L.latLng(deliveryLat, deliveryLng)
             ],
             routeWhileDragging: false,
@@ -194,14 +184,42 @@ const deliveryIcon = L.icon({
                 styles: [{ color: 'green', weight: 5 }]
             }
         }).addTo(map);
-
-        const group = new L.featureGroup(markers);
-        map.fitBounds(group.getBounds().pad(0.2));
-    } else if (markers.length === 1) {
-        map.setView(markers[0].getLatLng(), 14);
     }
+
+    function updateDeliveryLocation() {
+        fetch(`/api/orders/${orderId}/deliveryman-location`)
+            .then(res => res.json())
+            .then(({ lat, lng }) => {
+                if (!lat || !lng) return;
+
+                const position = L.latLng(lat, lng);
+
+                if (!deliveryMarker) {
+                    deliveryMarker = L.marker(position, { icon: deliveryIcon })
+                        .addTo(map)
+                        .bindPopup("Delivery Man's Current Location");
+                    markers.push(deliveryMarker);
+                    drawRoute(lat, lng);
+                    const group = new L.featureGroup(markers);
+                    map.fitBounds(group.getBounds().pad(0.2));
+                } else {
+                    deliveryMarker.setLatLng(position);
+                    drawRoute(lat, lng);
+                }
+            })
+
+            .catch(console.error);
+    }
+
+    // Initial draw
+    updateDeliveryLocation();
+
+    // Poll every 5 seconds
+    setInterval(updateDeliveryLocation, 5000);
 });
 </script>
+
+@endif
 <script>
     setInterval(function() {
         fetch("{{ route('order.track', $order->id) }}")

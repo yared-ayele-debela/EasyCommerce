@@ -8,12 +8,15 @@ use App\Models\Hotel;
 use App\Models\Product as ModelsProduct;
 use App\Models\Restaurant\Category;
 use App\Models\Restaurant\City;
+use App\Models\Restaurant\Order;
+use App\Models\Restaurant\OrderItem;
 use App\Models\Restaurant\Product;
 use App\Models\Restaurant\Restaurant;
 use App\Models\Restaurant\RestaurantMenu;
 use App\Models\Restaurant\Subcategory;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
@@ -142,6 +145,16 @@ class ProductController extends Controller
         $product=Product::with(['images','sizes','ratings'])->findOrFail($id);
         $related_products=Product::where('category_id',$product->category_id)->where('id','!=',$product->id)->get();
 
-        return view('Restaurant.frontend.pages.products.detail',compact('product','related_products'));
+        $hasOrdered=false;
+        if(Auth::check()){
+        $user = Auth::user();
+        $productId = $id;
+        $hasOrdered = OrderItem::whereHas('order', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->where('product_id', $productId)->exists();
+        }
+        // dd($hasOrdered);
+
+        return view('Restaurant.frontend.pages.products.detail',compact('product','related_products','hasOrdered'));
     }
 }
