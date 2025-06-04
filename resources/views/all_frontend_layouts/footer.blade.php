@@ -531,11 +531,11 @@ $cartCount = $sessionCount + $helperCount;
         , nav: false
         , dots: true
         , autoplay: true
-        , autoplayHoverPause: true // Stops autoplay when hovered
+        , autoplayHoverPause: false // Stops autoplay when hovered
         , responsiveClass: true
         , responsive: {
             0: {
-                items: 2
+                items: 3
                 , nav: false
             }
             , 1024: {
