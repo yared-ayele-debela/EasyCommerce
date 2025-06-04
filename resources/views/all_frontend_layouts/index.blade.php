@@ -304,7 +304,7 @@ use Illuminate\Support\Facades\Storage;
                             <div class="col-md-6 col-8">
                                 <div class="card-body">
                                     <h5 class="card-title">${restaurant.name}</h5>
-                                    <p class="mb-1">${restaurant.description.substring(0, 50)}...</p>
+                                    <p class="mb-1">${restaurant.description.substring(0, 10)}...</p>
                                     <div class="mb-2">
                                         <span class="badge resturant_badge p-2">Around ${ restaurant.distance } km</span>
                                         <span class="badge resturant_badge p-2">Around ${ restaurant.time } min</span>
