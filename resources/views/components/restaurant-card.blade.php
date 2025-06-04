@@ -3,7 +3,7 @@
 <div class="col-md-6">
     <div class="offer-card p-2">
         <div class="row g-0">
-            <div class="col-md-6">
+            <div class="col-md-6 col-4">
                 <a href="{{ url('restaurant/' . $restaurant->id . '/detail') }}">
                     @php
                         $parsedPath = $restaurant->cover ? parse_url($restaurant->cover, PHP_URL_PATH) : null;
@@ -17,7 +17,7 @@
                     @endif
                 </a>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 col-8">
                 <div class="card-body">
                     <h5 class="card-title">{{ $restaurant->name }}</h5>
                     <p class="mb-1">{{ Str::words($restaurant->description, 10, '...') }}</p>
