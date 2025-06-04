@@ -294,14 +294,14 @@ use Illuminate\Support\Facades\Storage;
                 <div class="col-md-6">
                     <div class="offer-card mb-4 p-2">
                         <div class="row g-0">
-                            <div class="col-md-6">
+                            <div class="col-md-6 col-4">
                             <a href="{{ url('restaurant/${restaurant.id}/detail') }}">
                                 <img src="${restaurant.cover}" class="img-fluid rounded-start" alt="Restaurant" style="max-height:230px;"
                                  onerror="this.onerror=null; this.src='{{ asset('restaurant_frontend/default-image.png') }}';"
                                 >
                             </a>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 col-8">
                                 <div class="card-body">
                                     <h5 class="card-title">${restaurant.name}</h5>
                                     <p class="mb-1">${restaurant.description.substring(0, 50)}...</p>
