@@ -10,7 +10,7 @@
 @endphp
 
 <div class="item my-2">
-    <div class="offer-card p-3 h-100">
+    <div class="offer-card p-2 h-100">
         <a href="{{ url('restaurant/product-detail/' . encrypt($product->id)) }}" class="text-decoration-none text-dark d-block">
              @if($badge)
             <span class="btn btn-sm {{ $bgColor }} text-white">
