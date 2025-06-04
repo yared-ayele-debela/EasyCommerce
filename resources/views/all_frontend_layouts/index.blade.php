@@ -291,31 +291,42 @@ use Illuminate\Support\Facades\Storage;
 
         restaurants.forEach(restaurant => {
             container.innerHTML += `
-                <div class="col-md-6">
-                    <div class="offer-card mb-4 p-2">
-                        <div class="row g-0">
-                            <div class="col-md-6 col-4">
+                <div class="col-lg-6 col-md-6">
+    <div class="offer-card overflow-hidden mb-4">
+        <div class="row g-0 align-items-stretch">
+                            <div class="col-md-4 col-4">
                             <a href="{{ url('restaurant/${restaurant.id}/detail') }}">
-                                <img src="${restaurant.cover}" class="img-fluid rounded-start" alt="Restaurant" style="max-height:230px;"
+                                <img src="${restaurant.cover}" class="img-fluid rounded-start p-2" alt="Restaurant" style="max-height:230px;"
                                  onerror="this.onerror=null; this.src='{{ asset('restaurant_frontend/default-image.png') }}';"
                                 >
                             </a>
                             </div>
-                            <div class="col-md-6 col-8">
-                                <div class="card-body">
-                                    <h5 class="card-title">${restaurant.name}</h5>
-                                    <p class="mb-1">${restaurant.description.substring(0, 10)}...</p>
-                                    <div class="mb-2">
-                                        <span class="badge resturant_badge p-2">Around ${ restaurant.distance } km</span>
-                                        <span class="badge resturant_badge p-2">Around ${ restaurant.time } min</span>
-                                    </div>
-                                    <p class="mb-1"> <i class="bi bi-pin-map-fill text-primary"></i> ${restaurant.address}</p>
-                                    <div class="d-flex justify-content-between align-items-center mt-3">
-                                    <div class="text-warning me-2">
+                            <div class="col-8 col-sm-8">
+                               <div class="card-body d-flex flex-column h-100 py-3 px-4">
+                                      <h5 class="card-title mb-1 text-truncate" title="${restaurant.name}">
+                                        ${restaurant.name}</h5>
+                                   <p class="text-muted d-none d-md-block">${restaurant.description.substring(0, 60)}...</p>
+                                    <div class="mb-2 d-flex flex-wrap gap-2">
+                                    <span class="badge bg-light text-dark px-3 py-2 rounded-pill">
+                                        <i class="bi bi-geo-alt-fill text-danger me-1"></i>${restaurant.distance} km
+                                    </span>
+                                    <span class="badge bg-light text-dark px-3 py-2 rounded-pill">
+                                        <i class="bi bi-clock-fill text-primary me-1"></i>${restaurant.time} min
+                                    </span>
+                                </div>
 
-                                        <span><span class="bi bi-star-fill text-primary"></span> ${restaurant.rating}</span>
+                                  <p class="small text-muted mb-2">
+                                    <i class="bi bi-pin-map-fill text-primary me-1"></i>${restaurant.address}
+                                </p>
+
+                                <div class="mt-auto d-flex justify-content-between align-items-center">
+                                    <div class="small text-primary">
+                                        <i class="bi bi-star-fill text-primary me-1"></i>${restaurant.rating}
                                     </div>
-                                    <div><img src="{{ asset('restaurant_frontend/assets/img/scooter-02.png') }}" style="width: 20%;" alt=""> From ${restaurant.start_from} ETB</div>
+                                    <div class="d-flex align-items-center gap-2 small text-muted">
+                                        <img src="{{ asset('restaurant_frontend/assets/img/scooter-02.png') }}" alt="Delivery" style="width: 22px;">
+                                        From ${restaurant.start_from} ETB
+                                    </div>
                                 </div>
                                 </div>
                             </div>
@@ -323,6 +334,8 @@ use Illuminate\Support\Facades\Storage;
                     </div>
                 </div>
             `;
+        
+
         });
     }
 
