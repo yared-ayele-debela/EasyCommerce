@@ -66,7 +66,7 @@
         <a href="{{ url('admin/restaurant/dashboard') }}" class="nav-link {{request()->is('admin/restaurant/dashboard')}}"> <i class="bi bi-menu-button-fill"></i><span>Dashboard</span> </a>
         </li>
         @endif
-        @if($adminType === "Ecommerce Manager" || $adminType === "vendor")
+        @if($adminType === "Ecommerce Manager" || $adminType === "vendor" || $adminType==="Super Admin")
         <li class=" {{ request()->is('admin/dashboard')?'nav-item active':'' }}">
            <a href="{{ url('admin/dashboard') }}" class="nav-link {{request()->is('admin/dashboard')}}"> <i class="bi bi-menu-button-fill"></i><span>Dashboard</span> </a>
         </li>
