@@ -222,6 +222,9 @@
         <li class="{{ request()->is('admin/vehicle_type')?'nav-item active':'' }} {{ request()->is('admin/withdrawals')?'nav-item active':'' }} {{ request()->is('admin/vehicle_type*')?'nav-item active':'' }}  {{ request()->is('admin/delivery_zone')?'nav-item active':'' }} {{ request()->is('admin/delivery_man/type*')?'nav-item active':'' }} {{ request()->is('admin/delivery_zone*')?'nav-item active':'' }} {{ request()->is('admin/delivery_man/type')?'nav-item active':'' }} {{ request()->is('admin/delivery_boy')?'nav-item active':'' }} {{ request()->is('admin/delivery_boy/*')?'nav-item active':'' }}  ">
             <a class="nav-link" data-bs-target="#delivery-nav" data-bs-toggle="collapse" href="javascript:void();"> <i class="bx bxs-file"></i><span>Delivery Man</span><i class="bi bi-chevron-down ms-auto"></i> </a>
             <ul id="delivery-nav" class="nav-content collapse {{ request()->is('admin/delivery_zone')?'show':'' }} {{ request()->is('admin/withdrawals')?'show':'' }} {{ request()->is('admin/delivery_zone*')?'show':'' }} {{ request()->is('admin/delivery_man/type')?'show':'' }} {{ request()->is('admin/delivery_man/type*')?'show':'' }} {{ request()->is('admin/vehicle_type')?'show':'' }} {{ request()->is('admin/vehicle_type*')?'show':'' }}  {{ request()->is('admin/delivery_boy')?'show':'' }}  {{ request()->is('admin/delivery_boy/*')?'show':'' }}    " data-bs-parent="#sidebar-nav">
+                    @if( $user->hasPermissionByRole('view_delivery_boy'))
+                <li> <a href="{{ route('delivery_boy.index') }}" class="{{ request()->is('admin/delivery_boy')?'nav-link active':'' }} {{ request()->is('admin/delivery_boy/*')?'nav-item active':'' }} "> <i class=" bi bi-circle active "></i><span>List Delivery man</span> </a></li>
+                @endif
                 @if( $user->hasPermissionByRole('view delivery zone'))
                 <li> <a href="{{ url('admin/withdrawals') }}" class="{{ request()->is('admin/withdrawals')?'nav-link active':'' }} {{ request()->is('admin/withdrawals')?'nav-item active':'' }} "> <i class=" bi bi-zoom-in  active "></i><span>Delivery Men Withdraw Requests</span> </a></li>
                 @endif
@@ -234,9 +237,7 @@
                 @if( $user->hasPermissionByRole('view vehicle type'))
                 <li> <a href="{{ route('vehicle_type') }}" class="{{ request()->is('admin/vehicle_type')?'nav-link active':'' }} {{ request()->is('admin/vehicle_type*')?'nav-item active':'' }} "> <i class=" bi bi-bicycle active "></i><span>Vehicle Type</span> </a></li>
                 @endif
-                @if( $user->hasPermissionByRole('view_delivery_boy'))
-                <li> <a href="{{ route('delivery_boy.index') }}" class="{{ request()->is('admin/delivery_boy')?'nav-link active':'' }} {{ request()->is('admin/delivery_boy/*')?'nav-item active':'' }} "> <i class=" bi bi-circle active "></i><span>List Delivery man</span> </a></li>
-                @endif
+
             </ul>
         </li>
         @endif

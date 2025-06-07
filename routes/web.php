@@ -559,7 +559,9 @@ Route::group(['middleware' => ['admin', 'check.admin:Ecommerce Manager,vendor']]
         Route::get('good-receiving-note/invoice/{id}', [ProductTransferController::class, 'good_receiving_note_invoice'])->name('good-receiving-note_invoice');
 
 
-        Route::get('/delivery_boy', [DeliveryManController::class, 'index'])->name('delivery_boy.index');
+        Route::get('/delivery_boy', action: [DeliveryManController::class, 'index'])->name('delivery_boy.index');
+        Route::put('/delivery_boy/{id}/update-password', [DeliveryManController::class, 'updatePassword'])->name('admin.delivery_boy.updatePassword');
+
         Route::get('/delivery_boy/create', [DeliverymanController::class, 'create'])->name('delivery_boy.create');
         Route::post('/delivery_boy', [DeliverymanController::class, 'store'])->name('delivery_boy.store');
         Route::get('/delivery_boy/{id}/edit', [DeliverymanController::class, 'edit'])->name('delivery_boy.edit');

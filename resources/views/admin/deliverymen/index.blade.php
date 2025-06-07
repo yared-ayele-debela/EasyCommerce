@@ -68,8 +68,50 @@ $user = Auth::guard('admin')->user();
                                      View withdraw histories
                                     </div>
                                 </div>
-
                                 @endif
+                                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modelId{{ $deliveryman['id']}}">
+                                        Update Password
+                                    </button>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="modelId{{ $deliveryman['id'] }}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <form action="{{ route('admin.delivery_boy.updatePassword', $deliveryman['id']) }}" method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Update Password</h5>
+                                                        <button type="button" class="close btn" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="form-group">
+                                                            <label for="password">New Password</label>
+                                                            <input type="password" name="password" class="form-control" required minlength="6">
+                                                            @error('password')
+                                                                <span class="text-danger">{{ $message }}</span>
+                                                            @enderror
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label for="password_confirmation">Confirm New Password</label>
+                                                            <input type="password" name="password_confirmation" class="form-control" required minlength="6">
+                                                            @error('password_confirmation')
+                                                                <span class="text-danger">{{ $message }}</span>
+                                                            @enderror
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-primary">Update Password</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
                              </td>
                         </tr>
                     @endforeach

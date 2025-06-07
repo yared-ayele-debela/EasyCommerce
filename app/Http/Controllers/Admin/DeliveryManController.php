@@ -16,6 +16,7 @@ use App\Models\Vehicle_Type;
 use GrahamCampbell\ResultType\Success;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -348,5 +349,20 @@ class DeliveryManController extends Controller
                 // dd(1);
       return view('admin.deliverymen.view_detail',compact('men','totalEarned','withdrawn','pendingWithdraw','withdrawals','available_to_withdraw'));
 
+    }
+
+     public function updatePassword(Request $request, $id)
+    {
+        // dd($request->password);
+        $request->validate([
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
+        ]);
+
+        $user = DeliveryMan::findOrFail($id);
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        Alert::toast('Delivery Boy password updated successfully!', 'success');
+        return redirect()->back();
     }
 }
