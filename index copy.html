@@ -1,61 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Location Access Required</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        #locationAlert {
-            display: none;
-        }
-    </style>
-</head>
-<body class="bg-light d-flex align-items-center justify-content-center vh-100">
-
-<div class="text-center">
-    <h2 class="mb-4">Welcome to Our Website</h2>
-    <p class="mb-3">To provide the best experience, we need your location.</p>
-    <button class="btn btn-primary" onclick="getUserLocation()">Allow Location</button>
-
-    <div id="locationAlert" class="alert alert-danger mt-4" role="alert">
-        Location access is required to continue using this site.
-    </div>
-
-    <div id="locationSuccess" class="alert alert-success mt-4" role="alert" style="display: none;">
-        Thank you! Your location is: <span id="coordinates"></span>
-    </div>
-</div>
-
-<script>
-    function getUserLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                function (position) {
-                    // Success: show coordinates
-                    const coords = position.coords.latitude + ", " + position.coords.longitude;
-                    document.getElementById('coordinates').innerText = coords;
-                    document.getElementById('locationSuccess').style.display = 'block';
-                    document.getElementById('locationAlert').style.display = 'none';
-
-                    // TODO: Send location to server with AJAX if needed
-                },
-                function (error) {
-                    if (error.code === error.PERMISSION_DENIED) {
-                        document.getElementById('locationAlert').style.display = 'block';
-                    }
-                }
-            );
-        } else {
-            alert("Geolocation is not supported by this browser.");
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Delivery Tracking Simulation</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <style>
+    #map {
+      height: 90vh;
+      width: 100%;
     }
+    #info {
+      padding: 10px;
+      font-family: sans-serif;
+      background: #f4f4f4;
+    }
+  </style>
+</head>
+<body>
 
-    // Optionally auto-trigger location prompt on page load
-    window.onload = function () {
-        getUserLocation();
-    };
+<div id="info">
+  <strong>Tracking delivery person:</strong> <span id="delivery-name"></span>
+</div>
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+<script>
+  // ====== CONFIG ======
+  const apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55bmFtZSI6IkVhc3kgZS1jb21tZXJjZSBob3RlbCBib29raW5nIGFuZCBkZWxpdmVyeSIsImRlc2NyaXB0aW9uIjoiMGU4ZDhhZDMtZmJhYy00OTJkLWE4OWYtZGFiZjQxNTFlNDc2IiwiaWQiOiI3OWY1ODRlYy0yZDA3LTRjNWQtYTI2Ny00MjBhNzVlMDY2NzMiLCJ1c2VybmFtZSI6ImJlZmk3NzU2In0.JgSoBiAoa4Te6ccg-jSJSifq26PZV4FnGbkhQKiTnuo";
+  const customerLocation = { lat: 9.03045, lng: 38.76530 };
+
+  const deliveryMen = [
+    { id: 1, name: "Amanuel", lat: 9.001370, lng: 38.767821 },
+    { id: 2, name: "Selam", lat: 8.9920, lng: 38.7825 },
+    { id: 3, name: "Mekdes", lat: 8.9940, lng: 38.7840 }
+  ];
+  let currentDelivery = deliveryMen[0]; // Simulate only Amanuel for now
+  let deliveryMarker, customerMarker, routeLine;
+  document.getElementById("delivery-name").textContent = currentDelivery.name;
+  const map = L.map('map').setView([customerLocation.lat, customerLocation.lng], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+  // Customer marker
+  customerMarker = L.marker([customerLocation.lat, customerLocation.lng], {
+    title: "Customer",
+    icon: L.icon({
+      iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+      iconSize: [30, 30],
+      iconAnchor: [15, 30]
+    })
+  }).addTo(map);
+
+  function updateDeliveryLocation() {
+    currentDelivery.lat += (Math.random() - 0.5) * 0.001;
+    currentDelivery.lng += (Math.random() - 0.5) * 0.001;
+    if (deliveryMarker) {
+      deliveryMarker.setLatLng([currentDelivery.lat, currentDelivery.lng]);
+    } else {
+      deliveryMarker = L.marker([currentDelivery.lat, currentDelivery.lng], {
+        title: "Delivery",
+        icon: L.icon({
+          iconUrl: "https://cdn-icons-png.flaticon.com/512/2921/2921822.png",
+          iconSize: [30, 30],
+          iconAnchor: [15, 30]
+        })
+      }).addTo(map);
+    }
+    // Fetch direction from Gebeta API
+    const url = `https://mapapi.gebeta.app/api/route/direction/?origin=${currentDelivery.lat},${currentDelivery.lng}&destination=${customerLocation.lat},${customerLocation.lng}&apiKey=${apiKey}`;
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        if (data.direction) {
+          const routeCoords = data.direction.map(coord => [coord[0], coord[1]]); // Lat,Lng order
+          if (routeLine) {
+            routeLine.setLatLngs(routeCoords);
+          } else {
+            routeLine = L.polyline(routeCoords, { color: "blue", weight: 4 }).addTo(map);
+          }
+          map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
+        }
+      })
+      .catch(error => console.error("Error fetching route:", error));
+  }
+  updateDeliveryLocation();
+  setInterval(updateDeliveryLocation, 3000);
 </script>
-
 </body>
 </html>

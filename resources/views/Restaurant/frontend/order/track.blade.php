@@ -1,16 +1,11 @@
 @extends('all_frontend_layouts.layouts')
 @section('content')
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
-
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
 <style>
-  #map {
-    height: 400px;
-    border-radius: 12px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  }
+    #map { height: 500px; }
 </style>
-<div class="container py-4">
+<div class="container">
      <div class="header">
         <button class="btn btn-link text-dark" onclick="history.back()">
             <i class="bi bi-arrow-left"></i>
@@ -127,106 +122,95 @@
         </div>
     </div>
 </div>
-@if($order->deliveryman)
-<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const map = L.map('map').setView([8.9806, 38.7578], 13);
-    let deliveryMarker, customerMarker, routeControl;
 
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.min.js"></script>
+<script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/laravel-echo/1.11.3/echo.iife.js"></script>
+@if($order->deliveryman)
+
+<script>
+    const destinationLatLng = [{{ $order->address->latitude }}, {{ $order->address->longitude }}];
+    const map = L.map('map').setView(destinationLatLng, 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
     }).addTo(map);
 
-    const deliveryLat = {{ $order->address->latitude ?? 'null' }};
-    const deliveryLng = {{ $order->address->longitude ?? 'null' }};
-    const deliveryAddress = "{{ $deliveryAddress ?? '' }}";
-    const deliveryManImage = "{{ asset('/storage/delivery_man/'.$order->deliveryman->delivery_man_image) }}";
-    const orderId = {{ $order->id }};
+    // Destination marker
+    const destination = L.marker(destinationLatLng,{
+         icon: L.icon({
+        iconUrl: '{{ asset('restaurant_frontend/placeholder.gif') }}',
+        iconSize: [50, 50],
+        iconAnchor: [15, 15]
+    })
+    })
+        .addTo(map)
+        .bindPopup("Delivery Destination")
+        .openPopup();
 
-    const customerIcon = L.icon({
-        iconUrl: '/restaurant_frontend/assets/destination.png',
-        iconSize: [30, 40],
-        iconAnchor: [15, 40],
+    let deliveryMarker = null;
+    let routingControl = null;
+    // let trailPolyline = L.polyline([], { color: 'blue' }).addTo(map);
+    let previousCoords = [];
+
+    // Laravel Echo setup
+    window.Pusher = Pusher;
+    window.Echo = new Echo({
+        broadcaster: 'pusher',
+        key: 'local',
+        wsHost: window.location.hostname,
+        wsPort: 6001,
+        forceTLS: false,
+        disableStats: true,
     });
 
-    const deliveryIcon = L.icon({
-        iconUrl: deliveryManImage,
-        iconSize: [35, 45],
-        iconAnchor: [17, 45],
-    });
+    window.Echo.channel('delivery-locations')
+        .listen('.location.updated', (e) => {
+            if (e.deliveryManId == {{ $order->delivery_man_id }}) {
+                const currentLatLng = [e.latitude, e.longitude];
 
-    const markers = [];
-
-    if (deliveryLat && deliveryLng) {
-        customerMarker = L.marker([deliveryLat, deliveryLng], {
-            icon: customerIcon
-        }).addTo(map).bindPopup(`<strong>Delivery Destination</strong><br>${deliveryAddress}`).openPopup();
-        markers.push(customerMarker);
-    }
-
-    function drawRoute(startLat, startLng) {
-        if (routeControl) {
-            map.removeControl(routeControl);
-        }
-        routeControl = L.Routing.control({
-            waypoints: [
-                L.latLng(startLat, startLng),
-                L.latLng(deliveryLat, deliveryLng)
-            ],
-            routeWhileDragging: false,
-            draggableWaypoints: false,
-            addWaypoints: false,
-            show: false,
-            createMarker: () => null,
-            lineOptions: {
-                styles: [{ color: 'green', weight: 5 }]
-            }
-        }).addTo(map);
-    }
-
-    function updateDeliveryLocation() {
-        fetch(`/api/orders/${orderId}/deliveryman-location`)
-            .then(res => res.json())
-            .then(({ lat, lng }) => {
-                if (!lat || !lng) return;
-
-                const position = L.latLng(lat, lng);
+                // Add trail
+                previousCoords.push(currentLatLng);
+                // trailPolyline.setLatLngs(previousCoords);
 
                 if (!deliveryMarker) {
-                    deliveryMarker = L.marker(position, { icon: deliveryIcon })
-                        .addTo(map)
-                        .bindPopup("Delivery Man's Current Location");
-                    markers.push(deliveryMarker);
-                    drawRoute(lat, lng);
-                    const group = new L.featureGroup(markers);
-                    map.fitBounds(group.getBounds().pad(0.2));
+                    deliveryMarker = L.marker(currentLatLng, {
+                        icon: L.icon({
+                            iconUrl: '{{ asset('restaurant_frontend/delivery-man.gif') }}',
+                            iconSize: [50, 50],
+                            iconAnchor: [15, 15]
+                        })
+                    }).addTo(map).bindPopup("Delivery Man");
                 } else {
-                    deliveryMarker.setLatLng(position);
-                    drawRoute(lat, lng);
+                    deliveryMarker.setLatLng(currentLatLng);
                 }
-            })
-
-            .catch(console.error);
-    }
-
-    // Initial draw
-    updateDeliveryLocation();
-
-    // Poll every 5 seconds
-    setInterval(updateDeliveryLocation, 5000);
-});
+                if (routingControl) {
+                    map.removeControl(routingControl);
+                }
+                routingControl = L.Routing.control({
+                    waypoints: [
+                        L.latLng(currentLatLng[0], currentLatLng[1]),
+                        L.latLng(destinationLatLng[0], destinationLatLng[1])
+                    ],
+                    routeWhileDragging: false,
+                    draggableWaypoints: false,
+                    addWaypoints: false,
+                    show: false,
+                    fitSelectedRoutes: false,
+                    createMarker: () => null,
+                     lineOptions: {
+                    styles: [
+                        {
+                            color: 'green',      // 💡 Change this to your preferred color
+                            opacity: 0.8,
+                            weight: 4          // 💡 Change this to adjust thickness
+                        }
+                    ]
+                }
+                }).addTo(map);
+            }
+        });
 </script>
-
 @endif
-<script>
-    setInterval(function() {
-        fetch("{{ route('order.track', $order->id) }}")
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('orderStatus').innerText = data.status.charAt(0).toUpperCase() + data.status.slice(1);
-            });
-    }, 5000);
-</script>
 @endsection

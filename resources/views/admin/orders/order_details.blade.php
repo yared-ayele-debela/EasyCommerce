@@ -82,7 +82,7 @@ $user = Auth::guard('admin')->user();
                         <input type="hidden" name="order_id" value="{{ $orderDetails['id'] }}">
                         <input type="hidden" name="order_status" value="{{ $orderDetails['order_status'] }}">
                         <div class="form-group mb-2 ">
-                            <select name="delivery_boy_id" id="delivery_boy_id" class="form-control" required="">
+                            <select name="delivery_boy_id" id="delivery_boy_id" class="form-control select-delivery-zone" required="">
                                 <option value="" selected>Select</option>
                                 @foreach ($alldelivery_boys as $boys )
                                 <option value="{{ $boys['id'] }}" @if(!empty($orderDetails['delivery_boy_id']) && $orderDetails['delivery_boy_id']==$boys['id']) selected @endif >{{ $boys['first_name'] }} &nbsp; {{ $boys['phone'] }}</option>

@@ -5,6 +5,7 @@ namespace App\Helper;
 
 use App\Models\Cart;
 use App\Models\Currencies;
+use App\Models\Notification;
 use App\Models\Restaurant\RestaurantCartItem;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -14,6 +15,7 @@ use function Clue\StreamFilter\fun;
 // start for currency converter
 class Helper
 {
+  
 
      public static function calculateDeliveryCommission($order)
     {
@@ -32,7 +34,7 @@ class Helper
         }
         return $totalCartItems;
     }
-  
+
     public static function totalRestaurantCartItems()
     {
         if (Auth::check()) {
@@ -49,7 +51,7 @@ class Helper
             $RestaurantCartItems = RestaurantCartItem::where('user_id', $user_id)->get();
             } else {
               $RestaurantCartItems= collect(Session::get('cart', []));
-            }    
+            }
             return $RestaurantCartItems;
     }
 

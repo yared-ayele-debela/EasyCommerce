@@ -31,6 +31,8 @@ use App\Models\State;
 use App\Models\Transfer_stock_product;
 use App\Models\User;
 use App\Models\Vehicle_Type;
+use App\Services\NotificationService;
+use App\Services\SmsService;
 use Dompdf\Dompdf;
 use GrahamCampbell\ResultType\Success;
 use Illuminate\Http\Request;
@@ -511,6 +513,8 @@ class DeliveryManController extends Controller
 
         $order = Order::with('orders_products')->find($request->order_id);
 
+        $oldStatus=$order->order_status;
+
         if (!$order) {
             Alert::toast('Order not found!', 'error');
             return back();
@@ -525,7 +529,6 @@ class DeliveryManController extends Controller
                 Alert::toast('Invalid user code', 'error');
                 return back();
             }
-
             $existingCommission = DeliveryManTip::where([
                 ['order_id', $order->id],
                 ['order_type', 'goods']
@@ -559,6 +562,20 @@ class DeliveryManController extends Controller
         // Update order status
         $order->update(['order_status' => $orderStatus]);
 
+        NotificationService::send(
+                userId: $order->user_id,
+                title: 'Order Status Updated',
+                message: "Your order #{$order->id} status has changed from '{$oldStatus}' to '{$order->order_status}'."
+            );
+               $phone = $order->user->mobile ?? null;
+                if ($phone) {
+                    // dd($phone);
+                $message = "Hi {$order->user->name}, Your goods order #{$order->id} status has changed from '{$oldStatus}' to '{$order->order_status}'.";
+                try {
+                SmsService::send($phone, $message);
+                } catch (\Exception $e) {
+            }
+        }
         // Log order update
         OrderLog::create([
             'order_id' => $order->id,
@@ -611,6 +628,7 @@ class DeliveryManController extends Controller
             $vendorCode = $data['vendor_code'] ?? null;
 
             $orderProduct = OrderProduct::find($orderItemId);
+            $oldStatus=$orderProduct->item_status;
             if (!$orderProduct) {
                 Alert::toast('Invalid order item.', 'error');
                 return redirect()->back();
@@ -662,6 +680,20 @@ class DeliveryManController extends Controller
                 'tracking_number' => $data['item_tracking_number'] ?? null
             ];
 
+              NotificationService::send(
+                userId: $order->user_id,
+                title: 'Goods Order Item Status Updated',
+                message: "Your goods order item #{$order->id} status has changed from '{$oldStatus}' to '{$orderProduct->item_status}'."
+            );
+              $phone = $order->user->mobile ?? null;
+                if ($phone) {
+                    // dd($phone);
+                    $message = "Hi {$order->user->name}, Your goods order item #{$order->id} status has changed from '{$oldStatus}' to '{$orderProduct->item_status}'.";
+                    try {
+                    SmsService::send($phone, $message);
+                    } catch (\Exception $e) {
+                    }
+                }
             Mail::send('emails.order_item_status', $emailData, function ($message) use ($recipientEmail) {
                 $message->to($recipientEmail)->subject('Order Item Status Updated');
             });

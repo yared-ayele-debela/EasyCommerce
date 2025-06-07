@@ -3,7 +3,7 @@
 @php
 $user = Auth::guard('deliverymen')->user();
 use App\Models\DeliveryNotification;
-$notifications_histories=DeliveryNotification::where('delivery_man_id',Auth::guard('deliverymen')->user()->id)->latest()->take(5)->get();
+$notifications_histories=DeliveryNotification::where('delivery_man_id',Auth::guard('deliverymen')->user()->id)->latest()->paginate(5);
 @endphp
 <div class="container">
     <nav class="breadcrumb bg-white shadow-sm py-3 px-4 rounded d-flex justify-content-between align-items-center">
@@ -85,13 +85,13 @@ $notifications_histories=DeliveryNotification::where('delivery_man_id',Auth::gua
                                                 <p><strong>Name:</strong> {{ $order->user->name }}</p>
                                                 <p><strong>Phone Number:</strong> {{ $order->user->mobile }}</p>
                                                 <p><strong>Email:</strong> {{ $order->user->email }}</p>
-                                                <p><strong>City:</strong> {{ $order->address->city }}</p>
-                                                <p><strong>Sub City:</strong> {{ $order->address->sub_city }}</p>
-                                                <p><strong>Street:</strong> {{ $order->address->street }}</p>
-                                                <p><strong>State:</strong> {{ $order->address->state }}</p>
-                                                <p><strong>Country:</strong> {{ $order->address->country }}</p>
-                                                <p><strong>Pincode:</strong> {{ $order->address->pincode }}</p>
-                                                 <a href="{{ url('get-customer-location/'.$order->id) }}" class="btn btn-primary">Get Customer Location</a>
+                                                <p><strong>City:</strong> {{ $order->address->city??'' }}</p>
+                                                <p><strong>Sub City:</strong> {{ $order->address->sub_city??'' }}</p>
+                                                <p><strong>Street:</strong> {{ $order->address->street??'' }}</p>
+                                                <p><strong>State:</strong> {{ $order->address->state??'' }}</p>
+                                                <p><strong>Country:</strong> {{ $order->address->country??'' }}</p>
+                                                <p><strong>Pincode:</strong> {{ $order->address->pincode??'' }}</p>
+                                                 <a href="{{ url('delivery-boy/get-customer-location/'.$order->id) }}" class="btn btn-primary">Get Customer Location</a>
                                             </div>
                                         </div>
                                     </div>
@@ -139,7 +139,7 @@ $notifications_histories=DeliveryNotification::where('delivery_man_id',Auth::gua
                                                                     <img src="{{ $item->product->restaurant->cover }}" class="rounded" style="width: 60px; height: 40px; object-fit: cover;">
                                                                 </div>
                                                                 <hr>
-                                                                <a href="{{ url('pickup-order/'.$order->id.'/'.$item->product->restaurant->id) }}" class="btn btn-primary">Get Restaurant Location</a>
+                                                                <a href="{{ url('delivery-boy/pickup-order/'.$order->id.'/'.$item->product->restaurant->id) }}" class="btn btn-primary">Get Restaurant Location</a>
                                                                 <p class="mt-3">
                                                                    <strong>Pickup Status: </strong> <div class="btn btn-sm btn-primary">
                                                                     {{ $item->picked_status }}
@@ -171,7 +171,7 @@ $notifications_histories=DeliveryNotification::where('delivery_man_id',Auth::gua
                                 </div>
                             </td>
                             <td>
-                                @if ($order->delivery_status === 'delivering')
+                                @if ($order->delivery_status === "delivering")
                                 <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#orderModal{{ $order->id }}">
                                     <i class="bi bi-qr-code-scan"></i> Confirm Delivery
                                 </button>
@@ -213,12 +213,10 @@ $notifications_histories=DeliveryNotification::where('delivery_man_id',Auth::gua
                                                         </form>
                                                     </div>
                                                 </div>
-
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
                                 @else
                                 <div class="alert alert-success" role="alert">
                                     This order has already been <strong>marked as {{ $order->delivery_status }}</strong>.
@@ -229,6 +227,9 @@ $notifications_histories=DeliveryNotification::where('delivery_man_id',Auth::gua
                         @endforeach
                     </tbody>
                 </table>
+            </div>
+               <div>
+                {{ $orders->links() }}
             </div>
             <h5 class="text-muted mt-4">📜 Notification History</h5>
             <table class="table">
@@ -259,7 +260,9 @@ $notifications_histories=DeliveryNotification::where('delivery_man_id',Auth::gua
                     @endforeach
                 </tbody>
             </table>
-
+          <div>
+            {{ $notifications_histories->links() }}
+          </div>
         </div>
     </div>
 </div>

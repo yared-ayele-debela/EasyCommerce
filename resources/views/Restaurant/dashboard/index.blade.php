@@ -99,7 +99,7 @@
                     <div class="col-md-3 col-sm-6">
                         <div class="card shadow-sm border-0 rounded-3 p-3">
                             <div class="d-flex align-items-center">
-                                <div class="bg-primary text-white rounded-circle p-2 me-3">
+                                <div class="bg-primary text-white rounded-circle px-3 py-2 me-3">
                                     <i class="bi bi-bag-check fs-4"></i>
                                 </div>
                                 <div>
@@ -114,7 +114,7 @@
                     <div class="col-md-3 col-sm-6">
                         <div class="card shadow-sm border-0 rounded-3 p-3">
                             <div class="d-flex align-items-center">
-                                <div class="bg-success text-white rounded-circle p-2 me-3">
+                                <div class="bg-success text-white rounded-circle px-3 py-2  me-3">
                                     <i class="bi bi-cash-coin fs-4"></i>
                                 </div>
                                 <div>
@@ -129,7 +129,7 @@
                     <div class="col-md-3 col-sm-6">
                         <div class="card shadow-sm border-0 rounded-3 p-3">
                             <div class="d-flex align-items-center">
-                                <div class="bg-warning text-white rounded-circle p-2 me-3">
+                                <div class="bg-warning text-white rounded-circle  px-3 py-2 me-3">
                                     <i class="bi bi-receipt fs-4"></i>
                                 </div>
                                 <div>
@@ -144,7 +144,7 @@
                     <div class="col-md-3 col-sm-6">
                         <div class="card shadow-sm border-0 rounded-3 p-3">
                             <div class="d-flex align-items-center">
-                                <div class="bg-danger text-white rounded-circle p-2 me-3">
+                                <div class="bg-danger text-white rounded-circle  px-3 py-2 me-3">
                                     <i class="bi bi-tag fs-4"></i>
                                 </div>
                                 <div>
@@ -159,7 +159,7 @@
                     <div class="col-md-3 col-sm-6">
                         <div class="card shadow-sm border-0 rounded-3 p-3">
                             <div class="d-flex align-items-center">
-                                <div class="bg-info text-white rounded-circle p-2 me-3">
+                                <div class="bg-info text-white rounded-circle px-3 py-2 me-3">
                                     <i class="bi bi-truck fs-4"></i>
                                 </div>
                                 <div>
@@ -174,7 +174,7 @@
                     <div class="col-md-3 col-sm-6">
                         <div class="card shadow-sm border-0 rounded-3 p-3">
                             <div class="d-flex align-items-center">
-                                <div class="bg-secondary text-white rounded-circle p-2 me-3">
+                                <div class="bg-secondary text-white rounded-circle  px-3 py-2  me-3">
                                     <i class="bi bi-percent fs-4"></i>
                                 </div>
                                 <div>
@@ -189,7 +189,7 @@
                     <div class="col-md-3 col-sm-6">
                         <div class="card shadow-sm border-0 rounded-3 p-3">
                             <div class="d-flex align-items-center">
-                                <div class="bg-dark text-white rounded-circle p-2 me-3">
+                                <div class="bg-dark text-white rounded-circle px-3 py-2 me-3">
                                     <i class="bi bi-gift fs-4"></i>
                                 </div>
                                 <div>
@@ -204,7 +204,7 @@
                     <div class="col-md-3 col-sm-6">
                         <div class="card shadow-sm border-0 rounded-3 p-3">
                             <div class="d-flex align-items-center">
-                                <div class="bg-success text-white rounded-circle p-2 me-3">
+                                <div class="bg-success text-white rounded-circle px-3 py-2 me-3">
                                     <i class="bi bi-graph-up-arrow fs-4"></i>
                                 </div>
                                 <div>
@@ -531,7 +531,6 @@ function fetchChartData(days = 7) {
             if (data.length === 0) {
                 return;
             }
-
             const labels = data.map(d => d.date);
             const sales = data.map(d => parseFloat(d.total_sales));
             const counts = data.map(d => parseInt(d.order_count));

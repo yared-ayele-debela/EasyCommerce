@@ -1,31 +1,32 @@
 <?php
+namespace App\Events;
+
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Broadcasting\PrivateChannel;
 
 class DeliveryManLocationUpdated implements ShouldBroadcast
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use SerializesModels;
 
-     public $id, $lat, $lng;
+    public $deliveryManId;
+    public $latitude;
+    public $longitude;
 
-    public function __construct($id, $lat, $lng)
+    public function __construct($deliveryManId, $latitude, $longitude)
     {
-        $this->id = $id;
-        $this->lat = $lat;
-        $this->lng = $lng;
+        $this->deliveryManId = $deliveryManId;
+        $this->latitude = $latitude;
+        $this->longitude = $longitude;
     }
 
     public function broadcastOn()
     {
-        return new PrivateChannel('deliveryman.location.' . $this->id);
+        return new Channel('delivery-locations');
     }
 
     public function broadcastAs()
     {
-        return 'LocationUpdated';
+        return 'location.updated';
     }
 }

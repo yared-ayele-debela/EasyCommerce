@@ -14,7 +14,7 @@ $user = Auth::guard('deliverymen')->user();
 @endphp
 
 <section class="container">
-       <nav class="breadcrumb bg-white shadow-sm py-3 px-4 rounded d-flex justify-content-between align-items-center">
+    <nav class="breadcrumb bg-white shadow-sm py-3 px-4 rounded d-flex justify-content-between align-items-center">
         <button class="btn btn-outline-primary btn-sm d-flex align-items-center" onclick="history.back()">
             <i class="bi bi-arrow-left mr-2"></i> &nbsp;
             <span>Back</span>
@@ -31,131 +31,136 @@ $user = Auth::guard('deliverymen')->user();
     <div class="row">
         <div class="col-lg-5">
             <div class="card border-0 shadow-sm mb-4">
-    <div class="card-body">
-        <h4 class="card-title mb-4 font-weight-bold">Order Details</h4>
-        <div class="bg-light p-4 rounded">
-            <div class="row">
-                <div class="col-md-6 mb-2">
-                    <strong>Order ID:</strong> {{ $orderDetails['id'] }}
-                </div>
-                <div class="col-md-6 mb-2">
-                    <strong>Order Date:</strong> {{ $orderDetails['created_at'] ?? '-' }}
-                </div>
-                <div class="col-md-6 mb-2">
-                    <strong>Order Status:</strong> {{ $orderDetails['order_status'] }}
-                </div>
-                <div class="col-md-6 mb-2">
-                    <strong>Order Total:</strong> {{ $orderDetails['grand_total'] }} ETB
-                </div>
-                <div class="col-md-6 mb-2">
-                    <strong>Shipping Charges:</strong> {{ $orderDetails['shipping_charges'] }} ETB
-                </div>
-                <div class="col-md-6 mb-2">
-                    <strong>Order Tax:</strong> {{ $orderDetails['tax_charge'] }} ETB
-                </div>
-                @if(!empty($orderDetails['coupon_code']))
-                <div class="col-md-6 mb-2">
-                    <strong>Coupon Code:</strong> {{ $orderDetails['coupon_code'] }}
-                </div>
-                <div class="col-md-6 mb-2">
-                    <strong>Coupon Amount:</strong> {{ $orderDetails['coupon_amount'] }} ETB
-                </div>
-                @endif
-                @if(!empty($orderDetails['courier_name']))
-                <div class="col-md-6 mb-2">
-                    <strong>Courier Name:</strong> {{ $orderDetails['courier_name'] }}
-                </div>
-                <div class="col-md-6 mb-2">
-                    <strong>Tracking Number:</strong> {{ $orderDetails['tracking_number'] }}
-                </div>
-                @endif
-                <div class="col-md-6 mb-2">
-                    <strong>Payment Method:</strong> {{ $orderDetails['payment_method'] }}
-                </div>
-                <div class="col-md-6 mb-2">
-                    <strong>Payment Gateway:</strong> {{ $orderDetails['payment_gateway'] }}
-                </div>
-            </div>
-        </div>
+                <div class="card-body">
+                    <h4 class="card-title mb-4 font-weight-bold">Order Details</h4>
+                    <div class="bg-light p-4 rounded">
+                        <div class="row">
+                            <div class="col-md-12 mb-2">
+                                <strong>Order ID:</strong> {{ $orderDetails['id'] }}
+                            </div>
+                            <div class="col-md-12 mb-2">
+                                <strong>Order Date:</strong> {{ $orderDetails['created_at'] ?? '-' }}
+                            </div>
+                            <div class="col-md-12 mb-2">
+                                <strong>Order Status:</strong> {{ $orderDetails['order_status'] }}
+                            </div>
+                            <div class="col-md-12 mb-2">
+                                <strong>Order Total:</strong> {{ $orderDetails['grand_total'] }} ETB
+                            </div>
+                            <div class="col-md-12 mb-2">
+                                <strong>Shipping Charges:</strong> {{ $orderDetails['shipping_charges'] }} ETB
+                            </div>
+                            <div class="col-md-12 mb-2">
+                                <strong>Order Tax:</strong> {{ $orderDetails['tax_charge'] }} ETB
+                            </div>
+                            @if(!empty($orderDetails['coupon_code']))
+                            <div class="col-md-12 mb-2">
+                                <strong>Coupon Code:</strong> {{ $orderDetails['coupon_code'] }}
+                            </div>
+                            <div class="col-md-12 mb-2">
+                                <strong>Coupon Amount:</strong> {{ $orderDetails['coupon_amount'] }} ETB
+                            </div>
+                            @endif
+                            @if(!empty($orderDetails['courier_name']))
+                            <div class="col-md-12 mb-2">
+                                <strong>Courier Name:</strong> {{ $orderDetails['courier_name'] }}
+                            </div>
+                            <div class="col-md-12 mb-2">
+                                <strong>Tracking Number:</strong> {{ $orderDetails['tracking_number'] }}
+                            </div>
+                            @endif
+                            <div class="col-md-12 mb-2">
+                                <strong>Payment Method:</strong> {{ $orderDetails['payment_method'] }}
+                            </div>
+                            <div class="col-md-12 mb-2">
+                                <strong>Payment Gateway:</strong> {{ $orderDetails['payment_gateway'] }}
+                            </div>
+                        </div>
+                    </div>
+                    @if($user && $user->hasPermissionByRole('update_order_status') && Auth::guard('deliverymen')->user())
+                    <hr class="my-4">
+                    <h4 class="card-title font-weight-bold">Update Order Status</h4>
+                    <form action="{{ url('delivery-boy/update-order-status') }}" method="post" class="mt-3">
+                        @csrf
+                        <input type="hidden" name="order_id" value="{{ $orderDetails['id'] }}">
+                        <div class="form-group">
+                            <label for="order_status"><strong>Select Status:</strong></label>
+                            <select name="order_status" id="order_status" class="form-control" required>
+                                <option value="">-- Select Status --</option>
+                                @foreach ($orderStatus as $status)
+                                <option value="{{ $status['name'] }}" @if($orderDetails['order_status']==$status['name']) selected @endif>
+                                    {{ $status['name'] }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-        @if ($user && $user->hasPermissionByRole('update_order_status') && Auth::guard('deliverymen')->user())
-        <hr class="my-4">
+                        <div class="form-group mt-3" style="display: none;" id="user_code">
+                            <label for="user_code"><strong>Customer Verification Code</strong></label>
+                            <input type="text" name="user_code" class="form-control" id="user_code" placeholder="Enter Customer Code">
+                        </div>
 
-        <h4 class="card-title font-weight-bold">Update Order Status</h4>
-        <form action="{{ url('delivery-boy/update-order-status') }}" method="post" class="mt-3">
-            @csrf
-            <input type="hidden" name="order_id" value="{{ $orderDetails['id'] }}">
-            <div class="form-group">
-                <label for="order_status"><strong>Select Status:</strong></label>
-                <select name="order_status" id="order_status" class="form-control" required>
-                    <option value="">-- Select Status --</option>
-                    @foreach ($orderStatus as $status)
-                        <option value="{{ $status['name'] }}" @if($orderDetails['order_status'] == $status['name']) selected @endif>
-                            {{ $status['name'] }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
+                        @if($orderDetails['order_status'] === "delivered")
+                        <div class="alert alert-info mt-3">Order delivered successfully!</div>
+                        @else
+                        <div class="d-flex flex-wrap gap-2 mt-3">
+                            <button type="submit" class="btn btn-primary">Update Order Status</button>
+                            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exampleModal">
+                                Update Acceptance
+                            </button>
+                        </div>
+                        @endif
+                    </form>
 
-            <div class="form-group mt-3" style="display: none;" id="user_code">
-                <label for="user_code"><strong>Customer Verification Code</strong></label>
-                <input type="text" name="user_code" class="form-control" id="user_code" placeholder="Enter Customer Code">
-            </div>
-
-            @if($orderDetails['order_status'] === "delivered")
-                <div class="alert alert-info mt-3">Order delivered successfully!</div>
-            @else
-                <div class="d-flex flex-wrap gap-2 mt-3">
-                    <button type="submit" class="btn btn-primary">Update Order Status</button>
-                    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exampleModal">
-                        Update Acceptance
-                    </button>
-                </div>
-            @endif
-        </form>
-
-        <div class="mt-4">
-            <h5 class="mb-3"><strong>Order Status History</strong></h5>
-            @foreach ($orderLog as $log)
-                <div class="border-left pl-3 mb-3">
-                    <strong>{{ $log['order_status'] }}</strong>
-                    @if($log['order_status'] == "Shipped")
-                        @if(!empty($log['order_item_id']))
+                    <div class="mt-4">
+                        <h5 class="mb-3"><strong>Order Status History</strong></h5>
+                        @foreach ($orderLog as $log)
+                        <div class="border-left pl-3 mb-3">
+                            <strong>{{ $log['order_status'] }}</strong>
+                            @if($log['order_status'] == "Shipped")
+                            @if(!empty($log['order_item_id']))
                             @php $getItemDetails = OrderLog::getItemDetails($log['order_item_id']); @endphp
                             - for item {{ $getItemDetails['product_code'] ?? '-' }}
                             @if(!empty($getItemDetails['courier_name']))
-                                <br>Courier: {{ $getItemDetails['courier_name'] }}
+                            <br>Courier: {{ $getItemDetails['courier_name'] }}
                             @endif
                             @if(!empty($getItemDetails['tracking_number']))
-                                <br>Tracking #: {{ $getItemDetails['tracking_number'] }}
+                            <br>Tracking #: {{ $getItemDetails['tracking_number'] }}
                             @endif
-                        @else
+                            @else
                             @if(!empty($orderDetails['courier_name']))
-                                <br>Courier: {{ $orderDetails['courier_name'] }}
+                            <br>Courier: {{ $orderDetails['courier_name'] }}
                             @endif
                             @if(!empty($orderDetails['tracking_number']))
-                                <br>Tracking #: {{ $orderDetails['tracking_number'] }}
+                            <br>Tracking #: {{ $orderDetails['tracking_number'] }}
                             @endif
-                        @endif
-                    @endif
-                    <br>Date: {{ date('Y-m-d h:i:s', strtotime($log['created_at'])) }}
-                    @if(!empty($log['reason']))
-                        <br>Reason: {{ $log['reason'] }}
+                            @endif
+                            @endif
+                            <br>Date: {{ date('Y-m-d h:i:s', strtotime($log['created_at'])) }}
+                            @if(!empty($log['reason']))
+                            <br>Reason: {{ $log['reason'] }}
+                            @endif
+                        </div>
+                        @endforeach
+                    </div>
+                    @else
+                    <div class="alert alert-warning mt-4">This feature is restricted.</div>
                     @endif
                 </div>
-            @endforeach
-        </div>
-        @else
-            <div class="alert alert-warning mt-4">This feature is restricted.</div>
-        @endif
-    </div>
-</div>
+            </div>
 
         </div>
         <div class="col-lg-7">
             <div class="card border-0 shadow-sm">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h1 class=" card-title">Customer Details</h1>
+                        <a href="{{url('delivery-boy/ecommerce/get-customer-location/'.$orderDetails['id'])}}" class="btn btn-primary">
+                            Get Customer Location
+                        </a>
+                    </div>
+                </div>
                 <div class="card-body pt-3">
-                    <h1 class=" card-title">Customer Details</h1>
                     <div class="p-3 bg-light">
                         <div class="col-md- pt-1">
                             <label for="" class="form-label"><b>Name:</b></label>
@@ -348,7 +353,7 @@ $user = Auth::guard('deliverymen')->user();
                                     <th scope="col">Total Price</th>
                                     <th scope="col">Acceptance</th>
                                     <th scope="col">Status</th>
-                                    <th scope="col">Added By</th>
+                                    <th scope="col">Shop Address</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -407,7 +412,6 @@ $user = Auth::guard('deliverymen')->user();
                                         <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal{{ $product['id'] }}">
                                             Update
                                         </button>
-                                        <!-- Modal -->
                                         <div class="modal fade" id="exampleModal{{ $product['id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel{{ $product['id'] }}" aria-hidden="true">
                                             <div class="modal-dialog" role="document">
                                                 <div class="modal-content">
@@ -428,12 +432,12 @@ $user = Auth::guard('deliverymen')->user();
                                                                 <option value="{{ $status['name'] }}" @if(!empty($product['item_status']) && $product['item_status']==$status['name']) selected="" @endif>{{ $status['name'] }}</option>
                                                                 @endforeach
                                                             </select>
-                                                             <div class="form-group mt-3 item_vendor_code" id="vendor_code_wrapper_{{ $product['id'] }}" style="display: none;">
+                                                            <div class="form-group mt-3 item_vendor_code" id="vendor_code_wrapper_{{ $product['id'] }}" style="display: none;">
                                                                 <label for="vendor_code"><strong>Vendor Verification Code</strong></label>
-                                                                 <input type="number" name="vendor_code" class="form-control  mb-2" placeholder="Enter Vendor Code">
+                                                                <input type="number" name="vendor_code" class="form-control  mb-2" placeholder="Enter Vendor Code">
                                                             </div>
                                                             @error('vendor_code')
-                                                             <br>
+                                                            <br>
                                                             <span class="text-danger">{{ $message }}</span>
                                                             @enderror
                                                             @if($product['item_status']==="delivered")
@@ -450,7 +454,7 @@ $user = Auth::guard('deliverymen')->user();
                                     </td>
                                     <td>
                                         @php
-                                             $vendor=Vendor::where('id',$product['vendor_id'])->first();
+                                        $vendor=Vendor::where('id',$product['vendor_id'])->first();
                                         @endphp
 
                                         <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#vendor{{ $vendor['id'] }}">
@@ -479,6 +483,9 @@ $user = Auth::guard('deliverymen')->user();
                                                                 <p><strong>Mobile :</strong> {{ $vendor->mobile }}</p>
                                                                 <p><strong>Email :</strong> {{ $vendor->email }}</p>
                                                                 <!-- Add more details here if needed -->
+                                                                <a href="{{ url('delivery-boy/ecommerce/pickup-order/'.$orderDetails['id'].'/'.$vendor->id) }}" class="btn btn-primary">
+                                                                    Get Shop Location
+                                                                </a>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -515,22 +522,23 @@ $user = Auth::guard('deliverymen')->user();
             }
         })
         //show item courier name and tracking nuber in case of shipped order item status
-         $('.order-status-dropdown').on('change', function () {
-        let productId = $(this).data('product-id');
-        let selectedStatus = $(this).val();
+        $('.order-status-dropdown').on('change', function() {
+            let productId = $(this).data('product-id');
+            let selectedStatus = $(this).val();
 
-        if (selectedStatus === 'picked') {
-            $('#vendor_code_wrapper_' + productId).show();
-        } else {
-            $('#vendor_code_wrapper_' + productId).hide();
-        }
+            if (selectedStatus === 'picked') {
+                $('#vendor_code_wrapper_' + productId).show();
+            } else {
+                $('#vendor_code_wrapper_' + productId).hide();
+            }
         });
 
         // Optional: Trigger change on page load if needed
-        $('.order-status-dropdown').each(function () {
+        $('.order-status-dropdown').each(function() {
             $(this).trigger('change');
         });
-        });
+    });
 
 </script>
 @endsection
+

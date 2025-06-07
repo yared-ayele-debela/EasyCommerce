@@ -163,6 +163,9 @@ use App\Models\Order;
                     </div>
                 </div>
                 @endforeach
+                <div class="col-md-12 text-left">
+                    {{ $orders->links() }}
+                </div>
             </div>
             @endif
         </div>
@@ -263,6 +266,9 @@ use App\Models\Order;
                     </div>
                 </div>
                 @endforeach
+                <div class="col-md-12 text-left">
+                    {{ $reservations->links() }}
+                </div>
             </div>
 
             @endif
@@ -352,15 +358,23 @@ use App\Models\Order;
                                     @else
                                     @endif
                                 </div>
+                                 <div>
+                                 <a href="{{ url('ecommerce/track-order/'.$order['id']) }}" class="btn btn-sm btn-primary mt-3">
+                                   <span class="bi bi-pin-map text-white"></span> Track order
+                                </a>
                                 <a href="{{ url('ecommerce/orders/'.encrypt($order['id'])) }}" class="btn btn-sm btn-primary mt-3">
                                     <i class="fas fa-eye me-1"></i> View Full Order
                                 </a>
+                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 @endif
                 @endforeach
+                <div class="col-md-12 text-left">
+                    {{ $good_orders->links() }}
+                </div>
             </div>
         </div>
     </div>

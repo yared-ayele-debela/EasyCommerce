@@ -15,6 +15,8 @@ use App\Models\Restaurant\Product;
 use App\Models\Restaurant\Restaurant;
 use App\Models\ShippingCharge;
 use App\Models\Tip;
+use App\Services\NotificationService;
+use App\Services\SmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -146,6 +148,24 @@ class CheckoutController extends Controller
             $payment->amount_paid = $total;
             $payment->save();
         }
+
+         NotificationService::send(
+                userId: $order->user_id,
+                title: 'Food Order Placed',
+                message: "Your food order has been successfully placed."
+            );
+
+
+        $phone = $order->user->mobile ?? null;
+        if ($phone) {
+            // dd($phone);
+            $message = "Hi {$order->user->name}, Your Food Order has been placed.";
+            try {
+            SmsService::send($phone, $message);
+            } catch (\Exception $e) {
+            }
+        }
+
         Mail::to(Auth::user()->email)->send(new OrderConfirmationMail($order));
 
         DB::commit();
@@ -165,10 +185,10 @@ class CheckoutController extends Controller
 
         $countries = Country::all();
         $banks=Bank::all();
-        $tips=Tip::all(); 
+        $tips=Tip::all();
         $order_now_cart = session()->get('order_now_cart', []);
         if (empty($order_now_cart)) {
-            return redirect()->route('restaurant.frontend.checkout.index')->with('error', 'No items in the order now cart.');
+            return redirect()->back()->with('error', 'No items in the order now cart.');
         }
         $subtotal = collect($order_now_cart)->sum(fn($item) => $item['price'] * $item['quantity']);
         session(['order_now_cart_subtotal' => $subtotal]);
@@ -191,7 +211,7 @@ class CheckoutController extends Controller
             $totalTax += $taxAmount;
 
         }
-       
+
         return view('Restaurant.frontend.checkout.order_now.index', compact('countries', 'banks', 'tips', 'subtotal', 'totalTax', 'totalShipping'));
     }
 
@@ -223,7 +243,7 @@ class CheckoutController extends Controller
         }
          $totalTax = 0;
         $totalShipping = 0;
-        
+
         foreach ($order_now_cart as $item) {
             $product = Product::find($item['product_id']);
             if (!$product) continue; // Skip if product doesn't exist
@@ -291,6 +311,23 @@ class CheckoutController extends Controller
             $payment->amount_paid = $total;
             $payment->save();
         }
+
+          NotificationService::send(
+                userId: $order->user_id,
+                title: 'Food Order Placed',
+                message: "Your food order has been successfully placed."
+            );
+
+             $phone = $order->user->mobile ?? null;
+            if ($phone) {
+                // dd($phone);
+                $message = "Hi {$order->user->name}, Your Food Order has been placed.";
+                try {
+                SmsService::send($phone, $message);
+                } catch (\Exception $e) {
+                }
+            }
+
         Mail::to(Auth::user()->email)->send(mailable: new OrderConfirmationMail($order));
         DB::commit();
         session()->forget(['order_now_cart', 'order_now_cart_subtotal', 'order_now_discount']); // Clear order now cart session after successful order

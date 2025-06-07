@@ -124,9 +124,6 @@
 
             <br>
 
-            {{-- <li class=" {{ request()->is('admin/hotel/my-hotel')?'nav-item active':'' }} " >
-                <a href="{{ url('admin/hotel/my-hotel') }}" class="nav-link" > <i class="bi bi-house-fill"></i><span>My Hotel</span></a>
-            </li> --}}
             <li class="nav-heading">My Settings</li>
             <li class=" {{ request()->is('admin/update_admin_password')?'nav-item active':'' }} {{ request()->is('admin/updateadmindetails')?'nav-item active':'' }} ">
                 <a class="nav-link" data-bs-target="#settings-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class="bi bi-person-bounding-box  "></i><span>My Profile</span><i class="bi bi-chevron-down ms-auto"></i> </a>
@@ -135,6 +132,15 @@
                     <li> <a href="{{ route('updateadmindetails') }}" class="{{ request()->is('admin/updateadmindetails*')?'nav-link active':'' }}"> <i class="bi bi-circle"></i><span>Update Details</span></a></li>
                 </ul>
             </li>
+             @if(Auth::guard('admin')->user()->type=="Hotel Manager")
+            <li class="{{ request()->is('admin/hotel/update-vendor-details')?'nav-item active':'' }} {{ request()->is('admin/hotel/update-vendor-bank-details')?'nav-item active':'' }} {{ request()->is('admin/hotel/update-vendor-business-details')?'nav-item active':'' }}">
+                <a class="nav-link " data-bs-target="#vendordetails-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class="bi bi-person-badge"></i><span>My Details</span><i class="bi bi-chevron-down ms-auto"></i> </a>
+                <ul id="vendordetails-nav" class=" nav-content collapse {{ request()->is('admin/hotel/update-vendor-details')?'show':'' }} {{ request()->is('admin/hotel/update-vendor-bank-details')?'show':'' }} {{ request()->is('admin/hotel/update-vendor-business-details')?'show':'' }}" data-bs-parent="#sidebar-nav">
+                    <li> <a href="{{ route('hotel.updatevendordetails') }}" class="{{ request()->is('admin/hotel/update-vendor-details*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Personal Details</span> </a></li>
+                    <li> <a href="{{ route('hotel.updatevendorbankdetails') }}" class="{{ request()->is('admin/hotel/update-vendor-bank-details*')?'nav-link active':'' }}"> <i class="bi bi-circle"></i><span>Bank Details</span></a></li>
+                </ul>
+            </li>
+            @endif
     </ul>
 </aside>
 

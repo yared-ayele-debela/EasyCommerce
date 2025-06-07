@@ -1,0 +1,100 @@
+
+ <!DOCTYPE html>
+<html>
+<head>
+  <title>Nearest Delivery Man</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map { height: 600px; width: 100%; }
+  </style>
+</head>
+<body>
+  <h2>Nearest Delivery Men to Restaurants</h2>
+  <div id="map"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <script>
+  const apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55bmFtZSI6IkVhc3kgZS1jb21tZXJjZSBob3RlbCBib29raW5nIGFuZCBkZWxpdmVyeSIsImRlc2NyaXB0aW9uIjoiMGU4ZDhhZDMtZmJhYy00OTJkLWE4OWYtZGFiZjQxNTFlNDc2IiwiaWQiOiI3OWY1ODRlYy0yZDA3LTRjNWQtYTI2Ny00MjBhNzVlMDY2NzMiLCJ1c2VybmFtZSI6ImJlZmk3NzU2In0.JgSoBiAoa4Te6ccg-jSJSifq26PZV4FnGbkhQKiTnuo";
+
+    // Restaurant and Delivery Man coordinates
+    const restaurants = [
+      { id: "R1", name: "Pizza Place", lat: 9.03045, lng: 38.76530 },
+      { id: "R2", name: "Burger House", lat: 9.02512, lng: 38.76381 }
+    ];
+
+    const deliveryMen = [
+      { id: "D1", name: "Amanuel", lat: 9.001370, lng: 38.767821 },
+      { id: "D2", name: "Selam", lat: 8.9920, lng: 38.7825 },
+      { id: "D3", name: "Mekdes", lat: 8.9940, lng: 38.7840 }
+    ];
+
+    const allLocations = [...deliveryMen, ...restaurants];
+    const jsonParam = allLocations.map(loc => `{${loc.lat},${loc.lng}}`).join(',');
+
+    // Initialize Leaflet map
+    const map = L.map('map').setView([9.01, 38.77], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Add markers to map
+    deliveryMen.forEach(d => {
+      L.marker([d.lat, d.lng], { icon: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/1995/1995525.png', iconSize: [25, 25] }) })
+        .addTo(map)
+        .bindPopup(`<b>Delivery: ${d.name}</b>`);
+    });
+
+    restaurants.forEach(r => {
+      L.marker([r.lat, r.lng], { icon: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/1046/1046784.png', iconSize: [25, 25] }) })
+        .addTo(map)
+        .bindPopup(`<b>Restaurant: ${r.name}</b>`);
+    });
+
+    // Call Gebeta Matrix API
+    fetch(`https://mapapi.gebeta.app/api/route/matrix/?json=[${jsonParam}]&apiKey=${apiKey}`)
+      .then(res => res.json())
+      .then(data => {
+        const durations = data.durations;
+        const numDelivery = deliveryMen.length;
+        const numRestaurants = restaurants.length;
+
+        for (let i = 0; i < numRestaurants; i++) {
+          const restaurant = restaurants[i];
+          let minDuration = Infinity;
+          let nearestDelivery = null;
+
+          for (let j = 0; j < numDelivery; j++) {
+            const duration = durations[j].duration[numDelivery + i];
+            if (duration < minDuration) {
+              minDuration = duration;
+              nearestDelivery = deliveryMen[j];
+            }
+          }
+
+          // Draw polyline from delivery man to restaurant
+          const line = L.polyline([
+            [nearestDelivery.lat, nearestDelivery.lng],
+            [restaurant.lat, restaurant.lng]
+          ], {
+            color: 'blue',
+            weight: 3,
+            opacity: 0.7
+          }).addTo(map);
+
+          line.bindPopup(`
+            <b>${restaurant.name}</b><br>
+            Nearest: ${nearestDelivery.name}<br>
+            ETA: ${minDuration.toFixed(1)} sec
+          `);
+        }
+      })
+      .catch(err => console.error("Matrix API error:", err));
+  </script>
+</body>
+</html>

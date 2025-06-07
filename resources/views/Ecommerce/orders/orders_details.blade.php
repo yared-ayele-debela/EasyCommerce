@@ -58,6 +58,7 @@
                                 {!! QrCode::size(100)->generate($orderDetails['order_code']) !!}
                             </div>
                             @endif
+                           
                         </div>
                         <div class="col-md-6">
                             <div class="d-flex justify-content-between py-2 border-bottom">
@@ -163,11 +164,20 @@
                     </div>
                 </div>
             </div>
-
         </div>
         <div class="col-md-6">
+            @session('success')
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+            </div>
+            @endsession
+              @session('error')
+            <div class="alert alert-error alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+            </div>
+            @endsession
             @if($checkorderproductavailable)
-            @if($getOrderStatus == "Delivered")
+            @if($getOrderStatus === "delivered")
             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#return_request">
                 Return Request
             </button>
@@ -181,7 +191,7 @@
                             <button type="button" class="btn-close btn" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form method="POST" action="{{ url('admin/orders/'.$orderDetails['id'].'/return') }}">
+                            <form method="POST" action="{{ url('ecommerce/orders/'.$orderDetails['id'].'/return') }}">
                                 @csrf
                                 <div class="form-group mb-3">
                                     <label for="returnProduct">Select Product</label>
@@ -243,7 +253,7 @@
 
 
             @endif
-            @if($getOrderStatus == "New")
+            @if($getOrderStatus == "new")
             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#reason">
                 Cancellation Reason
             </button>
@@ -257,7 +267,7 @@
                             <button type="button" class="btn-close btn" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form method="POST" action="{{ url('admin/orders/'.$orderDetails['id'].'/cancel') }}">
+                            <form method="POST" action="{{ url('ecommerce/orders/'.$orderDetails['id'].'/cancel') }}">
                                 @csrf
                                 <div class="form-group mb-3">
                                     <label for="cancelReason" class=" form-label"> Cancellation Reason</label>
@@ -297,12 +307,11 @@
     <hr>
     <h4 class="text-muted">Order Products</h4>
     <div class="row">
-
         @foreach ($orderDetails['orders_products'] as $product)
         <div class="col-md-2 col-6 mb-2">
             <div class="offer-card h-100 text-center">
                 <div class="card-body p-2">
-                    <img src="{{ \App\Models\Product::getProductImage($product['product_id']) }}" class="img-fluid mb-2" style="max-height: 80px;">
+                    <img src="{{ \App\Models\Product::getProductImage($product['product_id'])??asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" style="max-height: 80px;">
                     <h6>{{ $product['product_name'] }}</h6>
                     <p class="mb-1">
                         Code: {{ $product['product_code'] }}<br>
@@ -350,7 +359,6 @@
             }
         });
     });
-
 
     var toggleButton = document.getElementById('toggleButton');
     var content = document.getElementById('content');

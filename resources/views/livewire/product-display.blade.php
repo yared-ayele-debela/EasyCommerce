@@ -80,7 +80,6 @@
                                 {{ ucfirst($product['admin_type']) }}
                                 @endif
                             </td>
-                            @if ($user && $user->hasPermissionByRole('update product status'))
 
                             <td>
                                 <i class="cont">
@@ -94,21 +93,7 @@
                                 </div>
                                 </i>
                             </td>
-                            @else
-
-                            <td>
-                                <i class="cont">
-                                <button id="popoverButton" class="btn btn-sm {{ $product['status'] ? 'btn-success' : 'btn-danger' }}">
-                                    {{ $product['status'] ? 'Active' : 'Inactive' }}
-                                </button>
-                                <div id="popover" class="popover">
-                                    <div class="popover-content">
-                                        <p><strong>Comment</strong>: {{ $product['status_comment'] }}</p>
-                                    </div>
-                                </div>
-                                </i>
-                            </td>
-                            @endif
+                          
 
                             <td>
                                 <div class="d-flex">

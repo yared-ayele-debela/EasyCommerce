@@ -29,6 +29,10 @@
             placeholder: 'Select a street',
             allowClear: true
         });
+        $('.select-delivery-man').select2({
+            placeholder: 'Select a delivery man',
+            allowClear: true
+        });
         $('.edit-select-delivery-zone').select2({
             placeholder: 'Select a street',
             allowClear: true

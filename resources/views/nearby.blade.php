@@ -44,8 +44,8 @@
     , });
 
     const deliveryIcon = new L.Icon({
-        iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png'
-        , iconSize: [25, 25]
+        iconUrl: 'https://cdn-icons-png.flaticon.com/512/2219/2219633.png'
+        , iconSize: [35, 35]
     , });
 
     // Add restaurant marker
@@ -57,7 +57,7 @@
         .openPopup();
 
     // Fetch deliverymen nearby
-fetch(`/api/orders/${orderId}/nearby-deliverymen`)
+    fetch(`/api/orders/${orderId}/nearby-deliverymen`)
         .then(res => res.json())
         .then(deliverymen => {
             const listDiv = document.getElementById('deliveryman-list');
@@ -106,4 +106,3 @@ fetch(`/api/orders/${orderId}/nearby-deliverymen`)
 
 </script>
 @endsection
-

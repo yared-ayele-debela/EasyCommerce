@@ -266,7 +266,7 @@ class AdminController extends Controller
             $zones=Delivery_Zone::all();
             return view('admin.vendor.updatevendordetails', compact('zones','vendorDetails', 'country', 'appsettings', 'cms_pages'));
         } catch (\Exception $e) {
-            Alert::toast('Error', 'Something is wrong!', 'error');
+            Alert::toast(title:  'Something is wrong!', icon: 'error');
             return redirect()->back();
         }
     }
@@ -324,7 +324,6 @@ class AdminController extends Controller
                 'city' => $data['vendor_city'],
                 'state' => $data['vendor_state'],
                 'address' => $data['vendor_address'],
-                'mobile' => $data['vendor_mobile'],
                 'country' => $data['vendor_country'],
                 'pincode' => $data['vendor_pincode'],
                 'zone' =>  $data['zone'],
@@ -338,7 +337,7 @@ class AdminController extends Controller
             // Laravel's built-in validation exception
             return redirect()->back()->withErrors($e->validator->errors())->withInput();
         } catch (\Exception $e) {
-            Alert::toast('Error', 'Something is wrong!', 'error');
+            Alert::toast( 'Something is wrong!', 'error');
             return redirect()->back();
         }
     }
@@ -711,60 +710,70 @@ class AdminController extends Controller
             if (!$user || !$user->hasPermissionByRole('create_admin')) {
                 return view('admin.errors.unauthorized');
             }
-            if (!$request->method('post')) {
-                Alert::toast('something is wrong!!', 'error');
-                return redirect()->back();
-            }
-            $this->validate($request, [
-                'name' => 'required',
-                'email' => 'email',
-                'mobile' => 'required',
-                'password' => 'required'
-            ]);
-            //            dd($request->all());
-            $adminCount = Admin::where('email', $request->input('email'))->count();
-            if ($adminCount > 0) {
-                Alert::toast('Admin/sub-admin already exists', 'error');
-                return redirect()->back();
-            }
-            $adminmobile = Admin::where('mobile', $request->input('mobile'))->first();
-            //   dd($adminmobile);
-            if ($adminmobile != null) {
-                Alert::toast('Admin/sub-admin mobile number exists', 'error');
-                return redirect()->back();
-            }
-            $admin = new Admin();
 
+            $this->validate($request, [
+                'name' => 'required|string|max:255',
+                'email' => 'nullable|email|unique:admins,email',
+                'mobile' => 'required|unique:admins,mobile',
+                'password' => 'required|string|min:6',
+            ]);
+
+            $role = Roles::where('name',$request->type)->first();
+            // dd($role);
+            // List of types that require vendor creation
+            $typesWithVendors = ['vendor', 'ecommerce manager', 'hotel manager', 'restaurant manager'];
+
+            $vendorId = null;
+
+            if (in_array(strtolower($request->input('type')), $typesWithVendors)) {
+                // Create vendor
+                // dd('vendor');
+                $vendor = new Vendor();
+                $vendor->name = $request->input('name');
+                $vendor->mobile = $request->input('mobile');
+                $vendor->email = $request->input('email');
+                $vendor->status = 1; // default active
+                $vendor->confirm="Yes";
+                $vendor->save();
+
+                $vendorId = $vendor->id;
+            }
+            // dd("admin");
+
+            // Create admin
+            $admin = new Admin();
             $admin->name = $request->input('name');
             $admin->type = $request->input('type');
             $admin->email = $request->input('email');
             $admin->mobile = $request->input('mobile');
+            $admin->vendor_id = $vendorId;
             $admin->password = Hash::make($request->input('password'));
+            $admin->status=1;
+            $admin->confirm="Yes";
 
-            if ($request->hasFile('image')) {
+             if ($request->hasFile('image')) {
                 // Store image and get relative path
                 $path = $request->file('image')->store('admin/image', 'public');
-
                 // Convert to full URL
                 $admin->image = asset('storage/' . $path);
             }
-
             $admin->save();
 
+            $admin->roles()->sync([$role->id]);
 
-            ActivityLogger::log('Create', "Create admin user");
 
-
-            Alert::toast('Admin/sub-admin has been created!', 'success');
+            ActivityLogger::log('Create', 'Create admin user');
+            Alert::toast('Admin has been created!', 'success');
             return redirect()->route('alladmins');
+
         } catch (\Illuminate\Validation\ValidationException $e) {
-            // Laravel's built-in validation exception
             return redirect()->back()->withErrors($e->validator->errors())->withInput();
         } catch (\Exception $e) {
-            Alert::toast('something is wrong!!', 'error');
+            Alert::toast('Something is wrong!', 'error');
             return redirect()->back();
         }
     }
+
 
     public  function edit_admin_or_subadmin($id)
     {
@@ -793,25 +802,27 @@ class AdminController extends Controller
                 return view('admin.errors.unauthorized');
             }
 
-            if (!$request->method('put')) {
-                Alert::toast('something is wrong!!', 'error');
-                return redirect()->back();
-            }
-            $this->validate($request, [
-                'name' => 'required',
-                'email' => 'email',
-                'mobile' => 'required',
-            ]);
+           $admin = Admin::findOrFail($request->id);
+        //    dd($admin);
 
+        $this->validate($request, [
+            'name' => 'required|string|max:255',
+            'email' => 'nullable|email|unique:admins,email,' . $admin->id,
+            'mobile' => 'required|unique:admins,mobile,' . $admin->id,
+            'password' => 'nullable|string|min:6',
+        ]);
 
-            $admin = Admin::find($request->input('id'));
+        $admin->name = $request->input('name');
+        $admin->email = $request->input('email');
+        $admin->mobile = $request->input('mobile');
+        $admin->type = $request->input('type');
 
-            $admin->name = $request->input('name');
-            $admin->type = $request->input('type');
-            $admin->email = $request->input('email');
-            $admin->mobile = $request->input('mobile');
+        if ($request->filled('password')) {
+            $admin->password = Hash::make($request->input('password'));
+        }
 
-            if ($request->hasFile('image')) {
+        // Image update
+         if ($request->hasFile('image')) {
                 // Delete old image if exists
                 if ($admin->image) {
                     $oldImagePath = str_replace(asset('storage') . '/', '', $admin->image);
@@ -823,15 +834,43 @@ class AdminController extends Controller
                 // Store new image
                 $path = $request->file('image')->store('admin/image', 'public');
                 $admin->image = asset('storage/' . $path); // Save full URL
+        }
+
+        $typesWithVendors = ['vendor', 'ecommerce manager', 'hotel manager', 'restaurant manager'];
+
+        if (in_array(strtolower($request->input('type')), $typesWithVendors)) {
+            if ($admin->vendor_id) {
+
+                $vendor = Vendor::find($admin->vendor_id);
+                if ($vendor) {
+                    $vendor->name = $request->input('name');
+                    $vendor->mobile = $request->input('mobile');
+                    $vendor->email = $request->input('email');
+                    $vendor->save();
+                }
+            } else {
+                // Create new vendor
+                $vendor = new Vendor();
+                $vendor->name = $request->input('name');
+                $vendor->mobile = $request->input('mobile');
+                $vendor->email = $request->input('email');
+                $vendor->status = 1;
+                 $vendor->confirm="Yes";
+                $vendor->save();
+
+                $admin->vendor_id = $vendor->id;
             }
+        } else {
+            // Remove vendor link if not applicable anymore
+            $admin->vendor_id = null;
+        }
 
-            $admin->save();
+        $admin->save();
 
-            ActivityLogger::log('Update', "update admin information");
+        ActivityLogger::log('Update', "Updated admin user: {$admin->name}");
+        Alert::toast('Admin has been updated!', 'success');
+        return redirect()->route('alladmins');
 
-
-            Alert::toast('Admin/sub-admin has been updated', 'success');
-            return redirect('admin/all/admins');
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Laravel's built-in validation exception
             return redirect()->back()->withErrors($e->validator->errors())->withInput();

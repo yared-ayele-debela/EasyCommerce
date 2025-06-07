@@ -1,263 +1,165 @@
 @extends('delivery_man.admin_dashboard.maindashboard')
 @section('delivery_man_dashboard')
+
 @php
 $delivery_men = Auth::guard('deliverymen')->user();
 @endphp
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+
 <style>
-         #instructions {
-        max-height: 250px;
-        overflow-y: auto;
-        z-index: 1000;
+    #map { height: 500px; }
+    .leaflet-routing-container {
+        background: white;
+        border-radius: 8px;
+        padding: 5px;
     }
+</style>
 
-        #map {
-            width: 100%;
-            height: 70vh;
-            border-radius: 10px;
-        }
-
-        .info-card {
-            background: #f8f9fa;
-            border-radius: 10px;
-            box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.1);
-        }
-
-        .info-card h5 {
-            font-weight: bold;
-            color: #2ddb27;
-        }
-
-        .text-primary {
-            color: #2ddb27 !important;
-        }
-
-        .metric {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        .metric small {
-            font-weight: 400;
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-    </style>
- <div class="container">
+<div class="container">
     <nav class="breadcrumb bg-white shadow-sm py-3 px-4 rounded d-flex justify-content-between align-items-center">
         <button class="btn btn-outline-primary btn-sm d-flex align-items-center" onclick="history.back()">
             <i class="bi bi-arrow-left mr-2"></i> &nbsp;
             <span>Back</span>
         </button>
         <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item">
-                <a href="{{ url('delivery-boy/dashboard') }}">Home</a>
-            </li>
+            <li class="breadcrumb-item"><a href="{{ url('delivery-boy/dashboard') }}">Home</a></li>
             <li class="breadcrumb-item active" aria-current="page">Live Route Tracker</li>
         </ol>
     </nav>
-        {{-- <div class="row mb-4">
-            <div class="col-md-8 mx-auto text-center">
-                <h1 class="display-5 fw-bold text-primary">🚗 Live Route Tracker</h1>
-                <p class="lead">Real-time vehicle animation with total distance and estimated time</p>
-            </div>
-        </div> --}}
 
-        <div class="row g-4">
-            <div class="col-md-8">
-                <div class="info-card p-2">
-                    <div id="map"></div>
+    <div class="row g-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                   <div class="d-flex justify-content-between justify-items-center">
+                     <div class="">
+                        <button class="btn btn-sm btn-primary" onclick="window.speechSynthesis.resume()">Resume Voice</button>
+                        <button class="btn btn-sm btn-warning" onclick="window.speechSynthesis.pause()">Pause Voice</button>
+                        <button class="btn btn-sm btn-danger" onclick="window.speechSynthesis.cancel()">Stop Voice</button>
+                    </div>
+                    <button id="startDrivingBtn" class="btn btn-success btn-sm">Start Driving</button>
+                   </div>
                 </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="p-4 info-card">
-                    <h5>Route Summary</h5>
-                    <hr>
-                    <p class="metric"><i class="bi bi-pin-map-fill text-primary"></i> Start: <span id="startPoint">-</span></p>
-                    <p class="metric"><i class="bi bi-geo-alt-fill text-primary"></i> End: <span id="endPoint">-</span>
-                    </p>
-                    <p class="metric"><i class="bi bi-rulers text-primary"></i> Distance: <span id="totalDistance">-</span> km</p>
-                    <p class="metric"><i class="bi bi-clock-fill text-primary"></i> Time: <span id="estimatedTime">-</span></p>
+                <div class="card-body">
+                    
+                    <div id="map" class="mt-3"></div>
                 </div>
-                <div class="p-4 info-card mt-4">
-                    <h5>📋 Step-by-Step Instructions</h5>
-                    <ul class="list-group list-group-flush" id="instructions"></ul>
-                </div>
-
             </div>
         </div>
     </div>
+</div>
 
-     <!-- Bootstrap & Leaflet JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<!-- Scripts -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.min.js"></script>
+<script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/laravel-echo/1.11.3/echo.iife.js"></script>
 
-    <script>
-    const destinationLat = "{{ $restaurant->latitude }}";
-    const destinationLng = "{{ $restaurant->longitude }}";
-    const restaurant_name = "{{ $restaurant->name }}";
-    const destination = `${destinationLat},${destinationLng}`;
+<script>
+  
+  
 
-    const restaurantIcon = L.icon({
-        iconUrl: '{{ $restaurant->cover?$restaurant->cover:asset('restaurant_frontend/no-image.jpg') }}',
-        iconSize: [38, 38],
-        iconAnchor: [19, 38],
-        popupAnchor: [0, -38]
+    const destinationLatLng = [{{ $restaurant->latitude }}, {{ $restaurant->longitude }}];
+    const deliveryManId = {{ $order->delivery_man_id }};
+    let startedDriving = false;
+
+    const map = L.map('map').setView(destinationLatLng, 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+    }).addTo(map);
+
+    // Restaurant marker
+    const destinationMarker = L.marker(destinationLatLng, {
+        icon: L.icon({
+            iconUrl: '{{ asset('restaurant_frontend/hotel.gif') }}',
+            iconSize: [40, 40],
+            iconAnchor: [15, 15]
+        })
+    }).addTo(map).bindPopup("Restaurant").openPopup();
+
+    let deliveryMarker = null;
+    let routeControl = null;
+
+    // Start Driving button
+    document.getElementById('startDrivingBtn').addEventListener('click', () => {
+        startedDriving = true;
+
+        if (deliveryMarker) {
+            const currentLatLng = deliveryMarker.getLatLng();
+            map.setView(currentLatLng, 15); // or use map.flyTo for smooth animation
+        }
     });
 
-     const deliveryManIcon = L.icon({
-        iconUrl: '{{ $delivery_men->delivery_man_image?asset('/storage/delivery_man/'.Auth::guard('deliverymen')->user()->delivery_man_image):asset('restaurant_frontend/no-image.jpg') }}',
-        iconSize: [38, 38],
-        iconAnchor: [19, 38],
-        popupAnchor: [0, -38]
+    // Laravel Echo Setup
+    window.Pusher = Pusher;
+    window.Echo = new Echo({
+        broadcaster: 'pusher',
+        key: 'local',
+        wsHost: window.location.hostname,
+        wsPort: 6001,
+        forceTLS: false,
+        disableStats: true,
     });
 
-    let map, vehicle;
+    window.Echo.channel('delivery-locations')
+        .listen('.location.updated', (e) => {
+            if (e.deliveryManId == deliveryManId) {
+                const currentLatLng = [e.latitude, e.longitude];
 
-    async function initMap() {
-        // Get user's current location
-        navigator.geolocation.getCurrentPosition(async (position) => {
-            const originLat = "{{ $delivery_men->current_lat }}";
-            const originLng = "{{ $delivery_men->current_lng }}";
-            const origin = `${originLat},${originLng}`;
-
-            try {
-                const res = await fetch(`/order/route?origin=${origin}&destination=${destination}`);
-                const data = await res.json();
-
-                if (!data.direction) {
-                    alert("No route found.");
-                    return;
-                }
-
-                const coords = data.direction.map(([lat, lng]) => [parseFloat(lat), parseFloat(lng)]);
-                map = L.map('map').setView(coords[0], 14);
-
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 19,
-                    attribution: '&copy; OpenStreetMap contributors'
-                }).addTo(map);
-
-                const polyline = L.polyline(coords, { color: 'green', weight: 5 }).addTo(map);
-                map.fitBounds(polyline.getBounds());
-
-                const start = coords[0];
-                const end = coords[coords.length - 1];
-
-                L.marker(start, {icon: deliveryManIcon}).addTo(map).bindPopup("Your Location").openPopup();
-                L.marker(end, { icon: restaurantIcon }).addTo(map).bindPopup(`<b>${restaurant_name}</b>`);
-
-                // Define a custom Leaflet icon
-                const turnIcon = L.icon({
-                    iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png', // Example icon (map direction arrow)
-                    iconSize: [20, 20],  // width, height
-                    iconAnchor: [15, 30],  // point of the icon which will correspond to marker's location
-                    popupAnchor: [0, -30]  // point from which the popup should open relative to the iconAnchor
-                });
-
-                            (data.instruction || []).forEach((instruction, index) => {
-                    const lat = parseFloat(instruction.turning_latitude);
-                    const lng = parseFloat(instruction.turning_longitude);
-
-                    L.marker([lat, lng], { icon: turnIcon })
-                        .addTo(map)
-                        .bindPopup(`<strong>Step ${index + 1}</strong>: ${instruction.path} <br><small>${instruction.distance.toFixed(1)} m</small>`);
-                });
-
-                // Display route stats
-                document.getElementById('startPoint').innerText = `${start[0].toFixed(4)}, ${start[1].toFixed(4)}`;
-                document.getElementById('endPoint').innerText = `${end[0].toFixed(4)}, ${end[1].toFixed(4)}`;
-                document.getElementById('totalDistance').innerText = (data.totalDistance / 1000).toFixed(2); // km
-                document.getElementById('estimatedTime').innerText = formatDuration(data.timetaken); // in sec
-
-                // Route Instructions
-                const instructions = document.getElementById('instructions');
-                instructions.innerHTML = "";
-                if (data.instruction && data.instruction.length > 0) {
-                    data.instruction.forEach((step, index) => {
-                        const li = document.createElement('li');
-                        li.className = "list-group-item d-flex justify-content-between align-items-start";
-                        const icon = document.createElement('span');
-                        icon.className = "me-2 text-primary";
-                        icon.innerHTML = `<i class="bi bi-geo-alt-fill"></i>`;
-                        const stepText = document.createElement('div');
-                        stepText.className = "fw-semibold";
-                        stepText.innerHTML = `${index + 1}. ${step.path}`;
-                        const badge = document.createElement('span');
-                        badge.className = "badge bg-secondary rounded-pill";
-                        badge.innerText = `${step.distance.toFixed(1)} m`;
-                        li.appendChild(icon);
-                        li.appendChild(stepText);
-                        li.appendChild(badge);
-                        instructions.appendChild(li);
-                    });
+                // Create or move marker
+                if (!deliveryMarker) {
+                    deliveryMarker = L.marker(currentLatLng, {
+                        icon: L.icon({
+                            iconUrl: '{{ asset('restaurant_frontend/delivery-man.gif') }}',
+                            iconSize: [50, 50],
+                            iconAnchor: [25, 25]
+                        })
+                    }).addTo(map).bindPopup("You");
                 } else {
-                    instructions.innerHTML = `<li class="list-group-item text-muted">No instructions available.</li>`;
+                    deliveryMarker.setLatLng(currentLatLng);
                 }
 
-                // Add animated vehicle
-                const vehicleIcon = L.icon({
-                    iconUrl: 'https://cdn-icons-png.flaticon.com/512/744/744465.png',
-                    iconSize: [40, 40],
-                    iconAnchor: [20, 20]
-                });
+                // Only draw route when "Start Driving" is clicked
+                if (startedDriving) {
+                    if (routeControl) {
+                        map.removeControl(routeControl);
+                    }
 
-                vehicle = L.marker(start, { icon: vehicleIcon }).addTo(map);
-                animateVehicle(coords);
-                startLiveTracking();
-            } catch (error) {
-                console.error("Route fetch failed:", error);
-                alert("Error loading route.");
+                    routeControl = L.Routing.control({
+                        waypoints: [
+                            L.latLng(currentLatLng),
+                            L.latLng(destinationLatLng)
+                        ],
+                        createMarker: () => null,
+                        show: false,
+                        addWaypoints: false,
+                        draggableWaypoints: false,
+                        fitSelectedRoutes: true,
+                        lineOptions: {
+                            styles: [{ color: 'green', weight: 5, opacity: 0.8 }]
+                        }
+                    }).addTo(map);
+                    routeControl.on('routesfound', function(e) {
+                        const instructions = e.routes[0].instructions || e.routes[0].segments || [];
+                        let spokenInstructions = e.routes[0].instructions || [];
+
+                        if ('speechSynthesis' in window) {
+                            spokenInstructions.forEach((instr, idx) => {
+                                setTimeout(() => {
+                                    const utterance = new SpeechSynthesisUtterance(instr.text || instr.instruction || '');
+                                    utterance.lang = 'en-US';
+                                    window.speechSynthesis.speak(utterance);
+                                }, idx * 4000); // 4 seconds gap between steps
+                            });
+                        } else {
+                            console.warn("This browser does not support Speech Synthesis");
+                        }
+                    });
+                }
             }
-        }, (error) => {
-            alert("Geolocation failed: " + error.message);
         });
-    }
-
-    // Animate vehicle across route
-    function animateVehicle(coords) {
-        let i = 0;
-        function move() {
-            if (i < coords.length) {
-                vehicle.setLatLng(coords[i]);
-                i++;
-                requestAnimationFrame(move);
-            }
-        }
-        move();
-    }
-
-    // Format seconds as readable time
-    function formatDuration(seconds) {
-        const minutes = Math.floor(seconds / 60);
-        if (minutes < 60) {
-            return `${minutes} mins`;
-        } else {
-            const hrs = Math.floor(minutes / 60);
-            const mins = minutes % 60;
-            return `${hrs} hr ${mins} min`;
-        }
-    }
-
-    // Live tracking updates
-    function startLiveTracking() {
-        setInterval(async () => {
-            try {
-                const res = await fetch('/live-location');
-                const data = await res.json();
-
-                if (data.lat && data.lng && vehicle) {
-                    vehicle.setLatLng([parseFloat(data.lat), parseFloat(data.lng)]);
-                }
-            } catch (err) {
-                console.warn("Live location error:", err);
-            }
-        }, 10000); // Every 10 seconds
-    }
-
-    window.onload = initMap;
 </script>
-
 @endsection

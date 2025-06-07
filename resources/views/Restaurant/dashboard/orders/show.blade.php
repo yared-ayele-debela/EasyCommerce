@@ -19,6 +19,13 @@ $user = Auth::guard('admin')->user();
     <h4>Order #{{ $order->id }} Details</h4>
     <div class="row">
         <!-- User Info Card -->
+        <div class="col-md-12">
+            @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+            @endif
+        </div>
         <div class="col-md-4">
             <div class="card">
                 <div class="card-header">
@@ -76,11 +83,9 @@ $user = Auth::guard('admin')->user();
                         <div class="mb-3">
                             <label for="order_status" class="form-label">Order Status</label>
                             <select name="order_status" id="order_status" class="form-select">
-                                <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="confirmed" {{ $order->status == 'confirmed' ? 'selected' : '' }}>Confirmed</option>
-                                <option value="picked" {{ $order->status == 'picked' ? 'selected' : '' }}>picked</option>
-                                <option value="shipped" {{ $order->status == 'shipped' ? 'selected' : '' }}>shipped</option>
-                                <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>Delivered</option>
+                                @foreach ($order_status as $status)
+                                <option value="{{ $status->name }}" {{ $order->status === $status->name ? 'selected' : '' }}>{{ $status->name }}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="mb-3">
@@ -98,13 +103,7 @@ $user = Auth::guard('admin')->user();
                 </div>
             </div>
         </div>
-        <div class="col-md-12">
-            @if(session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-            @endif
-        </div>
+
         <div class="col-md-4">
             <div class="card">
                 <div class="card-header">
@@ -116,7 +115,7 @@ $user = Auth::guard('admin')->user();
                         @csrf
                         <div class="mb-3">
                             <label for="delivery_man_id" class="form-label">Delivery Man</label>
-                            <select name="delivery_man_id" id="delivery_man_id" class="form-select">
+                            <select name="delivery_man_id" id="delivery_man_id" class="form-select select-delivery-zone">
                                 @foreach ($delivery_mans as $man)
                                 <option value="{{ $man->id }}">{{ $man->first_name }} {{ $man->last_name }} | {{ $man->phone }}</option>
                                 @endforeach
@@ -125,6 +124,8 @@ $user = Auth::guard('admin')->user();
                         <button type="submit" class="btn btn-success">Assign To Delivery Man</button>
                     </form>
 
+                    <br>
+                    <a href="{{ url('admin/restaurant/nearby-deliverymen') }}" class="btn btn-primary">Check who nearby to resturant</a>
                     @else
                     <div class="alert alert-warning" role="alert">
                         <strong>Order already assigned to {{ $delivery_man->first_name }}</strong>

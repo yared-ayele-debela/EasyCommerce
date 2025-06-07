@@ -45,8 +45,8 @@ $user = Auth::guard('admin')->user();
                     <label for="type" class="form-label">Admin Type</label>
                     <select class="form-select" required name="type">
                         <option value="">Select Admin Type</option>
-                        @foreach ($role as $role)
-                        <option value="{{$role->name}}">{{ $role->name }}</option>
+                        @foreach ($role as $ro)
+                        <option value="{{$ro->name}}">{{ $ro->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -84,39 +84,6 @@ $user = Auth::guard('admin')->user();
     </div>
     </div>
 </section>
-<script>
-    // Form validation function
-    function validateForm() {
-        const mobileInput = document.getElementById("mobile");
-        const nameInput = document.getElementById("name");
-        const password = document.getElementById("password");
-        const validpassword = password.value;
 
-        if (validpassword < 8) {
-            alert("Password length must be 8 digit");
-            password.focus();
-            event.preventDefault();
-            return false;
-        }
-
-        if (!/^[A-Za-z\s]+$/.test(nameInput.value)) {
-            alert("Invalid name! Only characters are allowed.");
-            nameInput.focus();
-            event.preventDefault();
-            return false;
-        }
-      
-
-        return true; // Form will be submitted if everything is valid
-    }
-
-    // Event listener for form submission
-    document.getElementById("loginForm").addEventListener("submit", function(event) {
-        if (!validateForm()) {
-            event.preventDefault(); // Prevent form submission if validation fails
-        }
-    });
-
-</script>
 @endsection
 

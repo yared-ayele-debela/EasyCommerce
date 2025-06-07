@@ -23,6 +23,8 @@ use App\Models\OrderStatus;
 use App\Models\Payment;
 use App\Models\User;
 use App\Models\Vendor;
+use App\Services\NotificationService;
+use App\Services\SmsService;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -216,364 +218,239 @@ class OrdersController extends Controller
     }
 
     public function updateOrderStatus(Request $request)
-    {
-        try {
-            $user = Auth::guard('admin')->user();
+{
+    try {
+        $admin = Auth::guard('admin')->user();
+        if (!$admin || !$admin->hasPermissionByRole('update_order_status')) {
+            return view('admin.errors.unauthorized');
+        }
 
-            if (!$user || !$user->hasPermissionByRole('update_order_status')) {
-                return view('admin.errors.unauthorized');
-            }
+        if ($request->isMethod('post')) {
+            $data = $request->all();
+            $order = Order::with('user')->find($data['order_id']);
 
-            if($request->isMethod('post')){
-                $data=$request->all();
-
-                if ($data['order_status'] == 'Delivered' || $data['order_status'] == 'Paid') {
-                    if($data['order_status']=="Paid"){
-
-                        $order = Order::where('id', $data['order_id'])->first();
-                        $payment_id=Str::random(16);
-                        // dd($payment_id);
-                        $payment =new Payment();
-                        $payment->order_id=$order['id'];
-                        $payment->user_id=$order['user_id'];
-                        $payment->payment_id=$payment_id;
-                        $payment->payer_id=$order['user_id'];
-                        $payment->payer_email=$order['email'];
-                        $payment->amount=$order['grand_total'];
-                        $payment->currency='Birr';
-                        $payment->payment_status='approved';
-                        $payment->save();
-
-                    }
-                    $order = Order::where('id', $data['order_id'])->first();
-                    if ($order->order_code == $data['user_code']) {
-
-                        Order::where('id',$data['order_id'])
-                        ->update(['order_status'=>$data['order_status']]);
-
-                        $deliveryBoy = DeliveryMan::find(Auth::guard('deliverymen')->user()->id)->first();
-                        //   dd($deliveryBoy);
-                        if ($deliveryBoy) {
-                            $deliveryBoy->status = "Pending";
-                            $deliveryBoy->save();
-                        }
-
-                        //udate courier Name and Tracking Number
-                        if(!empty($data['courier_name'])&&!empty($data['tracking_number'])){
-                            Order::where('id',$data['order_id'])->update([
-                                'courier_name'=>$data['courier_name'],
-                                'tracking_number'=>$data['tracking_number']
-                            ]);
-                        }
-
-                        $log=new OrderLog();
-                        $log->order_id=$data['order_id'];
-                        $log->order_status=$data['order_status'];
-                        $log->save();
-
-                        $deliveryDetails=Order::select('mobile','email','name')->where('id',$data['order_id'])->first()->toArray();
-                        $orderDetails=Order::with('orders_products')->where('id',$data['order_id'])->first()->toArray();
-                        $email_template=EmailTemplate::first();
-
-
-                        //Send Order Status Update Email
-                        if(!empty($data['courier_name'])&& !empty($data['tracking_number'])){
-                            $email=$deliveryDetails['email'];
-                            $messageData=[
-                            'email_template'=>$email_template,
-                            'email'=>$email,
-                            'name'=>$deliveryDetails['name'],
-                            'order_id'=>$data['order_id'],
-                            'orderDetails'=>$orderDetails  ,
-                            'order_status'=>$data['order_status'],
-                            'courier_name'=>$data['courier_name'],
-                            'tracking_number'=>$data['tracking_number'],
-                            ];
-
-                            Mail::send('emails.order_status',$messageData,function($message)use ($email){
-                                $message->to($email)->subject('Order Status Updated   ');
-                            });
-                        }
-                        else
-                        {
-                            $email=$deliveryDetails['email'];
-                            $messageData=[
-                            'email_template'=>$email_template,
-                            'email'=>$email,
-                            'name'=>$deliveryDetails['name'],
-                            'order_id'=>$data['order_id'],
-                            'orderDetails'=>$orderDetails  ,
-                            'order_status'=>$data['order_status'],
-                            ];
-
-                            Mail::send('emails.order_status',$messageData,function($message)use ($email){
-                                $message->to($email)->subject('Order Status Updated   ');
-                            });
-                        }
-                        Alert::toast('Order status ihas been udpated !','success');
-                        return redirect()->back();
-                    }
-                    else
-                    {
-                        Alert::toast('Invalid user code. Order status not updated.', 'error');
-                        return redirect()->back();
-                    }
-                }
-
-                if ($data['order_status'] == 'Shipped'){
-                    $deliveryBoy = DeliveryMan::find(Auth::guard('deliverymen')->user())->first();
-                    if ($deliveryBoy) {
-                        $deliveryBoy->status = "In Transit";
-                        $deliveryBoy->save();
-                    }
-                }
-
-                Order::where('id',$data['order_id'])
-                ->update(['order_status'=>$data['order_status']]);
-
-
-                //udate courier Name and Tracking Number
-                if(!empty($data['courier_name'])&&!empty($data['tracking_number'])){
-                    Order::where('id',$data['order_id'])->update([
-                        'courier_name'=>$data['courier_name'],
-                        'tracking_number'=>$data['tracking_number']
-                    ]);
-                }
-
-                //Update Order log
-                 $log=new OrderLog();
-                 $log->order_id=$data['order_id'];
-                 $log->order_status=$data['order_status'];
-                 $log->save();
-                 $orders_users=Order::with('user')->where('id',$data['order_id'])->first()->toArray();
-                $orderNumber=$orders_users['id'];
-                $order_code=$orders_users['order_code'];
-                $orderStatus=$orders_users['order_status'];
-                $appsettings=AppSetting::first()->toArray();
-
-
-                $companyName=$appsettings['application_title'];
-                $phoneNumber=$appsettings['phone_no'];
-
-
-                // $message = "Hello " . $orders_users['user']['name'] . ", Your order ID #" . $orderNumber . " with  order code ".$order_code." is now " . $orderStatus . ". Thank you for choosing " . $companyName . ". For any inquiries, visit our website or contact customer support at " . $phoneNumber . ".";
-                // $messages='hello';
-                // $receiver= +251925508462;
-                // Email::sendSms($receiver,$messages);
-
-                $deliveryDetails=Order::select('mobile','email','name')->where('id',$data['order_id'])->first()->toArray();
-                $orderDetails=Order::with('orders_products')->where('id',$data['order_id'])->first()->toArray();
-                //Send Order Status Update Email
-                $email_template=EmailTemplate::first();
-
-                if(!empty($data['courier_name'])&& !empty($data['tracking_number'])){
-                    $email=$deliveryDetails['email'];
-                    $messageData=[
-                    'email_template'=>$email_template,
-                    'email'=>$email,
-                    'name'=>$deliveryDetails['name'],
-                    'order_id'=>$data['order_id'],
-                    'orderDetails'=>$orderDetails  ,
-                    'order_status'=>$data['order_status'],
-                    'courier_name'=>$data['courier_name'],
-                    'tracking_number'=>$data['tracking_number'],
-                    ];
-
-                    Mail::send('emails.order_status',$messageData,function($message)use ($email){
-                        $message->to($email)->subject('Order Status Updated   ');
-                    });
-                }
-                else
-                {
-                    $email=$deliveryDetails['email'];
-                    $messageData=[
-                        'email_template'=>$email_template,
-                    'email'=>$email,
-                    'name'=>$deliveryDetails['name'],
-                    'order_id'=>$data['order_id'],
-                    'orderDetails'=>$orderDetails  ,
-                    'order_status'=>$data['order_status'],
-                    ];
-
-                    Mail::send('emails.order_status',$messageData,function($message)use ($email){
-                        $message->to($email)->subject('Order Status Updated   ');
-                    });
-               }
-
-                Alert::toast('Order status ihas been udpated !','success');
+            if (!$order) {
+                Alert::toast('Order not found.', 'error');
                 return redirect()->back();
             }
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Laravel's built-in validation exception
-            return redirect()->back()->withErrors($e->validator->errors())->withInput();
-        } catch (\Exception $e) {
-            Alert::toast('something is wrong!!', 'error');
+
+            $oldStatus = $order->order_status;
+
+            // Handle Paid status and create Payment
+            if ($data['order_status'] === 'Paid') {
+                Payment::create([
+                    'order_id'       => $order->id,
+                    'user_id'        => $order->user_id,
+                    'payment_id'     => Str::random(16),
+                    'payer_id'       => $order->user_id,
+                    'payer_email'    => $order->email,
+                    'amount'         => $order->grand_total,
+                    'currency'       => 'Birr',
+                    'payment_status' => 'approved',
+                ]);
+            }
+
+            // Ensure user code matches if Delivered or Paid
+            if (in_array($data['order_status'], ['Delivered', 'Paid'])) {
+                if ($order->order_code !== $data['user_code']) {
+                    Alert::toast('Invalid user code. Order status not updated.', 'error');
+                    return redirect()->back();
+                }
+
+                // Set delivery man status to Pending
+                $deliveryMan = Auth::guard(name: 'deliverymen')->user();
+                if ($deliveryMan) {
+                    $deliveryMan->status = 'avalilable';
+                    $deliveryMan->save();
+                }
+            }
+
+            // Set delivery man status for Shipped
+            if ($data['order_status'] === 'Shipped') {
+                $deliveryMan = Auth::guard('deliverymen')->user();
+                if ($deliveryMan) {
+                    $deliveryMan->status = 'delivering';
+                    $deliveryMan->save();
+                }
+            }
+
+            // Update order status
+            $updateData = ['order_status' => $data['order_status']];
+
+            if (!empty($data['courier_name']) && !empty($data['tracking_number'])) {
+                $updateData['courier_name'] = $data['courier_name'];
+                $updateData['tracking_number'] = $data['tracking_number'];
+            }
+
+            $order->update($updateData);
+
+            // Save Order Log
+            OrderLog::create([
+                'order_id'     => $order->id,
+                'order_status' => $data['order_status'],
+            ]);
+
+            // Notification
+            NotificationService::send(
+                userId: $order->user_id,
+                title: 'Goods Order Status Updated',
+                message: "Your goods order #{$order->id} status has changed from '{$oldStatus}' to '{$data['order_status']}'."
+            );
+
+            // SMS
+            $phone = $order->user->mobile ?? null;
+            if ($phone) {
+                try {
+                    SmsService::send(
+                        $phone,
+                        "Hi {$order->user->name}, Your goods order #{$order->id} status has changed from '{$oldStatus}' to '{$data['order_status']}'."
+                    );
+                } catch (\Exception $e) {
+                    // optionally log SMS failure
+                }
+            }
+
+            // Email Notification
+            $emailTemplate = EmailTemplate::first();
+            $email = $order->user->email;
+
+            Mail::send('emails.order_status', [
+                'email_template' => $emailTemplate,
+                'email'          => $email,
+                'name'           => $order->user->name,
+                'order_id'       => $order->id,
+                'orderDetails'   => $order->load('orders_products')->toArray(),
+                'order_status'   => $data['order_status'],
+            ], function ($message) use ($email) {
+                $message->to($email)->subject('Order Status Updated');
+            });
+
+            Alert::toast('Order status has been updated!', 'success');
             return redirect()->back();
         }
+
+        // If not POST method
+        return redirect()->back();
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return redirect()->back()->withErrors($e->validator->errors())->withInput();
+    } catch (\Exception $e) {
+        Alert::toast('Something went wrong!', 'error');
+        return redirect()->back();
     }
+}
 
 
     public function updateOrderItemStatus(Request $request)
-    {
-        try {
-            $user = Auth::guard('admin')->user();
+{
+    // try {
+        $admin = Auth::guard('admin')->user();
 
-            if (!$user || !$user->hasPermissionByRole('update_order_item_status')) {
-                return view('admin.errors.unauthorized');
-            }
+        if (!$admin || !$admin->hasPermissionByRole('update_order_item_status')) {
+            return view('admin.errors.unauthorized');
+        }
 
-            if($request->isMethod('post')){
-                $data=$request->all();
-                if ($data['order_item_status'] == 'Shipped') {
-                $order = OrderProduct::where('id',$data['order_item_id'])->first();
-                if ($order->order_product_code == $data['vendor_code']){
-                    OrderProduct::where('id',$data['order_item_id'])->update(['item_status'=>$data['order_item_status']]);
-                    //update courier name & tracking number
-                    if(!empty($data['item_courier_name'])&&!empty($data['item_tracking_number'])){
-                        OrderProduct::where('id',$data['order_item_id'])->update([
-                            'courier_name'=>$data['item_courier_name'],
-                            'tracking_number'=>$data['item_tracking_number']
-                        ]);
-                    }
-
-                    $getOrderId=OrderProduct::select('order_id')->where('id',$data['order_item_id'])->first()->toArray();
-
-                    //Update Order log
-                    $log=new OrderLog();
-                    $log->order_id=$getOrderId['order_id'];
-                    $log->order_item_id=$data['order_item_id'];
-                    $log->order_status=$data['order_item_status'];
-                    $log->save();
-                    //get Delviery Details
-                    $deliveryDetails=Order::select('mobile','email','name')->where('id',$getOrderId['order_id'])->first()->toArray();
-                    //to Get Delivery Address
-                    $order_item_id=$data['order_item_id'];
-
-                    $orderDetails=Order::with(['orders_products'=>function($query)use($order_item_id){
-                        $query->where('id',$order_item_id);
-                    }])->where('id',$getOrderId['order_id'])->first()->toArray();
-                    $email_template=EmailTemplate::first();
-
-                    //Send Order Status Update Email
-                        if(!empty($data['item_courier_name'])&&!empty($data['item_tracking_number'])){
-                            $email=$deliveryDetails['email'];
-                            $messageData=[
-                            'email_template'=>$email_template,
-                            'email'=>$email,
-                            'name'=>$deliveryDetails['name'],
-                            'order_id'=>$getOrderId['order_id'],
-                            'orderDetails'=>$orderDetails  ,
-                            'order_status'=>$data['order_item_status'],
-                            'courier_name'=>$data['item_courier_name'],
-                            'tracking_number'=>$data['item_tracking_number'],
-                        ];
-
-                            Mail::send('emails.order_item_status',$messageData,function($message)use ($email){
-                                $message->to($email)->subject('Order Item Status Updated   ');
-                            });
-
-                        }
-                    else
-                        {
-                        $email=$deliveryDetails['email'];
-                        $messageData=[
-                        'email_template'=>$email_template,
-                        'email'=>$email,
-                        'name'=>$deliveryDetails['name'],
-                        'order_id'=>$getOrderId['order_id'],
-                        'orderDetails'=>$orderDetails  ,
-                        'order_status'=>$data['order_item_status'],
-                        ];
-
-                        Mail::send('emails.order_item_status',$messageData,function($message)use ($email){
-                            $message->to($email)->subject('Order Item Status Updated   ');
-                        });
-
-                        }
-                }else{
-                    Alert::toast('Invalid Vendor code. Ordered Product Status not updated.', 'error');
-                    return redirect()->back();
-                }
-             }
-
-
-                OrderProduct::where('id',$data['order_item_id'])->update(['item_status'=>$data['order_item_status']]);
-                //update courier name & tracking number
-                if(!empty($data['item_courier_name'])&&!empty($data['item_tracking_number'])){
-                    OrderProduct::where('id',$data['order_item_id'])->update([
-                        'courier_name'=>$data['item_courier_name'],
-                        'tracking_number'=>$data['item_tracking_number']
-                    ]);
-                }
-
-                $getOrderId=OrderProduct::select('order_id')->where('id',$data['order_item_id'])->first()->toArray();
-
-                //Update Order log
-                $log=new OrderLog();
-                $log->order_id=$getOrderId['order_id'];
-                $log->order_item_id=$data['order_item_id'];
-                $log->order_status=$data['order_item_status'];
-                $log->save();
-                //get Delviery Details
-
-                $deliveryDetails=Order::select('mobile','email','name')->where('id',$getOrderId['order_id'])->first()->toArray();
-                //to Get Delivery Address
-                $order_item_id=$data['order_item_id'];
-
-                $orderDetails=Order::with(['orders_products'=>function($query)use($order_item_id){
-                    $query->where('id',$order_item_id);
-                }])->where('id',$getOrderId['order_id'])->first()->toArray();
-                $email_template=EmailTemplate::first();
-
-                //Send Order Status Update Email
-                    if(!empty($data['item_courier_name'])&&!empty($data['item_tracking_number'])){
-                        $email=$deliveryDetails['email'];
-                        $messageData=[
-                        'email_template'=>$email_template,
-                        'email'=>$email,
-                        'name'=>$deliveryDetails['name'],
-                        'order_id'=>$getOrderId['order_id'],
-                        'orderDetails'=>$orderDetails  ,
-                        'order_status'=>$data['order_item_status'],
-                        'courier_name'=>$data['item_courier_name'],
-                        'tracking_number'=>$data['item_tracking_number'],
-                    ];
-
-                        Mail::send('emails.order_item_status',$messageData,function($message)use ($email){
-                            $message->to($email)->subject('Order Item Status Updated   ');
-                        });
-
-                    }
-                else
-                    {
-                    $email=$deliveryDetails['email'];
-                    $messageData=[
-                    'email_template'=>$email_template,
-                    'email'=>$email,
-                    'name'=>$deliveryDetails['name'],
-                    'order_id'=>$getOrderId['order_id'],
-                    'orderDetails'=>$orderDetails  ,
-                    'order_status'=>$data['order_item_status'],
-                    ];
-
-                    Mail::send('emails.order_item_status',$messageData,function($message)use ($email){
-                        $message->to($email)->subject('Order Item Status Updated   ');
-                    });
-
-                    }
-
-                Alert::toast('Order item status ihas been udpated !','success');
-                return redirect()->back();
-            }
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Laravel's built-in validation exception
-            return redirect()->back()->withErrors($e->validator->errors())->withInput();
-        } catch (\Exception $e) {
-            Alert::toast('something is wrong!!', 'error');
+        if (!$request->isMethod('post')) {
             return redirect()->back();
         }
+
+        $data = $request->all();
+        $orderItem = OrderProduct::find($data['order_item_id']);
+
+        if (!$orderItem) {
+            Alert::toast('Order item not found.', 'error');
+            return redirect()->back();
+        }
+
+        $oldStatus = $orderItem->item_status;
+
+        // Validate vendor code for "Shipped" status
+        if ($data['order_item_status'] === 'Shipped' && $orderItem->order_product_code !== $data['vendor_code']) {
+            Alert::toast('Invalid Vendor code. Ordered Product Status not updated.', 'error');
+            return redirect()->back();
+        }
+
+        // Update order item status and optional tracking info
+        $updateFields = ['item_status' => $data['order_item_status']];
+        if (!empty($data['item_courier_name']) && !empty($data['item_tracking_number'])) {
+            $updateFields['courier_name'] = $data['item_courier_name'];
+            $updateFields['tracking_number'] = $data['item_tracking_number'];
+        }
+        $orderItem->update(attributes: $updateFields);
+
+        // Log the status update
+        $this->logOrderItemStatusChange($orderItem->order_id, $orderItem->id, $data['order_item_status']);
+
+        // Fetch order, user, and delivery details
+        $order = Order::with(['user', 'orders_products' => fn($q) => $q->where('id', $orderItem->id)])
+            ->findOrFail($orderItem->order_id);
+        $user = $order->user;
+
+        // Send email
+        $this->sendOrderItemStatusEmail($user, $order, $orderItem, $data);
+
+        // Send app notification
+        NotificationService::send(
+            userId: $user->id,
+            title: 'Order Item Status Updated',
+            message: "Your order #{$order->id} status has changed from '{$oldStatus}' to '{$orderItem->item_status}'."
+        );
+
+        // Send SMS if mobile exists
+        if (!empty($user->mobile)) {
+            $sms = "Hi {$user->name}, Your goods order item #{$order->id} status has changed from '{$oldStatus}' to '{$orderItem->item_status}'.";
+            try {
+                SmsService::send($user->mobile, $sms);
+            } catch (\Exception $e) {
+                // log or ignore
+            }
+        }
+
+        Alert::toast('Order item status has been updated!', 'success');
+        return redirect()->back();
+
+    // } catch (\Illuminate\Validation\ValidationException $e) {
+    //     return redirect()->back()->withErrors($e->validator->errors())->withInput();
+    // } catch (\Exception $e) {
+    //     Alert::toast('Something went wrong!', 'error');
+    //     return redirect()->back();
+    // }
+}
+
+
+
+
+    private function logOrderItemStatusChange($orderId, $orderItemId, $status)
+    {
+        OrderLog::create([
+            'order_id' => $orderId,
+            'order_item_id' => $orderItemId,
+            'order_status' => $status,
+        ]);
     }
 
+    private function sendOrderItemStatusEmail($user, $order, $orderItem, $data)
+    {
+        $email = $user->email;
+        $emailTemplate = EmailTemplate::first();
+
+        $messageData = [
+            'email_template' => $emailTemplate,
+            'email' => $email,
+            'name' => $user->name,
+            'order_id' => $order->id,
+            'orderDetails' => $order->toArray(),
+            'order_status' => $data['order_item_status'],
+        ];
+
+        if (!empty($data['item_courier_name']) && !empty($data['item_tracking_number'])) {
+            $messageData['courier_name'] = $data['item_courier_name'];
+            $messageData['tracking_number'] = $data['item_tracking_number'];
+        }
+
+        Mail::send('emails.order_item_status', $messageData, function ($message) use ($email) {
+            $message->to($email)->subject('Order Item Status Updated');
+        });
+    }
 
 
     public function viewOrderInvoice($order_id)
@@ -1128,6 +1005,7 @@ class OrdersController extends Controller
                 $data = $request->all();
                 $returnDetails = ReturnRequest::where('id', $data['return_id'])->first();
 
+                // dd($returnDetails);
                 if (!$returnDetails) {
                     throw new \Exception('Return details not found.');
                 }
@@ -1138,9 +1016,8 @@ class OrdersController extends Controller
 
                 OrderProduct::where([
                     'order_id' => $returnDetails['order_id'],
-                    'product_code' => $returnDetails['product_code'],
-                    'product_size' => $returnDetails['product_size']
-                ])->update(['item_status' => 'Return' . $returnDetails['return_status']]);
+                    'product_code' => $returnDetails['product_code']
+                ])->update(['item_status' => 'Return ' . $returnDetails['return_status']]);
 
                 $userDetails = User::select('name', 'email')->where('id', $returnDetails['user_id'])->first();
 
@@ -1162,6 +1039,7 @@ class OrdersController extends Controller
                 Mail::send('emails.return_request', $messageData, function ($message) use ($email, $return_status) {
                     $message->to($email)->subject('Return Request ' . $return_status);
                 });
+
 
                 Alert::toast('Return Request has been ' . $return_status, 'success');
                 return redirect('admin/return_request');

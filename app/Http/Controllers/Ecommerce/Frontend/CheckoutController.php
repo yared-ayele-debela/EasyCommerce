@@ -24,6 +24,10 @@ use App\Models\SalesMainCommission;
 use App\Models\ShippingCharge;
 use App\Models\Tip;
 use App\Models\Vendor;
+use App\Models\VendorWallet;
+use App\Models\VendorWalletTransaction;
+use App\Services\NotificationService;
+use App\Services\SmsService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -54,7 +58,7 @@ class CheckoutController extends Controller
     foreach ($getCartItems as $item) {
         $product = Product::with('vendor')->find($item['product_id']);
         if(!empty($item['size'])){
-                $discountPriceData = Product::getDiscountAttributePrice($product->id, $item['size']);    
+                $discountPriceData = Product::getDiscountAttributePrice($product->id, $item['size']);
         }else{
             $discountPriceData=Product::getDiscountProductPrice($item['product_id']);
         }
@@ -84,7 +88,7 @@ class CheckoutController extends Controller
 
         // Calculate shipping
         $weight = $item['product']['product_weight'];
-        
+
         $vendor_city=Vendor::where('id',$product->vendor_id)->first();
         $zone = $vendor_city->zone;
         // dd(vars: $zone);
@@ -151,7 +155,7 @@ class CheckoutController extends Controller
               $getDiscountAttributePrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
             }else{
               $getDiscountAttributePrice = Product::getDiscountProductPrice($item['product_id']);
-    
+
             }
             $product_price = $getDiscountAttributePrice['final_price'];
             $product_quantity = $item['quantity'];
@@ -217,7 +221,7 @@ class CheckoutController extends Controller
                     ]);
 
                 }
-         
+
             //Prevent Disabled out ProductAttributes to Order
             $getAttributeStatus = ProductAttribute::getAttributeStatus($item['product_id'], $item['size']);
             if ($getAttributeStatus == 0) {
@@ -267,6 +271,8 @@ class CheckoutController extends Controller
         $order->state = $deliveryAddresses['state'];
         $order->country = $deliveryAddresses['country'];
         $order->pincode = $deliveryAddresses['pincode'];
+        $order->latitude = $deliveryAddresses['latitude'];
+        $order->longitude = $deliveryAddresses['longitude'];
         $order->mobile = $deliveryAddresses['mobile'];
         $order->email = Auth::user()->email;
         $order->shipping_charges = $totalShipping;
@@ -312,7 +318,7 @@ class CheckoutController extends Controller
               $getDiscountAttributePrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
             }else{
               $getDiscountAttributePrice = Product::getDiscountProductPrice($item['product_id']);
-    
+
             }
             $discount = Discount::where('product_id', $item['product_id'])
                 ->where('min_product', '<=', $product_quantity)
@@ -326,6 +332,7 @@ class CheckoutController extends Controller
             $product_total_price_for_commication = $product_total_price;
             $total_item_price = $product_total_price_for_commication * $item['quantity'];
 
+
             if ($discount) {
                 if ($discount->discount_type === "Discounted Price") {
                     $product_total_price_after_discount = $product_total_price - $discount->amount;
@@ -335,6 +342,27 @@ class CheckoutController extends Controller
                     $product_total_price_after_discount = $product_total_price - $discountAmount;
                 }
             }
+                $itemSubtotal = $product_total_price_after_discount * $item['quantity'];
+                // dd($itemSubtotal);
+
+                $product = Product::find($item['product_id']);
+                $vendor = Vendor::find($product->vendor_id);
+                $commissionRate = $vendor->commission ?? 5; // default to 10%
+                // Admin commission and vendor earning
+                $adminCommission = round($itemSubtotal * $commissionRate / 100, 2);
+                $vendorEarning = $itemSubtotal - $adminCommission;
+
+                $vendorId=$vendor->id;
+                $vendorWallet = VendorWallet::firstOrCreate(['vendor_id' => $vendorId]);
+                $vendorWallet->available_balance += $vendorEarning;
+                $vendorWallet->save();
+
+                VendorWalletTransaction::create([
+                    'vendor_id' => $vendorId,
+                    'type' => 'credit',
+                    'amount' => $vendorEarning,
+                    'description' => 'Earning from order #'.$order_id
+                ]);
 
             $total_prices += $product_total_price_after_discount;
             if ($discount) {
@@ -348,7 +376,10 @@ class CheckoutController extends Controller
                 $cartItem->discount_type = $discount->discount_type;
                 $cartItem->specail_discount = $discount->amount;
             }
+            $cartItem->admin_commission = $adminCommission;
+            $cartItem->vendor_earning = $vendorEarning;
             $cartItem->save();
+            
             if ($item['size']) {
                 $getProductStock = ProductAttribute::isStokAvailable(product_id: $item['product_id'], size: $item['size']);
                 $newStock = $getProductStock - $item['quantity'];
@@ -358,7 +389,7 @@ class CheckoutController extends Controller
                 $newStock = $getProductStock - $item['quantity'];
                 Product::where('id', operator: $item['product_id'])->update(['quantity' => $newStock]);
             }
-          
+
             if (Session::has('referral_token')) {
                 $commission_amount = SalesMainCommission::first();
                 $token = Session::get('referral_token');
@@ -376,6 +407,22 @@ class CheckoutController extends Controller
         Session::put('order_id', $order_id);
         DB::commit();
         $order = Order::with('orders_products')->where('id', $order_id)->first();
+
+         NotificationService::send(
+                userId: $order->user_id,
+                title: 'Goods Order Placed',
+                message: "Your goods order has been successfully placed."
+        );
+
+         $phone = $order->user->mobile ?? null;
+         if ($phone) {
+            // dd($phone);
+            $message = "Hi {$order->user->name}, Your Goods Order has been placed.";
+            try {
+            SmsService::send($phone, $message);
+            } catch (\Exception $e) {
+            }
+         }
 
         $pdf = Pdf::loadView('Ecommerce.order.receipt', ['order' => $order]);
         $pdfPath = storage_path('app/public/receipts/order_' . $order->order_code . '.pdf');

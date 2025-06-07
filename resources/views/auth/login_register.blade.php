@@ -18,8 +18,6 @@
             @if(session('info'))
             <div class="alert alert-warning">{{ session('info') }}</div>
             @endif
-
-
             <ul class="nav nav-pills mb-3 d-flex justify-content-center align-items-center" id="pills-tab" role="tablist">
                 <li class="nav-item" role="presentation">
                     <a class="nav-link active" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Login</a>
@@ -112,11 +110,10 @@
                             <small class=" text-danger">{{ $message }}</small>
                             @enderror
                         </div>
-                        <button type="submit" class="btn bg-primary w-100 text-white">Login</button>
-                        <div class="text-center">
-                            <p class="my-2">Login with</p>
-                        </div>
-                        <a href="{{ route('google.login') }}" class="btn border border-1 w-100 text-dark"><img src="{{ asset('restaurant_frontend/Logo-google-icon-PNG.png') }}" width="25"></img> Sign in with Google</a>
+                        <button type="submit" class="btn bg-primary w-100 text-white mb-2">Login</button>
+                        <a href="{{ url('delivery-boy/login') }}" type="submit" class="btn btn-outline-secondary w-100">Login as Driver</a>
+
+                        <a href="{{ route('google.login') }}" class="btn border border-1 w-100 text-dark mt-2"><img src="{{ asset('restaurant_frontend/Logo-google-icon-PNG.png') }}" width="25"></img> Sign in with Google</a>
                         <div class="py-2">
                             <a href="{{ url('auth/forgot-password') }}" class="text-dark">Forget Password</a>
                         </div>

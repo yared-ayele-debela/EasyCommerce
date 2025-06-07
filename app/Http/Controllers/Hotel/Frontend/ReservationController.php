@@ -11,6 +11,8 @@ use App\Models\HotelReview;
 use App\Models\Reservation;
 use App\Models\Room;
 use App\Models\User;
+use App\Services\NotificationService;
+use App\Services\SmsService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -79,6 +81,23 @@ class ReservationController extends Controller
         }
         $payment->amount_paid=$request->final_price;
         $payment->save();
+
+           NotificationService::send(
+                userId: $reservation->user_id,
+                title: 'Hotel Reservation Placed',
+                message: "Your hotel reservation has been placed."
+            );
+
+            $phone = $reservation->user->mobile ?? null;
+            if ($phone) {
+                // dd($phone);
+                $message = "Hi {$reservation->user->name}, Your hotel reservation has been placed.";
+                try {
+                SmsService::send($phone, $message);
+                } catch (\Exception $e) {
+                    // Optionally log error
+                }
+            }
 
         Mail::to($reservation->user->email)->send(new ReservationConfirmationMail($reservation));
 

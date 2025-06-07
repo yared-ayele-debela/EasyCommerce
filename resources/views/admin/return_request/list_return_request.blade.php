@@ -23,8 +23,8 @@ $user = Auth::guard('admin')->user();
                             <thead>
                             <tr>
                                 <th scope="col">ID</th>
-                                <th scope="col"> Size</th>
-                                <th scope="col"> Code</th>
+                                <th scope="col">Size</th>
+                                <th scope="col">Code</th>
                                 <th scope="col">Return Reason</th>
                                 <th scope="col">Comment</th>
                                 <th scope="col">Status</th>
@@ -56,9 +56,9 @@ $user = Auth::guard('admin')->user();
                                             @csrf
                                             <input type="hidden" name="return_id" value="{{$return['id']}}">
                                             <select class="form-control" name="return_status">
-                                                <option @if($return['return_status']=="Approved") selected="" @endif value="Approved">Approved</option>
-                                                <option @if($return['return_status']=="Rejected") selected="" @endif value="Rejected">Rejected</option>
-                                                <option @if($return['return_status']=="Pending") selected="" @endif value="Pending">Pending</option>
+                                                <option @if($return['return_status']=="Approved") selected="" @endif value="approved">Approved</option>
+                                                <option @if($return['return_status']=="Rejected") selected="" @endif value="rejected">Rejected</option>
+                                                <option @if($return['return_status']=="Pending") selected="" @endif value="pending">Pending</option>
                                             </select>
                                            <br>
                                             <input type="submit" class=" btn btn-primary btn-sm" value="Update">

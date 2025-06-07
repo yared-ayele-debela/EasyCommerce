@@ -128,7 +128,7 @@ $settings = AppSetting::first();
     </style>
 </head>
 <body>
-    
+
     <div class="container bg-light shadow-none ">
         @if(session('success'))
             <div class="alert alert-success">
@@ -138,14 +138,16 @@ $settings = AppSetting::first();
         <div class="container" id="receipt">
             <div class="header d-flex justify-content-between align-items-center">
                 <div>
-                    <img src="{{ $settings->logo }}" alt="Company Logo" style="max-height: 60px;">
+                    <a href="{{ url('/') }}">
+                        <img src="{{ $settings->logo }}" alt="{{ $settings->application_title }}" style="max-height: 60px;">
+                    </a>
                     <h6 class="text-dark">{{ $settings->application_title }}</h6>
                 </div>
                 <div>
                     <h4>Hotel Reservation Receipt  <button class="btn custom-btn btn-sm" onclick="printReceipt()"><i class="bi bi-printer-fill"></i></button></h4>
                 </div>
             </div>
-    
+
             <div class="info-grid">
                 <div class="info-box">
                     <h4 class="section-title"> <img src="{{ asset('restaurant_frontend/reserve.png') }}" width="20" alt=""> Reservation Info</h4>
@@ -167,7 +169,7 @@ $settings = AppSetting::first();
                     @endif
                     <p><strong>Status:</strong> {{ $reservation->status }}</p>
                 </div>
-    
+
                 <div class="info-box">
                     <h4 class="section-title"><i class="bi bi-pin-map-fill"></i> Customer Address</h4>
                     <p><strong>Address:</strong> {{ $reservation->user->address ?? '-' }}</p>

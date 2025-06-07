@@ -1,7 +1,6 @@
 @props(['product', 'badge','bgColor'])
 @php
     $off = $product->price - $product->getFinalPrice();
-
     $parsedPath = $product->image ? parse_url($product->image, PHP_URL_PATH) : null;
     $relativePath = $parsedPath ? str_replace('storage/', '', ltrim($parsedPath, '/')) : null;
     $imageSrc = ($relativePath && Storage::disk('public')->exists($relativePath))
@@ -24,7 +23,6 @@
                 <span class="price-old">{{ $product->price }} ETB</span>
             </p>
         </a>
-
         <div class="hover-buttons">
             <button onclick="window.location.href='{{ url('restaurant/product-detail/' . encrypt($product->id)) }}'" class="btn-view">
                 <i class="bi bi-eye-fill"></i>

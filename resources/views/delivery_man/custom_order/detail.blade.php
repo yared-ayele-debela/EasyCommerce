@@ -40,12 +40,12 @@ $user = Auth::guard('admin')->user();
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group mb-2" id="user_code" style="display: none;">
-                            <label for="user_code">Enter user order_code to verify delivered</label><br>
-                            <input type="number" class="form-control" name="user_code" id="user_code">
+                      <div class="form-group mb-2" id="user_code_wrapper" style="display: none;">
+                            <label for="user_code_input">Enter user order_code to verify delivered</label><br>
+                            <input type="number" class="form-control" name="user_code" id="user_code_input">
                         </div>
                         <button type="submit" class="btn btn-primary btn-block">
-                            Update delivery status
+                            Update status
                         </button>
                     </form>
                 </div>
@@ -69,16 +69,16 @@ $user = Auth::guard('admin')->user();
                         <input type="hidden" name="custom_order_product_id" value="{{ $product->id }}">
                         <div class="form-group mb-2 mt-4">
                             <label for="delivery_status" class="mb-2">Update order delivery status</label>
-                            <select id="my-select-for-vendor" class="form-control" name="product_delivery_status">
+                            <select  class="form-control vendor-status-select" name="product_delivery_status">
                                 <option selected value="">Select</option>
                                 @foreach ($order_status as $status)
-                                <option @if($product['delivery_status']==$status['name']) selected @endif; value="{{ $status['name'] }}">{{ $status['name'] }}</option>
+                                <option @if($product['delivery_status']===$status['name']) selected @endif; value="{{ $status['name'] }}">{{ $status['name'] }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group mb-2" id="vendor_code" style="display: none;">
-                            <label for="vendor_code">Enter vendor Code to verify shipped</label><br>
-                            <input type="number" class="form-control" name="vendor_code" id="vendor_code">
+                       <div class="form-group vendor-code-wrapper mb-2" style="display: none;">
+                            <label for="vendor_code_input">Enter vendor Code to verify shipped</label><br>
+                            <input type="number" class="form-control" name="vendor_code" id="vendor_code_input">
                         </div>
                         <button type="submit" class="btn btn-primary btn-block">
                             Update product delivery status
@@ -92,37 +92,44 @@ $user = Auth::guard('admin')->user();
     </div>
     @endforeach
 </section>
-@endsection
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        function toggleUserCodeVisibility() {
-            var deliveryStatus = document.getElementById("my-select").value;
-            var delivery_status=document.getElementById("my-select-for-vendor").value;
-            var userCodeElement = document.getElementById("user_code");
-            var vendorcodeElement=document.getElementById("vendor_code");
+document.addEventListener("DOMContentLoaded", function() {
+    // Get all vendor status selects
+    const statusSelects = document.querySelectorAll(".vendor-status-select");
+    statusSelects.forEach(select => {
+        // Find the corresponding vendor code wrapper in the same form
+        const form = select.closest("form");
+        const vendorCodeWrapper = form.querySelector(".vendor-code-wrapper");
 
-            if (deliveryStatus.toLowerCase() === "delivered") {
-                userCodeElement.style.display = "block"; // Show the user code input
+        function toggleVendorCode() {
+            const selected = select.value.toLowerCase();
+            if (selected === "picked") {
+                vendorCodeWrapper.style.display = "block";
             } else {
-                userCodeElement.style.display = "none"; // Hide the user code input
-            }
-
-
-            if (delivery_status.toLowerCase() === "shipped") {
-                vendorcodeElement.style.display = "block"; // Show the user code input
-            } else {
-                vendorcodeElement.style.display = "none"; // Hide the user code input
+                vendorCodeWrapper.style.display = "none";
             }
         }
 
-        document.getElementById("my-select").addEventListener("change", function() {
-            toggleUserCodeVisibility();
-        });
-        document.getElementById("my-select-for-vendor").addEventListener("change", function() {
-            toggleUserCodeVisibility();
-        });
-        // Initial check on page load
-        toggleUserCodeVisibility();
+        // Attach listener
+        select.addEventListener("change", toggleVendorCode);
+
+        // Initial call
+        toggleVendorCode();
     });
 
+    function toggleCodeInputs() {
+        const deliveryStatus = document.getElementById("my-select").value.toLowerCase();
+
+        const userCodeWrapper = document.getElementById("user_code_wrapper");
+
+        userCodeWrapper.style.display = (deliveryStatus === "delivered") ? "block" : "none";
+    }
+
+    document.getElementById("my-select").addEventListener("change", toggleCodeInputs);
+
+    // Initial call
+    toggleCodeInputs();
+});
 </script>
+@endsection
+

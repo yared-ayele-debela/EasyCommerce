@@ -9,6 +9,7 @@ use App\Models\CustomOrderProduct;
 use App\Models\DeliveryMan;
 use App\Models\FastOrders;
 use App\Models\OrderStatus;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -65,6 +66,8 @@ class CustomOrderController extends Controller
             $custom_orders= CustomOrder::where('id',$request['custom_order_id'])->first();
             if ($custom_orders->user_code == $request['user_code']){
                 CustomOrder::where('id',$request['custom_order_id'])->update(['delivery_status'=>$request['delivery_status']]);
+
+                
                 //update courier name & tracking number
                Alert::toast('Delivery status updated successfully', 'success');
                 return redirect()->back();

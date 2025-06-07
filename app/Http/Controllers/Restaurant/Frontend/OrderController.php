@@ -18,11 +18,11 @@ class OrderController extends Controller
     public function index()
     {
         // Fetch the authenticated user's orders with related items
-        $orders = Order::where('user_id', Auth::user()->id)->with('orderItems.product','paymentInfo')->latest()->get();
+        $orders = Order::where('user_id', Auth::user()->id)->with('orderItems.product','paymentInfo')->latest()->paginate(9);
         $user = auth()->user()->id;
         $user = User::findOrFail($user);
-        $reservations = $user->reservations()->with(['hotel', 'room','hotel_reservation_payment_info'])->latest()->get();
-        $good_orders = ModelsOrder::with('orders_products','paymentInfo')->where('user_id', Auth::user()->id)->latest()->get();
+        $reservations = $user->reservations()->with(['hotel', 'room','hotel_reservation_payment_info'])->latest()->paginate(9);
+        $good_orders = ModelsOrder::with('orders_products','paymentInfo')->where('user_id', Auth::user()->id)->latest()->paginate(9);
 
         return view('all_frontend_layouts.my_orders.inex', compact('orders','reservations','good_orders'));
     }
@@ -36,7 +36,7 @@ class OrderController extends Controller
         if ($order->user_id !== Auth::user()->id) {
             abort(403, 'Unauthorized access');
         }
-        
+
         $order = Order::with('orderItems.product','deliveryman','address')->findOrFail($order->id);
 
         // dd($order);

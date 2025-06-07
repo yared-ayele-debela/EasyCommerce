@@ -154,7 +154,15 @@
                     <li> <a href="{{ route('updateadmindetails') }}" class="{{ request()->is('admin/updateadmindetails*')?'nav-link active':'' }}"> <i class="bi bi-circle"></i><span>Update Details</span></a></li>
                 </ul>
             </li>
-
+            @if(Auth::guard('admin')->user()->type==="Restaurant Manager")
+            <li class="{{ request()->is('admin/hotel/update-vendor-details')?'nav-item active':'' }} {{ request()->is('admin/hotel/update-vendor-bank-details')?'nav-item active':'' }} {{ request()->is('admin/hotel/update-vendor-business-details')?'nav-item active':'' }}">
+                <a class="nav-link " data-bs-target="#vendordetails-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class="bi bi-person-badge"></i><span>My Details</span><i class="bi bi-chevron-down ms-auto"></i> </a>
+                <ul id="vendordetails-nav" class=" nav-content collapse {{ request()->is('admin/hotel/update-vendor-details')?'show':'' }} {{ request()->is('admin/hotel/update-vendor-bank-details')?'show':'' }} {{ request()->is('admin/hotel/update-vendor-business-details')?'show':'' }}" data-bs-parent="#sidebar-nav">
+                    <li> <a href="{{ route('restaurant.updatevendordetails') }}" class="{{ request()->is('admin/restaurant/update-vendor-details*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Personal Details</span> </a></li>
+                    <li> <a href="{{ route('restaurant.updatevendorbankdetails') }}" class="{{ request()->is('admin/restaurant/update-vendor-bank-details*')?'nav-link active':'' }}"> <i class="bi bi-circle"></i><span>Bank Details</span></a></li>
+                </ul>
+            </li>
+            @endif
     </ul>
 </aside>
 

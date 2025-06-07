@@ -7,7 +7,7 @@ $user = Auth::guard('admin')->user();
     <nav>
         <ol class="breadcrumb p-3 ">
             <li class="breadcrumb-item font-weight-bold"><a href="{{ url('admin/dashboard') }}">Home</a></li>
-            <li class="breadcrumb-item">Add FAQ</li>
+            <li class="breadcrumb-item">Custom Order Detail</li>
         </ol>
     </nav>
 </div>
@@ -55,7 +55,7 @@ $user = Auth::guard('admin')->user();
                     <input type="hidden" name="order_id" value="{{ $order->id }}">
                     <div class="form-group mb-2 mt-4">
                         <label for="my-select">Assing to delivery boy</label>
-                        <select id="my-select" class="form-control" name="delivery_boy_id">
+                        <select id="my-select" class="form-control select-delivery-zone" name="delivery_boy_id">
                             <option selected value="">Select</option>
                             @foreach ($alldelivery_boys as $boy )
                             <option @if($order->delivery_boy_id == $boy->id) selected @endif value="{{ $boy->id }}" >{{ $boy->first_name }} {{ $boy->last_name }}</option>

@@ -24,6 +24,8 @@ use App\Models\SalesMainCommission;
 use App\Models\ShippingCharge;
 use App\Models\Tip;
 use App\Models\Vendor;
+use App\Services\NotificationService;
+use App\Services\SmsService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -239,11 +241,26 @@ class DirectCheckoutController extends Controller
         DB::commit();
         $order = Order::with('orders_products')->where('id', $order_id)->first();
 
-        // $pdf = Pdf::loadView('Ecommerce.order.receipt', ['order' => $order]);
-        // $pdfPath = storage_path('app/public/receipts/order_' . $order->order_code . '.pdf');
-        // $pdf->save($pdfPath); // Save to storage
+         NotificationService::send(
+                userId: $order->user_id,
+                title: 'Goods Order Placed',
+                message: "Your goods order has been successfully placed."
+        );
 
-        // Mail::to($order->email)->queue(new OrderPlaced($order, $pdfPath));
+         $phone = $order->user->mobile ?? null;
+         if ($phone) {
+            $message = "Hi {$order->user->name}, Your Goods Order has been placed.";
+            try {
+            SmsService::send($phone, $message);
+            } catch (\Exception $e) {
+            }
+         }
+
+        $pdf = Pdf::loadView('Ecommerce.order.receipt', ['order' => $order]);
+        $pdfPath = storage_path('app/public/receipts/order_' . $order->order_code . '.pdf');
+        $pdf->save($pdfPath); // Save to storage
+
+        Mail::to($order->email)->queue(new OrderPlaced($order, $pdfPath));
         return response()->json([
             'status' => 'success',
             'message' => 'Order placed successfully!',

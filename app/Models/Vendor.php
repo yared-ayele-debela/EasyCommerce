@@ -26,6 +26,11 @@ class Vendor extends Model
             'updated_at',
       ];
 
+      public function wallet()
+{
+    return $this->hasOne(VendorWallet::class);
+}
+
         public function getProductCount()
         {
             return $this->products()->count();

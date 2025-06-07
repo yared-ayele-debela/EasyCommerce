@@ -1,5 +1,7 @@
 <?php
 
+use App\Events\DeliveryManLocationUpdated;
+use App\Events\MessageSent;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\Admin\AdminActivityLogController;
 use App\Http\Controllers\Admin\AdminController as AdminAdminController;
@@ -87,6 +89,8 @@ use App\Http\Controllers\Admin\TaxController;
 use App\Http\Controllers\Admin\TipSettingsController;
 use App\Http\Controllers\Admin\TransactionsController;
 use App\Http\Controllers\Admin\TransferRequestController;
+use App\Http\Controllers\Admin\Vendor\VendorBalanceController;
+use App\Http\Controllers\Admin\Vendor\VendorWithdrawRequestController as VendorVendorWithdrawRequestController;
 use App\Http\Controllers\Admin\WereHouseController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CategoriesController as ControllersCategoriesController;
@@ -102,6 +106,7 @@ use App\Http\Controllers\Admin\VendorController;
 use App\Http\Controllers\Admin\VendorNotificationController;
 use App\Http\Controllers\Admin\VendorWithdrawRequestController;
 use App\Http\Controllers\Admin\WithdrawSettingController;
+use App\Http\Controllers\Delivery\Ecommerce\GetLocationController;
 use App\Http\Controllers\Delivery\OrderController as DeliveryOrderController;
 use App\Http\Controllers\Delivery\WithdrawController;
 use App\Http\Controllers\Ecommerce\Frontend\BlogController;
@@ -137,6 +142,7 @@ use App\Http\Controllers\Front\VendorController as FrontVendorController;
 use App\Http\Controllers\Hotel\Dashboard\AmenityController;
 use App\Http\Controllers\Hotel\Dashboard\CouponController as DashboardCouponController;
 use App\Http\Controllers\Hotel\Dashboard\DashboardController as DashboardDashboardController;
+use App\Http\Controllers\Hotel\Dashboard\HotelAdminController;
 use App\Http\Controllers\Hotel\Dashboard\HotelCategoryController;
 use App\Http\Controllers\Hotel\Dashboard\HotelController;
 use App\Http\Controllers\Hotel\Dashboard\HotelPhotoController;
@@ -177,9 +183,11 @@ use App\Http\Controllers\Restaurant\Dashboard\CategoryController;
 use App\Http\Controllers\Restaurant\Dashboard\CityController as DashboardCityController;
 use App\Http\Controllers\Restaurant\Dashboard\CouponController;
 use App\Http\Controllers\Restaurant\Dashboard\DashboardController as RestaurantDashboardController;
+use App\Http\Controllers\Restaurant\Dashboard\NearbyDeliveryMenMapController as DashboardNearbyDeliveryMenMapController;
 use App\Http\Controllers\Restaurant\Dashboard\OrderController as DashboardOrderController;
 use App\Http\Controllers\Restaurant\Dashboard\ProductController as DashboardProductController;
 use App\Http\Controllers\Restaurant\Dashboard\ProductSizeController;
+use App\Http\Controllers\Restaurant\Dashboard\RestaurantAdminController;
 use App\Http\Controllers\Restaurant\Dashboard\RestaurantController;
 use App\Http\Controllers\Restaurant\Dashboard\RestaurantMenuController;
 use App\Http\Controllers\Restaurant\Dashboard\SliderBannerController;
@@ -196,7 +204,9 @@ use App\Http\Controllers\Restaurant\Frontend\SuCategoryController;
 use App\Http\Controllers\Restaurant\Frontend\WishController;
 use App\Http\Controllers\User\ForgetPasswordController;
 use App\Http\Controllers\User\GoogleAuthController;
+use App\Http\Controllers\User\NotificationController;
 use App\Http\Controllers\UserDeliveryAddressController;
+use App\Models\DeliveryMan;
 use App\Models\Hotel\Hotel;
 use App\Models\HotelCategory;
 use App\Models\NewsletterSubscriber;
@@ -584,9 +594,6 @@ Route::group(['middleware' => ['admin', 'check.admin:Ecommerce Manager,vendor']]
         Route::get('update-vendor-bank-details', [AdminController::class, 'updatevendorbankdetails'])->name('updatevendorbankdetails');
         Route::get('update-vendor-business-details', [AdminController::class, 'updatevendorbusinessdetails'])->name('updatevendorbusinessdetails');
 
-        Route::put('update_vendor_details', [AdminController::class, 'update_vendor_details'])->name('update_vendor_details');
-        Route::put('update_vendor_businessdetails', [AdminController::class, 'update_vendor_businessdetails'])->name('update_vendor_businessdetails');
-        Route::put('update_vendor_bank_details', [AdminController::class, 'update_vendor_bank_details'])->name('update_vendor_bank_details');
 
         //display admintype
         Route::get('all-vendors', [AdminController::class, 'display_vendor'])->name('all-vendors');
@@ -907,10 +914,22 @@ Route::group(['middleware' => ['admin', 'check.admin:Ecommerce Manager,vendor']]
 
         Route::resource('banks', BankController::class)->except(['create', 'edit', 'show']);
 
-         Route::get('/withdrawals', [DeliveryManWithdrawController::class, 'index'])->name('admin.withdrawals');
+        Route::get('/withdrawals', [DeliveryManWithdrawController::class, 'index'])->name('admin.withdrawals');
         Route::post('/withdrawals/{id}/approve', [DeliveryManWithdrawController::class, 'approve'])->name('admin.withdrawals.approve');
         Route::post('/withdrawals/{id}/reject', [DeliveryManWithdrawController::class, 'reject'])->name('admin.withdrawals.reject');
+
+
+        Route::get('vendor/wallet',[VendorBalanceController::class,'index']);
+        Route::get('vendor/withdraw-requests',[VendorVendorWithdrawRequestController::class,'index']);
+
+        Route::post('vendor-withdraw-request',[VendorBalanceController::class,'requestWithdraw'])->name('vendor-withdraw-request');
+        Route::post('withdraw.update/{id}',[VendorVendorWithdrawRequestController::class,'updateWithdrawStatus'])->name('admin.withdraw.update');
     });
+
+        Route::put('update_vendor_details', [AdminController::class, 'update_vendor_details'])->name('update_vendor_details')->middleware('admin');
+        Route::put('update_vendor_businessdetails', [AdminController::class, 'update_vendor_businessdetails'])->name('update_vendor_businessdetails')->middleware('admin');
+        Route::put('update_vendor_bank_details', [AdminController::class, 'update_vendor_bank_details'])->name('update_vendor_bank_details')->middleware('admin');
+
 });
 
 
@@ -975,8 +994,10 @@ Route::group(['middleware' => 'deliverymen'], function () {
         Route::post('delivery-boy/update-stock-product-transfer-status', [StockTransferProductController::class, 'update_status'])->name('updata_stock_transfer_status');
     });
 
-    Route::get('pickup-order/{orderId}/{restaurantId}',[DeliveryOrderController::class,'pickupView']);
-    Route::get('get-customer-location/{orderId}',[DeliveryOrderController::class,'getCustomerLocation']);
+    Route::get('delivery-boy/pickup-order/{orderId}/{restaurantId}',[DeliveryOrderController::class,'pickupView']);
+    Route::get('delivery-boy/get-customer-location/{orderId}',[DeliveryOrderController::class,'getCustomerLocation']);
+    Route::get('delivery-boy/ecommerce/get-customer-location/{orderId}',action: [GetLocationController::class,'getCustomerLocation']);
+    Route::get('delivery-boy/ecommerce/pickup-order/{orderId}/{vendorId}',[GetLocationController::class,'pickupView']);
 });
 
 // // for frontend user
@@ -1162,10 +1183,21 @@ Route::prefix('admin/restaurant')->group(function () {
         Route::get('/orders/{id}', [DashboardOrderController::class, 'show'])->name('restaurant.orders.show');
         Route::post('/assignToDeliveryMan/{order_id}', [AssignOrderController::class, 'assignToDeliveryMan'])->name('restaurant.assignToDeliveryMan');
         Route::post('/orders/{id}/update', [DashboardOrderController::class, 'updateStatus'])->name('restaurant.orders.updateStatus');
-    });
+
+
+        Route::get('/nearby-deliverymen/{order_id}',[DashboardNearbyDeliveryMenMapController::class,'index']);
+        Route::get('/api/orders/{order}/nearby-deliverymen', action: [DashboardNearbyDeliveryMenMapController::class, 'getNearbyDeliveryMen']);
+
+        Route::get('update-vendor-details', action: [RestaurantAdminController::class, 'updatevendordetails'])->name(name: 'restaurant.updatevendordetails');
+        Route::get('update-vendor-bank-details', action: [RestaurantAdminController::class, 'updatevendorbankdetails'])->name(name: 'restaurant.updatevendorbankdetails');
+
+     });
 });
 
-
+Route::post('/send-message', function () {
+    broadcast(new MessageSent(request('message')))->toOthers();
+    return response()->json(['status' => 'Message broadcasted!']);
+});
 // Hotel Reservations
 Route::group(['middleware' => ['admin', 'check.admin:Hotel Manager']], function () {
     Route::resource('admin/hotels', HotelController::class);
@@ -1192,6 +1224,10 @@ Route::group(['middleware' => ['admin', 'check.admin:Hotel Manager']], function 
         Route::post('/coupons', [DashboardCouponController::class, 'store'])->name('hotel.coupon.store');
         Route::put('/coupons/{coupon}', [DashboardCouponController::class, 'update'])->name('hotel.coupon.update');
         Route::delete('/coupons/{coupon}', [DashboardCouponController::class, 'destroy'])->name('hotel.coupon.destroy');
+
+    Route::get('update-vendor-details', action: [HotelAdminController::class, 'updatevendordetails'])->name('hotel.updatevendordetails');
+    Route::get('update-vendor-bank-details', action: [HotelAdminController::class, 'updatevendorbankdetails'])->name('hotel.updatevendorbankdetails');
+
     });
 });
 
@@ -1200,6 +1236,12 @@ Route::group(['middleware' => ['admin', 'check.admin:Hotel Manager']], function 
 // Route::get('/', [Restaurant\FrontendController::class, 'index'])->name('/');
 
 Route::get('/', [FrontendController::class, 'index'])->name('restaurant.index.page');
+
+Route::get('/welcome', function () {
+    return view('welcome');
+});
+
+
 
 // Authentication Routes
 Route::prefix('auth')->middleware('guest')->group(function () {
@@ -1319,6 +1361,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/restaurant-wishlist/remove', [WishController::class, 'rremove'])->name('restaurant-wishlist/remove');
 
 
+
 });
 
 // routes/web.php
@@ -1369,6 +1412,8 @@ Route::prefix('/hotel')->group(function () {
         Route::post('/rate-hotel-room', [FrontendRoomController::class, 'room_rating_store'])->name('hotel.room.rate');
     });
     Route::get('/reservations/receipt', [ReservationsController::class, 'receipt'])->name('reservations.receipt');
+
+
 });
 
 Route::get('hotels', [FrontendHotelController::class, 'latest'])->name('hotels');
@@ -1399,6 +1444,7 @@ Route::prefix('/ecommerce')->group(function () {
         Route::match(['GET', 'POST'], '/orders/{id}/cancel', [EcommerceFrontendOrderController::class, 'ordercancel']);
         Route::match(['GET', 'POST'], '/orders/{id}/return', [EcommerceFrontendOrderController::class, 'orderreturn']);
         Route::get('/orders/{id?}', [EcommerceFrontendOrderController::class, 'orders'])->name('ecommerce.order.detail');
+        Route::get('/track-order/{id}',[EcommerceFrontendOrderController::class, 'track']);
     });
 
     Route::middleware('auth')->group(function () {
@@ -1453,12 +1499,35 @@ Route::get('map',[MapController::class,'index'])->name('map');
 Route::get('/api/reverse-geocode', [MapController::class, 'reverse']);
 Route::get('/api/forward-geocode', [MapController::class, 'forward']);
 
-Route::get('/nearby-deliverymen',[NearbyDeliveryMenMapController::class,'index']);
-
-Route::get('/api/orders/{order}/nearby-deliverymen', [NearbyDeliveryMenMapController::class, 'getNearbyDeliveryMen']);
 
 Route::get('/orders/route-map', [OrderRouteMapController::class, 'show']);
 Route::get('/order/route', [OrderRouteMapController::class, 'getRoute']);
+
+
+Route::middleware('auth')->get('/check-notifications', function () {
+    $count = \App\Models\Notification::where('user_id', auth()->id())
+        ->where('is_read', false)
+        ->count();
+
+    return response()->json(['unread' => $count]);
+});
+
+Route::middleware('auth')->get('/notifications', function () {
+    $notifications = \App\Models\Notification::where('user_id', auth()->id())
+        ->orderByDesc('created_at')
+        ->paginate(10); // 10 notifications per page
+
+    // Mark unread notifications as read
+    \App\Models\Notification::where('user_id', auth()->id())
+        ->where('is_read', false)
+        ->update(['is_read' => true]);
+
+    return view('all_frontend_layouts.notifications.index', compact('notifications'));
+});
+
+
+Route::get('notifications/delete/{id}',[NotificationController::class,'delete'])->name('delete-notification')->middleware('auth');
+
 
 Route::get('/live-location', function () {
     // Replace this with dynamic DB/Redis fetch

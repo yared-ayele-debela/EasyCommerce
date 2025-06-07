@@ -126,7 +126,7 @@ $setting = AppSetting::first();
                 </div>
             </div>
             <div>
-                <h2>📦 Order Receipt</h2>
+                <h2>Order Receipt</h2>
             </div>
         </div>
 

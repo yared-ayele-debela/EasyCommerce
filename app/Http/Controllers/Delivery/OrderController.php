@@ -13,6 +13,8 @@ use App\Models\Restaurant\Order;
 use App\Models\Restaurant\OrderItem;
 use App\Models\Restaurant\Restaurant;
 use App\Models\User;
+use App\Services\NotificationService;
+use App\Services\SmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,7 +28,7 @@ class OrderController extends Controller
 
             $appsettings = AppSetting::all()->toArray();
             $deliveryManId = DeliveryMan::where('id', Auth::guard('deliverymen')->user()->id)->first();
-            $orders = Order::with('orderItems')->where('delivery_man_id', $deliveryManId->id)->orderBy('id', 'Desc')->get();
+            $orders = Order::with('orderItems')->where('delivery_man_id', $deliveryManId->id)->orderBy('id', 'Desc')->paginate(10);
 
             // Notifications (unseen assigned orders)
             $notifications = DeliveryNotification::where('delivery_man_id', $deliveryManId->id)
@@ -82,6 +84,8 @@ class OrderController extends Controller
     public function verifyDeliveryCode(Request $request, $orderId)
     {
         $order = Order::findOrFail($orderId);
+
+        $oldStatus=$order->status;
         $orderItems = OrderItem::where('order_id', $order->id)->get();
         if (Auth::guard('deliverymen')->user()->id !== $order->delivery_man_id) {
             abort(403, 'Unauthorized');
@@ -118,6 +122,22 @@ class OrderController extends Controller
                 $delivery_men->status = 'available';
                 $delivery_men->save();
             }
+
+             NotificationService::send(
+                userId: $order->user_id,
+                title: 'Food Order Status Updated',
+                message: "Your food order #{$order->id} status has changed from '{$oldStatus}' to '{$order->status}'."
+            );
+
+                $phone = $order->user->mobile ?? null;
+                if ($phone) {
+                    // dd($phone);
+                $message = "Hi {$order->user->name}, Your food order #{$order->id} status has changed from '{$oldStatus}' to '{$order->status}'.";
+                try {
+                SmsService::send($phone, $message);
+                } catch (\Exception $e) {
+                }
+                }
 
             return redirect()->back()->with('success', 'Delivery confirmed successfully.');
         }

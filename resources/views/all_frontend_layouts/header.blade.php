@@ -236,6 +236,7 @@ use Illuminate\Support\Facades\Storage;
                                 <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#customOrder">
                                     Custom Order
                                 </button>
+
                             </div>
                         </div>
 
@@ -302,8 +303,18 @@ use Illuminate\Support\Facades\Storage;
                                 @else
                                 <i class="bi bi-person-circle fs-5 text-primary"></i>
                                 @endif
+                                <span id="notification-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+                                    0
+                                 <span class="visually-hidden">unread messages</span>
+                                </span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow">
+                                 <li>
+                                    <a class="dropdown-item d-flex justify-content-between align-items-center" href="{{ url('/notifications') }}">
+                                        <span><i class="bi bi-bell text-primary"></i> Notifications &nbsp;</span>
+                                        <span id="notification-badge1" class="badge bg-danger rounded-pill" style="display: none;">0<span>
+                                    </a>
+                                </li>
                                 <li><a class="dropdown-item" href="{{ url('user/account/update') }}"><i class="bi bi-gear text-primary"></i> My Profile</a></li>
                                 <li><a class="dropdown-item" href="{{ url('my-orders') }}"><i class="bi bi-bag text-primary"></i> My Orders</a></li>
                                 <li><a class="dropdown-item" href="{{ url('my-delivery-addresses') }}"><i class="bi bi-geo-alt text-primary"></i> My Addresses</a></li>
@@ -366,6 +377,41 @@ use Illuminate\Support\Facades\Storage;
             </div>
         </header>
         @include('all_frontend_layouts.custom_order.index')
+     <script>
+        function checkNotifications() {
+            fetch('/check-notifications')
+                .then(response => response.json())
+                .then(data => {
+                    const badge = document.getElementById('notification-badge');
+                    const badge1 = document.getElementById('notification-badge1');
+                    const badge2 = document.getElementById('notification-badge2');
+                    const badge3 = document.getElementById('notification-badge3');
+                    if (data.unread > 0) {
+                        badge.innerText = data.unread;
+                        badge.style.display = 'inline-block';
+                        badge1.innerText = data.unread;
+                        badge1.style.display = 'inline-block';
+                        badge2.innerText = data.unread;
+                        badge2.style.display = 'inline-block';
+                        badge3.innerText = data.unread;
+                        badge3.style.display = 'inline-block';
+                    } else {
+                        badge.style.display = 'none';
+                        badge1.style.display = 'none';
+                        badge2.style.display = 'none';
+                        badge3.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Notification check failed:', error);
+                });
+        }
+
+        // Check immediately and then every 10 seconds
+        checkNotifications();
+        setInterval(checkNotifications, 5000);
+    </script>
+
         <script type="text/javascript">
             function googleTranslateElementInit() {
                 new google.translate.TranslateElement({

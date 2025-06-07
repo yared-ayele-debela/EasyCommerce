@@ -44,7 +44,7 @@ class OrderController extends Controller
 
                 if ($user_id_auth == $user_id_order->user_id) {
                     Order::where('id', $id)->update(
-                        ['order_status' => 'Cancelled']
+                        ['order_status' => 'cancelled']
                     );
                     $log = new OrderLog();
                     $log->order_id = $id;
@@ -52,7 +52,6 @@ class OrderController extends Controller
                     $log->reason = $data['reason'];
                     $log->updated_by = "User";
                     $log->save();
-
 
                     return redirect()->back()->with('success', 'Your Order has been cancelled successfully');
                 } else {
@@ -95,7 +94,7 @@ class OrderController extends Controller
                     $return->product_size = $product_size;
                     $return->product_code = $product_code;
                     $return->return_reason = $data['return_reason'];
-                    $return->return_status = "Pending";
+                    $return->return_status = "pending";
                     $return->comment = $data['comment'];
                     $return->save();
 
@@ -116,5 +115,13 @@ class OrderController extends Controller
             // Log or handle the exception as needed
             return redirect()->back()->with('error', 'something is wrong!!');
         }
+    }
+
+    public function track($id){
+
+        $order=Order::with('orders_products')->where('user_id', Auth::user()->id)->findOrFail($id);
+        // dd($order);
+
+        return view('Ecommerce.orders.track_order',compact('order'));
     }
 }

@@ -79,7 +79,7 @@ class AdminController extends Controller
             $admin->type = $role->name;
             $admin->save();
 
-            $user->roles()->sync([$request->role_id]);
+            $admin->roles()->sync([$request->role_id]);
 
             Alert::toast('Role assigned to user successfully!', 'success');
             return redirect()->route('all-admins.index');

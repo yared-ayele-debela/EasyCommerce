@@ -160,15 +160,9 @@
             </li>
             @endif
 
-        <li class="pt-4 {{ request()->is('admin/update-vendor-details')?'nav-item active':'' }} {{ request()->is('admin/update-vendor-bank-details')?'nav-item active':'' }} {{ request()->is('admin/update-vendor-business-details')?'nav-item active':'' }}">
-            <a class="nav-link " data-bs-target="#vendordetails-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class="bi bi-person-bounding-box  "></i><span>Your Details</span><i class="bi bi-chevron-down ms-auto"></i> </a>
-            <ul id="vendordetails-nav" class=" nav-content collapse {{ request()->is('admin/update-vendor-details')?'show':'' }} {{ request()->is('admin/update-vendor-bank-details')?'show':'' }} {{ request()->is('admin/update-vendor-business-details')?'show':'' }}" data-bs-parent="#sidebar-nav">
-                <li> <a href="{{ route('updatevendordetails') }}" class="{{ request()->is('admin/update-vendor-details*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Personal Details</span> </a></li>
-                <li> <a href="{{ route('updatevendorbusinessdetails') }}" class="{{ request()->is('admin/update-vendor-business-details*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Business Details</span></a></li>
-                <li> <a href="{{ route('updatevendorbankdetails') }}" class="{{ request()->is('admin/update-vendor-bank-details*')?'nav-link active':'' }}"> <i class="bi bi-circle"></i><span>Bank Details</span></a></li>
-            </ul>
-        </li>
+
         @endif
+
 
         @if(Auth::guard('admin')->user()->type!=="vendor" && Auth::guard('admin')->user()->type!=="Ecommerce Manager")
 
@@ -216,15 +210,6 @@
         </li>
         @endif
 
-        @if ($user && $user->hasPermissionByRole('view sales_person'))
-        <li class="{{ request()->is('admin/sales-user*')?'nav-item active':'' }} ">
-            <a class="nav-link" data-bs-target="#sales-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class="ri-user-follow-fill"></i><span>Sales Persons</span><i class="bi bi-chevron-down ms-auto"></i> </a>
-            <ul id="sales-nav" class="nav-content collapse {{ request()->is('admin/sales-user*')?'show':'' }}" data-bs-parent="#sidebar-nav">
-                <li> <a href="{{ route('sales-users') }}" class="{{ request()->is('admin/sales-user*')?'nav-link active':'' }} "> <i class=" bi bi-circle active "></i><span>List Sales Persons</span></a></li>
-            </ul>
-        </li>
-        @endif
-
         @if ($user && $user->hasPermissionByRole('view_users'))
         <li class=" {{ request()->is('admin/users')?'nav-item active':'' }} {{ request()->is('admin/edit_user*')?'nav-item active':'' }}  ">
             <a class="nav-link" data-bs-target="#users-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class=" ri-group-2-fill"></i><span>Customers</span><i class="bi bi-chevron-down ms-auto"></i> </a>
@@ -233,67 +218,33 @@
             </ul>
         </li>
         @endif
-
-        @if ($user && $user->hasPermissionByRole('view blog') || $user->hasPermissionByRole('view blog category') || $user->hasPermissionByRole('view blog comment'))
-        <li class=" {{ request()->is('admin/blog-categories')?'nav-item active':'' }} {{ request()->is('admin/blog-comments')?'nav-item active':'' }} {{ request()->is('admin/blog/category*')?'nav-item active':'' }} {{ request()->is('admin/blogs*')?'nav-item active':'' }} {{ request()->is('admin/blogs')?'nav-item active':'' }}">
-            <a class="nav-link" data-bs-target="#blog-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class=" ri-newspaper-fill"></i><span>News / Blogs</span><i class="bi bi-chevron-down ms-auto"></i> </a>
-            <ul id="blog-nav" class="nav-content collapse {{ request()->is('admin/blog-categories')?'show':'' }} {{ request()->is('admin/blog-comments')?'show':'' }} {{ request()->is('admin/blog/category*')?'show':'' }} {{ request()->is('admin/blogs*')?'show':'' }} {{ request()->is('admin/blogs')?'show':'' }}" data-bs-parent="#sidebar-nav">
-                @if($user->hasPermissionByRole('view blog'))
-                <li> <a href="{{ route('blogs') }}" class="{{ request()->is('admin/blogs')?'nav-link active':'' }} {{ request()->is('admin/blogs*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>List Blogs</span></a></li>
+        @if ($user && $user->hasPermissionByRole('view_delivery_boy') || $user->hasPermissionByRole('view delivery zone') || $user->hasPermissionByRole('view deliveryman type') || $user->hasPermissionByRole('view vehicle type'))
+        <li class="{{ request()->is('admin/vehicle_type')?'nav-item active':'' }} {{ request()->is('admin/withdrawals')?'nav-item active':'' }} {{ request()->is('admin/vehicle_type*')?'nav-item active':'' }}  {{ request()->is('admin/delivery_zone')?'nav-item active':'' }} {{ request()->is('admin/delivery_man/type*')?'nav-item active':'' }} {{ request()->is('admin/delivery_zone*')?'nav-item active':'' }} {{ request()->is('admin/delivery_man/type')?'nav-item active':'' }} {{ request()->is('admin/delivery_boy')?'nav-item active':'' }} {{ request()->is('admin/delivery_boy/*')?'nav-item active':'' }}  ">
+            <a class="nav-link" data-bs-target="#delivery-nav" data-bs-toggle="collapse" href="javascript:void();"> <i class="bx bxs-file"></i><span>Delivery Man</span><i class="bi bi-chevron-down ms-auto"></i> </a>
+            <ul id="delivery-nav" class="nav-content collapse {{ request()->is('admin/delivery_zone')?'show':'' }} {{ request()->is('admin/withdrawals')?'show':'' }} {{ request()->is('admin/delivery_zone*')?'show':'' }} {{ request()->is('admin/delivery_man/type')?'show':'' }} {{ request()->is('admin/delivery_man/type*')?'show':'' }} {{ request()->is('admin/vehicle_type')?'show':'' }} {{ request()->is('admin/vehicle_type*')?'show':'' }}  {{ request()->is('admin/delivery_boy')?'show':'' }}  {{ request()->is('admin/delivery_boy/*')?'show':'' }}    " data-bs-parent="#sidebar-nav">
+                @if( $user->hasPermissionByRole('view delivery zone'))
+                <li> <a href="{{ url('admin/withdrawals') }}" class="{{ request()->is('admin/withdrawals')?'nav-link active':'' }} {{ request()->is('admin/withdrawals')?'nav-item active':'' }} "> <i class=" bi bi-zoom-in  active "></i><span>Delivery Men Withdraw Requests</span> </a></li>
                 @endif
-                @if($user->hasPermissionByRole('view blog category'))
-                <li> <a href="{{ route('blog-categories') }}" class="{{ request()->is('admin/blog-categories')?'nav-link active':'' }} {{ request()->is('admin/blog/category*')?'nav-link active':''}}"> <i class=" bi bi-circle active "></i><span> Blog Categories</span></a></li>
+                @if( $user->hasPermissionByRole('view delivery zone'))
+                <li> <a href="{{ route('delivery_zone') }}" class="{{ request()->is('admin/delivery_zone')?'nav-link active':'' }} {{ request()->is('admin/delivery_zone*')?'nav-item active':'' }} "> <i class=" bi bi-zoom-in  active "></i><span>Delivery Zone</span> </a></li>
                 @endif
-                @if($user->hasPermissionByRole('view blog comment'))
-                <li> <a href="{{ route('blog-comments') }}" class="{{ request()->is('admin/blog-comments')?'nav-link active':'' }} {{ request()->is('admin/blog/category*')?'nav-link active':''}}"> <i class=" bi bi-circle active "></i><span> Blog Comments</span></a></li>
+                @if( $user->hasPermissionByRole('view deliveryman type'))
+                <li> <a href="{{ route('delivery_man_type') }}" class="{{ request()->is('admin/delivery_man/type')?'nav-link active':'' }} {{ request()->is('admin/delivery_man/type*')?'nav-item active':'' }} "> <i class=" bi bi-type  active "></i><span>Delivery Man Type</span> </a></li>
                 @endif
-            </ul>
-        </li>
-        @endif
-
-        @if ($user && $user->hasPermissionByRole('view stock') || $user->hasPermissionByRole('add stock') || $user->hasPermissionByRole('view transfer product') || $user->hasPermissionByRole('add transfer product') || $user->hasPermissionByRole('assign transfer product to deliveryman') || $user->hasPermissionByRole('view transfered stock product'))
-        <li class="{{ request()->is('admin/assign-to-deliveryman')?'nav-item active':'' }}  {{ request()->is('admin/assigned-stock-product-to-deliveryman')?'nav-item active':'' }}   {{ request()->is('admin/stocks')?'nav-item active':'' }}  {{ request()->is('admin/add-transfer-stock-product')?'nav-item active':'' }} {{ request()->is('admin/stocks*')?'nav-item active':'' }}  {{ request()->is('admin/admin/transfer-stocks*')?'nav-item active':'' }}">
-            <a class="nav-link" data-bs-target="#stock-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class=" ri ri-stock-fill"></i><span>Stok / Inventory</span><i class="bi bi-chevron-down ms-auto"></i> </a>
-            <ul id="stock-nav" class="nav-content collapse  {{ request()->is('admin/assign-to-deliveryman')?'show':'' }}  {{ request()->is('admin/assigned-stock-product-to-deliveryman')?'show':'' }}  {{ request()->is('admin/transfer-stocks')?'show':'' }}   {{ request()->is('admin/add-transfer-stock-product')?'show':'' }}    {{ request()->is('admin/stocks*')?'show':'' }}   {{ request()->is('admin/stocks')?'show':'' }}  " data-bs-parent="#sidebar-nav">
-                @if($user->hasPermissionByRole('view stock'))
-                <li> <a href="{{ url('admin/stocks') }}" class="{{ request()->is('admin/stocks')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>List Stock </span></a></li>
+                @if( $user->hasPermissionByRole('view vehicle type'))
+                <li> <a href="{{ route('vehicle_type') }}" class="{{ request()->is('admin/vehicle_type')?'nav-link active':'' }} {{ request()->is('admin/vehicle_type*')?'nav-item active':'' }} "> <i class=" bi bi-bicycle active "></i><span>Vehicle Type</span> </a></li>
                 @endif
-                @if($user->hasPermissionByRole('add stock'))
-                <li> <a href="{{ url('admin/stocks/add') }}" class="{{ request()->is('admin/stocks/add')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Add Stock</span></a></li>
-                @endif
-                <li class="nav-heading">Transfers</li>
-                @if($user->hasPermissionByRole('view transfer product'))
-                <li> <a href="{{ url('admin/transfer-stocks') }}" class="{{ request()->is('admin/transfer-stocks')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>List Stock Transfer </span></a></li>
-                @endif
-                @if($user->hasPermissionByRole('add transfer product'))
-                <li> <a href="{{ url('admin/add-transfer-stock-product') }}" class="{{ request()->is('admin/add-transfer-stock-product')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Add Stock Transfer</span></a></li>
-                @endif
-
-                <li class="nav-heading">Assign To Delivery Man</li>
-                @if($user->hasPermissionByRole('assign transfer product to deliveryman'))
-                <li> <a href="{{ url('admin/assign-to-deliveryman') }}" class="{{ request()->is('admin/assign-to-deliveryman')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Assing Stock Product To Delivery Man</span></a></li>
-                @endif
-                @if($user->hasPermissionByRole('view transfered stock product'))
-                <li> <a href="{{ url('admin/assigned-stock-product-to-deliveryman') }}" class="{{ request()->is('admin/assigned-stock-product-to-deliveryman')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>List Assigned Stock Products</span></a></li>
+                @if( $user->hasPermissionByRole('view_delivery_boy'))
+                <li> <a href="{{ route('delivery_boy.index') }}" class="{{ request()->is('admin/delivery_boy')?'nav-link active':'' }} {{ request()->is('admin/delivery_boy/*')?'nav-item active':'' }} "> <i class=" bi bi-circle active "></i><span>List Delivery man</span> </a></li>
                 @endif
             </ul>
         </li>
         @endif
-
-        @if ($user && $user->hasPermissionByRole('view transfer request'))
-        <li class="{{ request()->is('admin/all-transfer-requests')?'nav-item active':'' }}">
-            <a class="nav-link" data-bs-target="#return-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class=" ri-file-transfer-fill "></i><span>Transfer Request &nbsp; @if($count_transfer_request)<span class="badge bg-danger">{{$count_transfer_request}}</span>@endif</span><i class="bi bi-chevron-down ms-auto"></i> </a>
-            <ul id="return-nav" class="nav-content collapse {{ request()->is('admin/all-transfer-requests')?'show':'' }}" data-bs-parent="#sidebar-nav">
-                <li> <a href="{{ route('all-transfer-requests') }}" class="{{ request()->is('admin/all-transfer-requests')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>List of transfers Requests </span></a></li>
-            </ul>
-        </li>
-        @endif
-
-        @if ($user && $user->hasPermissionByRole('view_flash_deal'))
-        <li class=" {{ request()->is('admin/flash_deals')?'nav-item active':'' }} {{ request()->is('admin/flash_deals*')?'nav-item active':'' }}  ">
-            <a class="nav-link" data-bs-target="#flash_deals-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class="bx bxs-discount"></i><span>Flash Deals</span><i class="bi bi-chevron-down ms-auto"></i> </a>
-            <ul id="flash_deals-nav" class="nav-content collapse   {{ request()->is('admin/flash_deals*')?'show':'' }}   {{ request()->is('admin/flash_deals')?'show':'' }}  " data-bs-parent="#sidebar-nav">
-                <li> <a href="{{ route('flash_deals.index') }}" class="{{ request()->is('admin/flash_deals*')?'nav-link active':'' }} {{ request()->is('admin/flash_deals*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Lists of flashdeal</span></a></li>
+       @if ($user && $user->hasPermissionByRole('view sales_person'))
+        <li class="{{ request()->is('admin/sales-user*')?'nav-item active':'' }} ">
+            <a class="nav-link" data-bs-target="#sales-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class="ri-user-follow-fill"></i><span>Sales Persons</span><i class="bi bi-chevron-down ms-auto"></i> </a>
+            <ul id="sales-nav" class="nav-content collapse {{ request()->is('admin/sales-user*')?'show':'' }}" data-bs-parent="#sidebar-nav">
+                <li> <a href="{{ route('sales-users') }}" class="{{ request()->is('admin/sales-user*')?'nav-link active':'' }} "> <i class=" bi bi-circle active "></i><span>List Sales Persons</span></a></li>
             </ul>
         </li>
         @endif
@@ -327,6 +278,14 @@
         </li>
         @endif
 
+        @if ($user && $user->hasPermissionByRole('view_flash_deal'))
+        <li class=" {{ request()->is('admin/flash_deals')?'nav-item active':'' }} {{ request()->is('admin/flash_deals*')?'nav-item active':'' }}  ">
+            <a class="nav-link" data-bs-target="#flash_deals-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class="bx bxs-discount"></i><span>Flash Deals</span><i class="bi bi-chevron-down ms-auto"></i> </a>
+            <ul id="flash_deals-nav" class="nav-content collapse   {{ request()->is('admin/flash_deals*')?'show':'' }}   {{ request()->is('admin/flash_deals')?'show':'' }}  " data-bs-parent="#sidebar-nav">
+                <li> <a href="{{ route('flash_deals.index') }}" class="{{ request()->is('admin/flash_deals*')?'nav-link active':'' }} {{ request()->is('admin/flash_deals*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Lists of flashdeal</span></a></li>
+            </ul>
+        </li>
+        @endif
         @if ($user && $user->hasPermissionByRole('view_orders'))
         <li class=" {{ request()->is('admin/orders')?'nav-item active':'' }} {{ request()->is('admin/orders/*')?'nav-item active':'' }}  ">
             <a class="nav-link" data-bs-target="#order-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class="bx bxs-shopping-bags"></i><span>Orders</span> &nbsp; @if($count_order)<span class="badge bg-danger">{{$count_order}}</span>@endif<i class="bi bi-chevron-down ms-auto"></i> </a>
@@ -335,33 +294,6 @@
             </ul>
         </li>
         @endif
-
-        @if ($user && $user->hasPermissionByRole('view_orders'))
-        <li class="{{ request()->is('admin/offers/products')?'nav-item active':'' }} {{ request()->is('admin/offer*')?'nav-item active':'' }}">
-            <a class="nav-link" data-bs-target="#offer_order-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class="bx bxs-shopping-bags"></i><span>Offer Product Orders</span><i class="bi bi-chevron-down ms-auto"></i> </a>
-            <ul id="offer_order-nav" class="nav-content collapse  {{ request()->is('admin/offers/products')?'show':'' }} {{ request()->is('admin/offer*')?'show':'' }}" data-bs-parent="#sidebar-nav">
-                <li> <a href="{{ route('offers.products.index') }}" class="{{ request()->is('admin/offers/products')?'nav-link active':'' }} {{ request()->is('admin/offer*')?'nav-link active':'' }}">  <i class=" bi bi-circle active "></i><span>Offer Orders</span></a></li>
-            </ul>
-        </li>
-        @endif
-        @if ($user && $user->hasPermissionByRole('view payment'))
-        <li class=" {{ request()->is('admin/all-payments')?'nav-item active':'' }} ">
-            <a class="nav-link" data-bs-target="#pay-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class="bx bx-money-withdraw"></i><span>Payment Report</span> <i class="bi bi-chevron-down ms-auto"></i> </a>
-            <ul id="pay-nav" class="nav-content collapse  {{ request()->is('admin/all-payments')?'show':'' }}" data-bs-parent="#sidebar-nav">
-                <li> <a href="{{ route('all-payments') }}" class="{{ request()->is('admin/all-payments*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Payments</span></a></li>
-            </ul>
-        </li>
-        @endif
-
-        @if ($user && $user->hasPermissionByRole('view transaction'))
-        <li class=" {{ request()->is('admin/transaction')?'nav-item active':'' }} {{ request()->is('admin/transaction*')?'nav-item active':'' }}  ">
-            <a class="nav-link" data-bs-target="#transaction-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class="bx bxs-wallet"></i><span>Transactions</span><i class="bi bi-chevron-down ms-auto"></i> </a>
-            <ul id="transaction-nav" class="nav-content collapse  {{ request()->is('admin/transaction')?'show':'' }} {{ request()->is('admin/transaction*')?'show':'' }}  " data-bs-parent="#sidebar-nav">
-                <li> <a href="{{ route('all-transactions') }}" class="{{ request()->is('admin/transaction*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Transactions </span></a></li>
-            </ul>
-        </li>
-        @endif
-
         @if ($user && $user->hasPermissionByRole('view custom order'))
         <li class=" {{ request()->is('admin/custom-orders')?'nav-item active':'' }} {{ request()->is('admin/custom-orders/*')?'nav-item active':'' }}  ">
             <a class="nav-link" data-bs-target="#custom_order-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class="bx bxs-shopping-bag-alt  "></i><span>Custom-orders</span> &nbsp;@if($count_custom_order)<span class="badge bg-danger">{{$count_custom_order}}</span>@endif <i class="bi bi-chevron-down ms-auto"></i> </a>
@@ -380,28 +312,43 @@
         </li>
         @endif
 
-        @if ($user && $user->hasPermissionByRole('view_delivery_boy') || $user->hasPermissionByRole('view delivery zone') || $user->hasPermissionByRole('view deliveryman type') || $user->hasPermissionByRole('view vehicle type'))
-        <li class="{{ request()->is('admin/vehicle_type')?'nav-item active':'' }} {{ request()->is('admin/withdrawals')?'nav-item active':'' }} {{ request()->is('admin/vehicle_type*')?'nav-item active':'' }}  {{ request()->is('admin/delivery_zone')?'nav-item active':'' }} {{ request()->is('admin/delivery_man/type*')?'nav-item active':'' }} {{ request()->is('admin/delivery_zone*')?'nav-item active':'' }} {{ request()->is('admin/delivery_man/type')?'nav-item active':'' }} {{ request()->is('admin/delivery_boy')?'nav-item active':'' }} {{ request()->is('admin/delivery_boy/*')?'nav-item active':'' }}  ">
-            <a class="nav-link" data-bs-target="#delivery-nav" data-bs-toggle="collapse" href="javascript:void();"> <i class="bx bxs-file"></i><span>Delivery Man</span><i class="bi bi-chevron-down ms-auto"></i> </a>
-            <ul id="delivery-nav" class="nav-content collapse {{ request()->is('admin/delivery_zone')?'show':'' }} {{ request()->is('admin/withdrawals')?'show':'' }} {{ request()->is('admin/delivery_zone*')?'show':'' }} {{ request()->is('admin/delivery_man/type')?'show':'' }} {{ request()->is('admin/delivery_man/type*')?'show':'' }} {{ request()->is('admin/vehicle_type')?'show':'' }} {{ request()->is('admin/vehicle_type*')?'show':'' }}  {{ request()->is('admin/delivery_boy')?'show':'' }}  {{ request()->is('admin/delivery_boy/*')?'show':'' }}    " data-bs-parent="#sidebar-nav">
-                @if( $user->hasPermissionByRole('view delivery zone'))
-                <li> <a href="{{ url('admin/withdrawals') }}" class="{{ request()->is('admin/withdrawals')?'nav-link active':'' }} {{ request()->is('admin/withdrawals')?'nav-item active':'' }} "> <i class=" bi bi-zoom-in  active "></i><span>Delivery Men Withdraw Requests</span> </a></li>
+
+        @if ($user && $user->hasPermissionByRole('view payment'))
+        <li class=" {{ request()->is('admin/all-payments')?'nav-item active':'' }} ">
+            <a class="nav-link" data-bs-target="#pay-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class="bx bx-money-withdraw"></i><span>Payment Report</span> <i class="bi bi-chevron-down ms-auto"></i> </a>
+            <ul id="pay-nav" class="nav-content collapse  {{ request()->is('admin/all-payments')?'show':'' }}" data-bs-parent="#sidebar-nav">
+                <li> <a href="{{ route('all-payments') }}" class="{{ request()->is('admin/all-payments*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Payments</span></a></li>
+            </ul>
+        </li>
+        @endif
+
+        @if ($user && $user->hasPermissionByRole('view transaction'))
+        <li class=" {{ request()->is('admin/transaction')?'nav-item active':'' }} {{ request()->is('admin/transaction*')?'nav-item active':'' }}  ">
+            <a class="nav-link" data-bs-target="#transaction-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class="bx bxs-wallet"></i><span>Transactions</span><i class="bi bi-chevron-down ms-auto"></i> </a>
+            <ul id="transaction-nav" class="nav-content collapse  {{ request()->is('admin/transaction')?'show':'' }} {{ request()->is('admin/transaction*')?'show':'' }}  " data-bs-parent="#sidebar-nav">
+                <li> <a href="{{ route('all-transactions') }}" class="{{ request()->is('admin/transaction*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Transactions </span></a></li>
+            </ul>
+        </li>
+        @endif
+
+
+        @if ($user && $user->hasPermissionByRole('view blog') || $user->hasPermissionByRole('view blog category') || $user->hasPermissionByRole('view blog comment'))
+        <li class=" {{ request()->is('admin/blog-categories')?'nav-item active':'' }} {{ request()->is('admin/blog-comments')?'nav-item active':'' }} {{ request()->is('admin/blog/category*')?'nav-item active':'' }} {{ request()->is('admin/blogs*')?'nav-item active':'' }} {{ request()->is('admin/blogs')?'nav-item active':'' }}">
+            <a class="nav-link" data-bs-target="#blog-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class=" ri-newspaper-fill"></i><span>News / Blogs</span><i class="bi bi-chevron-down ms-auto"></i> </a>
+            <ul id="blog-nav" class="nav-content collapse {{ request()->is('admin/blog-categories')?'show':'' }} {{ request()->is('admin/blog-comments')?'show':'' }} {{ request()->is('admin/blog/category*')?'show':'' }} {{ request()->is('admin/blogs*')?'show':'' }} {{ request()->is('admin/blogs')?'show':'' }}" data-bs-parent="#sidebar-nav">
+                @if($user->hasPermissionByRole('view blog'))
+                <li> <a href="{{ route('blogs') }}" class="{{ request()->is('admin/blogs')?'nav-link active':'' }} {{ request()->is('admin/blogs*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>List Blogs</span></a></li>
                 @endif
-                @if( $user->hasPermissionByRole('view delivery zone'))
-                <li> <a href="{{ route('delivery_zone') }}" class="{{ request()->is('admin/delivery_zone')?'nav-link active':'' }} {{ request()->is('admin/delivery_zone*')?'nav-item active':'' }} "> <i class=" bi bi-zoom-in  active "></i><span>Delivery Zone</span> </a></li>
+                @if($user->hasPermissionByRole('view blog category'))
+                <li> <a href="{{ route('blog-categories') }}" class="{{ request()->is('admin/blog-categories')?'nav-link active':'' }} {{ request()->is('admin/blog/category*')?'nav-link active':''}}"> <i class=" bi bi-circle active "></i><span> Blog Categories</span></a></li>
                 @endif
-                @if( $user->hasPermissionByRole('view deliveryman type'))
-                <li> <a href="{{ route('delivery_man_type') }}" class="{{ request()->is('admin/delivery_man/type')?'nav-link active':'' }} {{ request()->is('admin/delivery_man/type*')?'nav-item active':'' }} "> <i class=" bi bi-type  active "></i><span>Delivery Man Type</span> </a></li>
-                @endif
-                @if( $user->hasPermissionByRole('view vehicle type'))
-                <li> <a href="{{ route('vehicle_type') }}" class="{{ request()->is('admin/vehicle_type')?'nav-link active':'' }} {{ request()->is('admin/vehicle_type*')?'nav-item active':'' }} "> <i class=" bi bi-bicycle active "></i><span>Vehicle Type</span> </a></li>
-                @endif
-                @if( $user->hasPermissionByRole('view_delivery_boy'))
-                <li> <a href="{{ route('delivery_boy.index') }}" class="{{ request()->is('admin/delivery_boy')?'nav-link active':'' }} {{ request()->is('admin/delivery_boy/*')?'nav-item active':'' }} "> <i class=" bi bi-circle active "></i><span>List Delivery man</span> </a></li>
+                @if($user->hasPermissionByRole('view blog comment'))
+                <li> <a href="{{ route('blog-comments') }}" class="{{ request()->is('admin/blog-comments')?'nav-link active':'' }} {{ request()->is('admin/blog/category*')?'nav-link active':''}}"> <i class=" bi bi-circle active "></i><span> Blog Comments</span></a></li>
                 @endif
             </ul>
         </li>
         @endif
+
 
         @if ($user && $user->hasPermissionByRole('view_advertisment'))
         <li class=" {{ request()->is('admin/adverstisements')?'nav-item active':'' }}  ">
@@ -489,12 +436,12 @@
                 @if ($user && $user->hasPermissionByRole('view product reports'))
                 <li> <a href="{{ url('admin/report/product-report')}}" class="{{ request()->is('admin/report/product-report')?'nav-link active':'' }} "> <i class=" bi bi-circle active "></i><span>Product Reports</span></a></li>
                 @endif
-                @if ($user && $user->hasPermissionByRole('view stock product reports'))
-                <li> <a href="{{ url('admin/report/stock-report')}}" class="{{ request()->is('admin/report/stock-report')?'nav-link active':'' }} "> <i class=" bi bi-circle active "></i><span>Stock Product Reports</span></a></li>
+                {{-- @if ($user && $user->hasPermissionByRole('view stock product reports'))
+                <li> <a href="" class="{{ request()->is('admin/report/stock-report')?'nav-link active':'' }} "> <i class=" bi bi-circle active "></i><span>Stock Product Reports</span></a></li>
                 @endif
                 @if ($user && $user->hasPermissionByRole('view stock transferred reports'))
-                <li> <a href="{{ url('admin/report/transfer-stock-report')}}" class="{{ request()->is('admin/report/transfer-stock-report')?'nav-link active':'' }} "> <i class=" bi bi-circle active "></i><span>Transfer Stock Product Reports</span></a></li>
-                @endif
+                <li> <a href="" class="{{ request()->is('admin/report/transfer-stock-report')?'nav-link active':'' }} "> <i class=" bi bi-circle active "></i><span>Transfer Stock Product Reports</span></a></li>
+                @endif --}}
                 @if ($user && $user->hasPermissionByRole('view order reports'))
                 <li> <a href="{{ url('admin/report/order-report')}}" class="{{ request()->is('admin/report/order-report')?'nav-link active':'' }} "> <i class=" bi bi-circle active "></i><span>Order Reports</span></a></li>
                 @endif
@@ -534,9 +481,9 @@
                 @if($user->hasPermissionByRole('view invoice'))
                 <li> <a href="{{ route('invoice-settings') }}" class="{{ request()->is('admin/invoice-setting*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Invoice Settings</span></a></li>
                 @endif
-                @if($user->hasPermissionByRole('view currency'))
+                {{-- @if($user->hasPermissionByRole('view currency'))
                 <li> <a href="{{ route('currencies') }}" class="{{ request()->is('admin/currency*')?'nav-link active':'' }} {{ request()->is('admin/currencies*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Currencies</span></a></li>
-                @endif
+                @endif --}}
                 @if($user->hasPermissionByRole('view tax'))
                 <li> <a href="{{ route('tax-settings.index') }}" class="{{ request()->is('admin/tax-setting*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Tax Settings</span></a></li>
                 @endif
@@ -580,6 +527,18 @@
         </li>
         @endif
         @endif
+
+        @if(Auth::guard('admin')->user()->type=="vendor" || Auth::guard('admin')->user()->type=="Ecommerce Manager" || Auth::guard('admin')->user()->type=="Hotel Manager" || Auth::guard('admin')->user()->type=="Restaurant Manager")
+        <li class="pt-4 {{ request()->is('admin/update-vendor-details')?'nav-item active':'' }} {{ request()->is('admin/update-vendor-bank-details')?'nav-item active':'' }} {{ request()->is('admin/update-vendor-business-details')?'nav-item active':'' }}">
+            <a class="nav-link " data-bs-target="#vendordetails-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class="bi bi-person-bounding-box  "></i><span>Your Details</span><i class="bi bi-chevron-down ms-auto"></i> </a>
+            <ul id="vendordetails-nav" class=" nav-content collapse {{ request()->is('admin/update-vendor-details')?'show':'' }} {{ request()->is('admin/update-vendor-bank-details')?'show':'' }} {{ request()->is('admin/update-vendor-business-details')?'show':'' }}" data-bs-parent="#sidebar-nav">
+                <li> <a href="{{ route('updatevendordetails') }}" class="{{ request()->is('admin/update-vendor-details*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Personal Details</span> </a></li>
+                <li> <a href="{{ route('updatevendorbusinessdetails') }}" class="{{ request()->is('admin/update-vendor-business-details*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Business Details</span></a></li>
+                <li> <a href="{{ route('updatevendorbankdetails') }}" class="{{ request()->is('admin/update-vendor-bank-details*')?'nav-link active':'' }}"> <i class="bi bi-circle"></i><span>Bank Details</span></a></li>
+            </ul>
+        </li>
+        @endif
+
         <li class="nav-heading">My Settings</li>
         <li class=" {{ request()->is('admin/update_admin_password')?'nav-item active':'' }} {{ request()->is('admin/updateadmindetails')?'nav-item active':'' }} ">
             <a class="nav-link" data-bs-target="#settings-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class="bi bi-person-bounding-box  "></i><span>My Profile</span><i class="bi bi-chevron-down ms-auto"></i> </a>

@@ -19,7 +19,7 @@ $user = Auth::guard('admin')->user();
             <div class="row">
                 {{-- Product Info --}}
                 <div class="col-md-4 d-flex">
-                    <img src="{{$notification->product->product_image }}" class="img-thumbnail me-3" style="width: 100px; height: 100px;" alt="Product">
+                    <img src="{{$notification->product->product_image??asset('restaurant_frontend/default-image.png') }}" class="img-thumbnail me-3" style="width: 50px; height: 50px;" alt="Product">
                     <div>
                         <h5 class="mb-1">{{ $notification->product->product_name }}</h5>
                         <p class="mb-1 text-muted">Category: {{ $notification->product->category->name ?? 'N/A' }}</p>
@@ -70,7 +70,7 @@ $user = Auth::guard('admin')->user();
             <tr>
                 {{-- Product Info --}}
                 <td class="d-flex align-items-center">
-                    <img src="{{ $notification->product->product_image }}"
+                    <img src="{{ $notification->product->product_image??asset('restaurant_frontend/default-image.png') }}"
                          alt="Product" class="me-2 img-thumbnail" style="width: 30px; height: 30px;">
                     <div>
                         <strong>{{ $notification->product->product_name }}</strong><br>
