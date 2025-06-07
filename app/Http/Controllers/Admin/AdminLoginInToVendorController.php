@@ -16,7 +16,7 @@ class AdminLoginInToVendorController extends Controller
     {
         $vendor=Admin::where('vendor_id',$id)->first();
         // dd($vendor);
-        if(!Auth::guard('admin')->check() || Auth::guard('admin')->user()->type != 'admin') {
+        if(!Auth::guard('admin')->check() || Auth::guard('admin')->user()->type != 'Super Admin') {
             // dd("vendor");
             Alert::toast('Unauthorized action.','error');
             return redirect()->back();
