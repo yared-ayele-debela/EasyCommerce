@@ -602,6 +602,21 @@ class AdminController extends Controller
         }
     }
 
+     public function updatePassword(Request $request, $id)
+    {
+        // dd($request->password);
+        $request->validate([
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
+        ]);
+
+        $user = Admin::findOrFail($id);
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        Alert::toast('Admin password updated successfully!', 'success');
+        return redirect()->back();
+    }
+
 
     //for view details about vendor
     public function viewVendorDetails($id)

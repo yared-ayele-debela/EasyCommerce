@@ -170,7 +170,7 @@ class CheckoutController extends Controller
 
         DB::commit();
         session()->forget(['cart', 'cart_subtotal', 'discount']); // Clear cart session after successful order
-        // session()->forget(['order_now_cart', 'order_now_cart_subtotal', 'order_now_discount']); // Clear cart session after successful order
+        session()->forget(['order_now_cart', 'order_now_cart_subtotal', 'order_now_discount']); // Clear cart session after successful order
 
         return redirect()->route('restaurant.order.success', ['order' => $order->id])
             ->with('success', 'Your order has been placed successfully.');

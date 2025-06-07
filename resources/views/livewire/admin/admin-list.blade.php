@@ -79,6 +79,43 @@ $user = Auth::guard('admin')->user();
                             </div>
                             </i>
                             @endif
+                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modelId{{ $all['id']}}">
+                                        Update Password
+                                    </button>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="modelId{{ $all['id'] }}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <form action="{{ route('admin.updatePassword', $all['id']) }}" method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Update Password</h5>
+                                                        <button type="button" class="close btn" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="form-group">
+                                                            <label for="password">New Password</label>
+                                                            <input type="password" name="password" class="form-control" required minlength="6">
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label for="password_confirmation">Confirm New Password</label>
+                                                            <input type="password" name="password_confirmation" class="form-control" required minlength="6">
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-primary">Update Password</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
                             @if ($user && $user->hasPermissionByRole('delete_admin'))
                             <a href="{{ url('admin/admin-subadmin/'.$all['id']) }}" style="background-color:rgb(239, 239, 239) " onclick="return confirm('Are you sure,you want to delete this Admin or SubAdmin ?? ') " class="btn  btn-sm" ><i class=" ri-delete-bin-6-fill"></i></a>
                             @endif

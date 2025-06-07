@@ -603,11 +603,12 @@ Route::group(['middleware' => ['admin', 'check.admin:Ecommerce Manager,vendor']]
         Route::get('admin/inactive/{id}', [AdminController::class, 'inactive_user'])->name('inactive_admin');
 
         // display all users on admin table
-        Route::get('all/admins', [AdminController::class, 'displayall'])->name('alladmins');
+        Route::get('all/admins', action: [AdminController::class, 'displayall'])->name('alladmins');
         Route::get('activity/{id}', [AdminActivityLogController::class, 'activity_log'])->name('admin_activity_log');
         Route::get('view_vendor_details/{id}', [AdminController::class, 'viewVendorDetails'])->name('viewVendorDetails');
         Route::get('manage-discounts', [DiscountManagementController::class, 'index'])->name('manage.discounts');
 
+        Route::put('/admin/{id}/update-password', action: [AdminController::class, 'updatePassword'])->name('admin.updatePassword');
 
         //Routing for products tables
         Route::get('products', [ProductController::class, 'product'])->name('products');
@@ -673,6 +674,8 @@ Route::group(['middleware' => ['admin', 'check.admin:Ecommerce Manager,vendor']]
         Route::get('coupons/inactive/{coupons_id}', [CouponsController::class, 'inactive'])->name('inactive_coupon');
 
         Route::get('users', [AdminUserController::class, 'users'])->name('users');
+        Route::put('/users/{id}/update-password', [AdminUserController::class, 'updatePassword'])->name('admin.users.updatePassword');
+
         Route::get('users/active/{user_id}', [AdminUserController::class, 'active'])->name('active_users');
         Route::get('users/inactive/{user_id}', [AdminUserController::class, 'inactive'])->name('inactive_users');
         Route::get('users/{user_id}/delete', [AdminUserController::class, 'destory'])->name('delete_user');

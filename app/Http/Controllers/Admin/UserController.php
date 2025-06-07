@@ -220,4 +220,20 @@ class UserController extends Controller
             return redirect()->back();
         }
     }
+
+    public function updatePassword(Request $request, $id)
+    {
+        // dd($request->password);
+        $request->validate([
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
+        ]);
+
+        $user = User::findOrFail($id);
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        Alert::toast('User password updated successfully!', 'success');
+        return redirect()->back();
+    }
+
 }
