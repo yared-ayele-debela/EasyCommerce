@@ -93,9 +93,9 @@
                             <h6 class="mb-0">{{ $order->deliveryman->first_name }} {{ $order->deliveryman->last_name }}</h6> &nbsp;
                             {{-- <span class="text-dark">Location</span> --}}
                         </div>
-                        <button class="btn bg-light shadow-lg" style="">
+                        <a href="tel:{{ $order->deliveryman->phone }}" class="btn bg-light shadow-lg" style="">
                             {{ $order->deliveryman->phone }}  <i class="bi bi-telephone-forward-fill text-primary"></i>
-                        </button>
+                        </a>
                     </div>
                     @endif
                     <hr>
