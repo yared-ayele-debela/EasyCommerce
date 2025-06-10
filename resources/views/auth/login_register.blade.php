@@ -103,13 +103,16 @@
                             <small class=" text-danger">{{ $message }}</small>
                             @enderror
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-2">
                             <label for="password" class="form-label">Password</label>
                             <input type="password" class="form-control" id="password" name="passwords" placeholder="Enter your password" required>
                             @error('passwords')
                             <small class=" text-danger">{{ $message }}</small>
                             @enderror
                         </div>
+                        <label class="mb-2">
+                            <input type="checkbox" name="remember" checked> Remember Me
+                        </label>
                         <button type="submit" class="btn bg-primary w-100 text-white mb-2">Login</button>
                         <a href="{{ url('delivery-boy/login') }}" type="submit" class="btn btn-outline-secondary w-100">Login as Driver</a>
 
