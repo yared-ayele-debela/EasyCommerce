@@ -251,9 +251,11 @@ class UserController extends Controller
         'mobile' => $request->input('mobile'),
         'password' => $request->input('passwords')
     ];
+    $remember = $request->has('remember');
+
 
     // Attempt login
-    if (Auth::attempt($credentials)) {
+    if (Auth::attempt($credentials,$remember)) {
         $user = Auth::user();
 
         // Check if user is active
