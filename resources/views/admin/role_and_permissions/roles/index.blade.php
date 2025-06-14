@@ -48,8 +48,11 @@ $user = Auth::guard('admin')->user();
                                     @if ($user && $user->hasPermissionByRole('assign role'))
                                     <a class="btn btn-primary  btn-sm" href="{{ url('admin/role/'.$role->id.'/permission') }}">Assign</a>
                                     @endif <br>
+                                     @if($role->name == 'Super Admin' || $role->name == 'Admin' ||$role->name == 'admin' ||$role->name == 'Hotel Manager' || $role->name == 'Ecommerce Manager'|| $role->name == 'Restaurant Manager')
+                                    @else
                                     @if ($user && $user->hasPermissionByRole('edit role'))
                                     <a href="{{ route('roles.edit', $role->id) }}" class="btn btn-sm btn-secondary text-white">Edit</a>
+                                    @endif
                                     @endif
                                     <br>
                                     @if ($user && $user->hasPermissionByRole('delete role'))
