@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\Restaurant\OrderConfirmationMail;
 use App\Models\Bank;
 use App\Models\Country;
+use App\Models\DeliveryAddress;
 use App\Models\Restaurant\Coupon;
 use App\Models\Restaurant\Order;
 use App\Models\Restaurant\OrderItem;
@@ -15,6 +16,9 @@ use App\Models\Restaurant\Product;
 use App\Models\Restaurant\Restaurant;
 use App\Models\ShippingCharge;
 use App\Models\Tip;
+use App\Models\Vendor;
+use App\Models\VendorWallet;
+use App\Models\VendorWalletTransaction;
 use App\Services\NotificationService;
 use App\Services\SmsService;
 use Illuminate\Http\Request;
@@ -62,8 +66,9 @@ class CheckoutController extends Controller
         }
         // dd($totalShipping);
         $banks=Bank::all();
+        $addresses = DeliveryAddress::where('user_id', Auth::user()->id)->get();
 
-        return view('Restaurant.frontend.checkout.index', compact('totalTax','banks','tips', 'cart', 'subtotal', 'countries','totalShipping'));
+        return view('Restaurant.frontend.checkout.index', compact('addresses','totalTax','banks','tips', 'cart', 'subtotal', 'countries','totalShipping'));
     }
 
 
@@ -71,7 +76,7 @@ class CheckoutController extends Controller
     {
         // dd($request->all());
         try{
-        if ($request->payment_method === "manual") {
+        if ($request->payment_method === "Bank Transfer") {
             $validator = Validator::make($request->all(), [
                 'payment_method' => 'required|string',
                 'address_id' => 'required|exists:delivery_address,id',
@@ -127,18 +132,47 @@ class CheckoutController extends Controller
         ]);
 
         foreach ($cart as $item) {
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $item['product_id'],
-                'size' => $item['size'] ? $item['size'] : '',
-                'quantity' => $item['quantity'],
-                'price' => $item['price'],
-                'total' => $item['price'] * $item['quantity'],
-                'picked_code' => strtoupper(Str::random(6)),
-            ]);
+
+            $itemSubtotal=$item['price'] * $item['quantity'];
+                $product=Product::findOrFail($item['product_id']);
+                $vendor = Vendor::find($product->vendor_id);
+                $commissionRate = $vendor->commission ?? 5; // default to 10%
+
+                // Admin commission and vendor earning
+                $adminCommission = round( $itemSubtotal * $commissionRate / 100, 2);
+                $vendorEarning = $itemSubtotal - $adminCommission;
+
+
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $item['product_id'],
+                    'size' => $item['size'] ? $item['size'] : '',
+                    'quantity' => $item['quantity'],
+                    'price' => $item['price'],
+                    'total' => $item['price'] * $item['quantity'],
+                    'picked_code' => strtoupper(Str::random(6)),
+                    'admin_commission'=>$adminCommission,
+                    'vendor_earning'=>$vendorEarning
+                ]);
+
+
+                $vendorId=$vendor->id;
+                $vendorWallet = VendorWallet::firstOrCreate(['vendor_id' => $vendorId]);
+                $vendorWallet->available_balance += $vendorEarning;
+                $vendorWallet->save();
+
+                VendorWalletTransaction::create([
+                    'vendor_id' => $vendorId,
+                    'type' => 'credit',
+                    'amount' => $vendorEarning,
+                    'description' => 'Earning from Restaurant order #'.$order->id
+                ]);
+
         }
 
-        if ($request->payment_method === "manual") {
+
+
+        if ($request->payment_method === "Bank Transfer") {
             $payment = new OrderPaymentInfo();
             $payment->restaurant_orders_id = $order->id;
             $payment->user_id = Auth::user()->id;
@@ -212,14 +246,17 @@ class CheckoutController extends Controller
 
         }
 
-        return view('Restaurant.frontend.checkout.order_now.index', compact('countries', 'banks', 'tips', 'subtotal', 'totalTax', 'totalShipping'));
+        $addresses = DeliveryAddress::where('user_id', Auth::user()->id)->get();
+
+
+        return view('Restaurant.frontend.checkout.order_now.index', compact('addresses','countries', 'banks', 'tips', 'subtotal', 'totalTax', 'totalShipping'));
     }
 
     public function PlaceOrderNow(Request $request)
     {
         // dd($request->all());
         try{
-        if ($request->payment_method === "manual") {
+        if ($request->payment_method === "Bank Transfer") {
             $validator = Validator::make($request->all(), [
                 'payment_method' => 'required|string',
                 'address_id' => 'required|exists:delivery_address,id',
@@ -259,6 +296,8 @@ class CheckoutController extends Controller
             $taxAmount = round($subtotal * ($product->product_tax / 100), 2);
             $totalTax += $taxAmount;
 
+
+
         }
         $tipAmount = 0;
         if ($request->tip_option) {
@@ -289,6 +328,16 @@ class CheckoutController extends Controller
         ]);
 
         foreach ($order_now_cart as $item) {
+                $itemSubtotal=$item['price']* $item['quantity'];
+                $product=Product::findOrFail($item['product_id']);
+                $vendor = Vendor::find($product->vendor_id);
+                $commissionRate = $vendor->commission ?? 5; // default to 10%
+
+                // Admin commission and vendor earning
+                $adminCommission = round( $itemSubtotal * $commissionRate / 100, 2);
+                $vendorEarning = $itemSubtotal - $adminCommission;
+
+
             OrderItem::create([
                 'order_id' => $order->id,
                 'product_id' => $item['product_id'],
@@ -297,9 +346,25 @@ class CheckoutController extends Controller
                 'price' => $item['price'],
                 'total' => $item['price'] * $item['quantity'],
                 'picked_code' => strtoupper(Str::random(6)),
+                'admin_commission'=>$adminCommission,
+                'vendor_earning'=>$vendorEarning
             ]);
+
+
+                $vendorId=$vendor->id;
+                $vendorWallet = VendorWallet::firstOrCreate(['vendor_id' => $vendorId]);
+                $vendorWallet->available_balance += $vendorEarning;
+                $vendorWallet->save();
+
+                VendorWalletTransaction::create([
+                    'vendor_id' => $vendorId,
+                    'type' => 'credit',
+                    'amount' => $vendorEarning,
+                    'description' => 'Earning from Restaurant order #'.$order->id
+                ]);
+
         }
-        if ($request->payment_method === "manual") {
+        if ($request->payment_method === "Bank Transfer") {
             $payment = new OrderPaymentInfo();
             $payment->restaurant_orders_id = $order->id;
             $payment->user_id = Auth::user()->id;

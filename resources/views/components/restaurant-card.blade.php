@@ -1,7 +1,7 @@
 
 @props(['restaurant', 'distance', 'time'])
 {{-- GRID ITEM --}}
-<div class="col-lg-6 col-md-6">
+<div class="col-lg-6 col-md-6 mb-2">
     {{-- CARD --}}
     <div class="offer-card h-100 overflow-hidden">
         <div class="row g-0 align-items-stretch">
@@ -27,6 +27,13 @@
             {{-- ➡️ INFO COLUMN --}}
             <div class="col-8 col-sm-8">
                 <div class="card-body d-flex flex-column h-100 py-3 px-4">
+                    @if($restaurant->delivery_radius <= $distance)
+                   <div class="position-absolute top-0 end-0 m-2">
+                        <button class="btn btn-sm btn-outline-danger rounded-pill px-3" disabled>
+                          <img src="{{ asset('restaurant_frontend/alert.png') }}" width="20" alt="">  Out of Range
+                        </button>
+                    </div>
+                    @endif
                     {{-- NAME --}}
                     <h5 class="card-title mb-1 text-truncate" title="{{ $restaurant->name }}">
                         {{ $restaurant->name }}
@@ -46,9 +53,14 @@
                     </div>
 
                     {{-- ADDRESS --}}
-                    <p class="small text-muted mb-2">
-                        <i class="bi bi-pin-map-fill text-primary me-1"></i>{{ $restaurant->address }}
-                    </p>
+                    <a  href="https://www.google.com/maps?q={{ $restaurant->latitude }},{{ $restaurant->longitude }}"
+                         target="_blank" class="small text-muted mb-2">
+                        <i class="bi bi-pin-map-fill text-primary me-1"></i>
+                         {{ $restaurant->address }}, {{ $restaurant->city }}, {{ $restaurant->state }}, Ethiopia
+
+                    </a>
+
+
 
                     {{-- RATING & PRICE (aligned bottom) --}}
                     <div class="mt-auto d-flex justify-content-between align-items-center">

@@ -21,7 +21,9 @@ $user = Auth::guard('admin')->user();
     <div class="card">
         <div class="card-header">
             <h4>Categories</h4>
+            @adminCan('add_restaurant_category')
             <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Add Category</button>
+           @endadminCan
         </div>
         <div class="card-body">
             <table class="table">
@@ -48,7 +50,10 @@ $user = Auth::guard('admin')->user();
                             </div>
                         </td>
                         <td>
+                            @adminCan('edit_restaurant_category')
                             <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editCategoryModal-{{ $category->id }}"><i class="bi bi-pencil-fill"></i></button>
+                            @endadminCan
+                            @adminCan('delete_restaurant_category')
                             <form action="{{ route('categories.destroy', $category->id) }}" method="POST" class="delete-form" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
@@ -56,6 +61,7 @@ $user = Auth::guard('admin')->user();
                                     <i class="bi bi-trash-fill"></i>
                                 </button>
                             </form>
+                            @endif
 
                         </td>
                     </tr>
@@ -81,6 +87,8 @@ $user = Auth::guard('admin')->user();
                                         <!-- Image Upload -->
                                         <div class="mb-3">
                                             <label class="form-label">Upload Image</label>
+                                                                     <br>
+              <span class="text-danger">height: 103 px width: 103 px</span>
                                             <input type="file" name="image" class="form-control">
                                             @if($category->image)
                                             <img src="{{ $category->image }}" width="50">
@@ -151,6 +159,8 @@ $user = Auth::guard('admin')->user();
                         </div>
                         <div class="mb-3">
                         <label>Upload Image:</label>
+                                                 <br>
+              <span class="text-danger">height: 103 px width: 103 px</span>
                         <input type="file" name="image" class="form-control">
                         </div>
                         <div class="mb-3">

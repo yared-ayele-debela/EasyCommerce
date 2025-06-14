@@ -11,6 +11,11 @@ use Illuminate\Support\Facades\Auth;
 class HotelReviewController extends Controller
 {
     //
+      public function __construct()
+    {
+        $this->middleware('admin.permission:view_hotel_review')->only('index');
+       
+    }
     public function index($id){
         $hotel=Hotel::findOrFail($id);
         if($hotel->admin_id != Auth::guard('admin')->user()->id){

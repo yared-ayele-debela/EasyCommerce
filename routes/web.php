@@ -117,12 +117,14 @@ use App\Http\Controllers\Ecommerce\Frontend\CmsController as FrontendCmsControll
 use App\Http\Controllers\Ecommerce\Frontend\CustomController;
 use App\Http\Controllers\Ecommerce\Frontend\DeliveryAddressController;
 use App\Http\Controllers\Ecommerce\Frontend\DirectCheckoutController;
+use App\Http\Controllers\Ecommerce\Frontend\FilterProductController;
 use App\Http\Controllers\Ecommerce\Frontend\FrontendController as EcommerceFrontendFrontendController;
 use App\Http\Controllers\Ecommerce\Frontend\NewslettersController;
 use App\Http\Controllers\Ecommerce\Frontend\OrderController as EcommerceFrontendOrderController;
 use App\Http\Controllers\Ecommerce\Frontend\ProductRequestController;
 use App\Http\Controllers\Ecommerce\Frontend\ProductsController;
 use App\Http\Controllers\Ecommerce\Frontend\RatingController as EcommerceFrontendRatingController;
+use App\Http\Controllers\Ecommerce\Frontend\RegisterDeliveryManController;
 use App\Http\Controllers\Ecommerce\Frontend\VendorController as FrontendVendorController;
 use App\Http\Controllers\Ecommerce\Frontend\VendorsController;
 use App\Http\Controllers\Ecommerce\Frontend\WishlistController;
@@ -150,6 +152,7 @@ use App\Http\Controllers\Hotel\Dashboard\HotelReviewController;
 use App\Http\Controllers\Hotel\Dashboard\ReservationsController;
 use App\Http\Controllers\Hotel\Dashboard\RoomController;
 use App\Http\Controllers\Hotel\Dashboard\SliderBannerController as DashboardSliderBannerController;
+use App\Http\Controllers\Hotel\Dashboard\VendorBalanceController as HotelDashboardVendorBalanceController;
 use App\Http\Controllers\Hotel\Frontend\BookingController;
 use App\Http\Controllers\Hotel\Frontend\CategoryController as HotelFrontendCategoryController;
 use App\Http\Controllers\Hotel\Frontend\FrontendController as FrontendFrontendController;
@@ -191,6 +194,7 @@ use App\Http\Controllers\Restaurant\Dashboard\RestaurantAdminController;
 use App\Http\Controllers\Restaurant\Dashboard\RestaurantController;
 use App\Http\Controllers\Restaurant\Dashboard\RestaurantMenuController;
 use App\Http\Controllers\Restaurant\Dashboard\SliderBannerController;
+use App\Http\Controllers\Restaurant\Dashboard\VendorBalanceController as DashboardVendorBalanceController;
 use App\Http\Controllers\Restaurant\Frontend\CartController;
 use App\Http\Controllers\Restaurant\Frontend\CategoryController as FrontendCategoryController;
 use App\Http\Controllers\Restaurant\Frontend\CheckoutController;
@@ -279,26 +283,7 @@ Route::prefix('admin')->group(function () {
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::prefix('admin')->group(function () {
-
-    // Route::get('login/google', [AuthController::class, 'redirectToGoogle'])->name('login.google');
-    // Route::get('login/google/callback', [AuthController::class, 'handleGoogleCallback']);
-
-    // // Github login
-    // Route::get('login/github', [AuthController::class, 'redirectToGithub'])->name('login.github');
-    // Route::get('login/github/callback', [AuthController::class, 'handleGithubCallback']);
-
-    // // Github login
-    // Route::get('login/linkedin', [AuthController::class, 'redirectToLinkedIn'])->name('login.linkedin');
-    // Route::get('login/linkedin/callback', [AuthController::class, 'handleLinkedInCallback']);
-
-
     Route::get('login', [AdminController::class, 'loginpage'])->name('admin_login');
-    //forget password
-    // Route::get('forget-password', [AdminController::class, 'ForgetPassword'])->name('ForgetPasswordGet');
-    // Route::post('forget-password', [AdminController::class, 'ForgetPasswordStore'])->name('ForgetPasswordPost');
-    // Route::get('reset-password/{token}', [AdminController::class, 'ResetPassword'])->name('ResetPasswordGet');
-    // Route::match(['get', 'post'], 'reset-password', [AdminController::class, 'ResetPasswordStore'])->name('ResetPasswordPost');
-
     Route::post('login', [AdminController::class, 'loginvalidate'])->name('login_admin');
     Route::group(['middleware' => ['admin']], function () {
         Route::get('update_admin_password', [AdminController::class, 'updateadminpassword'])->name('update_admin_password');
@@ -311,7 +296,6 @@ Route::prefix('admin')->group(function () {
 
 Route::group(['middleware' => ['admin']], function () {
 Route::get('adminlogout', [AdminController::class, 'logout'])->name('adminlogout');
-
 });
 Route::group(['middleware' => ['admin', 'check.admin:Ecommerce Manager,vendor']], function () {
 
@@ -333,9 +317,6 @@ Route::group(['middleware' => ['admin', 'check.admin:Ecommerce Manager,vendor']]
         Route::post('store-custom-order', [AdminCustomOrderController::class, 'store_custom_order'])->name('store-custom-order');
 
 
-        //for transcations
-        Route::get('transactions/all-transactions', [TransactionsController::class, 'index'])->name('all-transactions');
-        Route::get('transaction/{id}', [TransactionsController::class, 'detail'])->name('detail-transaction');
         Route::post('update-transaction-amount', [TransactionsController::class, 'update'])->name('update-transaction-amount');
         Route::get('transaction/delete/{id}', [TransactionsController::class, 'delete'])->name('delete-transaction');
         //for report
@@ -373,8 +354,6 @@ Route::group(['middleware' => ['admin', 'check.admin:Ecommerce Manager,vendor']]
         Route::get('report/order-product/chart', [ChartController::class, 'order_products'])->name('order-products-reports');
         // Route::get('report/stock/chart',[OrderChartController::class,'stock'])->name('stocks-reports');
 
-
-
         Route::get('colors', [ColorController::class, 'index'])->name('colors');
         Route::get('color/add', [ColorController::class, 'create'])->name('add-color');
         Route::post('color/store', [ColorController::class, 'store'])->name('store-color');
@@ -384,9 +363,7 @@ Route::group(['middleware' => ['admin', 'check.admin:Ecommerce Manager,vendor']]
         Route::get('color/active/{id}', [ColorController::class, 'active'])->name('active-color');
         Route::get('color/inactive/{id}', [ColorController::class, 'inactive'])->name('inactive-color');
 
-
         //for email template
-
         Route::get('email-templates', [EmailTemplateController::class, 'index'])->name('email_templates');
         Route::get('email-template/add', [EmailTemplateController::class, 'create'])->name('add-email-template');
         Route::post('email-template/store', [EmailTemplateController::class, 'store'])->name('store-email-template');
@@ -568,6 +545,7 @@ Route::group(['middleware' => ['admin', 'check.admin:Ecommerce Manager,vendor']]
         Route::put('/delivery_boy/{id}', [DeliverymanController::class, 'update'])->name('delivery_boy.update');
         Route::delete('/delivery_boy/{id}', [DeliverymanController::class, 'destroy'])->name('delivery_boy.destroy');
 
+        Route::get('delivery_boy/is_active/{id}',[DeliveryManController::class,'is_active'])->name('delivery_boy_is_active');
         Route::get('view-withdraw-detail/{id}',[DeliveryManController::class,'detail'])->name('view-withdraw-detail');
 
         //for role and permission
@@ -589,7 +567,10 @@ Route::group(['middleware' => ['admin', 'check.admin:Ecommerce Manager,vendor']]
         Route::get('delivery-boy/{user}/assign-role', [DeliveryBoyRolesController::class, 'assignRole'])->name('delivery_boy.assign_role');
         Route::post('delivery-boy/{user}/update-role', [DeliveryBoyRolesController::class, 'updateRole'])->name('delivery_boy.update_role');
 
-        Route::get('dashboard', [DashboardController::class, 'index'])->name('maindashboard');
+        Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('maindashboard');
+
+        // Route::get('/activities', [DashboardController::class, 'getFilteredActivities'])->name('admin.activities');
+        Route::get('/admin/activities', action: [DashboardController::class, 'fetch']);
 
         //for update vendor
         Route::get('update-vendor-details', [AdminController::class, 'updatevendordetails'])->name('updatevendordetails');
@@ -686,6 +667,7 @@ Route::group(['middleware' => ['admin', 'check.admin:Ecommerce Manager,vendor']]
         Route::post('order-filter-reports', [OrdersController::class, 'filterOrders'])->name('order-filter-reposts');
         Route::get('orders/{order_id}', [OrdersController::class, 'orderDetails']);
         Route::post('update-order-status', [OrdersController::class, 'updateOrderStatus']);
+        Route::post('update-order-payment-status', [OrdersController::class, 'updateOrderPaymentStatus']);
         Route::post('update-order-item-status', [OrdersController::class, 'updateOrderItemStatus']);
 
         Route::put('assign-to-delivery-boy', [AssingOrderToDeliveryBoy::class, 'assignToDeliveryBoy'])->name('assing_to_delivery_boy');
@@ -756,7 +738,6 @@ Route::group(['middleware' => ['admin', 'check.admin:Ecommerce Manager,vendor']]
         });
 
         //for fast orders
-
         Route::controller(AdminCustomOrderController::class)->group(function () {
             Route::get('custom-orders', 'index')->name('custom_orders');
 
@@ -892,7 +873,6 @@ Route::group(['middleware' => ['admin', 'check.admin:Ecommerce Manager,vendor']]
         Route::get('offer/detail/{offerId}', [OfferController::class, 'detail'])->name('offer.detail');
         Route::get('offer-products/{productId}/offers', [OfferController::class, 'product_offer'])->name('product-offer');
 
-
         // stream_socket_accept
         Route::get('all-stock', [StockController::class, 'live_wire'])->name('all-stock');
 
@@ -924,22 +904,22 @@ Route::group(['middleware' => ['admin', 'check.admin:Ecommerce Manager,vendor']]
         Route::post('/withdrawals/{id}/reject', [DeliveryManWithdrawController::class, 'reject'])->name('admin.withdrawals.reject');
 
 
-        Route::get('vendor/wallet',[VendorBalanceController::class,'index']);
+
+    });
+        Route::group(['middleware' => 'admin'], function () {
+
         Route::get('vendor/withdraw-requests',[VendorVendorWithdrawRequestController::class,'index']);
 
-        Route::post('vendor-withdraw-request',[VendorBalanceController::class,'requestWithdraw'])->name('vendor-withdraw-request');
         Route::post('withdraw.update/{id}',[VendorVendorWithdrawRequestController::class,'updateWithdrawStatus'])->name('admin.withdraw.update');
-    });
-
         Route::put('update_vendor_details', [AdminController::class, 'update_vendor_details'])->name('update_vendor_details')->middleware('admin');
         Route::put('update_vendor_businessdetails', [AdminController::class, 'update_vendor_businessdetails'])->name('update_vendor_businessdetails')->middleware('admin');
         Route::put('update_vendor_bank_details', [AdminController::class, 'update_vendor_bank_details'])->name('update_vendor_bank_details')->middleware('admin');
 
+
+        Route::get('vendor/wallet',[VendorBalanceController::class,'index']);
+        Route::post('vendor-withdraw-request',[VendorBalanceController::class,'requestWithdraw'])->name('vendor-withdraw-request');
+    });
 });
-
-
-
-
 
 
 Route::get('delivery-boy/login', [DeliveryDeliveryManController::class, 'login'])->name('delivery_boy_login');
@@ -1005,122 +985,15 @@ Route::group(['middleware' => 'deliverymen'], function () {
     Route::get('delivery-boy/ecommerce/pickup-order/{orderId}/{vendorId}',[GetLocationController::class,'pickupView']);
 });
 
-// // for frontend user
-
-Route::get('shop', [FontendController::class, 'shop'])->name('shop');
-
-$catUrls = Category::select('url')->where('status', 1)->get()->pluck('url')->toArray();
-
-foreach ($catUrls as $key => $url) {
-    Route::match(['get', 'post'], '/' . $url, [FrontProductController::class, 'listing']);
-}
-
 Route::get('page/{url}', [FrontCmsController::class, 'pages'])->name('pages');
-
-Route::get('/product/{id}', [FrontProductController::class, 'detail'])->name('product_detail');
-Route::get('category/{id}', [FontendController::class, 'category']);
-
-Route::get('all-products', [FontendController::class, 'allproduct']);
-Route::get('/fetch-data', [FontendController::class, 'fetchData']);
-Route::get('/fetch-product-data', [FontendController::class, 'fetchProductData']);
-
-Route::get('/vendor/{vendorid}', [FontendController::class, 'vendorListing']);
-Route::post('/get-product-price', [FrontProductController::class, 'getProductPrice']);
-Route::get('/vendor/login-register', [VendorRegistrationController::class, 'loginRegister'])->name('login_register');
-Route::post('/vendor/register', [VendorRegistrationController::class, 'Register'])->name('vendor_register');
-Route::get('/vendor/confirm/{code}', [VendorRegistrationController::class, 'confirmVendor'])->name('confirm_vendor');
-Route::get('/login_register/vendor', [ControllersVendorController::class, 'index'])->name('vlogin_register');
-
-Route::post('cart/add', [FrontProductController::class, 'cartAdd']);
-Route::get('cart', [FrontProductController::class, 'cart'])->name('cart');
-Route::post('cart/update', [FrontProductController::class, 'cartUpdate'])->name('update-cart');
-Route::post('cart/delete', [FrontProductController::class, 'cartDelete']);
-
-//Search Product
-Route::get('search-products', [FrontProductController::class, 'listing']);
-Route::get('special-link/{token}', [SpecialLinkController::class, 'handleSpecialLink'])->name('special.link');
-
-//for Contact
-Route::group(['middleware' => ['auth']], function () {
-    Route::get('order/invoice/download/{id}', [OrdersController::class, 'viewPDFInvoice']);
-    //update user account
-    Route::put('user/password/update', [UserController::class, 'update_user_password']);
-    //Dispaly User Account
-    Route::get('user/display/user_details_account', [UserController::class, 'createuserAccount']);
-    //Apply Coupon Account
-    Route::post('/apply-coupon', [FrontProductController::class, 'applyCoupon']);
-
-    Route::match(['GET', 'POST'], '/checkout', [FrontProductController::class, 'checkout']);
-    Route::post('get-delivery-address', [FrontAddressController::class, 'getDeliveryAddress']);
-    Route::post('save-delivery-address', [FrontAddressController::class, 'saveDeliveryAddress']);
-
-    Route::post('delete-delivery-address', [FrontAddressController::class, 'removeDeliveryAddress']);
-    Route::get('delete/delivery-address/{id}', [FrontAddressController::class, 'removeDeliveryAddress'])->name('delete_delivery_address');
-    //Thanks
-
-    Route::get('thanks', [FrontProductController::class, 'thanks'])->name('thanks');
-    //Users orders
-    Route::get('user/orders/{id?}', [OrderController::class, 'orders'])->name('orders');
-
-    Route::get('paypal', [PaypalController::class, 'paypal'])->name('paypal');
-    Route::post('pay', [PaypalController::class, 'pay'])->name('pay');
-    Route::get('success', [PaypalController::class, 'success'])->name('success');
-    Route::get('error', [PaypalController::class, 'error'])->name('error');
-    Route::get('successfully-ordered/{payment_id}', [PaypalController::class, 'payment_successfully'])->name('successfully.ordered');
-
-    //for chapa payment method
-    Route::get('chapa', [ChapaController::class, 'chapa'])->name('chapa');
-    Route::post('chapa_pay', [ChapaController::class, 'initialize'])->name('chapa_pay');
-    Route::get('callback/{reference}', [ChapaController::class, 'callback'])->name('callback');
-    Route::get('success_chapa', [ChapaController::class, 'success'])->name('success_pay');
-    Route::get('error_chapa', [ChapaController::class, 'error'])->name('error_pay');
-    Route::post('/update-wishlist', [FrontProductController::class, 'updateWhishlist']);
-    Route::get('/wishlist', [FrontProductController::class, 'wishlist'])->name('wishlist');
-    Route::post('/delete-wishlist-item', [FrontProductController::class, 'deleteWishlistItem']);
-    //for track order
-
-    Route::get('track-your-order', [TrackYourOrderController::class, 'index'])->name('track_your_order');
-    Route::match(['GET', 'POST'], 'check-order', [TrackYourOrderController::class, 'check'])->name('check-order');
-    Route::get('/track-order/{order_code}', [TrackYourOrderController::class, 'showOrderDetails'])->name('order-detailss');
-
-    Route::post('store_offer_product', [FrontProductController::class, 'OfferProductOrder'])->name('store_offer_product');
-});
-
-
-
-// Route::get('track-custom-order',[CustomOrderController::class,'findcustomorder'])->name('track_custom_order');
-// Route::post('check-custom-order',[CustomOrderController::class,'checkcustomorder'])->name('check_custom_order');
-// Route::get('custom-orders',[CustomOrderController::class,'create_fast_order'])->name('create_custom_order');
-
-
 Route::post('store-custom-orders', [CustomOrderController::class, 'store_fast_order'])->name('store_custom_order');
 
-
-Route::match(['GET', 'POST'], '/add-rating', [RatingController::class, 'addRating'])->name('add_rating');
+// /Route::match(['GET', 'POST'], '/add-rating', [RatingController::class, 'addRating'])->name('add_rating');
 Route::post('newslettersubscriber', [NewletterSubscriberController::class, 'store'])->name('newslettersubscriber');
-//forget a password for users
 //User Logout
 Route::get('user/logout', [UserController::class, 'userLogout']);
 //Confirm User Account
-Route::get('user/confirm/{code}', [UserController::class, 'confirmAccount']);
-
-Route::get('currency-converter', [FontendController::class, 'currency'])->name('currency_converter');
-
 Route::get('faq', [FaqController::class, 'index'])->name('faq');
-
-
-
-
-
-//for all vendors
-Route::get('vendors', [ControllersVendorController::class, 'vendors'])->name('all-vendor');
-//for all categories
-
-Route::get('categories', [ControllersCategoriesController::class, 'index'])->name('all-categories');
-
-Route::post('currency_load', [CurrencyController::class, 'currencyload'])->name('currency.load');
-
-
 
 // for sales man
 
@@ -1149,7 +1022,6 @@ Route::prefix('sales')->name('sales.')->group(function () {
 // Restaurant Routes
 Route::prefix('admin/restaurant')->group(function () {
     Route::group(['middleware' => ['admin', 'check.admin:Restaurant Manager']], function () {
-
         Route::get('dashboard', [RestaurantDashboardController::class, 'index'])
             ->name('restaurant.dashboard');
         Route::get('/dashboard/orders/trend', [RestaurantDashboardController::class, 'orderTrend'])->name('orders.trend');
@@ -1196,6 +1068,8 @@ Route::prefix('admin/restaurant')->group(function () {
         Route::get('update-vendor-details', action: [RestaurantAdminController::class, 'updatevendordetails'])->name(name: 'restaurant.updatevendordetails');
         Route::get('update-vendor-bank-details', action: [RestaurantAdminController::class, 'updatevendorbankdetails'])->name(name: 'restaurant.updatevendorbankdetails');
 
+        Route::get('vendor/wallet',action: [DashboardVendorBalanceController::class,'index']);
+
      });
 });
 
@@ -1230,23 +1104,15 @@ Route::group(['middleware' => ['admin', 'check.admin:Hotel Manager']], function 
         Route::put('/coupons/{coupon}', [DashboardCouponController::class, 'update'])->name('hotel.coupon.update');
         Route::delete('/coupons/{coupon}', [DashboardCouponController::class, 'destroy'])->name('hotel.coupon.destroy');
 
+        Route::get('vendor/wallet',action: [HotelDashboardVendorBalanceController::class,'index']);
+
     Route::get('update-vendor-details', action: [HotelAdminController::class, 'updatevendordetails'])->name('hotel.updatevendordetails');
     Route::get('update-vendor-bank-details', action: [HotelAdminController::class, 'updatevendorbankdetails'])->name('hotel.updatevendorbankdetails');
 
     });
 });
 
-// Restaurant Frontend Routes
-
-// Route::get('/', [Restaurant\FrontendController::class, 'index'])->name('/');
-
 Route::get('/', [FrontendController::class, 'index'])->name('restaurant.index.page');
-
-Route::get('/welcome', function () {
-    return view('welcome');
-});
-
-
 
 // Authentication Routes
 Route::prefix('auth')->middleware('guest')->group(function () {
@@ -1277,6 +1143,8 @@ Route::middleware('auth')->group(function () {
 
 // Pages
 Route::get('restaurants', [FrontendRestaurantController::class, 'index'])->name('restaurants');
+Route::get('/restaurants/filter', [FrontendRestaurantController::class, 'filter'])->name('restaurants.filter');
+
 // Route::get('ecommerce',[FrontendRestaurantController::class,'index'])->name('restaurants');
 Route::prefix('/restaurant')->group(function () {
     Route::get('/{id}/detail', [FrontendRestaurantController::class, 'detail'])->name('restaurant.detail');
@@ -1311,6 +1179,7 @@ Route::prefix('/restaurant')->group(function () {
     Route::get('/cart/update/{key}/{action}', [CartController::class, 'updateCart'])->name('restaurant.cart.update');;
     Route::get('/cart/count', [CartController::class, 'getCartCount'])->name('restaurant.cart.count');
     Route::post('/apply-coupon', [CartController::class, 'applyCoupon'])->name('restaurant.apply.coupon');
+    Route::post('/apply-coupon-order-now', [CartController::class, 'applyCouponOrderNow'])->name('restaurant.apply.coupon.order.now');
     Route::get('/cart/remove/{key}', [CartController::class, 'removeFromCart']);
     Route::get('/get-product-sizes/{id}', [CartController::class, 'getProductSizes']);
 
@@ -1386,9 +1255,6 @@ Route::get('/states/{countryId}', [UserDeliveryAddressController::class, 'getReg
 Route::get('/cities/{stateId}', [UserDeliveryAddressController::class, 'getCities']);
 Route::get('/sub-cities/{cityId}', [UserDeliveryAddressController::class, 'getSubCities']);
 Route::get('/streets/{subCityId}', [UserDeliveryAddressController::class, 'getStreets']);
-
-
-
 
 // hotel reservation
 
@@ -1466,6 +1332,10 @@ Route::prefix('/ecommerce')->group(function () {
 
         // routes/web.php
     Route::post('/calculate-shipping', [FrontendCheckoutController::class, 'calculateShipping']);
+
+    Route::get('/products/filter', action: [FilterProductController::class, 'filter'])->name('products.filter');
+    Route::get('/products/search', [FilterProductController::class, 'search'])->name('ecommerce.products.search');
+
     });
 });
 
@@ -1529,6 +1399,9 @@ Route::middleware('auth')->get('/notifications', function () {
 
     return view('all_frontend_layouts.notifications.index', compact('notifications'));
 });
+
+Route::get('/register/delivery-man', [RegisterDeliveryManController::class, 'create'])->name('delivery_man.registeration_page');
+Route::post('/register_delivery_man', action: [RegisterDeliveryManController::class, 'store'])->name('delivery_man.register');
 
 
 Route::get('notifications/delete/{id}',[NotificationController::class,'delete'])->name('delete-notification')->middleware('auth');

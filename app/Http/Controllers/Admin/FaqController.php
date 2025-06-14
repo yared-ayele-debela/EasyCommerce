@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use App\Models\CmsPage;
 use App\Models\Faq;
+use App\Services\ActivityLogger;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class FaqController extends Controller
@@ -66,8 +69,12 @@ class FaqController extends Controller
             $faq = new Faq();
             $faq->question = $request->input('question');
             $faq->answer = $request->input('answer');
-            $faq->status = 0;
+            $faq->status = 1;
             $faq->save();
+
+                $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add FAQ', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
             Alert::toast('FAQ is has been created!', 'success');
 
@@ -112,6 +119,10 @@ class FaqController extends Controller
             $faq->question = $request->input('question');
             $faq->answer = $request->input('answer');
             $faq->update();
+
+                $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Update FAQ', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
             Alert::toast('FAQ is has been updated!', 'success');
             return redirect('admin/allfaq');
@@ -163,6 +174,10 @@ class FaqController extends Controller
         try {
             $faq = Faq::find($id);
             $faq->delete();
+
+                $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete FAQ', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
             Alert::toast('FAQ has been deleted!', 'error');
             return redirect('admin/allfaq');

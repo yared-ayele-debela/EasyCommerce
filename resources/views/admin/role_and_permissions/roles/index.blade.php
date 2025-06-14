@@ -53,11 +53,14 @@ $user = Auth::guard('admin')->user();
                                     @endif
                                     <br>
                                     @if ($user && $user->hasPermissionByRole('delete role'))
+                                    @if($role->name == 'Super Admin' || $role->name == 'Admin' ||$role->name == 'admin' || $role->name == 'Ecommerce Manager'|| $role->name == 'Restaurant Manager')
+                                    @else
                                     <form action="{{ route('roles.destroy', $role->id) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger btn-sm text-white" onclick="return confirm('Are you sure you want to delete this role?')">Delete</button>
                                     </form>
+                                    @endif
                                     @endif
                                 </td>
                             </tr>

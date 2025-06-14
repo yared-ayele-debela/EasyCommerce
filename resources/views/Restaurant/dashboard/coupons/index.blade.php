@@ -25,8 +25,9 @@ $user = Auth::guard('admin')->user();
             <div class="alert alert-success">{{ session('success') }}</div>
             @endif
             <!-- Add Coupon Button -->
+            @adminCan('add_restaurant_coupon')
             <button class="btn btn-primary" data-toggle="modal" data-target="#couponModal">Add Coupon</button>
-
+@endadminCan
         </div>
         <div class="card-body">
             <!-- Coupon Table -->
@@ -56,7 +57,11 @@ $user = Auth::guard('admin')->user();
                             </div>
                         </td>
                         <td>
+                                        @adminCan('edit_restaurant_coupon')
+
                             <button class="btn btn-warning btn-sm edit-btn" data-toggle="modal" data-target="#editModal" data-id="{{ $coupon->id }}" data-name="{{ $coupon->name }}" data-description="{{ $coupon->description }}" data-code="{{ $coupon->code }}" data-type="{{ $coupon->type }}" data-value="{{ $coupon->value }}" data-validated_date="{{ $coupon->validated_date }}" data-is_active="{{ $coupon->is_active }}"><i class="bi bi-pencil-fill"></i></button>
+@endadminCan
+                                        @adminCan('delete_restaurant_coupon')
 
                             <form action="{{ route('coupons.destroy', $coupon->id) }}" method="POST" class="delete-form d-inline">
                                 @csrf
@@ -64,6 +69,7 @@ $user = Auth::guard('admin')->user();
                                     <i class="bi bi-trash-fill"></i>
                                 </button>
                             </form>
+                            @endadminCan
 
                         </td>
                     </tr>

@@ -16,12 +16,14 @@ $user = Auth::guard('admin')->user();
     <div class="container mt-5">
         <div class="card">
             <div class="card-header">
-                @if ($user && $user->hasPermissionByRole('view permission'))
+                <h4 class="card-title">All Permissions</h4>
+               
+                {{-- @if ($user && $user->hasPermissionByRole('view permission'))
                         <a class="btn btn-primary" href="{{ route('permissions.create') }}">Add Permissions</a>
                     @endif
                     @if ($user && $user->hasPermissionByRole('view permission category'))
                         <a class="btn btn-info text-white" href="{{ route('permissions-categories') }}">Permission Categories</a>
-                    @endif
+                    @endif --}}
             </div>
             <div class="card-body mt-2">
 
@@ -31,7 +33,7 @@ $user = Auth::guard('admin')->user();
                             <tr>
                                 <th scope="col">ID</th>
                                 <th scope="col">Name</th>
-                                <th scope="col">Action</th>
+                                <th scope="col">Date</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -40,7 +42,9 @@ $user = Auth::guard('admin')->user();
                                 <td>{{ $permission->id }}</td>
                                 <td>{{ $permission->name }}</td>
                                 <td>
-                                    @if ($user && $user->hasPermissionByRole('edit permission'))
+                                    {{ $permission->created_at }}
+                                    {{-- @if ($user && $user->hasPermissionByRole('view permission'))
+                                    {{-- @if ($user && $user->hasPermissionByRole('edit permission'))
                                     <a href="{{ route('permissions.edit', $permission->id) }}" class="btn btn-sm btn-info text-white">Edit</a>
                                     @endif
 
@@ -50,16 +54,16 @@ $user = Auth::guard('admin')->user();
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this permission?')">Delete</button>
                                     </form>
-                                    @endif
+                                    @endif --}}
                                 </td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
-                {{-- <div class="pagination">
+                <div class="pagination">
                     {!! $permissions->links() !!}
-                </div> --}}
+                </div>
             </div>
         </div>
     </div>

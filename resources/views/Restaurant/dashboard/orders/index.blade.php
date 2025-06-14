@@ -52,14 +52,12 @@ $user = Auth::guard('admin')->user();
                         <td>{{ $order->total }} ETB</td>
                         <td>{{ $order->payment_method }}</td>
                         <td>
-                            <span class="btn btn-sm text-white @if($order->status == 'completed') bg-success @endif  @if($order->status==='processing') bg-info @endif  @if($order->status == 'canceled') bg-danger @endif
-                                @if($order->status == 'pending') bg-warning @endif      ">
+                            <span class="btn btn-sm text-white btn-info">
                                  {{ ucfirst($order->status) }}
                              </span>
                         </td>
                         <td>
-                                <span class="btn btn-sm text-white @if($order->delivery_status === 'shipped') bg-info @endif  @if($order->delivery_status==='delivered') bg-success @endif
-                                @if($order->delivery_status === 'pending') bg-warning @endif">
+                                <span class="btn btn-sm text-white btn-secondary">
                                  {{ ucfirst($order->delivery_status) }}
                              </span>
                         </td>
@@ -101,7 +99,10 @@ $user = Auth::guard('admin')->user();
                                 @endif
                         </td>
                         <td>
+                                        @adminCan('view_restaurant_order')
+
                             <a href="{{ route('restaurant.orders.show', $order->id) }}" class="btn btn-info btn-sm text-white"><i class="bi bi-eye"></i> Details</a>
+                      @endadminCan
                         </td>
                     </tr>
                 @endforeach

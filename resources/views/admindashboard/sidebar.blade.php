@@ -75,7 +75,7 @@
 
         @if(Auth::guard('admin')->user()->type=="vendor" || Auth::guard('admin')->user()->type=="Ecommerce Manager")
         @if ($user && $user->hasPermissionByRole('view withdrawal request'))
-            <li class="{{ request()->is('admin/withdraw-request')?'nav-item active':'' }}">
+            <li class="{{ request()->is('admin/vendor/wallet')?'nav-item active':'' }}">
                 <a class="nav-link" data-bs-target="#withdrawal-nav" data-bs-toggle="collapse" href="javascripit:void(0);">
                     <svg id='Withdrawal_16' width='24' height='24' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'><rect width='16' height='16' stroke='none' fill='#000000' opacity='0'/>
                         <g transform="matrix(0.5 0 0 0.5 8 8)" >
@@ -95,9 +95,9 @@
                         </g>
                         </g>
                     </svg>
-                    <span>Wthdrawal Request Lists</span><i class="bi bi-chevron-down ms-auto"></i> </a>
-                <ul id="withdrawal-nav" class="nav-content collapse {{ request()->is('admin/withdraw-request')?'show':'' }}" data-bs-parent="#sidebar-nav">
-                    <li> <a href="{{ route('withdrawrequest.index') }}" class="{{ request()->is('admin/withdraw-request')?'nav-link active':'' }}"> <i class=" bi bi-circle active"></i><span>List Withdrawal Requests</span></a></li>
+                    <span>Your Wallet</span><i class="bi bi-chevron-down ms-auto"></i> </a>
+                <ul id="withdrawal-nav" class="nav-content collapse {{ request()->is('admin/vendor/wallet')?'show':'' }}" data-bs-parent="#sidebar-nav">
+                    <li> <a href="{{ url('admin/vendor/wallet') }}" class="{{ request()->is('admin/vendor/wallet')?'nav-link active':'' }}"> <i class=" bi bi-circle active"></i><span>Your Wallet</span></a></li>
                 </ul>
             </li>
             @endif
@@ -201,11 +201,11 @@
         @endif
 
         @if ($user && $user->hasPermissionByRole('view_vendor'))
-        <li class="{{ request()->is('admin/vendors')?'nav-item active':'' }} {{ request()->is('admin/vendors/details*')?'nav-item active':'' }} {{ request()->is('admin/all-withdraw-requests')?'nav-item active':'' }}">
+        <li class="{{ request()->is('admin/vendors')?'nav-item active':'' }} {{ request()->is('admin/vendors/details*')?'nav-item active':'' }} {{ request()->is('admin/vendor/withdraw-requests')?'nav-item active':'' }}">
             <a class="nav-link" data-bs-target="#vendor-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class=" ri-admin-fill "></i><span>Vendors & Wthdrawal Request</span><i class="bi bi-chevron-down ms-auto"></i> </a>
-            <ul id="vendor-nav" class="nav-content collapse {{ request()->is('admin/vendors')?'show':'' }} {{ request()->is('admin/all-withdraw-requests')?'show':'' }} {{ request()->is('admin/vendors/details*')?'show':'' }}" data-bs-parent="#sidebar-nav">
+            <ul id="vendor-nav" class="nav-content collapse {{ request()->is('admin/vendors')?'show':'' }} {{ request()->is('admin/vendor/withdraw-requests')?'show':'' }} {{ request()->is('admin/vendors/details*')?'show':'' }}" data-bs-parent="#sidebar-nav">
                 <li> <a href="{{ route('vendors') }}" class="{{ request()->is('admin/vendors')?'nav-link active':'' }} {{ request()->is('admin/vendors/details*')?'nav-link active':'' }} "> <i class=" bi bi-circle active "></i><span>List Vendors</span></a></li>
-                <li> <a href="{{ route('admin.withdrawrequest.index') }}" class="{{ request()->is('admin/all-withdraw-requests')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>List Vendors Withdrawal Request</span></a></li>
+                <li> <a href="{{ url('admin/vendor/withdraw-requests') }}" class="{{ request()->is('admin/vendor/withdraw-requests')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>List Vendors Withdrawal Request</span></a></li>
             </ul>
         </li>
         @endif
@@ -323,7 +323,7 @@
         </li>
         @endif
 
-        @if ($user && $user->hasPermissionByRole('view transaction'))
+        {{-- @if ($user && $user->hasPermissionByRole('view transaction'))
         <li class=" {{ request()->is('admin/transaction')?'nav-item active':'' }} {{ request()->is('admin/transaction*')?'nav-item active':'' }}  ">
             <a class="nav-link" data-bs-target="#transaction-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class="bx bxs-wallet"></i><span>Transactions</span><i class="bi bi-chevron-down ms-auto"></i> </a>
             <ul id="transaction-nav" class="nav-content collapse  {{ request()->is('admin/transaction')?'show':'' }} {{ request()->is('admin/transaction*')?'show':'' }}  " data-bs-parent="#sidebar-nav">
@@ -331,7 +331,7 @@
             </ul>
         </li>
         @endif
-
+ --}}
 
         @if ($user && $user->hasPermissionByRole('view blog') || $user->hasPermissionByRole('view blog category') || $user->hasPermissionByRole('view blog comment'))
         <li class=" {{ request()->is('admin/blog-categories')?'nav-item active':'' }} {{ request()->is('admin/blog-comments')?'nav-item active':'' }} {{ request()->is('admin/blog/category*')?'nav-item active':'' }} {{ request()->is('admin/blogs*')?'nav-item active':'' }} {{ request()->is('admin/blogs')?'nav-item active':'' }}">
@@ -518,7 +518,7 @@
             </ul>
         </li>
         @endif
-
+{{--
         @if ($user && $user->hasPermissionByRole('view warehouse'))
         <li class=" {{ request()->is('admin/all-warehouse')?'nav-item active':'' }} {{ request()->is('admin/warehouses*')?'nav-item active':'' }}">
             <a class="nav-link" data-bs-target="#werehouse-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class=" ri ri-home-3-line   "></i><span>Warehouse</span><i class="bi bi-chevron-down ms-auto"></i> </a>
@@ -526,7 +526,7 @@
                 <li> <a href="{{ url('admin/all-warehouse') }}" class="{{ request()->is('admin/all-warehouse*')?'nav-link active':'' }} {{ request()->is('admin/warehouses*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Warehouse</span></a></li>
             </ul>
         </li>
-        @endif
+        @endif --}}
         @endif
 
         @if(Auth::guard('admin')->user()->type=="vendor" || Auth::guard('admin')->user()->type=="Ecommerce Manager" || Auth::guard('admin')->user()->type=="Hotel Manager" || Auth::guard('admin')->user()->type=="Restaurant Manager")

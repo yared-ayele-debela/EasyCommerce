@@ -20,11 +20,13 @@
     #loading-spinner .spinner-border {
         width: 1.5rem;
         height: 1.5rem;
-    }   #map {
-            width: 100%;
-            height: 70vh;
-            border-radius: 10px;
-        }
+    }
+
+    #map {
+        width: 100%;
+        height: 70vh;
+        border-radius: 10px;
+    }
 
 </style>
 
@@ -50,8 +52,9 @@
             <div class="alert alert-success">{{ session('success') }}</div>
             @endif
             <!-- Create Button -->
+            @adminCan('add_hotel_hotel')
             <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createHotelModal">Add Hotel</button>
-
+            @endadminCan
         </div>
         <div class="card-body">
 
@@ -90,9 +93,11 @@
                                 @endif
                             </td>
                             <td>
+                                @adminCan('view_hotel_hotel_photo')
+
                                 <!-- Button trigger modal -->
                                 <button type="button" class="btn btn-secondary btn-sm mb-1" data-toggle="modal" data-target="#viewImage{{ $hotel->id }}">
-                                  View Images
+                                    View Images
                                 </button>
 
                                 <!-- Modal -->
@@ -101,28 +106,28 @@
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title">Hotel Image Gallery</h5>
-                                                    <button type="button" class="close btn" data-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
+                                                <button type="button" class="close btn" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
                                             </div>
                                             <div class="modal-body">
                                                 <div class="row">
                                                     @foreach($hotel->photos as $photo)
-                                                <div class="col-md-3">
-                                                    <div class="card mb-3">
-                                                        <img src="{{$photo->photo_url }}"  class=" img-fluid" alt="Photo">
-                                                        <div class="card-body p-2">
-                                                            <form action="{{ route('hotel_photos.destroy', $photo->id) }}" method="POST">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" class="btn btn-sm btn-danger">
-                                                                    x
-                                                                </button>
-                                                            </form>
+                                                    <div class="col-md-3">
+                                                        <div class="card mb-3">
+                                                            <img src="{{$photo->photo_url }}" class=" img-fluid" alt="Photo">
+                                                            <div class="card-body p-2">
+                                                                <form action="{{ route('hotel_photos.destroy', $photo->id) }}" method="POST">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="btn btn-sm btn-danger">
+                                                                        x
+                                                                    </button>
+                                                                </form>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                @endforeach
+                                                    @endforeach
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
@@ -131,8 +136,10 @@
                                         </div>
                                     </div>
                                 </div>
+                                @endadminCan
+                                @adminCan('add_hotel_hotel_photo')
                                 <button class="btn btn-primary mb-3 btn-sm" data-bs-toggle="modal" data-bs-target="#addPhotoModal{{ $hotel->id }}">Add Photo</button>
-
+                                @endadminCan
                                 <div class="modal fade" id="addPhotoModal{{ $hotel->id }}" tabindex="-1" aria-labelledby="addPhotoModalLabel" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <form action="{{ route('hotel_photos.store') }}" method="POST" enctype="multipart/form-data">
@@ -146,9 +153,10 @@
                                                     <input type="hidden" name="hotel_id" value="{{ $hotel->id }}" class="form-control" required>
                                                     <div class="mb-3">
                                                         <label for="photo_url" class="form-label">Image </label>
+                                                        <br>
+                                                        <span class="text-danger">height: 1254 px width: 1880 px</span>
                                                         <input type="file" name="photo_url" class="form-control" required>
                                                     </div>
-
                                                     @if ($errors->any())
                                                     <div class="alert alert-danger mt-2">
                                                         <ul class="mb-0">
@@ -181,17 +189,26 @@
                                 </a>
                             </td>
                             <td>
+                                @adminCan('view_hotel_review')
                                 <a href="{{ url('admin/hotel/'.$hotel->id.'/reviews') }}" class="btn btn-sm btn-warning text-white"><i class="bi bi-star-fill"></i></a>
+                                @endadminCan
+                                @adminCan('edit_hotel_hotel')
                                 <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#editHotelModal{{ $hotel->id }}"><i class="bi bi-pencil-square"></i></button>
+                                @endadminCan
+                                @adminCan('delete_hotel_hotel')
                                 <form action="{{ route('hotels.destroy', $hotel->id) }}" method="POST" class="d-inline">
                                     @csrf @method('DELETE')
                                     <button class="btn btn-sm btn-danger delete-restaurant"><i class=" bi bi-trash-fill"></i></button>
                                 </form>
+                                @endadminCan
+                                @adminCan('view_hotel_hotel')
+
                                 <form action="{{ route('my-hotel') }}" method="GET" class="d-inline">
                                     @csrf
                                     <input type="hidden" name="id" id="id" value="{{ $hotel->id }}">
                                     <button class="btn btn-sm btn-secondary text-white"><i class="bi bi-eye-fill"></i> Hotel</button>
                                 </form>
+                                @endadminCan
 
                             </td>
                         </tr>
@@ -199,106 +216,108 @@
                         <div class="modal fade " id="editHotelModal{{ $hotel->id }}" tabindex="-1">
                             <div class="modal-dialog bg-white modal-fullscreen modal-dialog-scrollable">
                                 <div class="modal-content shadow-lg border-0 rounded-4">
-                                <form method="POST" action="{{ route('hotels.update', $hotel->id) }}" enctype="multipart/form-data">
-                                    @csrf @method('PUT')
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Edit Hotel</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                         @include('Hotel.dashboard.hotels.partials.map')
+                                    <form method="POST" action="{{ route('hotels.update', $hotel->id) }}" enctype="multipart/form-data">
+                                        @csrf @method('PUT')
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Edit Hotel</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            @include('Hotel.dashboard.hotels.partials.map')
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                <div class="mb-2">
-                                                    <label class="form-label">Name</label>
-                                                    <input type="text" name="name" class="form-control" value="{{  $hotel->name ? $hotel->name : old('name') }}" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="mb-2">
-                                                    <label class="form-label">Category</label>
-                                                    <select name="category_id" class="form-select">
-                                                        <option value="">-- Select Category --</option>
-                                                        @foreach($categories as $category)
-                                                        <option value="{{ $category->id }}" {{ $hotel && $hotel->category_id == $category->id ? 'selected' : '' }}>
-                                                            {{ $category->name }}
-                                                        </option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            </div>
+                                                <div class="col-md-6">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="mb-2">
+                                                                <label class="form-label">Name</label>
+                                                                <input type="text" name="name" class="form-control" value="{{  $hotel->name ? $hotel->name : old('name') }}" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="mb-2">
+                                                                <label class="form-label">Category</label>
+                                                                <select name="category_id" class="form-select">
+                                                                    <option value="">-- Select Category --</option>
+                                                                    @foreach($categories as $category)
+                                                                    <option value="{{ $category->id }}" {{ $hotel && $hotel->category_id == $category->id ? 'selected' : '' }}>
+                                                                        {{ $category->name }}
+                                                                    </option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                        </div>
 
-                                            <div class="col-md-6">
-                                                <div class="mb-2">
-                                                    <label class="form-label">Location</label>
-                                                    <input type="text" name="location" class="form-control location" value="{{ $hotel ? $hotel->location : old('location') }}" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="mb-2">
-                                                    <label class="form-label">Price Per Night</label>
-                                                    <input type="number" step="0.01" name="price_per_night" class="form-control" value="{{ $hotel ? $hotel->price_per_night : old('price_per_night') }}" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="mb-2">
-                                                    <label class="form-label">Phone</label>
-                                                    <input type="text" name="phone" class="form-control" value="{{ $hotel ? $hotel->phone : old('phone') }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="mb-2">
-                                                    <label class="form-label">Banner Image</label>
-                                                    <input type="file" name="banner_image" class="form-control">
-                                                    @if($hotel && $hotel->banner_image)
-                                                    <img src="{{ $hotel->banner_image }}" class="mt-2" width="60">
-                                                    @endif
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label for="latitudes" class="form-label">Latitude</label>
-                                                    <input type="text" id="latitudes" name="latitude" class="form-control latitude" value="{{ $hotel->latitude }}" placeholder="Enter Latitude" required>
-                                                    @error('latitude')
-                                                    <small class="text-danger">{{ $message }}</small>
-                                                    @enderror
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label for="longitudes" class="form-label">Longitude</label>
-                                                    <input type="text" id="longitudes" name="longitude" class="form-control longitude" value="{{ $hotel->longitude }}" placeholder="Enter Longitude" required>
-                                                    @error('longitude')
-                                                    <small class="text-danger">{{ $message }}</small>
-                                                    @enderror
-                                                </div>
-                                            </div>
-                                            
-                             
-                                            <div class="col-md-12">
-                                                <div class="mb-2">
-                                                    <label class="form-label">Description</label>
-                                                    <textarea name="description" class="form-control">{{ $hotel ? $hotel->description : old('description') }}</textarea>
-                                                </div>
-                                            </div>
-                                                </div>
-                                            </div>
+                                                        <div class="col-md-6">
+                                                            <div class="mb-2">
+                                                                <label class="form-label">Location</label>
+                                                                <input type="text" name="location" class="form-control location" value="{{ $hotel ? $hotel->location : old('location') }}" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="mb-2">
+                                                                <label class="form-label">Price Per Night</label>
+                                                                <input type="number" step="0.01" name="price_per_night" class="form-control" value="{{ $hotel ? $hotel->price_per_night : old('price_per_night') }}" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="mb-2">
+                                                                <label class="form-label">Phone</label>
+                                                                <input type="text" name="phone" class="form-control" value="{{ $hotel ? $hotel->phone : old('phone') }}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="mb-2">
+                                                                <label class="form-label">Banner Image</label>
+                                                                <br>
+                                                                <span class="text-danger">height: 1254 px width: 1880 px</span>
+                                                                <input type="file" name="banner_image" class="form-control">
+                                                                @if($hotel && $hotel->banner_image)
+                                                                <img src="{{ $hotel->banner_image }}" class="mt-2" width="60">
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3">
+                                                                <label for="latitudes" class="form-label">Latitude</label>
+                                                                <input type="text" id="latitudes" name="latitude" class="form-control latitude" value="{{ $hotel->latitude }}" placeholder="Enter Latitude" required>
+                                                                @error('latitude')
+                                                                <small class="text-danger">{{ $message }}</small>
+                                                                @enderror
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3">
+                                                                <label for="longitudes" class="form-label">Longitude</label>
+                                                                <input type="text" id="longitudes" name="longitude" class="form-control longitude" value="{{ $hotel->longitude }}" placeholder="Enter Longitude" required>
+                                                                @error('longitude')
+                                                                <small class="text-danger">{{ $message }}</small>
+                                                                @enderror
+                                                            </div>
+                                                        </div>
 
+
+                                                        <div class="col-md-12">
+                                                            <div class="mb-2">
+                                                                <label class="form-label">Description</label>
+                                                                <textarea name="description" class="form-control">{{ $hotel ? $hotel->description : old('description') }}</textarea>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        <button class="btn btn-success">Update</button>
-                                    </div>
-                                </form>
+                                        <div class="modal-footer">
+                                            <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button class="btn btn-success">Update</button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -321,7 +340,7 @@
                                 <div class="col-md-6">
                                     <div class="col-md-12">
 
-                                      @include('Hotel.dashboard.hotels.partials.map')
+                                        @include('Hotel.dashboard.hotels.partials.map')
                                     </div>
                                 </div>
 
@@ -369,6 +388,8 @@
                                         <div class="col-md-6">
                                             <div class="mb-2">
                                                 <label class="form-label">Banner Image</label>
+                                                <br>
+                                                <span class="text-danger">height: 1254 px width: 1880 px</span>
                                                 <input type="file" name="banner_image" class="form-control">
                                             </div>
                                         </div>
@@ -437,7 +458,7 @@
                                                     <option value="{{ $country->country_name }}">{{ $country->country_name }}</option>
                                                     @endforeach
                                                 </select>
-                                              </div>
+                                            </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
@@ -448,7 +469,7 @@
                                                     <option value="{{ $state->name }}">{{ $state->name }}</option>
                                                     @endforeach
                                                 </select>
-                                              </div>
+                                            </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
@@ -459,7 +480,7 @@
                                                     <option value="{{ $city->name }}">{{ $city->name }}</option>
                                                     @endforeach
                                                 </select>
-                                              </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -479,11 +500,11 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         let initializedMaps = new Set();
 
         document.querySelectorAll('.modal').forEach(modal => {
-            modal.addEventListener('shown.bs.modal', function () {
+            modal.addEventListener('shown.bs.modal', function() {
                 const modalId = this.getAttribute('id');
                 if (initializedMaps.has(modalId)) return;
 
@@ -505,22 +526,22 @@
                 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
                 const icon = L.icon({
-                    iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
-                    iconSize: [25, 41],
-                    iconAnchor: [12, 41],
-                    shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
-                    shadowSize: [41, 41]
+                    iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png'
+                    , iconSize: [25, 41]
+                    , iconAnchor: [12, 41]
+                    , shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png'
+                    , shadowSize: [41, 41]
                 });
 
                 let marker;
 
-                map.on('click', async function (e) {
+                map.on('click', async function(e) {
                     const lat = e.latlng.lat;
                     const lng = e.latlng.lng;
                     try {
                         const res = await fetch(`/api/reverse-geocode?lat=${lat}&lon=${lng}`);
                         const data = await res.json();
-                        if (data.data?.length) {
+                        if (data.data ? .length) {
                             const address = data.data[0].name + ", " + data.data[0].City;
                             setLocation(lat, lng, address);
                         }
@@ -530,7 +551,7 @@
                 });
 
                 if (searchInput) {
-                    searchInput.addEventListener('keyup', async function () {
+                    searchInput.addEventListener('keyup', async function() {
                         const q = this.value.trim();
                         if (q.length < 3) return;
 
@@ -542,7 +563,7 @@
                             const data = await res.json();
                             spinner.style.display = 'none';
 
-                            if (data.data?.length) {
+                            if (data.data ? .length) {
                                 data.data.forEach(loc => {
                                     const item = document.createElement('a');
                                     item.href = "#";
@@ -567,15 +588,17 @@
 
                 function setLocation(lat, lng, address) {
                     if (marker) map.removeLayer(marker);
-                    marker = L.marker([lat, lng], { icon }).addTo(map).bindPopup(address).openPopup();
+                    marker = L.marker([lat, lng], {
+                        icon
+                    }).addTo(map).bindPopup(address).openPopup();
                     map.setView([lat, lng], 15);
 
                     selectedText.textContent = address;
                     latField.value = lat;
                     lngField.value = lng;
-                    latitude.value=lat;
-                    longtidue.value=lng;
-                    location.value=address;
+                    latitude.value = lat;
+                    longtidue.value = lng;
+                    location.value = address;
                     addressField.value = address;
                 }
 
@@ -588,6 +611,7 @@
             });
         });
     });
+
 </script>
 
 
@@ -613,25 +637,28 @@
             });
         });
     });
+
 </script>
 <script>
-function getLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            function(position) {
-                document.getElementById('latitude').value = position.coords.latitude;
-                document.getElementById('longitude').value = position.coords.longitude;
-                document.getElementById('latitudes').value = position.coords.latitude;
-                document.getElementById('longitudes').value = position.coords.longitude;
-                document.getElementById('locationMessage').innerText = "Location captured!";
-            },
-            function(error) {
-                document.getElementById('locationMessage').innerText = "Error: Unable to retrieve location.";
-            }
-        );
-    } else {
-        document.getElementById('locationMessage').innerText = "Geolocation is not supported by this browser.";
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    document.getElementById('latitude').value = position.coords.latitude;
+                    document.getElementById('longitude').value = position.coords.longitude;
+                    document.getElementById('latitudes').value = position.coords.latitude;
+                    document.getElementById('longitudes').value = position.coords.longitude;
+                    document.getElementById('locationMessage').innerText = "Location captured!";
+                }
+                , function(error) {
+                    document.getElementById('locationMessage').innerText = "Error: Unable to retrieve location.";
+                }
+            );
+        } else {
+            document.getElementById('locationMessage').innerText = "Geolocation is not supported by this browser.";
+        }
     }
-}
+
 </script>
 @endsection
+

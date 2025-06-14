@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use App\Models\Color;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 use SebastianBergmann\Environment\Runtime;
@@ -68,6 +70,11 @@ class ColorController extends Controller
             $color->status = 1;
             $color->save();
 
+             $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add Color', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
             Alert::toast('Color has been saved successfully!', 'success');
             return redirect()->route('colors');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -119,6 +126,13 @@ class ColorController extends Controller
             $color->color = $request->input('color');
             $color->update();
 
+
+             $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log(  'Edit Color', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
+
             Alert::toast('Color has been updated successfully!', 'success');
             return redirect()->route('colors');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -140,6 +154,13 @@ class ColorController extends Controller
             }
             $color = Color::find($id);
             $color->delete();
+
+
+             $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete Color', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
 
             Alert::toast('Color has been deleted successfully!', 'error');
             return redirect()->route('colors');

@@ -19,7 +19,9 @@
         <div class="card-header">
             <h4>Slider Banners</h4>
 
+            @adminCan('add_restaurant_banners')
             <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createBannerModal">Add Banner</button>
+           @endadminCan
             @if(session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
@@ -46,6 +48,7 @@
                 </div>
             </td>
             <td>
+                 @adminCan('edit_restaurant_banners')
                 <button class="btn btn-warning btn-sm editBannerBtn"
                         data-bs-toggle="modal"
                         data-bs-target="#editBannerModal"
@@ -56,11 +59,14 @@
                         data-image="{{$banner->image }}">
                     <i class="bi bi-pencil-fill"></i>
                 </button>
+                @endadminCan
 
+                 @adminCan('delete_restaurant_banners')
                 <button class="btn btn-danger btn-sm deleteBannerBtn"
                         data-id="{{ $banner->id }}">
                     <i class="bi bi-trash-fill"></i>
                 </button>
+                @endadminCan
             </td>
         </tr>
         @endforeach

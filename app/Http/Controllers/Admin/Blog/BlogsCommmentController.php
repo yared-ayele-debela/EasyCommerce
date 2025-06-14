@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin\Blog;
 use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use App\Models\BlogComment;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -30,6 +32,11 @@ class BlogsCommmentController extends Controller
             }
              $blog = BlogComment::find($id);
              $blog->delete();
+
+              $currentDateTime = Carbon::now();
+                $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+                ActivityLogger::log( 'Delete Blog Comment', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
 
              Alert::toast('Blog commment has been deleted successfully!', 'error');
              return redirect()->route('blog-comments');

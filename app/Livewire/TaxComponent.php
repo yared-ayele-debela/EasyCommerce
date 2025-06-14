@@ -3,6 +3,9 @@
 namespace App\Livewire;
 
 use App\Models\Tax;
+use App\Services\ActivityLogger;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class TaxComponent extends Component
@@ -57,6 +60,10 @@ class TaxComponent extends Component
             'percentage' => $this->percentage,
         ]);
 
+          $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Update Tax', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
         session()->flash('message', $this->tax_id ? 'Tax updated successfully.' : 'Tax created successfully.');
 
         $this->closeModal();
@@ -82,6 +89,12 @@ class TaxComponent extends Component
     public function delete()
     {
         Tax::find($this->tax_id)->delete();
+
+         $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete Tax', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+        
         session()->flash('message', 'Tax deleted successfully.');
         $this->closeDeleteModal();
     }

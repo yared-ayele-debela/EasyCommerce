@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use App\Models\BlogCategory;
 use App\Models\BlogComment;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -68,6 +70,10 @@ class BlogsCategoryController extends Controller
             $category->status = 1;
             $category->save();
 
+             $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add Blog', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
             Alert::toast('Blog category has been saved successfully!', 'success');
             return redirect()->route('blog-categories');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -118,6 +124,10 @@ class BlogsCategoryController extends Controller
             $category->name = $request->input('name');
             $category->save();
 
+              $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Update Blog Category', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
             Alert::toast('Blog category has been updated successfully!', 'success');
             return redirect()->route('blog-categories');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -139,6 +149,10 @@ class BlogsCategoryController extends Controller
             }
             $category = BlogCategory::find($id);
             $category->delete();
+
+              $currentDateTime = Carbon::now();
+            $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+            ActivityLogger::log( 'Delete Blog Category', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
             Alert::toast('Blog category has been deleted successfully!', 'error');
             return redirect()->route('blog-categories');

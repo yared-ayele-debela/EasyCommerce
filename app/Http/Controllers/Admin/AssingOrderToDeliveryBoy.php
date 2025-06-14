@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\DeliveryMan;
 use App\Models\EmailTemplate;
 use App\Models\Order;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -66,9 +68,16 @@ class AssingOrderToDeliveryBoy extends Controller
                 'order_status' => $request->input('order_status'),
             ];
 
+              $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Assign order to delivery man', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
             Mail::send('emails.assing_order_to_delivery_boy', $messageData, function ($message) use ($email) {
                 $message->to($email)->subject('New order has been assigned to you for delivery - Byt Developers.in');
             });
+
+
 
             Alert::toast('Order has been assigned to the delivery boy!', 'success');
 

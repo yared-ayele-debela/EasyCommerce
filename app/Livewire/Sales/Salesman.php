@@ -4,6 +4,9 @@ namespace App\Livewire\Sales;
 
 use App\Models\SalesMainCommission;
 use App\Models\SalesUser;
+use App\Services\ActivityLogger;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -140,6 +143,10 @@ class Salesman extends Component
             'email'    => $this->email,
             'password' => Hash::make($this->password),
         ]);
+                $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add Sales Man', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
 
         session()->flash('message', $this->salesUserId ? 'Sales User Updated Successfully.' : 'Sales User Created Successfully.');
 
@@ -181,6 +188,11 @@ class Salesman extends Component
         if($sales_user){
             $sales_user->status = $sales_user->status == 1 ? 0 : 1;
             $sales_user->update();
+             $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Edit Sales Man', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
             $this->closeModal();
             $this->resetInputFields();
         }

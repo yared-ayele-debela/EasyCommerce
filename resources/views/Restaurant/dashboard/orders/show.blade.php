@@ -78,6 +78,7 @@ $user = Auth::guard('admin')->user();
                     <!-- Status Update Form -->
                     <h6>UPDATE STATUS</h6>
 
+                    @adminCan('update_restaurant_order_status')
                     <form action="{{ route('restaurant.orders.updateStatus', $order->id) }}" method="POST">
                         @csrf
                         <div class="mb-3">
@@ -88,6 +89,7 @@ $user = Auth::guard('admin')->user();
                                 @endforeach
                             </select>
                         </div>
+                        @adminCan('assign_restaurant_order_to_delivery_man')
                         <div class="mb-3">
                             <label for="delivery_status" class="form-label">Delivery Status</label>
                             <select name="delivery_status" id="delivery_status" class="form-select">
@@ -98,8 +100,10 @@ $user = Auth::guard('admin')->user();
                                 <option value="delivered" {{ $order->delivery_status == 'delivered' ? 'selected' : '' }}>Delivered</option>
                             </select>
                         </div>
+                        @endadminCan
                         <button type="submit" class="btn btn-success">Update Status</button>
                     </form>
+                    @endadminCan
                 </div>
             </div>
         </div>
@@ -111,6 +115,7 @@ $user = Auth::guard('admin')->user();
                 </div>
                 <div class="card-body mt-2">
                     @if(empty($order->delivery_man_id))
+                    @adminCan('assign_restaurant_order_to_delivery_man')
                     <form action="{{ route('restaurant.assignToDeliveryMan', $order->id) }}" method="POST">
                         @csrf
                         <div class="mb-3">
@@ -123,6 +128,7 @@ $user = Auth::guard('admin')->user();
                         </div>
                         <button type="submit" class="btn btn-success">Assign To Delivery Man</button>
                     </form>
+                    @endadminCan
 
                     <br>
                     <a href="{{ url('admin/restaurant/nearby-deliverymen') }}" class="btn btn-primary">Check who nearby to resturant</a>

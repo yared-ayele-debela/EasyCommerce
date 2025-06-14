@@ -98,6 +98,8 @@
     <div class="col-6">
         <div class="mb-3">
             <label for="cover_image" class="form-label">Cover cover_image</label>
+            <br>
+            <span class="text-danger">height: 1254 px width: 1880 px</span>
             <input type="file" name="cover_image" class="form-control">
             @error('cover_image')
             <span class="alert alert-danger">{{ $message }}</span>
@@ -108,6 +110,8 @@
     <div class="col-md-6">
         <div class="mb-3">
             <label for="images" class="form-label">Upload Mulitiple Images</label>
+            <br>
+            <span class="text-danger">height: 1254 px width: 1880 px</span>
             <input type="file" name="images[]" class="form-control" multiple>
             @error('images')
             <span class="alert alert-danger">{{ $message }}</span>

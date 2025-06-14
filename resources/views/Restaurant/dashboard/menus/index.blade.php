@@ -21,7 +21,9 @@ $user = Auth::guard('admin')->user();
     <div class="card">
         <div class="card-header">
             <h4>Restaurant Menu</h4>
+            @adminCan('add_restaurant_restaurant_menu')
             <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addMenuModal">Add Restaurant Menu</button>
+            @endadminCan
         </div>
         <div class="card-body">
             <table class="table">
@@ -44,14 +46,17 @@ $user = Auth::guard('admin')->user();
                             </div>
                         </td>
                         <td>
+                            @adminCan('edit_restaurant_restaurant_menu')
                             <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editMenuModal-{{ $Menu->id }}"><i class="bi bi-pencil-fill"></i></button>
+                            @endadminCan
+                            @adminCan('delete_restaurant_restaurant_menu')
                             <form action="{{ route('menus.destroy', $Menu->id) }}" method="POST" class="delete-form" style="display:inline;">
                                 @csrf @method('DELETE')
                                 <button type="button" data-id="{{ $Menu->id }}" class="btn btn-danger btn-sm delete-menu">
                                     <i class="bi bi-trash-fill"></i>
                                 </button>
                             </form>
-
+                            @endadminCan
                         </td>
                     </tr>
 
@@ -60,7 +65,7 @@ $user = Auth::guard('admin')->user();
                         <div class="modal-dialog">
                             <form action="{{ route('menus.update', $Menu->id) }}" method="POST" enctype="multipart/form-data">
                                 @csrf
-                                 @method('PUT')
+                                @method('PUT')
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5>Edit Menu </h5>
@@ -112,21 +117,21 @@ $user = Auth::guard('admin')->user();
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                        <label>Menu Name:</label>
-                        <input type="text" name="name" class="form-control" required>
+                            <label>Menu Name:</label>
+                            <input type="text" name="name" class="form-control" required>
                         </div>
 
                         <div class="mb-3">
-                        <label>Upload Image:</label>
-                        <input type="file" name="image" class="form-control">
+                            <label>Upload Image:</label>
+                            <input type="file" name="image" class="form-control">
                         </div>
 
                         <div class="mb-3">
-                        <label>Status:</label>
-                        <select name="is_active" class="form-control">
-                            <option value="1">Active</option>
-                            <option value="0">Inactive</option>
-                        </select>
+                            <label>Status:</label>
+                            <select name="is_active" class="form-control">
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -138,24 +143,26 @@ $user = Auth::guard('admin')->user();
     </div>
 </div>
 <script>
-    $(document).on('click', '.delete-menu', function (e) {
+    $(document).on('click', '.delete-menu', function(e) {
         e.preventDefault();
         let form = $(this).closest("form");
 
         Swal.fire({
-            title: "Are you sure?",
-            text: "This action cannot be undone!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "Yes, delete it!"
-          }).then((result) => {
+            title: "Are you sure?"
+            , text: "This action cannot be undone!"
+            , icon: "warning"
+            , showCancelButton: true
+            , confirmButtonColor: "#d33"
+            , cancelButtonColor: "#3085d6"
+            , confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
             if (result.isConfirmed) {
                 form.submit(); // Submit the form after confirmation
             }
         });
     });
+
 </script>
 
 @endsection
+

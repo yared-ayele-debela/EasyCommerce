@@ -21,9 +21,11 @@ $user = Auth::guard('admin')->user();
     <div class="card">
         <div class="card-header">
             <h4>Products</h4>
+            @adminCan('view_restaurant_product')
             <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addProductModal">
                 Add Product
             </button>
+            @endadminCan
         </div>
         <div class="card-body">
            <div class="table-responsiv">
@@ -91,12 +93,17 @@ $user = Auth::guard('admin')->user();
                             </div>
                         </td>
                         <td>
+                                        @adminCan('edit_restaurant_product')
                             <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editProductModal{{ $product->id }}"><i class="bi bi-pencil-fill"></i></button>
-                            <a href="{{ url('admin/restaurant/products/'.$product->id) }}" class="btn btn-primary btn-sm" ><i class="bi bi-eye-fill"></i></a>
+                            @endadminCan         
+                            @adminCan('delete_restaurant_product')
+
+                            <a href="{{ url('admin/restaurant/show-product/'.$product->id) }}" class="btn btn-primary btn-sm" ><i class="bi bi-eye-fill"></i></a>
                             {{-- <form action="{{ route('products.destroy', $product->id) }}" method="POST" style="display:inline;">
                                 @csrf @method('DELETE') --}}
                                 <button class="btn btn-danger btn-sm delete-product" data-id="{{ $product->id }}"><i class="bi bi-trash-fill"></i></button>
                             {{-- </form> --}}
+                            @endadminCan
                         </td>
                     </tr>
                     <!-- Edit Product Modal -->
@@ -202,12 +209,14 @@ $user = Auth::guard('admin')->user();
                                             <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label for="discount" class="form-label">Discount</label>
-                                                    <input type="number" min="1" class="form-control" id="discount" value="{{ $product->discount }}" name="discount">
+                                                    <input type="number" min="0" class="form-control" id="discount" value="{{ $product->discount }}" name="discount">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label for="cover_image" class="form-label">Cover Images</label>
+                                                         <br>
+              <span class="text-danger">height: 1200 px width: 1200 px</span>
                                                     <input type="file" class="form-control" id="cover_image" name="cover_image">
                                                     @if($product->image)
                                                     <img src="{{ $product->image }}" width="50">
@@ -217,6 +226,8 @@ $user = Auth::guard('admin')->user();
                                             <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label for="images" class="form-label">Product Images</label>
+                                                         <br>
+              <span class="text-danger">height: 1200 px width: 1200 px</span>
                                                     <input type="file" class="form-control" id="images" name="images[]" multiple>
                                                     @foreach($product->images as $image)
                                                     <img src="{{ $image->image_path }}" width="50">
@@ -380,18 +391,22 @@ $user = Auth::guard('admin')->user();
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="discount" class="form-label">Discount</label>
-                                <input type="number" min="1" class="form-control" id="discount" name="discount">
+                                <input type="number" min="0" class="form-control" id="discount" name="discount">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="cover_image" class="form-label">Cover Images</label>
+                                     <br>
+              <span class="text-danger">height: 1200 px width: 1200 px</span>
                                 <input type="file" class="form-control" id="cover_image" name="cover_image">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="images" class="form-label">Product Images</label>
+                                                         <br>
+              <span class="text-danger">height: 1200 px width: 1200 px</span>
                                 <input type="file" class="form-control" id="images" name="images[]" multiple>
                             </div>
                         </div>

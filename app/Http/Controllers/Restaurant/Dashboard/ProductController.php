@@ -11,13 +11,23 @@ use App\Models\Restaurant\Restaurant;
 use App\Models\Restaurant\RestaurantMenu;
 use App\Models\Restaurant\Subcategory;
 use App\Models\Tax;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
+     public function __construct()
+    {
+        $this->middleware('admin.permission:view_restaurant_product')->only('index','show');
+        $this->middleware('admin.permission:add_restaurant_product')->only('store');
+        $this->middleware('admin.permission:edit_restaurant_product')->only(methods: 'update');
+        $this->middleware('admin.permission:delete_restaurant_product')->only('destroy');
+    }
+    
     public function index()
     {
         $adminType = Auth::guard('admin')->user()->type;
@@ -46,6 +56,7 @@ class ProductController extends Controller
 
         $product = Product::with('images','sizes')->whereIn('restaurant_id',$restaurantId)->findOrFail($id);
 
+        // dd($product);
         return view('Restaurant.dashboard.products.show',compact('product'));
     }
 
@@ -101,6 +112,10 @@ class ProductController extends Controller
             }
         }
 
+
+         $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add Restaurant Product', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
         return back()->with('success', 'Product added successfully!');
     }
@@ -170,6 +185,11 @@ class ProductController extends Controller
             }
         }
 
+         $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Update Restaurant Product', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
         return back()->with('success', 'Product updated successfully!');
     }
 
@@ -192,6 +212,10 @@ class ProductController extends Controller
     }
 
     $product->delete();
+     $currentDateTime = Carbon::now();
+    $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+    ActivityLogger::log( 'Delete Restaurant Product', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
 
     return response()->json(['success' => 'Product deleted successfully!']);
 }

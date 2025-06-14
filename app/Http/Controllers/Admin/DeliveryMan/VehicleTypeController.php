@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin\DeliveryMan;
 use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use App\Models\Vehicle_Type;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -58,6 +60,13 @@ class VehicleTypeController extends Controller
             $vehicle_type->status = 1;
             $vehicle_type->save();
 
+            
+         $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add Vehicle Type', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
+
             Alert::toast('Vehicle type has been added successfully!', 'success');
             return redirect()->route('vehicle_type');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -105,6 +114,12 @@ class VehicleTypeController extends Controller
 
             $vehicle_type->name = $request->input('name');
             $vehicle_type->update();
+
+              $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Update Vehicle Type', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
 
             Alert::toast('Vehicle type has been updated successfully!', 'success');
             return redirect()->route('vehicle_type');

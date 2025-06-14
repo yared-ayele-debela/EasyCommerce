@@ -9,6 +9,8 @@ use App\Models\Advertisement;
 use App\Models\AppSetting;
 use Illuminate\Http\Request;
 use App\Models\Admin;
+use App\Services\ActivityLogger;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -93,6 +95,12 @@ class AdvertisementController extends Controller
             }
 
             $adver->save();
+
+
+             $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add Advertisement', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
             $appsettings = AppSetting::all()->toArray();
 
             Alert::toast('Advertisement has been added successfully!', 'success');
@@ -187,6 +195,11 @@ class AdvertisementController extends Controller
 
 
             $adver->update();
+
+             $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log('Update Advertisement', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
             $appsettings = AppSetting::all()->toArray();
 
             Alert::toast('Advertisement has been updated successfully!', 'success');
@@ -254,6 +267,11 @@ class AdvertisementController extends Controller
                 Storage::delete('public/category/' . $adver->image);
             }
             $adver->delete();
+
+             $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log(  'Delete Advertisement', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
 
             Alert::toast('advertisement has been deleted successfully!', 'error');
             return redirect()->back();

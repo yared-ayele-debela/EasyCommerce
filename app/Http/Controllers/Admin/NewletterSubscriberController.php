@@ -9,8 +9,10 @@ use App\Models\Category;
 use App\Models\CmsPage;
 use App\Models\NewsletterSubscriber;
 use App\Models\User;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Mail\Mailer;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -56,6 +58,11 @@ class NewletterSubscriberController extends Controller
             foreach ($newsletter as $newsletter) {
                 Mail::to($newsletter->email)->send(new \App\Mail\NewsLetterEmail($subject, $message));
             }
+
+                    $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Send Email For All Customers', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
             Alert::toast('Email sent to all users!', 'success');
             return redirect()->route('newslettersubscribers');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -100,6 +107,11 @@ class NewletterSubscriberController extends Controller
 
             $news = NewsletterSubscriber::find($id);
             $news->delete();
+
+                    $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete Newslettersubscriber', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
             Alert::toast('Newsletters has been deleted!', 'error');
             return redirect()->back();
         } catch (\Exception $e) {

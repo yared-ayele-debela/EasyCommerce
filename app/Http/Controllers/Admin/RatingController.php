@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use App\Models\Rating;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -85,6 +87,10 @@ class RatingController extends Controller
             }
             $ratings = Rating::find($id);
             $ratings->delete();
+
+                    $currentDateTime = Carbon::now();
+                    $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+                    ActivityLogger::log( 'Delete Ecommerce Product Review', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
             Alert::toast('Deleted', 'error');
             return redirect()->back();

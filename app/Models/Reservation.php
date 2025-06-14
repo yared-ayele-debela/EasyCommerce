@@ -11,7 +11,7 @@ class Reservation extends Model
 
     protected $fillable = [
         'user_id', 'hotel_id', 'room_id','total_night','check_in_date','check_out_date',
-        'total_price','discount_amount','final_price','total_adult','total_child','total_infant','status','payment_status'
+        'total_price','discount_amount','final_price','total_adult','total_child','total_infant','status','payment_status','admin_commission','vendor_earning'
     ];
 
     public function hotel()

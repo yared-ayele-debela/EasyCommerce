@@ -20,13 +20,14 @@
         <div class="card-header">
             <div class="d-flex justify-content-between mb-3">
                 <h4>Coupons</h4>
+                @adminCan('view_hotel_coupon')
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCouponModal">Add Coupon</button>
+                @endadminCan
             </div>
             @session('success')
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label
-                "Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label "Close"></button>
             </div>
             @endsession
         </div>
@@ -57,14 +58,17 @@
                         <td>{{ $coupon->used }}</td>
                         <td>{{ $coupon->expires_at }}</td>
                         <td>
+                            @adminCan('edit_hotel_coupon')
                             <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editCouponModal{{ $coupon->id }}"><i class="bi bi-pencil-square"></i></button>
+                            @endadminCan
+                            @adminCan('delete_hotel_coupon')
 
                             <form action="{{ route('hotel.coupon.destroy', $coupon->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this coupon?')">
                                 @csrf
                                 @method('DELETE')
                                 <button class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i></button>
                             </form>
-
+                            @endadminCan
                             {{-- Edit Modal --}}
                             <div class="modal fade" id="editCouponModal{{ $coupon->id }}" tabindex="-1">
                                 <div class="modal-dialog">
@@ -115,3 +119,4 @@
     </div>
 </div>
 @endsection
+

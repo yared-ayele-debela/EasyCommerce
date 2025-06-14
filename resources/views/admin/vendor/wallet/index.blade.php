@@ -12,7 +12,7 @@ $user = Auth::guard('admin')->user();
             <div class="card-body">
                 <h5 class="card-title text-white">Available Balance</h5>
                 <p class="card-text fs-4">
-                    {{ number_format($wallet->available_balance, 2) }} ETB
+                    {{ number_format($wallet->available_balance??'0', 2) }} ETB
                 </p>
             </div>
         </div>
@@ -24,7 +24,7 @@ $user = Auth::guard('admin')->user();
             <div class="card-body">
                 <h5 class="card-title text-white">Pending Balance</h5>
                 <p class="card-text fs-4">
-                    {{ number_format($wallet->pending_balance, 2) }} ETB
+                    {{ number_format($wallet->pending_balance??'0', 2) }} ETB
                 </p>
             </div>
         </div>
@@ -36,7 +36,7 @@ $user = Auth::guard('admin')->user();
             <div class="card-body">
                 <h5 class="card-title text-white">Total Withdrawn</h5>
                 <p class="card-text fs-4">
-                    {{ number_format($wallet->total_withdrawn, 2) }} ETB
+                    {{ number_format($wallet->total_withdrawn??'0', 2) }} ETB
                 </p>
             </div>
         </div>
@@ -47,9 +47,15 @@ $user = Auth::guard('admin')->user();
         <div class="col-md-6">
             <div class="card mb-4">
                 <div class="card-body py-4">
-                    <p><strong>Available Balance:</strong> &nbsp; {{ number_format($wallet->available_balance, 2) }} ETB</p>
-                    <p><strong>Pending Balance:</strong> &nbsp;{{ number_format($wallet->pending_balance, 2) }} ETB</p>
-                    <p><strong>Total Withdrawn:</strong> &nbsp;{{ number_format($wallet->total_withdrawn, 2) }} ETB</p>
+                    <p><strong>Full Name: </strong> &nbsp; {{ $vendor->name }} </p>
+                    <p><strong>Email: </strong> &nbsp; {{ $vendor->email }} </p>
+                    <p><strong>Phone: </strong> &nbsp; {{ $vendor->mobile }} </p>
+                    <p><strong>Address: </strong> &nbsp;{{ $vendor->address }}, {{$vendor->city}}, {{ $vendor->state }}, {{ $vendor->country }}  </p>
+                    @if($vendor->vendorBank)
+                    <p><strong>Account Number: </strong> &nbsp; {{ $vendor->vendorBank->account_number }} </p>
+                    <p><strong>Bank Name: </strong> &nbsp; {{ $vendor->vendorBank->bank_name }} </p>
+                    @endif
+
                 </div>
             </div>
 
@@ -67,17 +73,23 @@ $user = Auth::guard('admin')->user();
                         <p>{{ session('success') }}</p>
                     </div>
                     @endsession
+                    <h5 class="card-title">Withdraw Request</h5>
+                    <p class="card-text">Minimum withdraw request amount is <strong>{{ number_format($withdrawSetting->amount,2) }} ETB</strong></p>
                     <form method="POST" action="{{ route('vendor-withdraw-request') }}">
                         @csrf
                         <div class="form-group">
                             <label for="amount" class="form-lable4">Amount</label>
-                            <input type="text" class="form-control" name="amount" min="0" maxlength="{{ $wallet->available_balance }}" id="amount" placeholder="Enter amount">
+                            <input type="text" class="form-control" name="amount" min="0" maxlength="{{ $withdrawSetting->amount }}" id="amount" placeholder="Enter amount">
                             @error('amount')
                             <small class="text-danger text-muted">{{ $message }}</small>
                             @enderror
                         </div>
                         <div class="form-group mt-3">
+                            @if(isset($wallet->available_balance) && $wallet->available_balance >= $withdrawSetting->amount)
                             <button type="submit" class="btn btn-primary">Request Withdraw</button>
+                            @else
+                            <button type="button" class="btn btn-secondary" disabled>Insufficient Balance</button>
+                            @endif
                         </div>
                     </form>
                 </div>
@@ -87,7 +99,7 @@ $user = Auth::guard('admin')->user();
 
     <div class="card p-2">
         <div class="card-header">
-            <h6>Transaction History</h6>
+            <h6>Withdraw History</h6>
         </div>
         <div class="card-body">
             <table class="table">

@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
+use App\Services\ActivityLogger;
 use Dotenv\Exception\ValidationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException as ValidationValidationException;
@@ -102,6 +104,10 @@ class AppSettingController extends Controller
             $appsettings->language = $request->input('language');
             $appsettings->footer_text = $request->input('footer_text');
             $appsettings->update();
+
+              $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Update Website Settings', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
             Alert::toast('Website Settings has been updated!', 'success');
             return redirect()->back();

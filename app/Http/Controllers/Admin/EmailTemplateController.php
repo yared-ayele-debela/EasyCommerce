@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use App\Models\EmailTemplate;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -76,6 +78,10 @@ class EmailTemplateController extends Controller
             $emailTemplate->status = 1;
             $emailTemplate->save();
 
+                  $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Store Email Template', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
             Alert::toast('Email Template has been saved successfully!', 'success');
             return redirect()->route('email_templates');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -137,6 +143,11 @@ class EmailTemplateController extends Controller
             $EmailTemplate->status = 1;
             $EmailTemplate->save();
 
+                $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Update Email Template', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
             Alert::toast('Email Template has been updated successfully!', 'success');
             return redirect()->route('email_templates');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -162,6 +173,12 @@ class EmailTemplateController extends Controller
             }
 
             $emailTemplate->delete();
+
+                  $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete Email Template', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+        
             Alert::toast('Email Template has been deleted successfully!', 'success');
             return redirect()->route('email_templates');
         } catch (\Exception $e) {

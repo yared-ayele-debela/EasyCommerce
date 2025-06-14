@@ -20,7 +20,7 @@ $user = Auth::guard('admin')->user();
     <div class="card-header bg-light text-dark">
       <h5 class="mb-0">Withdraw Requests</h5>
     </div>
-    <div class="card-body p-0">
+    <div class="card-body p-2">
       <div class="table-responsive">
         <table class="table">
           <thead class="thead-light">
@@ -36,9 +36,49 @@ $user = Auth::guard('admin')->user();
             @foreach ($requests as $req)
               <tr>
                 <td>
-                    <a href="{{ url('admin/vendors/details/',$req->vendor->id) }}" class="btn btn-sm btn-primary">
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#ven{{ $req->id }}">
                      <i class="bi bi-eye-fill"></i>
-                    </a>
+                    </button>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="ven{{ $req->id }}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content modal-lg">
+ <div class="modal-content modal-lg">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Vendor Detail informatione</h5>
+                                        <button type="button" class="close btn" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+
+                                        <div class="col-md-8">
+                                            <h5>{{ $req->vendor->name }}</h5>
+                                            <p><strong>Email: </strong> &nbsp; {{ $req->vendor->email }} </p>
+                                            <p><strong>Phone: </strong> &nbsp; {{ $req->vendor->mobile }} </p>
+                                            <p><strong>Address: </strong> &nbsp;{{ $req->vendor->address }}, {{$req->vendor->city}}, {{ $req->vendor->state }}, {{ $req->vendor->country }}  </p>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-md-6">
+                                            <p><strong>Account Number:</strong> {{ $req->vendor->vendorBank ? $req->vendor->vendorBank->account_number : 'N/A' }}</p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p><strong>Bank Name:</strong> {{ $req->vendor->vendorBank ? $req->vendor->vendorBank->bank_name : 'N/A' }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                            
+                            </div>
+                        </div>
+                    </div>
                     {{ $req->vendor->name }}</td>
                 <td><strong>{{ number_format($req->amount, 2) }} ETB</strong></td>
                 <td>
@@ -105,6 +145,9 @@ $user = Auth::guard('admin')->user();
           </tbody>
         </table>
       </div>
+        <div class="d-flex justify-content-left">
+            {{ $requests->links() }}
+        </div>
     </div>
   </div>
 

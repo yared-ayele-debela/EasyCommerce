@@ -176,15 +176,9 @@ class ProductController extends Controller
 
                 return view('products.listing', compact('cms_pages', 'appsettings', 'categoryDetails', 'categoryProducts', 'allcategoryProducts'));
             } else {
-                $url = Route::getFacadeRoot()->current()->uri();
-                $categoryCount = Category::where(['url' => $url, 'status' => 1])->count();
-
-
-                if ($categoryCount > 0) {
-
-                    $categoryDetails = Category::categoryDetails($url);
+              
                     $allcategoryProducts = Product::all()->toArray();
-                    $categoryProducts = Product::with('brand')->whereIn('category_id', $categoryDetails['catIds'])->where('status', 1);
+                    $categoryProducts = Product::with('brand')->where('status', 1);
 
                     if (isset($_GET['sort']) && !empty($_GET['sort'])) {
 
@@ -202,10 +196,9 @@ class ProductController extends Controller
                     }
                     $categoryProducts = $categoryProducts->paginate(20);
                     $appsettings = AppSetting::all()->toArray();
-                    return view('products.listing', compact('cms_pages', 'appsettings', 'url', 'categoryDetails', 'categoryProducts', 'allcategoryProducts'));
-                } else {
-                    abort(404);
-                }
+                    $url="";
+                    return view('products.listing', compact('url','cms_pages', 'appsettings',   'categoryProducts', 'allcategoryProducts'));
+               
             }
         }
     }
@@ -297,7 +290,6 @@ class ProductController extends Controller
 
             $getDiscountAttributePrice = Product::getDiscountAttributePrice($data['product_id'], $data['size']);
             return $getDiscountAttributePrice;
-
         }
     }
 
@@ -306,45 +298,45 @@ class ProductController extends Controller
         // try {
 
 
-            $data = $request->all();
-            $this->validate($request, [
-                'size'=>'required',
-            ]);
+        $data = $request->all();
+        $this->validate($request, [
+            'size' => 'required',
+        ]);
 
-            //Forget the coupon sessions
-            Session::forget('couponAmount');
-            Session::forget('couponCode');
-            if ($data['quantity'] <= 0) {
-                $data['quantity'] = 1;
-            }
+        //Forget the coupon sessions
+        Session::forget('couponAmount');
+        Session::forget('couponCode');
+        if ($data['quantity'] <= 0) {
+            $data['quantity'] = 1;
+        }
 
-            $getProductStock = ProductAttribute::isStokAvailable($data['product_id'], $data['size']);
-            if ($getProductStock < $data['quantity']) {
-                return redirect()->back()->with('error_message', 'Required Quantity is not available!');
-            }
-            $session_id = Session::get('session_id');
-            if (empty($session_id)) {
-                $session_id = Session::getId();
-                Session::put('session_id', $session_id);
-            }
-            if (Auth::check()) {
-                $user_id = Auth::user()->id;
-                $countProducts = Cart::where(['product_id' => $data['product_id'], 'size' => $data['size'], 'user_id' => $user_id])->count();
-            } else {
-                $user_id = 0;
-                $countProducts = Cart::where(['product_id' => $data['product_id'], 'size' => $data['size'], 'session_id' => $session_id])->count();
-            }
+        $getProductStock = ProductAttribute::isStokAvailable($data['product_id'], $data['size']);
+        if ($getProductStock < $data['quantity']) {
+            return redirect()->back()->with('error_message', 'Required Quantity is not available!');
+        }
+        $session_id = Session::get('session_id');
+        if (empty($session_id)) {
+            $session_id = Session::getId();
+            Session::put('session_id', $session_id);
+        }
+        if (Auth::check()) {
+            $user_id = Auth::user()->id;
+            $countProducts = Cart::where(['product_id' => $data['product_id'], 'size' => $data['size'], 'user_id' => $user_id])->count();
+        } else {
+            $user_id = 0;
+            $countProducts = Cart::where(['product_id' => $data['product_id'], 'size' => $data['size'], 'session_id' => $session_id])->count();
+        }
 
-            $item = new Cart();
-            $item->session_id = $session_id;
-            $item->user_id = $user_id;
-            $item->product_id = $data['product_id'];
-            $item->size = $data['size'];
-            $item->quantity = $data['quantity'];
-            $item->save();
+        $item = new Cart();
+        $item->session_id = $session_id;
+        $item->user_id = $user_id;
+        $item->product_id = $data['product_id'];
+        $item->size = $data['size'];
+        $item->quantity = $data['quantity'];
+        $item->save();
 
-            Alert::toast('Product has been added in your cart! <a href="/cart">View Cart</a>', 'success');
-            return redirect()->back();
+        Alert::toast('Product has been added in your cart! <a href="/cart">View Cart</a>', 'success');
+        return redirect()->back();
         // } catch (\Illuminate\Validation\ValidationException $e) {
         //     // Laravel's built-in validation exception
         //     return redirect()->back()->withErrors($e->validator->errors())->withInput();
@@ -372,75 +364,74 @@ class ProductController extends Controller
     }
 
     public function cartUpdate(Request $request)
-{
-    try {
-        if ($request->ajax()) {
-            $data = $request->all();
+    {
+        try {
+            if ($request->ajax()) {
+                $data = $request->all();
 
-            Session::forget('couponAmount');
-            Session::forget('couponCode');
+                Session::forget('couponAmount');
+                Session::forget('couponCode');
 
-            $cartDetails = Cart::find($data['cartid']);
-            $product = Product::find($cartDetails['product_id']);
+                $cartDetails = Cart::find($data['cartid']);
+                $product = Product::find($cartDetails['product_id']);
 
-            // If product has size (meaning the cart item has size)
-            if (!empty($cartDetails['size'])) {
-                $productAttribute = ProductAttribute::where([
-                    'product_id' => $cartDetails['product_id'],
-                    'size' => $cartDetails['size'],
-                    'status' => 1
-                ])->first();
+                // If product has size (meaning the cart item has size)
+                if (!empty($cartDetails['size'])) {
+                    $productAttribute = ProductAttribute::where([
+                        'product_id' => $cartDetails['product_id'],
+                        'size' => $cartDetails['size'],
+                        'status' => 1
+                    ])->first();
 
-                if (!$productAttribute) {
-                    $getCartItems = Cart::getCartItems();
-                    return response()->json([
-                        'status' => false,
-                        'message' => 'Product Size is not available. Please remove this product and choose another one!',
-                        'view' => (string)View::make('Restaurant.frontend.cart.cart_item')->with(compact('getCartItems'))
-                    ]);
+                    if (!$productAttribute) {
+                        $getCartItems = Cart::getCartItems();
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'Product Size is not available. Please remove this product and choose another one!',
+                            'view' => (string)View::make('Restaurant.frontend.cart.cart_item')->with(compact('getCartItems'))
+                        ]);
+                    }
+
+                    if ($data['qty'] > $productAttribute->stock) {
+                        $getCartItems = Cart::getCartItems();
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'Product Stock is not available',
+                            'view' => (string)View::make('Restaurant.frontend.cart.cart_item')->with(compact('getCartItems'))
+                        ]);
+                    }
+                } else {
+                    // No size, so check stock from product directly
+                    if ($data['qty'] > $product->quantity) {
+                        $getCartItems = Cart::getCartItems();
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'Product Stock is not available',
+                            'view' => (string)View::make('Restaurant.frontend.cart.cart_item')->with(compact('getCartItems'))
+                        ]);
+                    }
                 }
 
-                if ($data['qty'] > $productAttribute->stock) {
-                    $getCartItems = Cart::getCartItems();
-                    return response()->json([
-                        'status' => false,
-                        'message' => 'Product Stock is not available',
-                        'view' => (string)View::make('Restaurant.frontend.cart.cart_item')->with(compact('getCartItems'))
-                    ]);
-                }
-            } else {
-                // No size, so check stock from product directly
-                if ($data['qty'] > $product->quantity) {
-                    $getCartItems = Cart::getCartItems();
-                    return response()->json([
-                        'status' => false,
-                        'message' => 'Product Stock is not available',
-                        'view' => (string)View::make('Restaurant.frontend.cart.cart_item')->with(compact('getCartItems'))
-                    ]);
-                }
+                // Update quantity
+                Cart::where('id', operator: $data['cartid'])->update(['quantity' => $data['qty']]);
+
+                $getCartItems = Cart::getCartItems();
+                $totalCartItems = Helper::totalCartItems();
+
+                return response()->json([
+                    'status' => true,
+                    'totalCartItems' => $totalCartItems,
+                    'view' => (string)View::make('Restaurant.frontend.cart.cart_item')->with(compact('getCartItems')),
+                    // 'headerview' => (string)View::make('fontend.layout.min_cart')->with(compact('getCartItems'))
+                ]);
             }
-
-            // Update quantity
-            Cart::where('id', operator: $data['cartid'])->update(['quantity' => $data['qty']]);
-
-            $getCartItems = Cart::getCartItems();
-            $totalCartItems = Helper::totalCartItems();
-
-            return response()->json([
-                'status' => true,
-                'totalCartItems' => $totalCartItems,
-                'view' => (string)View::make('Restaurant.frontend.cart.cart_item')->with(compact('getCartItems')),
-                // 'headerview' => (string)View::make('fontend.layout.min_cart')->with(compact('getCartItems'))
-            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()->withErrors($e->validator->errors())->withInput();
+        } catch (\Exception $e) {
+            Alert::toast('something is wrong!!', 'error');
+            return redirect()->back();
         }
-
-    } catch (\Illuminate\Validation\ValidationException $e) {
-        return redirect()->back()->withErrors($e->validator->errors())->withInput();
-    } catch (\Exception $e) {
-        Alert::toast('something is wrong!!', 'error');
-        return redirect()->back();
     }
-}
 
 
 
@@ -456,10 +447,11 @@ class ProductController extends Controller
                 Session::forget('couponCode');
                 Cart::where('id', $data['cartid'])->delete();
                 $getCartItems = Cart::getCartItems();
-                 $totalCartItems=Helper::totalCartItems();
+                $totalCartItems = Helper::totalCartItems();
 
                 return response()->json([
-                    'totalCartItems' => $totalCartItems, 'view' => (string)View::make('Restaurant.frontend.cart.cart_item')->with(compact('getCartItems')),
+                    'totalCartItems' => $totalCartItems,
+                    'view' => (string)View::make('Restaurant.frontend.cart.cart_item')->with(compact('getCartItems')),
                     'headerview' => (string)View::make('fontend.layout.min_cart')->with(compact('getCartItems'))
                 ]);
             }
@@ -476,126 +468,128 @@ class ProductController extends Controller
     public function applyCoupon(Request $request)
     {
         // try {
-            if ($request->ajax()) {
-                $data = $request->all();
-                // dd($data);
-                Session::forget('couponAmount');
-                Session::forget('couponCode');
-                $getCartItems = Cart::getCartItems();
-                // dd($getCartItems);
-                // echo "<pre>";print_r($getCartItems); die;
+        if ($request->ajax()) {
+            $data = $request->all();
+            // dd($data);
+            Session::forget('couponAmount');
+            Session::forget('couponCode');
+            $getCartItems = Cart::getCartItems();
+            // dd($getCartItems);
+            // echo "<pre>";print_r($getCartItems); die;
 
-                 $totalCartItems=Helper::totalCartItems();
-                $couponCount = Coupon::where('coupon_code', $data['code'])->count();
-                if ($couponCount == 0) {
-                    return response()->json([
-                        'status' => false,
-                        'message' => 'The coupon is not valid',
-                        'totalCartItems' => $totalCartItems, 'view' => (string)View::make('Restaurant.frontend.cart.cart_item')->with(compact('getCartItems')),
-                        'headerview' => (string)View::make('fontend.layout.min_cart')->with(compact('getCartItems'))
-                    ]);
-                } else {
-                    //  echo "Check for other coupon conditions";die;
-                    //get coupon details
-                    $couponDetails = Coupon::where('coupon_code', $data['code'])->first();
-                    //Check if coupon is active
-                    if ($couponDetails->status == 0) {
-                        $message = "The coupon is not active";
-                    }
+            $totalCartItems = Helper::totalCartItems();
+            $couponCount = Coupon::where('coupon_code', $data['code'])->count();
+            if ($couponCount == 0) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'The coupon is not valid',
+                    'totalCartItems' => $totalCartItems,
+                    'view' => (string)View::make('Restaurant.frontend.cart.cart_item')->with(compact('getCartItems'))
+                    // 'headerview' => (string)View::make('fontend.layout.min_cart')->with(compact('getCartItems'))
+                ]);
+            } else {
+                //  echo "Check for other coupon conditions";die;
+                //get coupon details
+                $couponDetails = Coupon::where('coupon_code', $data['code'])->first();
+                //Check if coupon is active
+                if ($couponDetails->status == 0) {
+                    $message = "The coupon is not active";
+                }
 
-                    //Check if coupon is expired
-                    $expiry_date = $couponDetails->expiry_date;
-                    $current_date = date('Y-m-d');
-                    if ($expiry_date < $current_date) {
-                        $message = "The coupon is expired!";
-                    }
-                    //Check if coupon is for single time
-                    if ($couponDetails->coupon_type == "Single Time") {
+                //Check if coupon is expired
+                $expiry_date = $couponDetails->expiry_date;
+                $current_date = date('Y-m-d');
+                if ($expiry_date < $current_date) {
+                    $message = "The coupon is expired!";
+                }
+                //Check if coupon is for single time
+                if ($couponDetails->coupon_type == "Single Time") {
 
-                        $couponCount = Order::where(['coupon_code' => $data['code'], 'user_id' => Auth::user()->id])->count();
+                    $couponCount = Order::where(['coupon_code' => $data['code'], 'user_id' => Auth::user()->id])->count();
 
-                        if ($couponCount >= 1) {
-                            $message = "This coupon code is already availed by you";
-                        }
-                    }
-
-                    //Check if coupon is from selected categories
-                    //Get all selected categories from coupon
-                    $catArr = explode(",", $couponDetails->categories);
-
-                    $total_amount = 0;
-                    foreach ($getCartItems as $key => $item) {
-                        if (!in_array($item['product']['category_id'], $catArr)) {
-                            $message = "This coupon code is not for one of the selected products.";
-                        }
-                        $attrPrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
-                        // echo "<pre>";print _r($attrPrice);die;
-                        $total_amount = $total_amount + ($attrPrice['final_price'] * $item['quantity']);
-                    }
-
-                    //check if coupon is from selected users
-                    if (isset($couponDetails->users) && !empty($couponDetails->users)) {
-                        $userArr = explode(",", $couponDetails->users);
-                        //Get user Id's of all selected users
-                        // echo "<pre>";print_r($userArr);die;
-                        if (count($userArr)) {
-                            foreach ($userArr as $key => $user) {
-                                $getUserId = User::select('id')->where('email', $user)->first()->toArray();
-                                $usersId[] = $getUserId['id'];
-                            }
-                            //Check if any Cart item not belong to coupon user
-                            foreach ($getCartItems as $item) {
-                                if (!in_array($item['user_id'], $usersId)) {
-                                    $message = "This coupon code is not for for you. Try with valid coupon code!";
-                                }
-                            }
-                        }
-                    }
-
-
-
-                    if ($couponDetails->vendor_id > 0) {
-                        $productIds = Product::select('id')->where('vendor_id', $couponDetails->vendor_id)->pluck('id')->toArray();
-                        foreach ($getCartItems as $item) {
-                            if (!in_array($item['product']['id'], $productIds)) {
-                                $message = "This coupon code is not for you. Try with valid coupon code (vendor validation)!";
-                            }
-                        }
-                    }
-                    //if error message is there
-                    if (isset($message)) {
-                        return response()->json([
-                            'status' => false,
-                            'message' => $message,
-                            'totalCartItems' => $totalCartItems, 'view' => (string)View::make('Restaurant.frontend.cart.cart_item')->with(compact('getCartItems')),
-                            'headerview' => (string)View::make('fontend.layout.min_cart')->with(compact('getCartItems'))
-                        ]);
-                    } else {
-                        //Check if Coupon Amount type is Fixed or Percantage
-                        if ($couponDetails->amount_type == "Fixed") {
-                            $couponAmount = $couponDetails->amount;
-                        } else {
-                            $couponAmount = $total_amount * ($couponDetails->amount / 100);
-                        }
-                        $grand_total = $total_amount - $couponAmount;
-                        //Add coupon code and amount is session variables
-                        Session::put('couponAmount', $couponAmount);
-                        Session::put('couponCode', $data['code']);
-                        $message = "Coupon Code successfully applied. You are availing discount!";
-
-                        return response()->json([
-                            'status' => true,
-                            'message' => $message,
-                            'totalCartItems' => $totalCartItems,
-                            'couponAmount' => $couponAmount,
-                            'grand_total' => $grand_total,
-                            'view' => (string)View::make('Restaurant.frontend.cart.cart_item')
-                                ->with(compact('getCartItems')),
-                            'headerview' => (string)View::make('fontend.layout.min_cart')->with(compact('getCartItems'))
-                        ]);
+                    if ($couponCount >= 1) {
+                        $message = "This coupon code is already availed by you";
                     }
                 }
+
+                //Check if coupon is from selected categories
+                //Get all selected categories from coupon
+                $catArr = explode(",", $couponDetails->categories);
+
+                $total_amount = 0;
+                foreach ($getCartItems as $key => $item) {
+                    if (!in_array($item['product']['category_id'], $catArr)) {
+                        $message = "This coupon code is not for one of the selected products.";
+                    }
+                    $attrPrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
+                    // echo "<pre>";print _r($attrPrice);die;
+                    $total_amount = $total_amount + ($attrPrice['final_price'] * $item['quantity']);
+                }
+
+                //check if coupon is from selected users
+                if (isset($couponDetails->users) && !empty($couponDetails->users)) {
+                    $userArr = explode(",", $couponDetails->users);
+                    //Get user Id's of all selected users
+                    // echo "<pre>";print_r($userArr);die;
+                    if (count($userArr)) {
+                        foreach ($userArr as $key => $user) {
+                            $getUserId = User::select('id')->where('email', $user)->first()->toArray();
+                            $usersId[] = $getUserId['id'];
+                        }
+                        //Check if any Cart item not belong to coupon user
+                        foreach ($getCartItems as $item) {
+                            if (!in_array($item['user_id'], $usersId)) {
+                                $message = "This coupon code is not for for you. Try with valid coupon code!";
+                            }
+                        }
+                    }
+                }
+
+
+
+                if ($couponDetails->vendor_id > 0) {
+                    $productIds = Product::select('id')->where('vendor_id', $couponDetails->vendor_id)->pluck('id')->toArray();
+                    foreach ($getCartItems as $item) {
+                        if (!in_array($item['product']['id'], $productIds)) {
+                            $message = "This coupon code is not for you. Try with valid coupon code (vendor validation)!";
+                        }
+                    }
+                }
+                //if error message is there
+                if (isset($message)) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => $message,
+                        'totalCartItems' => $totalCartItems,
+                        'view' => (string)View::make('Restaurant.frontend.cart.cart_item')->with(compact('getCartItems'))
+                        // 'headerview' => (string)View::make('fontend.layout.min_cart')->with(compact('getCartItems'))
+                    ]);
+                } else {
+                    //Check if Coupon Amount type is Fixed or Percantage
+                    if ($couponDetails->amount_type == "Fixed") {
+                        $couponAmount = $couponDetails->amount;
+                    } else {
+                        $couponAmount = $total_amount * ($couponDetails->amount / 100);
+                    }
+                    $grand_total = $total_amount - $couponAmount;
+                    //Add coupon code and amount is session variables
+                    Session::put('couponAmount', $couponAmount);
+                    Session::put('couponCode', $data['code']);
+                    $message = "Coupon Code successfully applied. You are availing discount!";
+
+                    return response()->json([
+                        'status' => true,
+                        'message' => $message,
+                        'totalCartItems' => $totalCartItems,
+                        'couponAmount' => $couponAmount,
+                        'grand_total' => $grand_total,
+                        'view' => (string)View::make('Restaurant.frontend.cart.cart_item')
+                            ->with(compact('getCartItems'))
+                        // 'headerview' => (string)View::make('fontend.layout.min_cart')->with(compact('getCartItems'))
+                    ]);
+                }
             }
+        }
         // } catch (\Exception $e) {
         //     // Log or handle the exception as needed
         //     Alert::toast('something is wrong!!', 'error');
@@ -606,284 +600,284 @@ class ProductController extends Controller
     public function checkout(Request $request)
     {
         // try {
-            $appsettings = AppSetting::all()->toArray();
-            $cms_pages = CmsPage::get()->toArray();
+        $appsettings = AppSetting::all()->toArray();
+        $cms_pages = CmsPage::get()->toArray();
 
-            $countries = Country::where('status', 1)->get()->toArray();
-            $getCartItems = Cart::getCartItems();
+        $countries = Country::where('status', 1)->get()->toArray();
+        $getCartItems = Cart::getCartItems();
 
-            if (count($getCartItems) == 0) {
-                Alert::toast('Shopping Cart is empty! Please add products to checkout', 'error');
-                return redirect('cart');
+        if (count($getCartItems) == 0) {
+            Alert::toast('Shopping Cart is empty! Please add products to checkout', 'error');
+            return redirect('cart');
+        }
+        $total_price = 0;
+        $total_weight = 0;
+        $totalTax = 0;
+
+        foreach ($getCartItems as $item) {
+            $getDiscountAttributePrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
+            $product_price = $getDiscountAttributePrice['final_price'];
+            $product_quantity = $item['quantity'];
+
+            // Calculate product total price without discount
+            $product_total_price = $product_price * $product_quantity;
+
+            // Get product weight and calculate total weight
+            $product_weight = $item['product']['product_weight'];
+            $total_weight += $product_weight;
+
+            // Apply discount based on quantity
+            $discount = Discount::where('product_id', $item['product_id'])
+                ->where('min_product', '<=', $product_quantity)
+                ->where('max_product', '>=', $product_quantity)
+                ->where('status', 1)
+                ->first();
+
+
+            if ($discount) {
+                if ($discount->discount_type === "Discounted Price") {
+                    $product_total_price_after_discount = $product_total_price - $discount->amount;
+                }
+                if ($discount->discount_type === "Percentage") {
+                    $discountAmount = $product_total_price * ($discount->amount / 100);
+                    $product_total_price_after_discount = $product_total_price - $discountAmount;
+                }
+            } else {
+                $product_total_price_after_discount = $product_total_price;
             }
-            $total_price = 0;
-            $total_weight = 0;
-            $totalTax = 0;
 
+            // Add discounted price to total price
+            $total_price += $product_total_price_after_discount;
+
+            // Calculate tax
+            $get_tax_percent = Product::select('product_tax')->where('id', $item['product_id'])->first();
+            $tax_percent = $get_tax_percent->product_tax;
+            $tax_amount = round($product_total_price_after_discount * $tax_percent / 100, 2);
+
+            // Add tax to total tax
+            $totalTax += $tax_amount;
+        }
+
+
+        if ($request->isMethod('post')) {
+            $data = $request->all();
             foreach ($getCartItems as $item) {
+                $product_status = Product::getProductStatus($item['product_id']);
+                if ($product_status == 0) {
+
+                    Alert::toast($item['product']['product_name'] . " with " . $item['size'] . " Size is not available. Please remove from cart and choose some other product.", 'error');
+
+                    return redirect('/cart');
+                }
+                //prvent sold out product to order
+                $getProductStock = ProductAttribute::isStokAvailable($item['product_id'], $item['size']);
+                if ($getProductStock == 0) {
+                    // Product::deleteCartProduct($item['product_id']);
+                    // notify()->error('One of the product is sold out!','Please try again');
+                    Alert::toast($item['product']['product_name'] . " with " . $item['size'] . " Size is not available. Please remove from cart and choose some other product.", 'error');
+                    return redirect('/cart');
+                }
+                //Prevent Disabled out ProductAttributes to Order
+                $getAttributeStatus = ProductAttribute::getAttributeStatus($item['product_id'], $item['size']);
+                if ($getAttributeStatus == 0) {
+                    // Product::deleteCartProduct($item['product_id']);
+                    // notify()->error('One of the product attribute is sold out!','Please try again');
+                    Alert::toast($item['product']['product_name'] . " with " . $item['size'] . " Size is not available. Please remove from cart and choose some other product.", 'error');
+                    return redirect('/cart');
+                }
+                //Prevent disabled Categories product to order
+                $getCategoryStatus = Category::getCategoryStatus($item['product']['category_id']);
+                if ($getCategoryStatus == 0) {
+                    // Product::deleteCartProduct($item['product_id']);
+                    // notify()->error('One of the product category is disabled!','Please try again');
+                    Alert::toast($item['product']['product_name'] . " with " . $item['size'] . " Size is not available. Please remove from cart and choose some other product.", 'error');
+                    return redirect('/cart');
+                }
+            }
+            //check validation for address_id
+            if (empty($data['address_id'])) {
+                Alert::toast('Please select Delivery Address!', 'error');
+                return redirect()->back();
+            }
+            //check validation for payment getway
+            if (empty($data['payment_gateway'])) {
+                Alert::toast('Please select Payment Geteway!', 'error');
+                return redirect()->back();
+            }
+            //agree to T&C validation
+
+            if (empty($data['accept'])) {
+
+                Alert::toast('Please agree to T&C!', 'error');
+                return redirect()->back();
+            }
+            $deliveryAddresses = DeliveryAddress::where('id', $data['address_id'])->first()->toArray();
+
+            if ($data['payment_gateway'] == "COD") {
+                $payment_method = "COD";
+                $order_status = "New";
+            } elseif ($data['payment_gateway'] == "Chapa") {
+                $payment_method = "Chapa";
+                $order_status = "Pending";
+            } else {
+                $payment_method = "Paypal";
+                $order_status = "Pending";
+            }
+
+            DB::beginTransaction();
+
+            $shipping_charges = 0;
+
+            //get shipping charges
+            $shipping_charges = ShippingCharge::getShippingCharges($total_weight, $deliveryAddresses['city']);
+
+            //Calculate Grand Total
+            $grand_total = $total_price + $shipping_charges + $totalTax - Session::get('couponAmount');
+
+            $grand_total =  Helper::final_amount_currency_converter($grand_total);
+
+            $get_currency = Session::get('currency_code');
+
+            Session::put('grand_total', $grand_total);
+
+            //Insert Order Details
+            $user_code = str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+            $order = new Order();
+            $order->user_id = Auth::user()->id;
+            $order->order_code = $user_code;
+            $order->name = $deliveryAddresses['name'];
+            $order->address = $deliveryAddresses['address'];
+            $order->city = $deliveryAddresses['city'];
+            $order->state = $deliveryAddresses['state'];
+            $order->country = $deliveryAddresses['country'];
+            $order->pincode = $deliveryAddresses['pincode'];
+            $order->mobile = $deliveryAddresses['mobile'];
+            $order->email = Auth::user()->email;
+            $order->shipping_charges = $shipping_charges;
+            $order->tax_charge = $totalTax;
+            $order->coupon_code = Session::get('couponCode');
+            $order->coupon_amount = Session::get('couponAmount');
+            $order->order_status = $order_status;
+            $order->payment_method = $payment_method;
+            $order->payment_gateway = $data['payment_gateway'];
+            $order->grand_total = $grand_total;
+            $order->save();
+
+            $order_id = DB::getPdo()->lastInsertId();
+            foreach ($getCartItems as $item) {
+                $cartItem = new OrderProduct();
+                $cartItem->order_id = $order_id;
+                $cartItem->user_id = Auth::user()->id;
+                $getProductDetails = Product::select('product_code', 'product_name', 'product_color', 'admin_id', 'vendor_id')->where('id', $item['product_id'])->first()->toArray();
+                //  dd($getProductDetails);
+                $vendor_code = str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+
+                $cartItem->admin_id = $getProductDetails['admin_id'];
+                $cartItem->vendor_id = $getProductDetails['vendor_id'];
+                $cartItem->order_product_code = $vendor_code;
+                $cartItem->product_id = $item['product_id'];
+                $cartItem->product_code = $getProductDetails['product_code'];
+                $cartItem->product_name = $getProductDetails['product_name'];
+                $cartItem->product_color = $getProductDetails['product_color'];
+                $cartItem->product_size = $item['size'];
+
                 $getDiscountAttributePrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
-                $product_price = $getDiscountAttributePrice['final_price'];
-                $product_quantity = $item['quantity'];
-
-                // Calculate product total price without discount
-                $product_total_price = $product_price * $product_quantity;
-
-                // Get product weight and calculate total weight
-                $product_weight = $item['product']['product_weight'];
-                $total_weight += $product_weight;
-
-                // Apply discount based on quantity
-                $discount = Discount::where('product_id',$item['product_id'])
+                $discount = Discount::where('product_id', $item['product_id'])
                     ->where('min_product', '<=', $product_quantity)
                     ->where('max_product', '>=', $product_quantity)
-                    ->where('status',1)
+                    ->where('status', 1)
                     ->first();
 
+                $total_prices = 0;
+                $product_total_price = $getDiscountAttributePrice['final_price'];
+                //for commication
+                $product_total_price_for_commication = $product_total_price;
+                $total_item_price = $product_total_price_for_commication * $item['quantity'];
 
-                if ($discount){
-                    if($discount->discount_type==="Discounted Price"){
+                if ($discount) {
+                    if ($discount->discount_type === "Discounted Price") {
                         $product_total_price_after_discount = $product_total_price - $discount->amount;
                     }
-                    if($discount->discount_type==="Percentage"){
-                            $discountAmount = $product_total_price * ($discount->amount / 100);
-                            $product_total_price_after_discount = $product_total_price - $discountAmount;
+                    if ($discount->discount_type === "Percentage") {
+                        $discountAmount = $product_total_price * ($discount->amount / 100);
+                        $product_total_price_after_discount = $product_total_price - $discountAmount;
                     }
-                } else {
-                    $product_total_price_after_discount = $product_total_price;
                 }
-
                 // Add discounted price to total price
-                $total_price += $product_total_price_after_discount;
+                $total_prices += $product_total_price_after_discount;
 
-                // Calculate tax
-                $get_tax_percent = Product::select('product_tax')->where('id', $item['product_id'])->first();
-                $tax_percent = $get_tax_percent->product_tax;
-                $tax_amount = round($product_total_price_after_discount * $tax_percent / 100, 2);
-
-                // Add tax to total tax
-                $totalTax += $tax_amount;
-            }
-
-
-            if ($request->isMethod('post')) {
-                $data = $request->all();
-                foreach ($getCartItems as $item) {
-                    $product_status = Product::getProductStatus($item['product_id']);
-                    if ($product_status == 0) {
-
-                        Alert::toast($item['product']['product_name'] . " with " . $item['size'] . " Size is not available. Please remove from cart and choose some other product.", 'error');
-
-                        return redirect('/cart');
-                    }
-                    //prvent sold out product to order
-                    $getProductStock = ProductAttribute::isStokAvailable($item['product_id'], $item['size']);
-                    if ($getProductStock == 0) {
-                        // Product::deleteCartProduct($item['product_id']);
-                        // notify()->error('One of the product is sold out!','Please try again');
-                        Alert::toast($item['product']['product_name'] . " with " . $item['size'] . " Size is not available. Please remove from cart and choose some other product.", 'error');
-                        return redirect('/cart');
-                    }
-                    //Prevent Disabled out ProductAttributes to Order
-                    $getAttributeStatus = ProductAttribute::getAttributeStatus($item['product_id'], $item['size']);
-                    if ($getAttributeStatus == 0) {
-                        // Product::deleteCartProduct($item['product_id']);
-                        // notify()->error('One of the product attribute is sold out!','Please try again');
-                        Alert::toast($item['product']['product_name'] . " with " . $item['size'] . " Size is not available. Please remove from cart and choose some other product.", 'error');
-                        return redirect('/cart');
-                    }
-                    //Prevent disabled Categories product to order
-                    $getCategoryStatus = Category::getCategoryStatus($item['product']['category_id']);
-                    if ($getCategoryStatus == 0) {
-                        // Product::deleteCartProduct($item['product_id']);
-                        // notify()->error('One of the product category is disabled!','Please try again');
-                        Alert::toast($item['product']['product_name'] . " with " . $item['size'] . " Size is not available. Please remove from cart and choose some other product.", 'error');
-                        return redirect('/cart');
-                    }
-                }
-                //check validation for address_id
-                if (empty($data['address_id'])) {
-                    Alert::toast('Please select Delivery Address!', 'error');
-                    return redirect()->back();
-                }
-                //check validation for payment getway
-                if (empty($data['payment_gateway'])) {
-                    Alert::toast('Please select Payment Geteway!', 'error');
-                    return redirect()->back();
-                }
-                //agree to T&C validation
-
-                if (empty($data['accept'])) {
-
-                    Alert::toast('Please agree to T&C!', 'error');
-                    return redirect()->back();
-                }
-                $deliveryAddresses = DeliveryAddress::where('id', $data['address_id'])->first()->toArray();
-
-                if ($data['payment_gateway'] == "COD") {
-                    $payment_method = "COD";
-                    $order_status = "New";
-                } elseif ($data['payment_gateway'] == "Chapa") {
-                    $payment_method = "Chapa";
-                    $order_status = "Pending";
-                } else {
-                    $payment_method = "Paypal";
-                    $order_status = "Pending";
+                if ($discount) {
+                    $cartItem->discounted_price = $total_prices;
                 }
 
-                DB::beginTransaction();
+                // dd($item);
+                $cartItem->product_price = $product_total_price;
+                $cartItem->product_qty = $item['quantity'];
 
-                $shipping_charges = 0;
-
-                //get shipping charges
-                $shipping_charges = ShippingCharge::getShippingCharges($total_weight, $deliveryAddresses['city']);
-
-                //Calculate Grand Total
-                $grand_total = $total_price + $shipping_charges + $totalTax - Session::get('couponAmount');
-
-                $grand_total=  Helper::final_amount_currency_converter($grand_total);
-
-                $get_currency=Session::get('currency_code');
-
-                Session::put('grand_total', $grand_total);
-
-                //Insert Order Details
-                $user_code = str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
-                $order = new Order();
-                $order->user_id = Auth::user()->id;
-                $order->order_code = $user_code;
-                $order->name = $deliveryAddresses['name'];
-                $order->address = $deliveryAddresses['address'];
-                $order->city = $deliveryAddresses['city'];
-                $order->state = $deliveryAddresses['state'];
-                $order->country = $deliveryAddresses['country'];
-                $order->pincode = $deliveryAddresses['pincode'];
-                $order->mobile = $deliveryAddresses['mobile'];
-                $order->email = Auth::user()->email;
-                $order->shipping_charges = $shipping_charges;
-                $order->tax_charge = $totalTax;
-                $order->coupon_code = Session::get('couponCode');
-                $order->coupon_amount = Session::get('couponAmount');
-                $order->order_status = $order_status;
-                $order->payment_method = $payment_method;
-                $order->payment_gateway = $data['payment_gateway'];
-                $order->grand_total = $grand_total;
-                $order->save();
-
-                $order_id = DB::getPdo()->lastInsertId();
-                foreach ($getCartItems as $item) {
-                    $cartItem = new OrderProduct();
-                    $cartItem->order_id = $order_id;
-                    $cartItem->user_id = Auth::user()->id;
-                    $getProductDetails = Product::select('product_code', 'product_name', 'product_color', 'admin_id', 'vendor_id')->where('id', $item['product_id'])->first()->toArray();
-                    //  dd($getProductDetails);
-                    $vendor_code = str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
-
-                    $cartItem->admin_id = $getProductDetails['admin_id'];
-                    $cartItem->vendor_id = $getProductDetails['vendor_id'];
-                    $cartItem->order_product_code = $vendor_code;
-                    $cartItem->product_id = $item['product_id'];
-                    $cartItem->product_code = $getProductDetails['product_code'];
-                    $cartItem->product_name = $getProductDetails['product_name'];
-                    $cartItem->product_color = $getProductDetails['product_color'];
-                    $cartItem->product_size = $item['size'];
-
-                    $getDiscountAttributePrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
-                    $discount = Discount::where('product_id',$item['product_id'])
-                    ->where('min_product', '<=', $product_quantity)
-                    ->where('max_product', '>=', $product_quantity)
-                    ->where('status',1)
-                    ->first();
-
-                     $total_prices=0;
-                     $product_total_price=$getDiscountAttributePrice['final_price'];
-                      //for commication
-                     $product_total_price_for_commication = $product_total_price;
-                     $total_item_price = $product_total_price_for_commication * $item['quantity'];
-
-                    if ($discount){
-                        if($discount->discount_type==="Discounted Price"){
-                            $product_total_price_after_discount = $product_total_price - $discount->amount;
-                        }
-                        if($discount->discount_type==="Percentage"){
-                                $discountAmount = $product_total_price * ($discount->amount / 100);
-                                $product_total_price_after_discount = $product_total_price - $discountAmount;
-                        }
-                    }
-                    // Add discounted price to total price
-                    $total_prices += $product_total_price_after_discount;
-
-                    if($discount){
-                        $cartItem->discounted_price= $total_prices;
-                    }
-
-                    // dd($item);
-                    $cartItem->product_price = $product_total_price;
-                    $cartItem->product_qty = $item['quantity'];
-
-                    if($discount){
-                    $cartItem->discount_type= $discount->discount_type;
+                if ($discount) {
+                    $cartItem->discount_type = $discount->discount_type;
                     $cartItem->specail_discount = $discount->amount;
-                    }
-                    $cartItem->save();
-                    //Reduce Stock Script Starts
-                    $getProductStock = ProductAttribute::isStokAvailable($item['product_id'], $item['size']);
-                    $newStock = $getProductStock - $item['quantity'];
-                    ProductAttribute::where(['product_id' => $item['product_id'], 'size' => $item['size']])->update(['stock' => $newStock]);
-
-                     // Calculate and save commission for each item if referral token exists
-                    if (Session::has('referral_token')) {
-                        $commission_amount=SalesMainCommission::first();
-                        $token = Session::get('referral_token');
-                        $commissionAmount = $total_item_price * ($commission_amount->commission_amount / 100);
-                        $commission = new SalesCommission();
-                        $commission->salesperson_id = SalesCommission::getSalespersonIdFromToken($token);
-                        $commission->order_id = $order_id;
-                        $commission->product_id = $item['product_id'];
-                        $commission->amount = $commissionAmount;
-                        $commission->save();
-                    }
                 }
+                $cartItem->save();
+                //Reduce Stock Script Starts
+                $getProductStock = ProductAttribute::isStokAvailable($item['product_id'], $item['size']);
+                $newStock = $getProductStock - $item['quantity'];
+                ProductAttribute::where(['product_id' => $item['product_id'], 'size' => $item['size']])->update(['stock' => $newStock]);
 
-                Session::forget('referral_token');
-                Session::put('order_id', $order_id);
-                DB::commit();
-                $orderDetails = Order::with('orders_products')->where('id', $order_id)->first()->toArray();
-
-                if ($data['payment_gateway'] == "COD") {
-
-                    // $email = Auth::user()->email;
-                    // $email_template = EmailTemplate::first();
-                    // $messageData = [
-                    //     'email_template' => $email_template,
-                    //     'email' => $email,
-                    //     'name' => Auth::user()->name,
-                    //     'order_id' => $order_id,
-                    //     'orderDetails' => $orderDetails
-                    // ];
-                    // Mail::send('emails.order', $messageData, function ($message) use ($email) {
-                    //     $message->to($email)->subject('Order Placed');
-                    // });
+                // Calculate and save commission for each item if referral token exists
+                if (Session::has('referral_token')) {
+                    $commission_amount = SalesMainCommission::first();
+                    $token = Session::get('referral_token');
+                    $commissionAmount = $total_item_price * ($commission_amount->commission_amount / 100);
+                    $commission = new SalesCommission();
+                    $commission->salesperson_id = SalesCommission::getSalespersonIdFromToken($token);
+                    $commission->order_id = $order_id;
+                    $commission->product_id = $item['product_id'];
+                    $commission->amount = $commissionAmount;
+                    $commission->save();
                 }
-                if ($data['payment_gateway'] == "Chapa") {
-                    return redirect()->route('chapa', compact('appsettings'));
-                }
-                if ($data['payment_gateway'] == "Paypal") {
-                    return redirect()->route('paypal', compact('appsettings'));
-                }
-
-                Alert::toast('Order successfully placed!', 'success');
-                return redirect()->route('thanks', compact('appsettings'));
             }
 
-            $total_price = 0;
-            foreach ($getCartItems as $item) {
-                $attrPrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
-                $total_price = $total_price + ($attrPrice['final_price'] * $item['quantity']);
-                $city = ShippingCharge::all()->where('status', 1);
-                $state = State::all()->where('status', 1);
+            Session::forget('referral_token');
+            Session::put('order_id', $order_id);
+            DB::commit();
+            $orderDetails = Order::with('orders_products')->where('id', $order_id)->first()->toArray();
+
+            if ($data['payment_gateway'] == "COD") {
+
+                // $email = Auth::user()->email;
+                // $email_template = EmailTemplate::first();
+                // $messageData = [
+                //     'email_template' => $email_template,
+                //     'email' => $email,
+                //     'name' => Auth::user()->name,
+                //     'order_id' => $order_id,
+                //     'orderDetails' => $orderDetails
+                // ];
+                // Mail::send('emails.order', $messageData, function ($message) use ($email) {
+                //     $message->to($email)->subject('Order Placed');
+                // });
+            }
+            if ($data['payment_gateway'] == "Chapa") {
+                return redirect()->route('chapa', compact('appsettings'));
+            }
+            if ($data['payment_gateway'] == "Paypal") {
+                return redirect()->route('paypal', compact('appsettings'));
             }
 
-            return view('NewFrontEndPage.delivery_address.checkout', compact('city', 'state', 'appsettings', 'cms_pages',  'countries', 'getCartItems', 'total_price', 'totalTax'));
+            Alert::toast('Order successfully placed!', 'success');
+            return redirect()->route('thanks', compact('appsettings'));
+        }
+
+        $total_price = 0;
+        foreach ($getCartItems as $item) {
+            $attrPrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
+            $total_price = $total_price + ($attrPrice['final_price'] * $item['quantity']);
+            $city = ShippingCharge::all()->where('status', 1);
+            $state = State::all()->where('status', 1);
+        }
+
+        return view('NewFrontEndPage.delivery_address.checkout', compact('city', 'state', 'appsettings', 'cms_pages',  'countries', 'getCartItems', 'total_price', 'totalTax'));
         // } catch (\Illuminate\Validation\ValidationException $e) {
         //     // Laravel's built-in validation exception
         //     return redirect()->back()->withErrors($e->validator->errors())->withInput();
@@ -986,17 +980,16 @@ class ProductController extends Controller
             'offer_price' => 'required|numeric',
         ]);
 
-        $offer=new Offer();
-        $offer->product_id=$request->input('product_id');
-        $offer->user_id=$request->input('user_id');
-        $offer->quantity=$request->quantity;
-        $offer->size=$request->description;
-        $offer->description=$request->description;
-        $offer->offer_price=$request->offer_price;
+        $offer = new Offer();
+        $offer->product_id = $request->input('product_id');
+        $offer->user_id = $request->input('user_id');
+        $offer->quantity = $request->quantity;
+        $offer->size = $request->description;
+        $offer->description = $request->description;
+        $offer->offer_price = $request->offer_price;
         $offer->save();
 
-        Alert::toast('Product offer submited successfully','success');
+        Alert::toast('Product offer submited successfully', 'success');
         return redirect()->back();
     }
-
 }

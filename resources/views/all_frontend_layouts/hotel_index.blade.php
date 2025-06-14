@@ -152,7 +152,11 @@
                         <span class="badge bg-primary mt-0">{{ $hotel->category->name }}</span>
                         <h5 class="card-title">{{ $hotel->name }}</h5>
                         <p class="card-text">
-                            Location: {{ $hotel->state }}, {{ $hotel->city }}, {{ $hotel->location }}<br>
+                            <a  href="https://www.google.com/maps?q={{ $hotel->latitude }},{{ $hotel->longitude }}"
+                         target="_blank" class="small text-muted mb-2">
+                        Location: {{ $hotel->state }}, {{ $hotel->city }}, {{ $hotel->location }}
+                        </a>
+                            <br>
                             Price per Night: <strong>{{ $hotel->price_per_night }} ETB</strong><br>
                             Rating: <strong>{{ $hotel->rating }} <i class="bi bi-star-fill text-primary"></i></strong><br>
                         </p>
@@ -164,7 +168,7 @@
         </div>
     </div>
     @if($after_discount_hotels)
-        <div class="row justify-content-center">
+        <div class="row justify-content-center mb-3">
             <div class="col-12 col-md-12">
             <div class="card border-0 rounded-3 shadow-sm overflow-hidden">
                 <a href="{{ $after_discount_hotels->adv_links??'' }}" target="_blank">
@@ -176,7 +180,7 @@
             </div>
         </div>
     @endif
-     
+
     <div class="container-fluid p-0">
         <div id="nearby-hotels">
             <p>Loading nearby hotels...</p>
@@ -184,12 +188,12 @@
     </div>
 
 <div class="d-flex justify-content-between align-items-center">
-    <h4 class="mt-2 mb-2">Latest Hotels</h4>
-    <h5 class="mt-2 mb-2">
+    <h4 class="mb-2">Latest Hotels</h4>
+    <h5 class="mb-2">
         <form action="{{ url('hotels') }}" method="GET">
             @csrf
-            <button type="submit" class="text-dark border-0 bg-white">
-                All
+            <button type="submit" class="btn btn-outline-primary btn-sm">
+                 <i class="bi bi-funnel"></i> Filter Hotels
             </button>
         </form>
     </h5>
@@ -210,7 +214,11 @@
                     <span class="badge bg-primary mt-0">{{ $hotel->category->name }}</span>
                     <h5 class="card-title">{{ $hotel->name }}</h5>
                     <p class="card-text">
-                        Location: {{ $hotel->state }}, {{ $hotel->city }}, {{ $hotel->location }}<br>
+                       <a  href="https://www.google.com/maps?q={{ $hotel->latitude }},{{ $hotel->longitude }}"
+                         target="_blank" class="small text-muted mb-2">
+                        Location: {{ $hotel->state }}, {{ $hotel->city }}, {{ $hotel->location }}
+                        </a>
+                        <br>
                         Price per Night: <strong>{{ $hotel->price_per_night }} ETB</strong><br>
                         Rating: <strong>{{ $hotel->rating }} <i class="bi bi-star-fill text-primary"></i></strong><br>
                     </p>
@@ -222,26 +230,26 @@
     </div>
 </div>
  @if($after_latest_hotels)
-        <div class="row justify-content-center">
-            <div class="col-12 col-md-12">
-            <div class="card border-0 rounded-3 shadow-sm overflow-hidden">
-                <a href="{{ $after_latest_hotels->adv_links??'' }}" target="_blank">
-                <img src="{{ $after_latest_hotels->image }}"
-                    alt="{{ $after_latest_hotels->title??'' }}"
-                    class="img-fluid w-100 d-block" style="max-height: 250px; ">
-                </a>
-            </div>
-            </div>
+    <div class="row justify-content-center mb-2">
+        <div class="col-12 col-md-12">
+        <div class="card border-0 rounded-3 shadow-sm overflow-hidden">
+            <a href="{{ $after_latest_hotels->adv_links??'' }}" target="_blank">
+            <img src="{{ $after_latest_hotels->image }}"
+                alt="{{ $after_latest_hotels->title??'' }}"
+                class="img-fluid w-100 d-block" style="max-height: 250px; ">
+            </a>
         </div>
-    @endif
+        </div>
+    </div>
+@endif
 
 <div class="d-flex justify-content-between align-items-center">
     <h4 class="mt-2 mb-2">Latest Rooms</h4>
     <h5 class="mt-2 mb-2">
         <form action="{{ url('hotel/rooms') }}" method="GET">
             @csrf
-            <button type="submit" class="text-dark border-0 bg-white">
-                All
+            <button type="submit" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-funnel"></i> Filter Hotel Rooms
             </button>
         </form>
     </h5>

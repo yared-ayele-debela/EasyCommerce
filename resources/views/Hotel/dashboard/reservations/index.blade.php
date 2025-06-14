@@ -201,6 +201,8 @@
                                     {{ ucfirst($reservation->status) }}
                                 </span>
                                 <!-- Button trigger modal -->
+                                 @adminCan('update_hotel_reservation_status')
+
                                 <button type="button" class="btn btn-info btn-sm text-white" data-toggle="modal" data-target="#status{{ $reservation->id }}">
                                     Update
                                 </button>
@@ -236,6 +238,8 @@
                                         </div>
                                     </div>
                                 </div>
+                                                                @endadminCan
+
                             </td>
                             <td>
                                 <span class="btn btn-sm @if($reservation->payment_status == 'Pending') btn-warning
@@ -247,6 +251,8 @@
                                     {{ ucfirst($reservation->payment_status) }}
                                 </span>
                                 <!-- Button trigger modal -->
+                                 @adminCan('update_hotel_reservation_payment_status')
+
                                 <button type="button" class="btn btn-info btn-sm text-white" data-toggle="modal" data-target="#paymentstatus{{ $reservation->id }}">
                                     Update
                                 </button>
@@ -283,6 +289,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                @endadminCan
                             </td>
                             <td>
                                 @if($reservation->hotel_reservation_payment_info)
@@ -323,11 +330,13 @@
                                 @endif
                             </td>
                             <td>
+                                @adminCan('delete_hotel_reservation')
                                 <form action="{{ route('reservations.destroy', $reservation->id) }}" method="POST" class="mb-2" style="display: inline-block;">
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn btn-danger btn-sm delete-restaurant"><i class="bi bi-trash-fill"></i></button>
                                 </form>
+                                @endadminCan
                                 <form action="{{ route('reservations.receipt') }}" method="GET" target="_blank">
                                     @csrf
                                     <input type="hidden" name="id" value="{{ encrypt( $reservation->id) }}">

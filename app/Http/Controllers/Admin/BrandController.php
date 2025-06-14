@@ -7,6 +7,8 @@ use App\Models\AppSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Brand;
+use App\Services\ActivityLogger;
+use Illuminate\Support\Carbon;
 use Intervention\Image\ImageManagerStatic as Image;
 
 use Illuminate\Support\Facades\Auth;
@@ -82,6 +84,11 @@ class BrandController extends Controller
 
             $brand->name = $request->input('name');
             $brand->save();
+
+                     $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add Ecommerce Brand', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
 
             Alert::toast('Brand has been saved', 'success');
             return redirect('admin/brands');
@@ -171,6 +178,10 @@ class BrandController extends Controller
 
             $brand->update();
 
+                   $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log(  'Update Ecommerce Brand', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
             Alert::toast('Brand has been updated', 'success');
 
             return redirect('admin/brands');
@@ -199,6 +210,11 @@ class BrandController extends Controller
             }
 
             $brand->delete();
+
+                   $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete Ecommerce Brand', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
 
             Alert::toast('Brand has been deleted', 'error');
             return redirect('admin/brands');

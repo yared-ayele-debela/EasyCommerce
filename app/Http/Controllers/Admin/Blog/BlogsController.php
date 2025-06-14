@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use App\Models\BlogCategory;
 use App\Models\Blogs;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -91,7 +93,9 @@ class BlogsController extends Controller
             $blog->status      = 1;
             $blog->added_by    = $admin_id;
             $blog->save();
-
+ $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add Blog', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
             Alert::toast('Blog has been saved successfully!', 'success');
             return redirect()->route('blogs');
@@ -173,6 +177,9 @@ class BlogsController extends Controller
             $blog->description = $request->input('message');
             $blog->update();
 
+ $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log('Update Blog', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
             Alert::toast('Blog has been updated successfully!', 'success');
             return redirect()->route('blogs');
@@ -209,6 +216,9 @@ class BlogsController extends Controller
 
         // Delete the blog
         $blog->delete();
+ $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log(  'Delete Blog', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
         Alert::toast('Blog has been deleted successfully!', 'error');
         return redirect()->route('blogs');

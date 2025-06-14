@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GroupFormRequest;
 use App\Models\AppSetting;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use App\Models\Group;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Ramsey\Uuid\Guid\Guid;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -60,6 +62,11 @@ class GroupController extends Controller
             $group->description = $request['description'];
 
             $group->save();
+
+             $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add Group', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
             Alert::toast('Group has been created!', 'success');
 
             return redirect('admin/groups');
@@ -90,6 +97,11 @@ class GroupController extends Controller
             $group->description = $request['description'];
 
             $group->update();
+
+                    $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log(  'Update Group', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
             Alert::toast('Group has been updated!', 'success');
 
             return redirect('admin/groups');
@@ -129,6 +141,11 @@ class GroupController extends Controller
 
             $group = Group::find($group_id);
             $group->delete();
+
+                    $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete Group', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
             Alert::toast('Group has been deleted!', 'error');
             return redirect('admin/groups');
         } catch (\Exception $e) {

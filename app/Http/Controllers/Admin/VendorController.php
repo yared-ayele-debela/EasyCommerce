@@ -9,7 +9,9 @@ use App\Models\AppSetting;
 use App\Models\CmsPage;
 use App\Models\EmailTemplate;
 use App\Models\Vendor;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -149,6 +151,11 @@ class VendorController extends Controller
             if ($vendor) {
                 $vendor->delete();
                 ModelsAdmin::where('vendor_id', $id)->delete();
+
+                    $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete Vendor', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
             }
             Alert::toast('Vendor has been deleted!', 'error');
             return redirect()->back();

@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Street;
 use App\Models\SubCity;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class StreetController extends Controller
 {
@@ -25,6 +28,10 @@ class StreetController extends Controller
 
         Street::create($request->all());
 
+        $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add Street', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
         return redirect()->back()->with('success', 'Street added successfully.');
     }
 
@@ -36,6 +43,9 @@ class StreetController extends Controller
         ]);
 
         $street->update($request->all());
+  $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Update Street', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
         return redirect()->back()->with('success', 'Street updated successfully.');
     }
@@ -43,6 +53,9 @@ class StreetController extends Controller
     public function destroy(Street $street)
     {
         $street->delete();
+       $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete Street', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
         return redirect()->back()->with('success', 'Street deleted successfully.');
     }

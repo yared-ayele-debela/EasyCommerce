@@ -196,6 +196,7 @@ $cartCount = $sessionCount + $helperCount;
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="{{ route('auth.login') }}">Login As Customer</a></li>
                 <li><a class="dropdown-item" href="{{ route('vendor-register') }}"> Become A Vendor</a></li>
+                <li><a class="dropdown-item" href="{{ url('register/delivery-man') }}"> Become A Delivery Man</a></li>
             </ul>
         </div>
         @endif
@@ -234,7 +235,6 @@ $cartCount = $sessionCount + $helperCount;
                     document.getElementById('locationError').style.display = 'block';
                 });
             } else {
-                // alert("Geolocation is not supported by this browser.");
             }
         });
     }
@@ -799,6 +799,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 </script>
+
 
 </body>
 </html>

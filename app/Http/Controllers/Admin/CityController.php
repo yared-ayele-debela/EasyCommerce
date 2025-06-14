@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use App\Models\City;
 use App\Models\State;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -72,6 +74,11 @@ class CityController extends Controller
             $city->status = 1;
             $city->save();
 
+
+                   $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add Cities', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
             Alert::toast('City has been saved successfully!', 'success');
             return redirect()->route('cities');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -124,6 +131,11 @@ class CityController extends Controller
             $city->states_id = $request->input('state_id');
             $city->save();
 
+             $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Update Cities', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
             Alert::toast('City has been updated successfully!', 'success');
             return redirect()->route('cities');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -145,6 +157,10 @@ class CityController extends Controller
             }
             $city = City::find($id);
             $city->delete();
+
+             $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete Cities', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
             Alert::toast('City has been deleted successfully!', 'error');
             return redirect()->route('cities');

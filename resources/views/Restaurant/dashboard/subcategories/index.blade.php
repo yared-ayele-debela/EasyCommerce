@@ -17,7 +17,9 @@
     <div class="card">
         <div class="card-header">
             <h4>Manage Subcategories</h4>
+            @adminCan('add_restaurant_category')
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">Add Subcategory</button>
+            @endadminCan
             @if(session('success'))
                 <div class="alert alert-success mt-2">{{ session('success') }}</div>
             @endif
@@ -44,12 +46,16 @@
                             @endif
                         </td>
                         <td>
+                           @adminCan('edit_restaurant_category')
                             <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editModal{{ $subcategory->id }}"><i class="bi bi-pencil-fill"></i></button>
+                            @endif    
+                            @adminCan('delete_restaurant_category')
                             <form action="{{ route('subcategories.destroy', $subcategory->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')"><i class="bi bi-trash-fill"></i></button>
                             </form>
+                            @endif
                         </td>
                     </tr>
 

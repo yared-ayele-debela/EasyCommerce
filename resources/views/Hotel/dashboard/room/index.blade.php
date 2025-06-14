@@ -20,7 +20,10 @@
         <div class="card-header">
 
             <h4 class="mb-4">Room Management</h4>
+                                    @adminCan('add_hotel_room')
+
             <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addRoomModal">Add Room</button>
+          @endadminCan
             @session('success')
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('success') }}
@@ -134,6 +137,8 @@
                             </div>
                         </td>
                         <td>
+                                                                @adminCan('edit_hotel_room')
+
                             <button class="btn btn-sm btn-warning edit-btn" data-id="{{ $room->id }}" data-room_type="{{ $room->room_type }}" data-capacity="{{ $room->capacity }}" data-price="{{ $room->price }}" data-is_available="{{ $room->is_available }}" data-hotel_id="{{ $room->hotel_id }}" data-bs-toggle="modal" data-bs-target="#editRoomModal{{ $room->id }}"><i class="bi bi-pencil-square"></i>
                             </button>
                             <!-- Edit Room Modal -->
@@ -245,6 +250,8 @@
                                                 <div class="col-md-6">
                                                     <div class="mb-3">
                                                         <label for="cover_image" class="form-label">Cover cover_image</label>
+                                                        <br>
+                                                        <span class="text-danger">height: 1254 px width: 1880 px</span>
                                                         <input type="file" name="cover_image" class="form-control">
                                                         @error('cover_image')
                                                         <span class="alert alert-danger">{{ $message }}</span>
@@ -257,6 +264,8 @@
                                                 <div class="col-md-6">
                                                     <div class="mb-3">
                                                         <label for="images" class="form-label">Upload Mulitiple Images</label>
+                                                        <br>
+                                                        <span class="text-danger">height: 1254 px width: 1880 px</span>
                                                         <input type="file" name="images[]" class="form-control" multiple>
                                                         @error('images')
                                                         <span class="alert alert-danger">{{ $message }}</span>
@@ -309,11 +318,15 @@
                                     </form>
                                 </div>
                             </div>
+                            @endadminCan
+
+                                                                @adminCan('delete_hotel_room')
 
                             <form action="{{ route('rooms.destroy', $room->id) }}" method="POST" style="display:inline;">
                                 @csrf @method('DELETE')
                                 <button class="btn btn-sm btn-danger delete-restaurant"><i class="bi bi-trash-fill"></i></button>
                             </form>
+                            @endadminCan
                         </td>
                     </tr>
                     @endforeach

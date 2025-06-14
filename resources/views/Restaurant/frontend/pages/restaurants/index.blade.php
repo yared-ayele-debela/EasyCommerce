@@ -4,43 +4,111 @@
     <div class="header">
         <button class="btn btn-link text-dark" onclick="history.back()">
             <i class="bi bi-arrow-left"></i>
-         </button>
+        </button>
         <h5 class="my-4 text-dark text-center">All Restaurants</h5>
     </div>
-    <div class="row">
-        @foreach ($restaurants as $restaurant)
-        <div class="col-md-6">
-            <div class="resturant_card card mb-3 p-2">
-                <div class="row g-0">
-                    <div class="col-md-6">
-                        <a href="{{ url('restaurant/'.$restaurant->id.'/detail') }}">
-                            <img src="{{ $restaurant->cover }}" class="img-fluid rounded-start" alt="{{ $restaurant->name }}">
-                        </a>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ $restaurant->name }}</h5>
-                            <p class="mb-1">{{ Str::words($restaurant->description,10,'....') }}</p>
-                            <div class="mb-2">
-                                <span class="badge resturant_badge p-2">Around 1.5km</span>
-                                <span class="badge resturant_badge p-2">Around 45 min</span>
-                            </div>
-                            <p class="mb-1"> <i class="bi bi-pin-map-fill text-primary"></i> {{ $restaurant->address }}</p>
-                            <div class="d-flex justify-content-between align-items-center mt-3">
-                                <div class="text-warning me-2">
-                                    <span><span class="bi bi-star-fill text-primary"></span> {{ $restaurant->rating }}</span>
-                                </div>
-                                <div><img src="{{ asset('restaurant_frontend/assets/img/scooter-02.png') }}" style="width: 20%;" alt=""> From {{ $restaurant->start_from }} ETB</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="row g-3 offer-card align-items-end mb-4 mx-1 bg-white p-3 ">
+        <div class="col-md-2">
+            <label for="name" class="form-label fw-semibold">name</label>
+            <input type="text" name="name" class="form-control" id="name" placeholder="Search by restaurant name" />
         </div>
-        @endforeach
+        <div class="col-md-2">
+            <label for="city" class="form-label fw-semibold">City</label>
+            <select id="city" class="form-select shadow-sm">
+                <option value="">-- Select City --</option>
+                @foreach($cities as $city)
+                <option value="{{ $city }}">{{ $city }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label for="state" class="form-label fw-semibold">State</label>
+            <select id="state" class="form-select shadow-sm">
+                <option value="">-- Select State --</option>
+                @foreach($states as $state)
+                <option value="{{ $state }}">{{ $state }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label for="delivery_zone" class="form-label fw-semibold">Delivery Zone</label>
+            <select id="delivery_zone" class="form-select shadow-sm">
+                <option value="">-- Select Zone --</option>
+                @foreach($delivery_zones as $zone)
+                <option value="{{ $zone }}">{{ $zone }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label for="delivery_fee" class="form-label fw-semibold">Start From Fee</label>
+            <select id="delivery_fee" class="form-select shadow-sm">
+                <option value="">-- Select Fee --</option>
+                @foreach($delivery_fees as $fee)
+                <option value="{{ $fee }}">{{ $fee }} ETB</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="col-md-2 text-end">
+            <button class="btn btn-primary w-100 shadow-sm" id="filterBtn">
+             <i class="bi bi-arrow-clockwise"></i>   Reset Form
+            </button>
+        </div>
+    </div>
+
+    <div class="row" id="restaurantResults">
+        @include('all_frontend_layouts.partials.restaurant-cards')
         <div class="col-12">
-            {{ $restaurants->links() }}
+            {{ $auto_restaurants->links() }}
         </div>
     </div>
 </div>
+<script>
+    $(document).ready(function () {
+        // Attach change event to all select filters
+        $('#city, #state, #delivery_zone, #delivery_fee, #name').on('change keyup', function () {
+            let city = $('#city').val();
+            let name = $('#name').val(); // assuming there's an input with id="name"
+            let state = $('#state').val();
+            let delivery_zone = $('#delivery_zone').val();
+            let delivery_fee = $('#delivery_fee').val();
+
+            $.ajax({
+                url: "{{ route('restaurants.filter') }}",
+                method: 'GET',
+                data: {
+                    city: city,
+                    name: name,
+                    state: state,
+                    delivery_zone: delivery_zone,
+                    delivery_fee: delivery_fee
+                },
+                beforeSend: function () {
+                    $('#restaurantResults').html('<div class="text-center my-5">Loading...</div>');
+                },
+                success: function (response) {
+                    $('#restaurantResults').html(response.html);
+                },
+                error: function () {
+                    $('#restaurantResults').html('<div class="text-danger text-center my-5">Something went wrong. Please try again.</div>');
+                }
+            });
+        });
+        $('#filterBtn').on('click', function () {
+            $('#city').val('');
+            $('#state').val('');
+            $('#delivery_zone').val('');
+            $('#delivery_fee').val('');
+            $('#name').val('');
+
+            $('#city, #state, #delivery_zone, #delivery_fee, #name').trigger('change');
+        });
+
+    });
+</script>
+
 @endsection
+

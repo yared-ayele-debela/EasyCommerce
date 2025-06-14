@@ -4,6 +4,9 @@ namespace App\Livewire;
 
 use App\Models\ShippingZone;
 use App\Models\State;
+use App\Services\ActivityLogger;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class ShipppingZone extends Component
@@ -40,6 +43,10 @@ class ShipppingZone extends Component
             'name' => $this->name,
             'regions' => $this->regions,
         ]);
+         $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add Shipping Zone', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
 
         session()->flash('message','Shipping Zone Saved Successfully.');
         $this->dispatch('close-modal');
@@ -60,6 +67,11 @@ class ShipppingZone extends Component
             'name' => $this->name,
             'regions' => $this->regions,
         ]);
+
+         $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log(  'Update Shipping Zone', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
 
         session()->flash('message','Shipping Zone Updated Successfully.');
         $this->dispatch('close-modal');
@@ -85,6 +97,11 @@ class ShipppingZone extends Component
     public function destroyShippingZone()
     {
         ShippingZone::findOrFail($this->ShippingZoneId)->delete();
+         $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete Shipping Zone', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
         session()->flash('message','Shipping Zone Deleted Successfully');
         $this->dispatch('close-modal');
         $this->mount();

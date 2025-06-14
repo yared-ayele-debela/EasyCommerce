@@ -34,6 +34,7 @@ $user = Auth::guard('admin')->user();
                         <th>Identity Number</th>
                         <th>Email</th>
                         <th>Salary</th>
+                        <th>Is Active</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -48,6 +49,11 @@ $user = Auth::guard('admin')->user();
                             <td>{{ $deliveryman->identity_number }}</td>
                             <td>{{ $deliveryman->email }}</td>
                             <td>{{ $deliveryman->salary }} ETB</td>
+                              <td>
+                                <a href="{{ url('admin/delivery_boy/is_active/'.$deliveryman->id) }}" class="btn btn-sm btn-{{ $deliveryman->is_active?'success':'danger' }}">
+                                {{ $deliveryman->is_active?'Active':'Not Active' }}
+                                </a>
+                             </td>
                             <td class=" btn-group-sm">
                                 @if ($user && $user->hasPermissionByRole('edit_delivery_boy'))
                                 <a href="{{ route('delivery_boy.edit', $deliveryman->id) }}" style="background-color:rgb(239, 239, 239) " class="btn btn-white btn-sm "><i class="ri-ball-pen-fill"></i></a>
@@ -113,6 +119,7 @@ $user = Auth::guard('admin')->user();
                                         </div>
                                     </div>
                              </td>
+
                         </tr>
                     @endforeach
                 </tbody>

@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -23,8 +25,15 @@ class AdminLoginInToVendorController extends Controller
         }
         $request->session()->put('admin_id', Auth::guard('admin')->user()->id);
 
+          $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Admin login to Venodr Account', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
         Auth::guard('admin')->logout();
         Auth::guard('admin')->login($vendor);
+
+
         return redirect()->route('maindashboard');
     }
 

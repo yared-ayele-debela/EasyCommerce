@@ -22,8 +22,9 @@ $user = Auth::guard('admin')->user();
     <div class="card">
         <div class="card-header">
             <h2>Restaurants</h2>
+            @adminCan('add_restaurant_restaurant')
             <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRestaurantModal">Add Restaurant</a>
-
+@endadminCan
         </div>
         <div class="card-body">
 
@@ -37,6 +38,7 @@ $user = Auth::guard('admin')->user();
                         <th>Owner</th>
                         <th>Phone</th>
                         <th>Address</th>
+                        <th>Delivery Radius in KM</th>
                         <th>Logo</th>
                         <th>Cover Image</th>
                         <th>Images</th>
@@ -55,6 +57,9 @@ $user = Auth::guard('admin')->user();
                         <td>{{ $restaurant->admin? $restaurant->admin->name:'' }}</td>
                         <td>{{ $restaurant->phone }}</td>
                         <td>{{ $restaurant->address }}</td>
+                        <td><div class="btn btn-sm btn-info">
+                            {{ $restaurant->delivery_radius }} KM
+                            </div></td>
                         <td><img src="{{ $restaurant->logo }}" width="50" /></td>
                         <td><img src="{{ $restaurant->cover }}" width="50" /></td>
                         <td>
@@ -107,7 +112,10 @@ $user = Auth::guard('admin')->user();
                             </div>
                         </td>
                         <td>
+                            @adminCan('edit_restaurant_restaurant')
                             <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editRestaurantModal-{{ $restaurant->id }}"><i class="bi bi-pencil-fill"></i></button>
+                            @endadminCan
+                            @adminCan('delete_restaurant_restaurant')
                             <form action="{{ route('restaurants.destroy', $restaurant->id) }}" method="POST" class="delete-form" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
@@ -115,7 +123,10 @@ $user = Auth::guard('admin')->user();
                                     <i class="bi bi-trash-fill"></i>
                                 </button>
                             </form>
+                            @endadminCan
+                            @adminCan('view_restaurant_restaurant')
                             <a href="{{ url('admin/restaurant/my-restaurant/'.encrypt($restaurant->id)) }}" class="btn btn-info btn-sm text-white"><i class="bi bi-eye-fill"></i></a>
+                         @endadminCan
                         </td>
                     </tr>
                     @endforeach
@@ -271,6 +282,17 @@ $user = Auth::guard('admin')->user();
                                 @enderror
                             </div>
                         </div>
+
+                         <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="delivery_radius" class="form-label">Maximum delivery radius (in km)</label>
+                                <input type="number" id="delivery_radius" name="delivery_radius" class="form-control">
+                                @error('delivery_radius')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+
                         <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="logo" class="form-label">Restaurant Logo</label>
@@ -317,7 +339,7 @@ $user = Auth::guard('admin')->user();
                                 @enderror
                             </div>
                         </div>
-                        
+
                         <div class="col-md-12">
                             <div class="mb-3">
                                @include('Restaurant.dashboard.restaurants.partials.map')
@@ -475,6 +497,15 @@ $user = Auth::guard('admin')->user();
                                 <label for="closing_time" class="form-label">Closing time</label>
                                 <input type="time" id="closing_time"  value="{{ \Carbon\Carbon::parse($restaurant->closing_time)->format('H:i') }}" name="closing_time" class="form-control">
                                 @error('closing_time')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+                         <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="delivery_radius" class="form-label">Maximum delivery radius (in km)</label>
+                                <input type="number" id="delivery_radius" name="delivery_radius" value="{{ $restaurant->delivery_radius }}" class="form-control">
+                                @error('delivery_radius')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
@@ -714,7 +745,7 @@ $user = Auth::guard('admin')->user();
         document.getElementById('locationMessage').innerText = "Geolocation is not supported by this browser.";
     }
 }
-    
+
     </script>
     <script>
         $(document).ready(function () {

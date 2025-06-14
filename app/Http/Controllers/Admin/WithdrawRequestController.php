@@ -16,7 +16,7 @@ class WithdrawRequestController extends Controller
         ]);
 
         WithdrawalRequest::create([
-            'vendor_id' => Auth::guard('admin')->id,
+            'vendor_id' => Auth::guard('admin')->user()->id,
             'amount' => $request->amount,
             'status' => 'pending',
         ]);

@@ -9,8 +9,10 @@ use App\Models\CustomOrderProduct;
 use App\Models\DeliveryMan;
 use App\Models\EmailTemplate;
 use App\Models\FastOrders;
+use App\Services\ActivityLogger;
 use Dompdf\Dompdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
@@ -92,10 +94,11 @@ class CustomOrderController extends Controller
                     'delivery_address' => $validatedData['delivery_address'][$key],
                 ]);
             }
-            // $message = "Hello ";
-            // $messages='hello';
-            // $receiver= +251912651113;
-            // Email::sendSms($receiver,$messages);
+
+                 $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Create Custom order', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
             Alert::toast("Custom Order placed successfully!", 'success');
             return redirect()->route('custom_orders');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -138,7 +141,7 @@ class CustomOrderController extends Controller
                 return view('admin.errors.unauthorized');
             }
             $custom_order = CustomOrder::with('custom_order_product')->where('id', $id)->first();
-            
+
             // dd($custom_order);
             $appsettings = AppSetting::all()->toArray();
 
@@ -203,6 +206,10 @@ class CustomOrderController extends Controller
                 // Mail::send('emails.fast_order_status',$messageData,function($message)use ($email){
                 //     $message->to($email)->subject('Fast Order Item Status Updated - Byt Developers.in');
                 // });
+
+                 $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Update Custom order Status', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
                 Alert::toast('Custom order status updated successfully!', 'success');
                 return back();
@@ -272,6 +279,11 @@ class CustomOrderController extends Controller
             // });
 
 
+                 $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log(  'Assign custom order to delivery man', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
             Alert::toast('Order has been assigned to delivery boy', 'success');
             return redirect()->back();
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -293,6 +305,12 @@ class CustomOrderController extends Controller
             // dd($id);
             $custom_order = CustomOrder::find($id);
             $custom_order->delete();
+
+
+                 $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete Custom order', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
 
             Alert::toast('Custom Order has been deleted!', 'error');
             return redirect()->back();

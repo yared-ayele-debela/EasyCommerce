@@ -26,7 +26,11 @@
                 <span class="badge bg-primary mt-0">{{ $hotel->category->name }}</span>
                 <h5 class="card-title">{{ $hotel->name }}</h5>
                 <p class="card-text">
-                    Location: {{ $hotel->state }}, {{ $hotel->city }}, {{ $hotel->location }}<br>
+                     <a  href="https://www.google.com/maps?q={{ $hotel->latitude }},{{ $hotel->longitude }}"
+                         target="_blank" class="small text-muted mb-2">
+                        Location: {{ $hotel->state }}, {{ $hotel->city }}, {{ $hotel->location }}
+                        </a>
+                        <br>
                     Price per Night: <strong>{{ $hotel->price_per_night }} ETB</strong><br>
                     Rating: <strong>{{ $hotel->rating }} <i class="bi bi-star-fill text-primary"></i></strong><br>
                     Distance: {{ round($hotel->distance, 1) }} km

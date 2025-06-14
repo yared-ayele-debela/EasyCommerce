@@ -60,6 +60,7 @@ use App\Models\Restaurant\Product;
                                 $itemSubtotal = $item['price'] * $item['quantity'];
                                 $subtotal += $itemSubtotal;
                                 $product=Product::find($item['product_id']);
+
                                 @endphp
                                 <tr>
                                     <td>
@@ -160,7 +161,7 @@ use App\Models\Restaurant\Product;
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
     $(document).ready(function() {
-       
+
         $(document).on('submit', '#ApplyCoupon', function(event) {
             event.preventDefault();
             var user = $(this).attr("user");

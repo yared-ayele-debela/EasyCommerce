@@ -153,6 +153,15 @@ $notifications_histories=DeliveryNotification::where('delivery_man_id',Auth::gua
                                                                         <input type="text" name="picked_code" id="picked_code" class="form-control" placeholder="e.g. ABC123" required>
                                                                     </div>
                                                                     <button type="submit" class="btn btn-primary w-100"> <i class="bi bi-fingerprint"></i> Confirm Pickup</button>
+                                                                    <hr>
+                                                                     <h6 class="mb-3">Or Scan Vendor QR Code</h6>
+                                                                    <div class="border rounded p-2 mb-3">
+                                                                        <div id="vendor-reader-{{ $order->id }}" style="width: 100%; max-width: 300px;"></div>
+                                                                    </div>
+                                                                    <form method="POST" action="{{ route('delivery.markDelivered', $order->id) }}" id="vendor-confirm-form-{{ $order->id }}">
+                                                                        @csrf
+                                                                        <input type="hidden" name="code" id="vendor-scanned_code_{{ $order->id }}">
+                                                                    </form>
                                                                 </form>
                                                                 @endif
                                                                 <hr>
@@ -271,7 +280,6 @@ $notifications_histories=DeliveryNotification::where('delivery_man_id',Auth::gua
 <script>
     $(document).ready(function() {
         let scanners = {};
-
         $('.modal').on('shown.bs.modal', function() {
             const modalId = $(this).attr('id'); // e.g., orderModal123
             const orderId = modalId.replace("orderModal", "");

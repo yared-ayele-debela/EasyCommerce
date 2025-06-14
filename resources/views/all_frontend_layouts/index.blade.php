@@ -143,10 +143,9 @@ use Illuminate\Support\Facades\Storage;
     <div class="d-flex justify-content-between align-items-center">
         <h4 class="mt-5 mb-2">Latest Product</h4>
         <h5 class="mt-5 mb-2">
-            <form action="{{ url('restaurant/all-products') }}" method="GET">
-
+            <form action="{{ route('all-restaurant-products') }}" method="GET">
                 @csrf
-                <input type="hidden" name="type" value="best_seller">
+                <input type="hidden" name="type" value="latest">
                 <button type="submit" class="text-dark border-0 bg-white">
                     All
                 </button>
@@ -160,10 +159,20 @@ use Illuminate\Support\Facades\Storage;
             @endforeach
         </div>
     </div>
-    <div class="d-flex justify-content-between align-items-center">
-        <h4 class="mt-5 mb-2">All Products</h4>
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center">
+        <h4 class="mt-2 mb-2">All Products</h4>
+        <h4 class="mt-2 mb-2">
+            <form action="{{ url('restaurant/all-products') }}" method="GET">
+                @csrf
+                <input type="hidden" name="type" value="best_seller">
+                <button type="submit" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-funnel"></i> Filter Products
+                </button>
+            </form>
+        </h3>
     </div>
-
+    </div>
     <div id="product-container" class="row g-4">
         @include('all_frontend_layouts.partials.product-cards')
     </div>
@@ -182,6 +191,9 @@ use Illuminate\Support\Facades\Storage;
 
     <div class="d-flex justify-content-between align-items-center">
         <h4 class="mt-5 mb-2">All Restaurants</h4>
+        <a href="{{ url('restaurants') }}" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-funnel"></i> Filter Restaurants
+        </a>
     </div>
 
     <div id="auto-restaurant-container" class="row g-4">
@@ -215,7 +227,6 @@ use Illuminate\Support\Facades\Storage;
 
     <div class="d-flex justify-content-between align-items-center">
         <h4 class="mt-5 mb-3">All Restaurants Nearby</h4>
-        <h5 class="mt-5 mb-3"><a href="{{ url('restaurants') }}" class="text-dark">All</a></h5>
     </div>
     <div class="row" id="restaurant-container">
         <!-- Placeholder Cards -->
@@ -263,6 +274,23 @@ use Illuminate\Support\Facades\Storage;
     @include('all_frontend_layouts.partial_index')
 </div>
 <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        const splashShown = localStorage.getItem('splashShown');
+
+        if (isMobile && !splashShown) {
+            const splash = document.getElementById('splash-screen');
+            splash.style.display = 'flex';
+
+            setTimeout(() => {
+                splash.style.display = 'none';
+                localStorage.setItem('splashShown', 'true');
+            }, 3000); // show for 3 seconds
+        }
+    });
+</script>
+
+<script>
     document.addEventListener('DOMContentLoaded', function() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(position => {
@@ -290,19 +318,32 @@ use Illuminate\Support\Facades\Storage;
         container.innerHTML = '';
 
         restaurants.forEach(restaurant => {
+             const isOutOfRange = parseFloat(restaurant.distance) > parseFloat(restaurant.delivery_radius);
+
+    const outOfRangeHTML = isOutOfRange
+        ? `
+            <div class="position-absolute top-0 end-0 m-2">
+                <button class="btn btn-sm btn-outline-danger rounded-pill px-3" disabled>
+                    <img src="{{ asset('restaurant_frontend/alert.png') }}" width="20" alt=""> Out of Range
+                </button>
+            </div>
+          `
+        : '';
             container.innerHTML += `
                 <div class="col-lg-6 col-md-6">
     <div class="offer-card overflow-hidden mb-4">
         <div class="row g-0 align-items-stretch">
                             <div class="col-md-4 col-4">
                             <a href="{{ url('restaurant/${restaurant.id}/detail') }}">
-                                <img src="${restaurant.cover}" class="img-fluid rounded-start p-2" alt="Restaurant" style="max-height:230px;"
+                                <img src="${restaurant.cover}"  class="img-fluid object-fit-cover w-100 h-100 p-2"
+                         style="min-height: 180px; max-height: 230px;"
                                  onerror="this.onerror=null; this.src='{{ asset('restaurant_frontend/default-image.png') }}';"
                                 >
                             </a>
                             </div>
                             <div class="col-8 col-sm-8">
                                <div class="card-body d-flex flex-column h-100 py-3 px-4">
+                                   ${outOfRangeHTML}
                                       <h5 class="card-title mb-1 text-truncate" title="${restaurant.name}">
                                         ${restaurant.name}</h5>
                                    <p class="text-muted d-none d-md-block">${restaurant.description.substring(0, 60)}...</p>
@@ -315,9 +356,11 @@ use Illuminate\Support\Facades\Storage;
                                     </span>
                                 </div>
 
-                                  <p class="small text-muted mb-2">
-                                    <i class="bi bi-pin-map-fill text-primary me-1"></i>${restaurant.address}
-                                </p>
+                                   <a  href="https://www.google.com/maps?q=${restaurant.latitude},${restaurant.longitude}"
+                         target="_blank" class="small text-muted mb-2">
+                                    <i class="bi bi-pin-map-fill text-primary me-1"></i>
+                                       ${restaurant.address} , ${restaurant.city}, ${restaurant.state}, Ethiopia
+                                </a>
 
                                 <div class="mt-auto d-flex justify-content-between align-items-center">
                                     <div class="small text-primary">
@@ -334,8 +377,6 @@ use Illuminate\Support\Facades\Storage;
                     </div>
                 </div>
             `;
-        
-
         });
     }
 

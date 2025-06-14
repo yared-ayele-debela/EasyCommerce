@@ -45,7 +45,6 @@ class Admin extends Authenticable
                 return true;
             }
         }
-
         return false;
     }
 

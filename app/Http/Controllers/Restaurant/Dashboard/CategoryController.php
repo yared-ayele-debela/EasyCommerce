@@ -5,12 +5,22 @@ namespace App\Http\Controllers\Restaurant\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Models\Restaurant\Category;
 use App\Models\Restaurant\Restaurant;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
+     public function __construct()
+    {
+        $this->middleware('admin.permission:view_restaurant_category')->only('index');
+        $this->middleware('admin.permission:add_restaurant_category')->only('store');
+        $this->middleware('admin.permission:edit_restaurant_category')->only(methods: 'update');
+        $this->middleware('admin.permission:delete_restaurant_category')->only('destroy');
+    }
     public function index()
     {
         $categories = Category::latest()->get();
@@ -43,6 +53,11 @@ class CategoryController extends Controller
             'discount' => $request->discount,
             'discount_type' => $request->discount_type,
         ]);
+
+          
+        $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add Restaurant Category', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
         return redirect()->route('categories.index')->with('success', 'Category created successfully.');
     }
@@ -80,6 +95,10 @@ class CategoryController extends Controller
         'discount_type' => $request->discount_type,
     ]);
 
+    $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Update Restaurant Category', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
     return redirect()->route('categories.index')->with('success', 'Category updated successfully.');
 }
 
@@ -89,6 +108,11 @@ class CategoryController extends Controller
             Storage::disk('public')->delete($category->image);
         }
         $category->delete();
+
+        $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete Restaurant Category', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
         return redirect()->route('categories.index')->with('success', 'Category deleted successfully.');
     }
 }

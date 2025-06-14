@@ -7,7 +7,7 @@
     }
 
     .room-type-btn {
-        background-color: #0abe27;
+        background-color: #055935;
         border: none;
         color: white;
         padding: 8px 24px;
@@ -75,7 +75,7 @@
     }
 
     .room-type-btn {
-        background-color: #0abe27;
+        background-color: #055935;
         border: none;
         color: white;
         padding: 8px 20px;

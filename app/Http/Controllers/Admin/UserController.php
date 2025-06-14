@@ -9,6 +9,8 @@ use App\Models\Country;
 use App\Models\State;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Services\ActivityLogger;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -91,6 +93,11 @@ class UserController extends Controller
             $user->country = $request->input('country');
             $user->pincode = $request->input('pincode');
             $user->save();
+            
+             $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add User', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
 
             Alert::toast('User has been created successfully', 'success');
             return redirect('admin/users');
@@ -152,6 +159,10 @@ class UserController extends Controller
             $user->pincode = $request->input('pincode');
             $user->update();
 
+             $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Update User', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
             Alert::toast('User has been updated successfully', 'success');
             return redirect('admin/users');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -174,6 +185,10 @@ class UserController extends Controller
 
             $user = User::find($user_id);
             $user->delete();
+
+             $currentDateTime = Carbon::now();
+            $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+            ActivityLogger::log( 'Delete User', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
             Alert::toast('User has been deleted', 'error');
             return redirect()->back();
@@ -231,6 +246,10 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $user->password = Hash::make($request->password);
         $user->save();
+
+         $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Update User Password', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
         Alert::toast('User password updated successfully!', 'success');
         return redirect()->back();

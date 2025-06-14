@@ -24,6 +24,8 @@ use App\Models\SalesMainCommission;
 use App\Models\ShippingCharge;
 use App\Models\Tip;
 use App\Models\Vendor;
+use App\Models\VendorWallet;
+use App\Models\VendorWalletTransaction;
 use App\Services\NotificationService;
 use App\Services\SmsService;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -77,6 +79,9 @@ class DirectCheckoutController extends Controller
             'total' => $final_price
         ];
 
+         $addresses = DeliveryAddress::where('user_id', Auth::user()->id)->get();
+
+
         return view('Ecommerce.checkout.direct_checkout', [
             'cartItems' => [$item],
             'total' => $final_price,
@@ -85,14 +90,16 @@ class DirectCheckoutController extends Controller
             'totalShipping'=>$totalShipping,
             'tips' =>$tips,
             'banks' =>$banks,
-            'countries'=>$countries
+            'countries'=>$countries,
+            'address'=>$addresses
         ]);
 
     }
 
     public function placeOrder(Request $request)
     {
-        if($request->payment_method==="manual"){
+        // dd($request->all());
+        if($request->payment_method==="Bank Transfer"){
             $validator = Validator::make($request->all(), [
                 'payment_method' => 'required|string',
                 'address_id' => 'required|exists:delivery_address,id',
@@ -149,7 +156,7 @@ class DirectCheckoutController extends Controller
 
         $order_id = DB::getPdo()->lastInsertId();
 
-        if($request->payment_method==="manual"){
+        if($request->payment_method==="Bank Transfer"){
         $payment= new EcommerceOrderPaymentInfo();
         $payment->orders_id=$order_id;
         $payment->user_id=Auth::id();
@@ -202,6 +209,28 @@ class DirectCheckoutController extends Controller
                     $product_total_price_after_discount = $product_total_price - $discountAmount;
                 }
             }
+                  $itemSubtotal = $product_total_price_after_discount * $data['quantity'];
+                // dd($itemSubtotal);
+
+                $product = Product::find($data['product_id']);
+                $vendor = Vendor::find($product->vendor_id);
+                $commissionRate = $vendor->commission ?? 5; // default to 10%
+
+                // Admin commission and vendor earning
+                $adminCommission = round($itemSubtotal * $commissionRate / 100, 2);
+                $vendorEarning = $itemSubtotal - $adminCommission;
+
+                $vendorId=$vendor->id;
+                $vendorWallet = VendorWallet::firstOrCreate(['vendor_id' => $vendorId]);
+                $vendorWallet->available_balance += $vendorEarning;
+                $vendorWallet->save();
+
+                VendorWalletTransaction::create([
+                    'vendor_id' => $vendorId,
+                    'type' => 'credit',
+                    'amount' => $vendorEarning,
+                    'description' => 'Earning from order #'.$order_id
+                ]);
             $total_prices += $product_total_price_after_discount;
             if ($discount) {
                 $cartItem->discounted_price = $total_prices;

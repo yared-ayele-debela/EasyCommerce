@@ -267,11 +267,11 @@
                                 @foreach ($group['categories'] as $category )
                                 <div class="col-4">
                                     <li>
-                                        <a href="{{ url($category['url']) }}">{{ $category['name'] }}</a>
+                                        <a href="{{ url('ecommerce/category/' . encrypt($category->id)) }}">{{ $category['name'] }}</a>
                                         <ul>
                                             @foreach ($category['subcategories'] as $subcategory)
                                             <li>
-                                                <a href="{{ url($subcategory['url']) }}">{{ $subcategory['name'] }}</a>
+                                                <a href="{{ url('ecommerce/category/' . encrypt($category->id)) }}">{{ $subcategory['name'] }}</a>
                                             </li>
                                             @endforeach
                                         </ul>
@@ -618,15 +618,16 @@
     </div>
     <x-fixed-banner :image="$fixbanners[1]['image'] ?? ''" :link="$fixbanners[1]['link'] ?? '#'"/>
 
-    <div class="d-flex justify-content-between align-items-center mt-3">
-        <h3 class="fw-bold">All Products</h3>
-        <div class="d-flex gap-3 text-center">
-            <form action="{{ route('ecommerce.products.all') }}" method="GET">
-                <input type="hidden" name="name" value="all">
-                <input type="submit" value="View All" class="btn btn-outline-primary btn-sm">
-            </form>
-        </div>
+    <div class="d-flex justify-content-between align-items-center my-3">
+    <h3 class="fw-bold mb-0">All Products</h3>
+
+    <div class="d-flex gap-2">
+        <a href="{{ url('ecommerce/products/search') }}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-funnel"></i> Filter Products
+        </a>
     </div>
+   </div>
+
    <div id="product-container" class="row g-4">
         @include('Ecommerce.products._product_card')
     </div>

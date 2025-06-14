@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\AppSetting;
 use App\Models\Roles;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -80,6 +82,13 @@ class AdminController extends Controller
             $admin->save();
 
             $admin->roles()->sync([$request->role_id]);
+
+
+
+        $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Assign Role', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
 
             Alert::toast('Role assigned to user successfully!', 'success');
             return redirect()->route('all-admins.index');

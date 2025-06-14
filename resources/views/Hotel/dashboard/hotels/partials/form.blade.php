@@ -45,6 +45,8 @@ $edit = isset($hotel);
     <div class="col-md-6">
         <div class="mb-2">
             <label class="form-label">Banner Image</label>
+            <br>
+              <span class="text-danger">height: 1254 px width: 1880 px</span>
             <input type="file" name="banner_image" class="form-control">
             @if($edit && $hotel->banner_image)
             <img src="{{ asset('storage/'.$hotel->banner_image) }}" class="mt-2" width="60">
@@ -76,7 +78,7 @@ $edit = isset($hotel);
             <button type="button" onclick="getLocation()" class="btn btn-secondary">Use My Location</button>
         </div>
     </div>
-   
+
     <div class="col-md-12">
         <div id="locationMessage" class="text-success"></div>
     </div>
@@ -86,6 +88,6 @@ $edit = isset($hotel);
             <textarea name="description" class="form-control">{{ $edit ? $hotel->description : old('description') }}</textarea>
         </div>
     </div>
-    
+
 </div>
 

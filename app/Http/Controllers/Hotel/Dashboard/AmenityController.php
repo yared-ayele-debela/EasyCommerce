@@ -3,12 +3,25 @@
 namespace App\Http\Controllers\Hotel\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\Amenity;
+use App\Services\ActivityLogger;
+use App\Services\PermissionService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class AmenityController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('admin.permission:view_hotel_amenity')->only('index');
+        $this->middleware('admin.permission:add_hotel_amenity')->only('store');
+        $this->middleware('admin.permission:edit_hotel_amenity')->only(methods: 'update');
+        $this->middleware('admin.permission:delete_hotel_amenity')->only('destroy');
+    }
     public function index()
     {
         $amenities = Amenity::latest()->paginate(10);
@@ -33,6 +46,10 @@ class AmenityController extends Controller
             'name' => $request->name,
             'icon' => $iconPath,
         ]);
+        $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log('Add Amenity', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
 
 
         return redirect()->back()->with('success', 'Amenity created successfully.');
@@ -62,6 +79,11 @@ class AmenityController extends Controller
         $amenity->name = $request->name;
         $amenity->save();
 
+          $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log('Update Amenity', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
 
         return redirect()->back()->with('success', 'Amenity updated successfully.');
     }
@@ -76,6 +98,11 @@ class AmenityController extends Controller
         }
 
         $amenity->delete();
+
+        $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log('Delete Amenity', description: Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
 
         return redirect()->back()->with('success', 'Amenity deleted.');
     }

@@ -10,7 +10,9 @@ use App\Models\ShippingCharge;
 use App\Models\State;
 use App\Models\Street;
 use App\Models\SubCity;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -87,6 +89,11 @@ class ShippingChargeController extends Controller
                     'zone' => $data['zone'],
                 ]);
 
+                    $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Update Shipping Charges', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
             Alert::toast('shipping charges is updated!', 'success');
             return redirect('admin/shipping-charges');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -137,6 +144,11 @@ class ShippingChargeController extends Controller
                 return redirect()->back();
             }else{
                      ShippingCharge::create($data);
+                        $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Create Shipping Charges', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
             }
             // dd($data);
 
@@ -161,6 +173,13 @@ class ShippingChargeController extends Controller
             }
             $shipping = ShippingCharge::find($shipping_id);
             $shipping->delete();
+
+               $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete Shipping Charges', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
+
             Alert::toast('shipping charges has been deleted!', 'error');
             return redirect('admin/shipping-charges');
         } catch (\Exception $e) {

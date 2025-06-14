@@ -45,7 +45,7 @@ use App\Models\Restaurant\Product;
             <div class="delivery-location mb-2">
                 <div class="d-flex justify-content-between align-items-center">
                     <button type="button" class="btn btn-outline-primary fw-bold px-4 py-2 delivery_text" id="loadAddresses">
-                        <i class="bi bi-geo-alt"></i> Load Delivery Addresses
+                        <i class="bi bi-geo-alt"></i> Get My Current Addresses
                     </button>
 
                     <a href="#" class="btn btn-primary fw-bold d-flex align-items-center delivery_text px-3 py-2 rounded-3" data-bs-toggle="modal" data-bs-target="#addressModal">
@@ -56,7 +56,25 @@ use App\Models\Restaurant\Product;
             <form action="{{ route('restaurant.checkout.placeOrderNow') }}" id="checkoutForm" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="row" id="addressContainer">
-                    <p class="text-muted text-center">Click "Load Addresses" to view your addresses.</p>
+                    @forelse ($addresses as $address)
+                             <div class="col-md-12 mb-2">
+                                <div class="card shadow-sm p-3 delivery-location">
+                                    <div class="form-check">
+                                        <input class="form-check-input address-radio" type="radio" name="address"
+                                            value="{{ $address->id }}" id="address-{{ $address->id }}">
+                                        <label class="form-check-label w-100" for="address-{{ $address->id }}">
+                                            <strong>{{ $address->name }}</strong></strong> <br>
+                                            <small>
+                                            {{ $address->address }}, {{ $address->city }}, {{ $address->sub_city??'-' }}, {{ $address->street??'' }} <br>
+                                            <small>Mobile: {{ $address->mobile }}</small>
+                                            </small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                        <p class="text-muted">Add delivery address</p>
+                        @endforelse
                 </div>
                 <span id="address-error" class="text-danger d-none">Please select a delivery address.</span>
 
@@ -79,6 +97,7 @@ use App\Models\Restaurant\Product;
                                                 <th scope="col">Product</th>
                                                 <th scope="col" class="text-center">Quantity</th>
                                                 <th scope="col" class="text-end">Total Price</th>
+                                                
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -168,13 +187,13 @@ use App\Models\Restaurant\Product;
                     <h6 class="fw-bold text-dark mb-2">Payment Method</h6>
                     <div class="payment-methods">
                         <label type="button" class="payment-method shadow-sm rounded-3 p-3 text-center bg-white" data-bs-toggle="modal" data-bs-target="#modalId">
-                            <input type="radio" name="payment_method" value="bank_transfer" class="d-none">
+                            <input type="radio" name="payment_method" value="Bank Transfer" class="d-none">
                                 <img src="{{ asset('restaurant_frontend/assets/img/bank.jpg') }}" alt="Bank Transfer" width="200" class="mb-2">
                             <div class="fw-semibold">Bank Transfer</div>
                         </label>
 
                         <label class="payment-method shadow-sm rounded-3 p-3 text-center bg-white">
-                            <input type="radio" name="payment_method" value="cash_on_delivery" class="d-none">
+                            <input type="radio" name="payment_method" value="Cash On Delivery" class="d-none">
                             <img src="{{ asset('restaurant_frontend/assets/img/cash.png') }}" alt="Cash on Delivery" width="35" class="mb-2">
                             <div class="fw-semibold">Cash on Delivery</div>
                         </label>
@@ -339,10 +358,12 @@ use App\Models\Restaurant\Product;
 
     if (!selectedAddress) {
         addressError.classList.remove("d-none");
+        showAlert('error','Please select delivery address');
         return;
     }
     if (!selectedPayment) {
         paymentError.classList.remove("d-none");
+        showAlert('error','Please select Payment Method');
         return;
     }
     document.getElementById("checkoutForm").submit();
@@ -352,41 +373,41 @@ use App\Models\Restaurant\Product;
 
 <script>
     $(document).ready(function() {
-        $('#loadAddresses').click(function() {
-            $.ajax({
-                url: "{{ url('/addresses') }}"
-                , method: "GET"
-                , success: function(response) {
-                    let cards = "";
-                    if (response.length > 0) {
-                        response.forEach(function(address) {
-                            cards += `
-                                <div class="col-md-12 mb-1">
-                                    <div class="card shadow-sm p-3 delivery-location">
-                                        <div class="form-check">
-                                            <input class="form-check-input address-radio" type="radio" name="address"
-                                                value="${address.id}" id="address-${address.id}">
-                                            <label class="form-check-label w-100" for="address-${address.id}">
-                                                <strong>${address.name}</strong> <br>
-                                                <small>
-                                                ${address.address}, ${address.city}, ${address.sub_city || '-'}, ${address.street || '-'} <br>
-                                                <small>Mobile: ${address.mobile}</small>
-                                                </small>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>`;
-                        });
-                    } else {
-                        cards = `<p class="text-muted text-center">No addresses found.</p>`;
-                    }
-                    $('#addressContainer').html(cards);
-                }
-                , error: function() {
-                    alert("Error fetching addresses.");
-                }
-            });
-        });
+        // $('#loadAddresses').click(function() {
+        //     $.ajax({
+        //         url: "{{ url('/addresses') }}"
+        //         , method: "GET"
+        //         , success: function(response) {
+        //             let cards = "";
+        //             if (response.length > 0) {
+        //                 response.forEach(function(address) {
+        //                     cards += `
+        //                         <div class="col-md-12 mb-1">
+        //                             <div class="card shadow-sm p-3 delivery-location">
+        //                                 <div class="form-check">
+        //                                     <input class="form-check-input address-radio" type="radio" name="address"
+        //                                         value="${address.id}" id="address-${address.id}">
+        //                                     <label class="form-check-label w-100" for="address-${address.id}">
+        //                                         <strong>${address.name}</strong> <br>
+        //                                         <small>
+        //                                         ${address.address}, ${address.city}, ${address.sub_city || '-'}, ${address.street || '-'} <br>
+        //                                         <small>Mobile: ${address.mobile}</small>
+        //                                         </small>
+        //                                     </label>
+        //                                 </div>
+        //                             </div>
+        //                         </div>`;
+        //                 });
+        //             } else {
+        //                 cards = `<p class="text-muted text-center">No addresses found.</p>`;
+        //             }
+        //             $('#addressContainer').html(cards);
+        //         }
+        //         , error: function() {
+        //             alert("Error fetching addresses.");
+        //         }
+        //     });
+        // });
 
         // Listen for address selection
         $(document).on("change", ".address-radio", function() {
@@ -482,7 +503,7 @@ use App\Models\Restaurant\Product;
             let couponCode = document.getElementById("coupon_code").value;
             let messageDiv = document.getElementById("coupon_message");
 
-            fetch("{{ route('restaurant.apply.coupon') }}", {
+            fetch("{{ route('restaurant.apply.coupon.order.now') }}", {
                     method: "POST"
                     , headers: {
                         "Content-Type": "application/json"
@@ -498,9 +519,10 @@ use App\Models\Restaurant\Product;
                         messageDiv.classList.remove("text-danger");
                         messageDiv.classList.add("text-success");
                         messageDiv.innerText = "Coupon applied successfully!";
+location.reload()
 
                         document.querySelector(".total").innerText = data.new_total + " ETB"; // Update total
-                        document.getElementById("discount_value").innerText = "-" + data.discount + " ETB"; // Update discount
+                        // document.getElementById("discount_value").innerText = "-" + data.discount + " ETB"; // Update discount
                     } else {
                         messageDiv.classList.remove("text-success");
                         messageDiv.classList.add("text-danger");

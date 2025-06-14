@@ -20,7 +20,7 @@ class PermissionsController extends Controller
                 return view('admin.errors.unauthorized');
             }
             $appsettings = AppSetting::all()->toArray();
-            $permissions = Permissions::all();
+            $permissions = Permissions::latest()->paginate(20);
             return view('admin.role_and_permissions.permissions.index', compact('permissions', 'appsettings'));
         } catch (\Exception $e) {
             Alert::toast('something is wrong!!', 'error');

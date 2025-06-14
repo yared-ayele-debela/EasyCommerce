@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\AppSetting;
 use App\Models\EmailTemplate;
+use App\Services\ActivityLogger;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -100,6 +102,10 @@ class AdminResetController extends Controller
 
             $admin->password = Hash::make($request->password);
             $admin->save();
+                $currentDateTime = Carbon::now();
+            $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+            ActivityLogger::log( 'Reset Admin Password', $admin->name . " at {$formattedDateTime}");
+
 
             DB::table('password_resets')->where(['email' => $request->email])->delete();
 

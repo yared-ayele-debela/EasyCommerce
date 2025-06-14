@@ -10,7 +10,7 @@ class Restaurant extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'admin_id', 'name', 'email', 'phone', 'address','cover','description','logo','latitude', 'longitude', 'is_open','start_from','country_id','opening_time','closing_time','zone','city','state','postal_code'
+        'admin_id', 'name', 'email', 'phone', 'address','cover','description','logo','latitude', 'longitude', 'is_open','start_from','country_id','opening_time','closing_time','zone','city','state','postal_code','delivery_radius'
     ];
 
     // Relationship with User (Admin/Restaurant Owner)

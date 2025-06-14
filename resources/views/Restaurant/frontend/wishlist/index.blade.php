@@ -52,7 +52,7 @@
                                                                                   {{ $product->name }}
                                         </a>
                                     </td>
-                                    <td>{{ number_format($product->price, 2) }} ETB</td>
+                                    <td>{{ number_format($product->getFinalPrice(), 2) }} ETB</td>
                                     <td>
                                         <button class="btn btn-danger btn-sm remove-restaurant-wishlist-btn" data-id="{{ $item->id }}"><i class="bi bi-trash-fill"></i></button>
                                     </td>

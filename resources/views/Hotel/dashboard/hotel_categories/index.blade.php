@@ -22,7 +22,9 @@
             @if(session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
+            @adminCan('view_hotel_hotel_category')
             <button class="btn btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#addModal">Add Category</button>
+            @endadminCan
         </div>
         <div class="card-body">
             <!-- Amenities Table -->
@@ -43,12 +45,16 @@
                             </td>
                             <td>{{ $category->name }}</td>
                             <td>
+                                @adminCan('edit_hotel_hotel_category')
                                 <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#editModal{{ $category->id }}"><i class="bi bi-pencil-square"></i></button>
+                                @endadminCan
+                                @adminCan('delete_hotel_hotel_category')
                                 <form action="{{ route('hotel-categories.destroy', $category->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure?')">
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i></button>
                                 </form>
+                                @endadminCan
                             </td>
                         </tr>
 
@@ -70,6 +76,8 @@
                                       </div>
                                       <div class="mb-3">
                                           <label>Image</label>
+                                          <br>
+              <span class="text-danger">height: 103 px width: 103 px</span>
                                           <input type="file" class="form-control" name="image">
                                           <img src="{{ $category->image }}" width="60" height="60" class="mt-2">
                                       </div>
@@ -106,6 +114,8 @@
                 </div>
                 <div class="mb-3">
                     <label>Image</label>
+                                             <br>
+              <span class="text-danger">height: 103 px width: 103 px</span>
                     <input type="file" class="form-control" name="image" required>
                 </div>
             </div>

@@ -99,6 +99,8 @@ class CheckoutController extends Controller
 
     $totalPrice += $totalShipping;
     $tips=Tip::all();
+    $addresses = DeliveryAddress::where('user_id', Auth::user()->id)->get();
+
 
     return view('Ecommerce.checkout.index', compact(
         'countries',
@@ -107,16 +109,15 @@ class CheckoutController extends Controller
         'totalTax',
         'totalShipping',
         'tips',
-        'banks'
+        'banks',
+        'addresses'
     ));
-}
-
-
+    }
     // Place the Order
     public function placeOrder(Request $request)
     {
         // dd($request->all());
-        if($request->payment_method==="manual"){
+        if($request->payment_method==="Bank Transfer"){
             $validator = Validator::make($request->all(), [
                 'payment_method' => 'required|string',
                 'address_id' => 'required|exists:delivery_address,id',
@@ -288,7 +289,7 @@ class CheckoutController extends Controller
 
         $order_id = DB::getPdo()->lastInsertId();
 
-        if($request->payment_method==="manual"){
+        if($request->payment_method==="Bank Transfer"){
         $payment= new EcommerceOrderPaymentInfo();
         $payment->orders_id=$order_id;
         $payment->user_id=Auth::id();
@@ -348,6 +349,7 @@ class CheckoutController extends Controller
                 $product = Product::find($item['product_id']);
                 $vendor = Vendor::find($product->vendor_id);
                 $commissionRate = $vendor->commission ?? 5; // default to 10%
+
                 // Admin commission and vendor earning
                 $adminCommission = round($itemSubtotal * $commissionRate / 100, 2);
                 $vendorEarning = $itemSubtotal - $adminCommission;
@@ -379,7 +381,7 @@ class CheckoutController extends Controller
             $cartItem->admin_commission = $adminCommission;
             $cartItem->vendor_earning = $vendorEarning;
             $cartItem->save();
-            
+
             if ($item['size']) {
                 $getProductStock = ProductAttribute::isStokAvailable(product_id: $item['product_id'], size: $item['size']);
                 $newStock = $getProductStock - $item['quantity'];

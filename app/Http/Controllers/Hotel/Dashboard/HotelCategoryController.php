@@ -4,12 +4,23 @@ namespace App\Http\Controllers\Hotel\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\HotelCategory;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class HotelCategoryController extends Controller
 {
     //
+      public function __construct()
+    {
+        $this->middleware('admin.permission:view_hotel_hotel_category')->only('index');
+        $this->middleware('admin.permission:add_hotel_hotel_category')->only('store');
+        $this->middleware('admin.permission:edit_hotel_hotel_category')->only(methods: 'update');
+        $this->middleware('admin.permission:delete_hotel_hotel_category')->only('destroy');
+    }
+    
     public function index()
     {
         $categories = HotelCategory::latest()->paginate(8);
@@ -30,6 +41,12 @@ class HotelCategoryController extends Controller
             'name' => $request->name,
             'image' => $fullImageUrl,
         ]);
+
+
+         $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log('Add Hotel Category', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
 
         return redirect()->back()->with('success', 'Hotel category added!');
     }
@@ -58,6 +75,11 @@ class HotelCategoryController extends Controller
         $category->name = $request->name;
         $category->save();
 
+         $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log('Update Hotel Category', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
         return redirect()->back()->with('success', 'Hotel category updated!');
     }
 
@@ -74,6 +96,12 @@ class HotelCategoryController extends Controller
         }
 
         $category->delete();
+
+        
+         $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete Hotel Category', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
 
         return redirect()->back()->with('success', 'Hotel category deleted!');
     }

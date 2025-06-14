@@ -14,6 +14,7 @@ use App\Models\Restaurant\Product;
 use App\Models\Restaurant\Restaurant;
 use App\Models\Restaurant\RestaurantMenu;
 use App\Models\Restaurant\Subcategory;
+use App\Services\LocationService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -64,6 +65,7 @@ class ProductController extends Controller
     public function filter(Request $request)
     {
         try{
+            
         $filter = $request->input('type');
         switch ($filter) {
             case 'specail_offer':
@@ -76,6 +78,9 @@ class ProductController extends Controller
                 $products = Product::where('best_seller', 1)->latest()->get();
                 break;
             case 'all':
+                $products = Product::where('is_active', 1)->latest()->get();
+                break;
+            case 'latest':
                 $products = Product::where('is_active', 1)->latest()->get();
                 break;
             default:
@@ -140,21 +145,30 @@ class ProductController extends Controller
         return view('all_frontend_layouts.index', compact('auto_scroll_products'));
     }
 
-    public function detail($id){
-        $id=decrypt($id);
-        $product=Product::with(['images','sizes','ratings'])->findOrFail($id);
-        $related_products=Product::where('category_id',$product->category_id)->where('id','!=',$product->id)->get();
+    public function detail($id, LocationService $locationService)
+    {
+        $id = decrypt($id);
+        $product = Product::with(relations: ['images', 'sizes', 'ratings', 'restaurant'])->findOrFail($id);
+        $userLat = session(key: 'user_lat');
+        $userLng = session('user_lng');
+        // dd($userLat, $userLng);
+        $restLat = $product->restaurant->latitude;
+        $restLng = $product->restaurant->longitude;
 
-        $hasOrdered=false;
-        if(Auth::check()){
-        $user = Auth::user();
-        $productId = $id;
-        $hasOrdered = OrderItem::whereHas('order', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })->where('product_id', $productId)->exists();
+        $distance = $locationService->getDistance($userLat, $userLng, $restLat, $restLng);
+        // dd($distance);
+        $related_products = Product::where('category_id', $product->category_id)->where('id', '!=', $product->id)->get();
+
+        $hasOrdered = false;
+        if (Auth::check()) {
+            $user = Auth::user();
+            $productId = $id;
+            $hasOrdered = OrderItem::whereHas('order', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })->where('product_id', $productId)->exists();
         }
         // dd($hasOrdered);
 
-        return view('Restaurant.frontend.pages.products.detail',compact('product','related_products','hasOrdered'));
+        return view('Restaurant.frontend.pages.products.detail', compact('product','distance', 'related_products', 'hasOrdered'));
     }
 }

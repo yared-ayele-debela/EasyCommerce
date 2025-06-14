@@ -7,6 +7,7 @@ use App\Models\AppSetting;
 use App\Models\FlashDeal;
 use App\Models\FlashDealProduct;
 use App\Models\Product;
+use App\Services\ActivityLogger;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -91,6 +92,11 @@ class FlashDealController extends Controller
 
                 $root_product->save();
             }
+
+                  $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add FashDeal', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
             Alert::toast('Flash Deal has been saved', 'success');
             return redirect()->route('flash_deals.index');
         } else {
@@ -181,8 +187,15 @@ class FlashDealController extends Controller
                 $root_product->discount_end_date   = $request->end_date;
 
                 $root_product->save();
+                
             }
 
+             $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Update FashDeal', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
+            
             Alert::toast('Flash deal has been updated!', 'success');
             return redirect()->route('flash_deals.index');
         } else {
@@ -207,6 +220,10 @@ class FlashDealController extends Controller
         $flash_deal->flash_deal_products()->delete();
 
         FlashDeal::destroy($id);
+
+         $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete FashDeal', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
         Alert::toast('Flash deal has been deleted!', 'success');
         return redirect()->route('flash_deals.index');

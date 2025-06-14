@@ -7,7 +7,9 @@ use App\Models\AppSetting;
 use App\Models\PermissionCategory;
 use App\Models\Permissions;
 use App\Models\Roles;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -52,6 +54,13 @@ class RolePermissions extends Controller
             ]);
 
             $role->permissions()->sync($request->permissions);
+
+
+               $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Assign Permission to role', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
             Alert::toast('Permissions assigned to role successfully.', 'success');
             return redirect()->route('roles.index');
         } catch (\Illuminate\Validation\ValidationException $e) {

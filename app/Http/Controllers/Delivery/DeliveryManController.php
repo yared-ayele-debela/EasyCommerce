@@ -62,30 +62,41 @@ class DeliveryManController extends Controller
 
     public function login_validate(Request $request)
     {
-        // try{
+        try{
         $this->validate($request, [
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
+        $deliveryman=DeliveryMan::where('email',$request->email)->first();
+        
+        if (!$deliveryman) {
+        Alert::toast('Invalid Email or Password', 'error');
+        return back()->withErrors(['email' => 'Invalid credentials']);
+        }
+
+        // Check if account is active
+        if (!$deliveryman->is_active) {
+            Alert::toast('Your account is not active. Please contact admin.', 'warning');
+            return back()->withErrors(['email' => 'Your account is not active.']);
+        }
         if (auth()->guard('deliverymen')->attempt($request->only('email', 'password'))) {
+
             Alert::toast('Welcome to your dashboard', 'success');
             return redirect()->route('delivery_man.dashboard');
         } else {
-
-
             Alert::toast('Invalid Email or Password', 'error');
             return back()->withErrors(['email' => 'Invalid credentials']);
         }
 
-        // } catch (\Illuminate\Validation\ValidationException $e) {
-        //     // Laravel's built-in validation exception
-        //     return redirect()->back()->withErrors($e->validator->errors())->withInput();
-        // } catch (\Exception $e) {
-        //     // Log or handle the exception as needed
-        //     Alert::toast('something is wrong!!','error');
-        //     return redirect()->back();
-        //  }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Laravel's built-in validation exception
+            return redirect()->back()->withErrors($e->validator->errors())->withInput();
+        } catch (\Exception $e) {
+            // Log or handle the exception as needed
+            Alert::toast('something is wrong!!','error');
+            return redirect()->back();
+         }
     }
 
 

@@ -179,17 +179,18 @@ class OrdersController extends Controller
                         ->with('error_message', 'Your Vendor Account is not approved yet. Please make sure to fill your valid personal, business, and bank details');
                 }
 
-                $orderDetails = Order::with(['orders_products' => function ($query) use ($vendor_id) {
+                $orderDetails = Order::with(['paymentInfo','orders_products' => function ($query) use ($vendor_id) {
                     $query->where('vendor_id', $vendor_id);
                 }])
                     ->where('id', $order_id)
                     ->first()
                     ->toArray();
             } else {
-                $orderDetails = Order::with('orders_products')
+                $orderDetails = Order::with('orders_products','paymentInfo')
                     ->where('id', $order_id)
                     ->first()
                     ->toArray();
+                    // dd($orderDetails);
             }
 
             $userDetails = User::find($orderDetails['user_id'])->toArray();
@@ -338,6 +339,37 @@ class OrdersController extends Controller
         return redirect()->back();
     }
 }
+
+    public function updateOrderPaymentStatus(Request $request)
+    {
+        $order = Order::findOrFail($request->order_id);
+        // dd($order);
+        $oldStatus=$order->payment_status;
+        $order->payment_status = $request->order_status;
+        $order->save();
+
+        NotificationService::send(
+            userId: $order->user_id,
+            title: 'Goods Order Payment Status Updated',
+            message: "Your goods order #{$order->id} payment status has changed from '{$oldStatus}' to '{$request->order_status}'."
+        );
+
+        // SMS
+        $phone = $order->user->mobile ?? null;
+        if ($phone) {
+            try {
+                SmsService::send(
+                    $phone,
+                    "Hi {$order->user->name}, Your goods order #{$order->id} payment status has changed from '{$oldStatus}' to '{$request->order_status}'."
+                );
+            } catch (\Exception $e) {
+                // optionally log SMS failure
+            }
+        }
+        
+            Alert::toast('Order payment status has been updated!', 'success');
+            return redirect()->back();
+    }
 
 
     public function updateOrderItemStatus(Request $request)

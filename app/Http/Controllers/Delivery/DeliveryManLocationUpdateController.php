@@ -40,22 +40,24 @@ class DeliveryManLocationUpdateController extends Controller
     }
 
     public function updateLocation(Request $request)
-{
-    $request->validate([
-        'order_id' => 'required',
-        'lat' => 'required|numeric',
-        'lng' => 'required|numeric',
-    ]);
+    {
+        $request->validate([
+            'order_id' => 'required',
+            'lat' => 'required|numeric',
+            'lng' => 'required|numeric',
+        ]);
 
-    // Save location to DB if needed
-    $order = Order::find($request->order_id);
-    $order->deliveryman->update([
-        'current_lat' => $request->lat,
-        'current_lng' => $request->lng,
-    ]);
+        // Save location to DB if needed
+        $order = Order::find($request->order_id);
+        $order->deliveryman->update([
+            'current_lat' => $request->lat,
+            'current_lng' => $request->lng,
+        ]);
 
-    broadcast(new DeliveryManLocationUpdated($request->order_id, $request->lat, $request->lng))->toOthers();
+        broadcast(new DeliveryManLocationUpdated($request->order_id, $request->lat, $request->lng))->toOthers();
 
-    return response()->json(['message' => 'Location updated']);
-}
+        return response()->json(['message' => 'Location updated']);
+    }
+
+    
 }

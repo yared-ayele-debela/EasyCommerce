@@ -39,7 +39,7 @@
                     <div class="delivery-location mb-2">
                         <div class="d-flex justify-content-between align-items-center">
                             <button type="button" class="btn btn-outline-primary fw-bold px-2 py-2 delivery_text" id="loadAddresses">
-                                <i class="bi bi-geo-alt"></i> Load Delivery Addresses
+                                <i class="bi bi-geo-alt"></i> Get My Current Addresses
                             </button>
                             <a href="#" class="btn btn-primary fw-bold d-flex align-items-center delivery_text px-3 py-2 rounded-3" data-bs-toggle="modal" data-bs-target="#addressModal">
                                 <i class="bi bi-plus-circle me-1"></i> Add New Address
@@ -47,7 +47,25 @@
                         </div>
                     </div>
                     <div class="row" id="addressContainer">
-                        <p class="text-muted text-center">Click "Load Addresses" to view your addresses.</p>
+                       @forelse ($addresses as $ads)
+                             <div class="col-md-12 mb-2">
+                                <div class="card shadow-sm p-3 delivery-location">
+                                    <div class="form-check">
+                                        <input class="form-check-input address-radio" type="radio" name="address"
+                                            value="{{ $ads->id }}" id="address-{{ $ads->id }}">
+                                        <label class="form-check-label w-100" for="address-{{ $ads->id }}">
+                                            <strong>{{ $ads->name }}</strong></strong> <br>
+                                            <small>
+                                            {{ $ads->address }}, {{ $ads->city }}, {{ $ads->sub_city??'-' }}, {{ $ads->street??'' }} <br>
+                                            <small>Mobile: {{ $ads->mobile }}</small>
+                                            </small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                        <p class="text-muted">Add delivery address</p>
+                        @endforelse
                     </div>
                     <span id="address-error" class="text-danger" style="display: none;">Please select a delivery address.</span>
                     <input type="hidden" name="address_id" id="selected_address_id">
@@ -158,12 +176,12 @@
                         <h6 class="fw-bold text-dark mb-2">Payment Method</h6>
                         <div class="payment-methods">
                             <label type="button" class="payment-method bg-white shadow-sm rounded-3 p-3 text-center" data-bs-toggle="modal" data-bs-target="#modalId">
-                                <input type="radio" name="payment_method" value="bank_transfer" class="d-none">
+                                <input type="radio" name="payment_method" value="Bank Transfer" class="d-none">
                                 <img src="{{ asset('restaurant_frontend/assets/img/bank.jpg') }}" alt="Bank Transfer" width="200" class="mb-2">
                                 <div class="fw-semibold">Bank Transfer</div>
                             </label>
                             <label class="payment-method shadow-sm bg-white rounded-3 p-3 text-center">
-                                <input type="radio" name="payment_method" value="cash_on_delivery" class="d-none">
+                                <input type="radio" name="payment_method" value="Cash On Delivery" class="d-none">
                                 <img src="{{ asset('restaurant_frontend/assets/img/cash.png') }}" alt="Cash on Delivery" width="35" class="mb-2">
                                 <div class="fw-semibold">Cash on Delivery</div>
                             </label>
@@ -334,6 +352,7 @@
     const selectedAddress = document.querySelector("input[name='address']:checked");
 
     if (!selectedAddress) {
+        showAlert('error','Please select delivery address');
         addressError.style.display = 'block';
         return;
     } else {
@@ -341,6 +360,7 @@
     }
 
     if (!selected) {
+        showAlert('error','Please select Payment Method');
         error.style.display = 'block';
         return;
     } else {
@@ -414,41 +434,41 @@
 </script>
 <script>
     $(document).ready(function() {
-        $('#loadAddresses').click(function() {
-            $.ajax({
-                url: "{{ url('/addresses') }}"
-                , method: "GET"
-                , success: function(response) {
-                    let cards = "";
-                    if (response.length > 0) {
-                        response.forEach(function(address) {
-                            cards += `
-                                <div class="col-md-12 mb-2">
-                                    <div class="card shadow-sm p-3 delivery-location">
-                                        <div class="form-check">
-                                            <input class="form-check-input address-radio" type="radio" name="address"
-                                                value="${address.id}" id="address-${address.id}">
-                                            <label class="form-check-label w-100" for="address-${address.id}">
-                                                <strong>${address.name}</strong> <br>
-                                                <small>
-                                                ${address.address}, ${address.city}, ${address.sub_city || '-'}, ${address.street || '-'} <br>
-                                                <small>Mobile: ${address.mobile}</small>
-                                                </small>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>`;
-                        });
-                    } else {
-                        cards = `<p class="text-muted text-center">No addresses found.</p>`;
-                    }
-                    $('#addressContainer').html(cards);
-                }
-                , error: function() {
-                    alert("Error fetching addresses.");
-                }
-            });
-        });
+        // $('#loadAddresses').click(function() {
+        //     $.ajax({
+        //         url: "{{ url('/addresses') }}"
+        //         , method: "GET"
+        //         , success: function(response) {
+        //             let cards = "";
+        //             if (response.length > 0) {
+        //                 response.forEach(function(address) {
+        //                     cards += `
+        //                         <div class="col-md-12 mb-2">
+        //                             <div class="card shadow-sm p-3 delivery-location">
+        //                                 <div class="form-check">
+        //                                     <input class="form-check-input address-radio" type="radio" name="address"
+        //                                         value="${address.id}" id="address-${address.id}">
+        //                                     <label class="form-check-label w-100" for="address-${address.id}">
+        //                                         <strong>${address.name}</strong> <br>
+        //                                         <small>
+        //                                         ${address.address}, ${address.city}, ${address.sub_city || '-'}, ${address.street || '-'} <br>
+        //                                         <small>Mobile: ${address.mobile}</small>
+        //                                         </small>
+        //                                     </label>
+        //                                 </div>
+        //                             </div>
+        //                         </div>`;
+        //                 });
+        //             } else {
+        //                 cards = `<p class="text-muted text-center">No addresses found.</p>`;
+        //             }
+        //             $('#addressContainer').html(cards);
+        //         }
+        //         , error: function() {
+        //             alert("Error fetching addresses.");
+        //         }
+        //     });
+        // });
 
         // Listen for address selection
         $(document).on("change", ".address-radio", function() {

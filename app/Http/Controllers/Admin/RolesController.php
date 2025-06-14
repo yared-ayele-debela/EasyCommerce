@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use App\Models\Roles;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -66,6 +68,11 @@ class RolesController extends Controller
                 'name' => $request->name,
             ]);
 
+               $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Create Role', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
             Alert::toast('Role has been created successfully!', 'success');
             return redirect()->route('roles.index');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -111,6 +118,12 @@ class RolesController extends Controller
                 'name' => $request->name,
             ]);
 
+               $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Update Role', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
+
             Alert::toast('Role has been updated successfully.', 'success');
             return redirect()->route('roles.index');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -131,6 +144,13 @@ class RolesController extends Controller
             }
 
             $role->delete();
+
+
+               $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log(  'Delete Role', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
             Alert::toast('Role has been deleted successfully', 'error');
             return redirect()->route('roles.index');
         } catch (\Exception $e) {

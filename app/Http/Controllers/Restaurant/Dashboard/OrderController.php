@@ -9,14 +9,24 @@ use App\Models\DeliveryNotification;
 use App\Models\OrderStatus;
 use App\Models\Restaurant\Order;
 use App\Models\Restaurant\Restaurant;
+use App\Services\ActivityLogger;
 use App\Services\NotificationService;
 use App\Services\SmsService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 class OrderController extends Controller
 {
     //
+
+
+     public function __construct()
+    {
+        $this->middleware('admin.permission:view_restaurant_order')->only('index','show');
+        $this->middleware('admin.permission:update_restaurant_status')->only(methods: 'updateStatus');
+        
+    }
     public function index()
     {
         $admin=Auth::guard('admin')->user();
@@ -90,6 +100,10 @@ class OrderController extends Controller
                 dd($e->getMessage());
             }
         }
+         $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Update Restaurant Order Status', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
 
         // Mail::to($order->user->email)->send(new OrderStatusUpdateMail($order));
 

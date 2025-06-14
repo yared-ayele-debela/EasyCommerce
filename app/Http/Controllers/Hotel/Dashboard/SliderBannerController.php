@@ -4,12 +4,22 @@ namespace App\Http\Controllers\Hotel\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\HotelSlider;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class SliderBannerController extends Controller
 {
     //
+      public function __construct()
+    {
+        $this->middleware('admin.permission:view_hotel_slider')->only('index');
+        $this->middleware('admin.permission:add_hotel_slider')->only('store');
+        $this->middleware('admin.permission:edit_hotel_slider')->only(methods: 'update');
+        $this->middleware('admin.permission:delete_hotel_slider')->only('destroy');
+    }
     public function index()
     {
         $banners = HotelSlider::latest()->get();
@@ -41,6 +51,10 @@ class SliderBannerController extends Controller
             'image'       => $imageUrl, // Store the full URL instead of just the path
             'is_active'   => $request->is_active
         ]);
+
+        $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log('Add Hotel Slider Banner', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
         return redirect()->route('hotel-slider-banners.index')->with('success', 'Banner added successfully.');
     }
@@ -81,6 +95,10 @@ class SliderBannerController extends Controller
             'image'       => $slider->image, // ensure image is included in update
         ]);
 
+          $currentDateTime = Carbon::now();
+          $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+          ActivityLogger::log('Update Hotel Slider Banner', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
 
         return redirect()->route('hotel-slider-banners.index')->with('success', 'Banner updated successfully.');
     }
@@ -99,6 +117,9 @@ class SliderBannerController extends Controller
     }
 
     $sliderBanner->delete();
+         $currentDateTime = Carbon::now();
+          $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+          ActivityLogger::log('Delete Hotel Slider Banner', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
     return response()->json(['success' => 'Banner deleted successfully!']);
 }

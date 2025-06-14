@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Restaurant\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Restaurant\RestaurantMenu;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -12,6 +15,13 @@ use Illuminate\Support\Str;
 class RestaurantMenuController extends Controller
 {
     //
+     public function __construct()
+    {
+        $this->middleware('admin.permission:view_restaurant_restaurant_menu')->only('index');
+        $this->middleware('admin.permission:add_restaurant_restaurant_menu')->only('store');
+        $this->middleware('admin.permission:edit_restaurant_restaurant_menu')->only(methods: 'update');
+        $this->middleware('admin.permission:delete_restaurant_restaurant_menu')->only('destroy');
+    }
     public function index()
     {
         $restaurant_menus = RestaurantMenu::all();
@@ -35,6 +45,10 @@ class RestaurantMenuController extends Controller
             'image'     => $imageUrl,
             'is_active' => $request->is_active,
         ]);
+
+          $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add Restaurant Menu', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
 
         return redirect()->route('menus.index')->with('success', 'Restaurant Menu created successfully.');
@@ -75,6 +89,11 @@ class RestaurantMenuController extends Controller
                 'image'     => $RestaurantMenu->image,
             ]);
         });
+           $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Update Restaurant Menu', description: Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
 
         return redirect()->route('menus.index')->with('success', 'Restaur updated successfully.');
     }
@@ -91,6 +110,12 @@ class RestaurantMenuController extends Controller
             }
         }
         $RestaurantMenu->delete();
+
+           $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete Restaurant Menu', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
         return redirect()->route('menus.index')->with('success', 'Restaurant Menu deleted successfully.');
     }
 }

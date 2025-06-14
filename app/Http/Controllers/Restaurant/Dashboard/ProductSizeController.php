@@ -6,12 +6,21 @@ use App\Http\Controllers\Controller;
 use App\Models\Restaurant\Product;
 use App\Models\Restaurant\ProductSize;
 use App\Models\Restaurant\Restaurant;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class ProductSizeController extends Controller
 {
-    //
+    
+     public function __construct()
+    {
+        $this->middleware('admin.permission:view_restaurant_product')->only('index');
+        $this->middleware('admin.permission:add_restaurant_product')->only('store');
+        $this->middleware('admin.permission:edit_restaurant_product')->only(methods: 'update');
+        $this->middleware('admin.permission:delete_restaurant_product')->only('destroy');
+    }
     public function store(Request $request, $productId)
     {
         $request->validate([
@@ -45,11 +54,17 @@ class ProductSizeController extends Controller
         $productSize->price = $request->price;
         $productSize->stock = $request->stock;
         $productSize->save();
+
+             $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add Restaurant Product Size', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
         }
         else{
             return redirect()->back()->with('error', 'Product not found.');
         }
 
+        
         return redirect()->route('products.show', $productId)->with('success', 'Product size created successfully.');
     }
 
@@ -68,6 +83,10 @@ class ProductSizeController extends Controller
         $productSize->stock = $request->stock;
         $productSize->save();
 
+         $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Update Restaurant Product Size', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
         return redirect()->back()->with('success', 'Product size updated successfully.');
     }
 
@@ -77,6 +96,10 @@ class ProductSizeController extends Controller
         $productSize = ProductSize::findOrFail($sizeId);
 
         $productSize->delete();
+
+         $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log(  'Delete Restaurant Product Size', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
         return redirect()->route('products.show', $productId)->with('success', 'Product size deleted successfully.');
     }

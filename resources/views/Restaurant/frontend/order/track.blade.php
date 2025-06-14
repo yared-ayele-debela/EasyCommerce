@@ -170,9 +170,7 @@
             if (e.deliveryManId == {{ $order->delivery_man_id }}) {
                 const currentLatLng = [e.latitude, e.longitude];
 
-                // Add trail
                 previousCoords.push(currentLatLng);
-                // trailPolyline.setLatLngs(previousCoords);
 
                 if (!deliveryMarker) {
                     deliveryMarker = L.marker(currentLatLng, {

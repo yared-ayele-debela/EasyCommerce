@@ -10,20 +10,27 @@
     <div class="row g-3">
         @foreach ($hotels as $hotel)
         <div class="col-md-3 my-2">
-            <div class="card">
+            <div class="offer-card h-100">
                 <a href="{{ url('hotel/'.$hotel->id.'/detail') }}">
                     @if($hotel->banner_image)
-                    <img class="card-img-top img-fluid" src="{{ $hotel->banner_image }}" alt="{{ $hotel->name }}" style="height: 200px; object-fit: cover;">
+                    <img class="card-img-top img-fluid" src="{{$hotel->banner_image}}" alt="{{ $hotel->name }}" style="height: 200px; object-fit: cover;">
                     @else
                     <img class="card-img-top img-fluid" src="{{ asset('restaurant_frontend/default-image.png') }}" alt="{{ $hotel->name }}" style="height: 200px; object-fit: cover;">
                     @endif
                 </a>
                 <div class="card-body">
-                    <button class="btn-sm btn btn-primary">{{ $hotel->category->name }}</button><br>
-                    <span class="card-text text-dark star">1.0 Km . &nbsp; <i class="bi bi-star-fill"></i> 4.8 Reviews </span>
-                    <h4 class="card-title">{{ $hotel->name }}</h4>
-                    <p class="card-text text-dark"><i class="bi bi-pin-map-fill text-primary"></i> {{ $hotel->location }}</p>
-                    <h5 class="text-primary">{{ $hotel->price_per_night }} ETB / Night</h5>
+                    <span class="badge bg-primary mt-0">{{ $hotel->category->name }}</span>
+                    <h5 class="card-title">{{ $hotel->name }}</h5>
+                    <p class="card-text">
+                       <a  href="https://www.google.com/maps?q={{ $hotel->latitude }},{{ $hotel->longitude }}"
+                         target="_blank" class="small text-muted mb-2">
+                        Location: {{ $hotel->state }}, {{ $hotel->city }}, {{ $hotel->location }}
+                        </a>
+                        <br>
+                        Price per Night: <strong>{{ $hotel->price_per_night }} ETB</strong><br>
+                        Rating: <strong>{{ $hotel->rating }} <i class="bi bi-star-fill text-primary"></i></strong><br>
+                    </p>
+                    <p class="card-text">{{ \Illuminate\Support\Str::limit($hotel->description, 60) }}</p>
                 </div>
             </div>
         </div>

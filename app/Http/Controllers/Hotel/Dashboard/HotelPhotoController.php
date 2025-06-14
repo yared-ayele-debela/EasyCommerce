@@ -4,12 +4,20 @@ namespace App\Http\Controllers\Hotel\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\HotelPhoto;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class HotelPhotoController extends Controller
 {
 
+      public function __construct()
+    {
+        $this->middleware('admin.permission:add_hotel_hotel_photo')->only('store');
+        $this->middleware('admin.permission:delete_hotel_hotel_photo')->only('destroy');
+    }
     public function store(Request $request)
     {
         $request->validate([
@@ -28,6 +36,12 @@ class HotelPhotoController extends Controller
             ]);
         }
 
+          $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log('Add Hotel Photos', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+        
+
         return redirect()->back()->with('success', 'Photo uploaded successfully!');
     }
 
@@ -43,6 +57,9 @@ class HotelPhotoController extends Controller
 
         $photo->delete();
 
+    $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log('Delete Hotel Photos', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
         return redirect()->back()->with('success', 'Photo deleted successfully!');
     }

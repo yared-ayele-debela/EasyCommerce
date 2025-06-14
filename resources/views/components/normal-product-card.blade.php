@@ -28,7 +28,7 @@
         </a>
 
         <div class="card-body p-3">
-            <p class="text-muted small mb-1">{{ $product->product_code }} • {{ $product->product_color }}</p>
+            {{-- <p class="text-muted small mb-1">{{ $product->product_code }} • {{ $product->product_color }}</p> --}}
             <h6 class="fw-semibold mb-2">
                 <a href="{{ url('ecommerce/product/' . encrypt($product->id)) }}"
                    class="text-dark text-decoration-none">

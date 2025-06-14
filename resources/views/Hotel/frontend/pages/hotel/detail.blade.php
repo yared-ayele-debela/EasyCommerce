@@ -18,7 +18,12 @@
         <div class="col-md-6">
             <div class="hotel-card ">
                 <h2>{{ $hotel->name }}</h2>
-                <p><i class="bi bi-geo-alt-fill text-primary"></i> &nbsp; {{$hotel->state}}, {{$hotel->city}}, {{$hotel->location}}</p>
+                <p>
+                     <a  href="https://www.google.com/maps?q={{ $hotel->latitude }},{{ $hotel->longitude }}"
+                         target="_blank" class="small text-muted mb-2">
+                                             <i class="bi bi-geo-alt-fill text-primary"></i> &nbsp; {{$hotel->state}}, {{$hotel->city}}, {{$hotel->location}}
+                        </a>
+                </p>
                 <p><i class="bi bi-telephone-fill text-primary"></i> {{ $hotel->phone }}</p>
                 <p>
                     <strong>Room Types:</strong>

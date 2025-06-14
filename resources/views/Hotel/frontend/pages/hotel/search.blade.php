@@ -152,7 +152,10 @@
                                 <span class="badge bg-primary mt-0">${hotel.category.name}</span>
                                 <h5 class="card-title">${hotel.name}</h5>
                                 <p class="card-text">
+                                    <a  href="https://www.google.com/maps?q= ${hotel.latitude},${hotel.longitude}"
+                                    target="_blank" class="small text-muted mb-2">
                                     Location: ${hotel.state}, ${hotel.city} ${hotel.location}<br>
+                                    </a>
                                     Price per Night: <strong>${hotel.price_per_night} ETB</strong><br>
                                     Rating: <strong>${hotel.rating} <i class="bi bi-star-fill text-primary"></i></strong><br>
                                 </p>

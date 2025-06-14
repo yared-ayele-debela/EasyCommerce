@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Group;
+use App\Services\ActivityLogger;
+use Illuminate\Support\Carbon;
 use PhpParser\Node\Expr\FuncCall;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -125,6 +127,11 @@ class CategoriesController extends Controller
 
             $category->save();
 
+                   $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add Ecommerce Categories', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
             Alert::toast('Category has been saved', 'success');
             return redirect('admin/categories');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -207,6 +214,11 @@ class CategoriesController extends Controller
 
             $category->update();
 
+
+                   $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log(  'Update Ecommerce Categories', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
             Alert::toast('Category has been updated', 'success');
             return redirect('admin/categories');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -277,6 +289,11 @@ class CategoriesController extends Controller
             }
 
             $category->delete();
+
+
+                   $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete Ecommerce Categories', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
             Alert::toast('Category has been deleted', 'error');
             return redirect('admin/categories');

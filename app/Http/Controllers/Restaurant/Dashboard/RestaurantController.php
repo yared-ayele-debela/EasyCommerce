@@ -14,10 +14,19 @@ use App\Models\Delivery_Zone;
 use App\Models\Restaurant\Restaurant as RestaurantRestaurant;
 use App\Models\Restaurant\RestaurantImage;
 use App\Models\State;
+use App\Services\ActivityLogger;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class RestaurantController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('admin.permission:view_restaurant_restaurant')->only('index','show');
+        $this->middleware('admin.permission:add_restaurant_restaurant')->only('store');
+        $this->middleware('admin.permission:edit_restaurant_restaurant')->only(methods: 'update');
+        $this->middleware('admin.permission:delete_restaurant_restaurant')->only('destroy');
+    }
     public function index()
     {
         $adminType = Auth::guard('admin')->user()->type;
@@ -56,7 +65,8 @@ class RestaurantController extends Controller
             'logo'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_active' => 'required|boolean',
             'images.*'  => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'zone' => 'required|string|max:255'
+            'zone' => 'required|string|max:255',
+            'delivery_radius' => 'required|numeric|min:0',
         ]);
 
 
@@ -94,6 +104,7 @@ class RestaurantController extends Controller
             'start_from' => $request->start_from,
             'opening_time' => $request->opening_time,
             'closing_time' => $request->closing_time,
+            'delivery_radius' => $request->delivery_radius,
         ]);
 
         // Upload and Save Multiple Images
@@ -107,6 +118,11 @@ class RestaurantController extends Controller
                 ]);
             }
         }
+
+           $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add Restaurant', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
 
         return redirect()->route('restaurants.index')->with('success', 'Restaurant created successfully.');
     }
@@ -127,7 +143,8 @@ class RestaurantController extends Controller
             'logo'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_active' => 'required|boolean',
             'images.*'  => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'zone' => 'nullable|string|max:255'
+            'zone' => 'nullable|string|max:255',
+            'delivery_radius' => 'nullable|numeric|min:0',
         ]);
 
         // Update restaurant details
@@ -147,6 +164,7 @@ class RestaurantController extends Controller
             'start_from' => $request->start_from ? $request->start_from : $restaurant->start_from,
             'opening_time' => $request->opening_time ? $request->opening_time : $restaurant->opening_time,
             'closing_time' => $request->closing_time ? $request->closing_time : $restaurant->closing_time,
+            'delivery_radius' => $request->delivery_radius ? $request->delivery_radius : $restaurant->delivery_radius,
         ]);
 
         // Update logo if a new one is uploaded
@@ -188,6 +206,11 @@ class RestaurantController extends Controller
                 ]);
             }
         }
+
+             $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Update Restaurant', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
         return redirect()->route('restaurants.index')->with('success', 'Restaurant updated successfully.');
     }
 
@@ -217,6 +240,10 @@ class RestaurantController extends Controller
 
     $restaurant->delete();
 
+         $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log(  'Delete Restaurant', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
     return redirect()->route('restaurants.index')->with('success', 'Restaurant deleted successfully.');
 }
 
@@ -227,6 +254,11 @@ public function deleteImage($id)
     $imagePath = str_replace(asset('storage') . '/', '', $image->image_path);
     Storage::disk('public')->delete($imagePath);
     $image->delete();
+
+         $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete Restaurant Image', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
 
     return back()->with('success', 'Image deleted successfully.');
 }

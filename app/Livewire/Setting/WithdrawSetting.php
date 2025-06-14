@@ -3,6 +3,9 @@
 namespace App\Livewire\Setting;
 
 use App\Models\WithdrawSetting as ModelsWithdrawSetting;
+use App\Services\ActivityLogger;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class WithdrawSetting extends Component
@@ -55,6 +58,11 @@ class WithdrawSetting extends Component
             'amount' => $this->amount,
         ]);
 
+         $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add withdraw setting', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
         session()->flash('message', $this->withdrawal_id ? 'Withdrawal updated successfully.' : 'Withdrawal created successfully.');
 
         $this->closeCreateModal();
@@ -79,6 +87,11 @@ class WithdrawSetting extends Component
     public function delete()
     {
         ModelsWithdrawSetting::find($this->withdrawal_id)->delete();
+        
+         $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete withdraw setting', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
         session()->flash('message', 'Withdrawal deleted successfully.');
         $this->closeDeleteModal();
     }

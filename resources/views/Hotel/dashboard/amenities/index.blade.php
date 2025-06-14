@@ -22,7 +22,9 @@
             @if(session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
             @endif
+            @adminCan('add_hotel_amenity')
             <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addAmenityModal">Add Amenity</button>
+            @endadminCan
         </div>
         <div class="card-body">
             <!-- Amenities Table -->
@@ -48,14 +50,17 @@
                             <td>{{ $amenity->name }}</td>
                             <td>
                                 <!-- Edit -->
+                                @adminCan('edit_hotel_amenity')
                                 <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#editAmenityModal{{ $amenity->id }}"><i class="bi bi-pencil-fill"></i></button>
-
+                                @endadminCan
                                 <!-- Delete -->
+                                @adminCan('delete_hotel_amenity')
                                 <form action="{{ route('amenities.destroy', $amenity->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure?')">
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i></button>
                                 </form>
+                                @endadminCan
                             </td>
                         </tr>
 

@@ -30,6 +30,15 @@
                                 </div>
                               <h2 class="text-center">Delivery Boy</h2>
                             </div>
+                              @if(session('success'))
+                                <div class="alert alert-success">{{ session('success') }}</div>
+                                @endif
+                                @if(session('error'))
+                                <div class="alert alert-danger">{{ session('error') }}</div>
+                                @endif
+                                @if(session('info'))
+                                <div class="alert alert-warning">{{ session('info') }}</div>
+                                @endif
                             <form class="row" action="{{ route('delivery-man-forgetpassword') }}"  method="POST">
                                 @csrf
                                 <div class="col-12">

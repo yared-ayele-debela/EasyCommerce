@@ -8,9 +8,11 @@ use App\Mail\HotelReservationStatusUpdated;
 use App\Models\AppSetting;
 use App\Models\HotelReservationPaymentInfo;
 use App\Models\Reservation;
+use App\Services\ActivityLogger;
 use App\Services\NotificationService;
 use App\Services\SmsService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
@@ -64,6 +66,10 @@ class ReservationsController extends Controller
         $reservation->status = $request->status;
         $reservation->save();
 
+            $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log('Update hotel reservation status', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
         Mail::to($reservation->user->email)->send(new HotelReservationStatusUpdated($reservation));
         return redirect()->route('reservations.index')->with('success', 'Reservation status updated successfully');
     }
@@ -103,6 +109,10 @@ class ReservationsController extends Controller
             }
         }
 
+            $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log('Update hotel reservation payment status', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
         Mail::to($reservation->user->email)->send(new HotelReservationPaymentStatusUpdated($reservation));
         return redirect()->route('reservations.index')->with('success', 'Reservation Payment Status updated successfully');
     }
@@ -111,6 +121,11 @@ class ReservationsController extends Controller
     {
         $reservation = Reservation::findOrFail($id);
         $reservation->delete();
+
+            $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log('Delete hotel reservation', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
 
         return redirect()->route('reservations.index')->with('success', 'Reservation deleted successfully');
     }

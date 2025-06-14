@@ -27,7 +27,11 @@
 
                 <div class="info">
                     <h4>{{ $restaurant->name }}</h4>
-                    <p>{{ $restaurant->address }}</p>
+                    <p>
+                         <a class="text-white" href="https://www.google.com/maps?q={{ $restaurant->latitude }},{{ $restaurant->longitude }}" target="_blank">
+                        {{ $restaurant->address }}, {{ $restaurant->city }}, {{ $restaurant->state }}, Ethiopia
+                        </a>
+                    </p>
                     <div class="d-flex align-items-center gap-2">
                         @php
                         $averageRating = \App\Models\Restaurant\RestaurantRating::where('restaurant_id', $restaurant->id)->avg('rating');
@@ -37,7 +41,7 @@
                         <span class="bi bi-clock-fill text-primary"> </span><span>20 min</span>
                     </div>
                     <!-- Add a rating button here -->
-                    
+
                     <button class="btn btn-outline-primary mt-3" data-bs-toggle="modal" data-bs-target="#ratingModal">
                         Leave a Review
                     </button>
@@ -54,7 +58,10 @@
         <h4>{{ $restaurant->name }}</h4>
         <div class="row pb-4 d-flex justify-content-between align-items-center">
             <div class="col-md-3 col-12 col-sm-6">
-                <span> <i class="bi bi-geo-alt-fill text-primary"></i> {{ $restaurant->address }}</span>
+                <a class="text-dark" href="https://www.google.com/maps?q={{ $restaurant->latitude }},{{ $restaurant->longitude }}" target="_blank">
+
+                <span> <i class="bi bi-geo-alt-fill text-primary"></i> {{ $restaurant->address }}, {{ $restaurant->city }}, {{ $restaurant->state }}, Ethiopia</span>
+                </a>
             </div>
             <div class="col-md-3 col-12 col-sm-6">
                 <span> <i class="bi bi-clock-fill text-primary"></i> From {{ $restaurant->opening_time }} - {{ $restaurant->closing_time }}</span>

@@ -365,4 +365,14 @@ class DeliveryManController extends Controller
         Alert::toast('Delivery Boy password updated successfully!', 'success');
         return redirect()->back();
     }
+
+    public function is_active($id){
+        $delivery_man=DeliveryMan::findOrFail($id);
+        $delivery_man->is_active=!$delivery_man->is_active;
+        $delivery_man->save();
+
+        Alert::toast('Delivery Boy account status updated!', 'success');
+        return redirect()->back();
+    }
+
 }

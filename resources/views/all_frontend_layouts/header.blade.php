@@ -25,6 +25,33 @@ use Illuminate\Support\Facades\Storage;
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <style>
+        .tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-wrapper::after {
+  content: "Out of range product";
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  z-index: 10;
+}
+
+.tooltip-wrapper:hover::after {
+  opacity: 1;
+}
+
         @media (max-width: 768px) {
             .custom-order-btn {
                 font-size: 9px;
@@ -332,6 +359,7 @@ use Illuminate\Support\Facades\Storage;
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="{{ route('auth.login') }}">Login As Customer</a></li>
                                 <li><a class="dropdown-item" href="{{ route('vendor-register') }}"> Become A Vendor</a></li>
+                                <li><a class="dropdown-item" href="{{ url('register/delivery-man') }}"> Become A Delivery Man</a></li>
                             </ul>
                         </div>
                         @endif

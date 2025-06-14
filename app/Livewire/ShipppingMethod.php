@@ -5,6 +5,9 @@ namespace App\Livewire;
 use App\Models\ShippingMethod;
 use App\Models\ShippingMethodPrice;
 use App\Models\ShippingZone;
+use App\Services\ActivityLogger;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class ShipppingMethod extends Component
@@ -74,6 +77,12 @@ class ShipppingMethod extends Component
             $shippingMethod->zones()->attach($this->zones);
         }
 
+         $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add Shipping Method', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
+
         session()->flash('message','Shipping Method Saved Successfully.');
         $this->dispatch('close-modal');
         $this->resetInputFields();
@@ -113,6 +122,12 @@ class ShipppingMethod extends Component
             $this->selectedShippingMethod->zones()->sync($this->zones);
         }
 
+        
+         $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log(  'Update Shipping Method', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
         session()->flash('message','Shipping Method Updated Successfully.');
         $this->dispatch('close-modal');
         $this->resetInputFields();
@@ -147,6 +162,13 @@ class ShipppingMethod extends Component
     public function destroyShippingMethod()
     {
         ShippingMethod::findOrFail($this->ShippingMethodId)->delete();
+
+        
+         $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log(  'Delete Shipping Method', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
         session()->flash('message','Shipping Method Deleted Successfully');
         $this->dispatch('close-modal');
         $this->mount();

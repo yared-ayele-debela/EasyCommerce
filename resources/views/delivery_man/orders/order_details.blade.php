@@ -87,11 +87,18 @@ $user = Auth::guard('deliverymen')->user();
                             <label for="order_status"><strong>Select Status:</strong></label>
                             <select name="order_status" id="order_status" class="form-control" required>
                                 <option value="">-- Select Status --</option>
-                                @foreach ($orderStatus as $status)
-                                <option value="{{ $status['name'] }}" @if($orderDetails['order_status']==$status['name']) selected @endif>
-                                    {{ $status['name'] }}
+                                <option value="picked" @if($orderDetails['order_status']==="picked") selected @endif>
+                                    Picked
                                 </option>
-                                @endforeach
+                                <option value="delivering" @if($orderDetails['order_status']==="delivering") selected @endif>
+                                    Delivering
+                                </option>
+                                <option value="delivered" @if($orderDetails['order_status']==="delivered") selected @endif>
+                                    Delivered
+                                </option>
+                                <option value="cancelled" @if($orderDetails['order_status']==="cancelled") selected @endif>
+                                    Cancelled
+                                </option>
                             </select>
                         </div>
 

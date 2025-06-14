@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use App\Models\Banner;
+use App\Services\ActivityLogger;
 use Intervention\Image\ImageManager as Image;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -104,6 +106,10 @@ class BannerController extends Controller
                 $banner->status = 0;
 
                 $banner->save();
+
+                   $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add Ecommerce Banner', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
                 Alert::toast('Banner has been saved', 'success');
                 return redirect('admin/banners');
@@ -256,6 +262,10 @@ class BannerController extends Controller
 
         $banner->update();
 
+                 $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Update Ecommerce Banner', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
         Alert::toast('Banner has been updated', 'success');
         return redirect('admin/banners');
         // } catch (\Illuminate\Validation\ValidationException $e) {
@@ -343,6 +353,11 @@ class BannerController extends Controller
             }
 
             $banner->delete();
+
+                     $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete Ecommerce Banner', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
 
             Alert::toast('Banner has been deleted', 'success');
             return redirect('admin/banners');

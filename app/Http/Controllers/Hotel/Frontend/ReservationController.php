@@ -4,13 +4,18 @@ namespace App\Http\Controllers\Hotel\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Mail\ReservationConfirmationMail;
+use App\Models\Admin;
 use App\Models\Bank;
+use App\Models\Hotel;
 use App\Models\HotelCoupon;
 use App\Models\HotelReservationPaymentInfo;
 use App\Models\HotelReview;
 use App\Models\Reservation;
 use App\Models\Room;
 use App\Models\User;
+use App\Models\Vendor;
+use App\Models\VendorWallet;
+use App\Models\VendorWalletTransaction;
 use App\Services\NotificationService;
 use App\Services\SmsService;
 use Carbon\Carbon;
@@ -25,6 +30,7 @@ class ReservationController extends Controller
     public function store(Request $request)
     {
 
+        // dd($request->all());
         // Validate the incoming request
         $request->validate([
             'check_in_date' => 'required|date',
@@ -44,7 +50,26 @@ class ReservationController extends Controller
         // dd($request->all());
         // Calculate the total price for the reservation
         $room = Room::find($request->room_id);
+
+
         $total_price = $room->price * $request->total_night;
+        // dd($total_price);
+
+        $hotel=Hotel::findOrFail($room->hotel_id);
+
+                $admin=Admin::findOrFail($hotel->admin_id);
+
+                $vendor = Vendor::find($admin->vendor_id);
+
+                $commissionRate = $vendor->commission ?? 5; // default to 10%
+
+                                // dd(vars: $commissionRate);
+
+                // Admin commission and vendor earning
+                $itemSubtotal=$request->final_price;
+                $adminCommission = round($itemSubtotal * $commissionRate / 100, 2);
+                $vendorEarning = $itemSubtotal - $adminCommission;
+
 
         $reservation =  Reservation::create([
             'user_id' => $request->user_id,
@@ -61,7 +86,22 @@ class ReservationController extends Controller
             'total_infant' => $request->total_infant,
             'status' => 'Pending', // Example status
             'payment_status' => 'Pending', // Example payment status
+            'admin_commission' => $adminCommission,
+            'vendor_earning'=>$vendorEarning
         ]);
+
+
+                $vendorId=$vendor->id;
+                $vendorWallet = VendorWallet::firstOrCreate(['vendor_id' => $vendorId]);
+                $vendorWallet->available_balance += $vendorEarning;
+                $vendorWallet->save();
+
+                VendorWalletTransaction::create([
+                    'vendor_id' => $vendorId,
+                    'type' => 'credit',
+                    'amount' => $vendorEarning,
+                    'description' => 'Earning from reservation #'.$reservation->id
+                ]);
 
         if($request->input('discount_amount') > 0){
             $coupon = HotelCoupon::find($request->input('coupon_id'));
@@ -99,7 +139,7 @@ class ReservationController extends Controller
                 }
             }
 
-        Mail::to($reservation->user->email)->send(new ReservationConfirmationMail($reservation));
+        // Mail::to($reservation->user->email)->send(new ReservationConfirmationMail($reservation));
 
         return redirect()->route('reservations.receipt', ['id' => encrypt($reservation->id)])
         ->with('success', 'Your reservation has been made successfully!');

@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use App\Models\Country;
 use App\Models\State;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -66,6 +68,10 @@ class StateController extends Controller
             $state->status = 1;
             $state->save();
 
+              $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add State', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
             Alert::toast('State has been added', 'success');
             return redirect()->route('states');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -114,6 +120,11 @@ class StateController extends Controller
             $state->country_id = $request->input('country_id');
             $state->save();
 
+                          $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log(  'Update State', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+        
             Alert::toast('State has been updated', 'success');
             return redirect()->route('states');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -134,6 +145,11 @@ class StateController extends Controller
             }
             $state = State::find($id);
             $state->delete();
+
+
+                          $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete State', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
             Alert::toast('State has been deleted', 'error');
             return redirect()->route('states');

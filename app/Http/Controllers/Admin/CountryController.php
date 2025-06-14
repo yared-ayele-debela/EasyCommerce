@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use App\Models\Country;
+use App\Services\ActivityLogger;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -65,6 +67,12 @@ class CountryController extends Controller
             $country->status = 1;
             $country->save();
 
+             $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add country', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
+
             Alert::toast('Country has been saved successfully!', 'success');
             return redirect()->route('countries');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -122,6 +130,10 @@ class CountryController extends Controller
             $country->country_code = $request->input('country_code');
             $country->save();
 
+               $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Update country', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
             Alert::toast('Country has been updated successfully!', 'success');
             return redirect()->route('countries');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -145,6 +157,10 @@ class CountryController extends Controller
             }
             $country = Country::find($id);
             $country->delete();
+
+               $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete country', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
             Alert::toast('Country has been deleted successfully!', 'success');
             return redirect()->route('countries');

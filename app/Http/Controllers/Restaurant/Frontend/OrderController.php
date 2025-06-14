@@ -39,8 +39,6 @@ class OrderController extends Controller
 
         $order = Order::with('orderItems.product','deliveryman','address')->findOrFail($order->id);
 
-        // dd($order);
-
         return view('Restaurant.frontend.order.track', compact('order'));
     }
 

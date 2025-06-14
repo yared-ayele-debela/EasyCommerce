@@ -183,7 +183,6 @@ public function removeFromCart($key)
         if ($subtotal <= 0) {
             return response()->json(['success' => false, 'message' => 'Cart is empty.'], 400);
         }
-
         // Find active coupon
         $coupon = Coupon::where('code', $couponCode)
                         ->where('is_active', 1)
@@ -208,6 +207,40 @@ public function removeFromCart($key)
             'success' => true,
             'discount' => $discountAmount,
             'new_total' => $newTotal
+        ]);
+    }
+    public function applyCouponOrderNow(Request $request)
+    {
+        $couponCode = $request->coupon_code;
+        $subtotal = session()->get('order_now_cart_subtotal', 0);
+
+        
+        if ($subtotal <= 0) {
+            return response()->json(['success' => false, 'message' => 'Cart is empty.'], 400);
+        }
+        // Find active coupon
+        $coupon = Coupon::where('code', $couponCode)
+                        ->where('is_active', 1)
+                        ->whereDate('validated_date', '>=', now())
+                        ->first();
+
+        if (!$coupon) {
+            return response()->json(['success' => false, 'message' => 'Invalid or expired coupon.'], 400);
+        }
+
+        // Calculate discount
+        $discountAmount = $coupon->type === 'fixed'
+                          ? $coupon->value
+                          : ($subtotal * $coupon->value) / 100;
+
+        $discountAmount = min($discountAmount, $subtotal); // Prevent discount from exceeding total
+        $newTotal = max($subtotal - $discountAmount, 0); // Prevent negative total
+
+        session(key: ['order_now_discount' => $discountAmount]);
+
+        return response()->json([
+            'success' => true,
+            'order_now_discount' => $discountAmount,
         ]);
     }
 

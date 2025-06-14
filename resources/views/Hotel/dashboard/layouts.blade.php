@@ -9,6 +9,7 @@ $appsettings = AppSetting::all()->toArray();
 @include('Hotel.dashboard.css.css_file')
 @include('Hotel.dashboard.header')
 @include('Hotel.dashboard.sidebar')
+
 <main id="main" class="main">
     @yield('hotel-dashboard')
 </main>

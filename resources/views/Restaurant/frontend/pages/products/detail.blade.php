@@ -64,7 +64,7 @@
             <div class="d-flex d-lg-none justify-content-center my-3">
                 @foreach($product->sizes as $size)
                 <label class="size-option mx-2">
-                    <input type="radio" name="size" value="{{ $size->price }}" data-price="{{ $size->price }}" data-size="{{ $size->size }}" class="size-selector">
+                    <input type="radio" name="size" value="{{ $size->final_price }}" data-price="{{ $size->final_price }}" data-size="{{ $size->size }}" class="size-selector">
                     <span>{{ strtoupper(substr($size->size, 0, 1)) }}</span>
                 </label>
                 @endforeach
@@ -75,7 +75,7 @@
             <div class="d-flex align-items-start flex-column bd-highlight mb-3" style="height: 200px;">
                 @foreach($product->sizes as $size)
                 <label class="size-option mx-2 mb-3">
-                    <input type="radio" name="size" value="{{ $size->price }}" data-price="{{ $size->price }}" data-size="{{ $size->size }}" class="size-selector">
+                    <input type="radio" name="size" value="{{ $size->final_price }}" data-price="{{ $size->final_price }}" data-size="{{ $size->size }}" class="size-selector">
                     <span>{{ strtoupper(substr($size->size, 0, 1)) }}</span>
                 </label>
                 @endforeach
@@ -87,8 +87,8 @@
             <div class="offer-card p-3 shadow-sm">
                 <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
                     <h2 class="card-title text-dark">{{ $product->name }}</h2>
-                    <h1 class="text-primary" id="product-price" data-base-price="{{ $product->price }}">
-                        {{ $product->price }} Birr
+                    <h1 class="text-primary" id="product-price" data-base-price="{{ $product->getFinalPrice() }}">
+                        {{ $product->getFinalPrice() }} Birr
                     </h1>
                 </div>
                 <div class="card-body">
@@ -124,6 +124,7 @@
                                 <i class=" bi text-success bi-{{ $isInWishlist ? 'heart-fill' : 'heart' }}"></i>
                             </button>
                         </div>
+                        @if($distance <= $product->restaurant->delivery_radius)
                         <form action="{{ route('restaurant.checkout.orderNow') }}" method="POST">
                             @csrf
                             <input type="hidden" id="p_product_id" name="product_id" value="{{ $product->id }}">
@@ -135,7 +136,14 @@
                                 <i class=" bi bi-shop-window"></i> Order Now
                             </button>
                         </form>
+                        @endif
                     </div>
+                     @if($distance > $product->restaurant->delivery_radius)
+                        <div class="alert alert-warning shadow mt-2">
+                            Sorry, this restaurant is {{ round($distance, 1) }} km away from you. Ordering is disabled for distant locations.
+                        </div>
+                        <button class="btn btn-primary shadow" disabled>Order Now</button>
+                    @endif
 
                 </div>
             </div>
@@ -253,7 +261,7 @@ function updateCartCount() {
     let sizeSelectors = document.querySelectorAll(".size-selector");
 
     // Store base product price from the element
-    let basePrice = parseFloat(priceDisplay.getAttribute("data-base-price") || "{{ $product->price }}");
+    let basePrice = parseFloat(priceDisplay.getAttribute("data-base-price") || "{{ $product->getFinalPrice() }}");
 
     function updatePrice() {
         let selectedSize = document.querySelector('input[name="size"]:checked');

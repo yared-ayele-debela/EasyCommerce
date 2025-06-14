@@ -7,12 +7,14 @@ use App\Models\AdminsRole;
 use App\Models\AppSetting;
 use App\Models\Coupon;
 use App\Models\Group;
+use App\Services\ActivityLogger;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Session;
 use App\Models\Brand;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class CouponsController extends Controller
@@ -64,6 +66,11 @@ class CouponsController extends Controller
 
             $coupon = Coupon::find($coupon_id);
             $coupon->delete();
+
+                 $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete Ecommerce Coupon', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
             Alert::toast('Coupon has been deleted!', 'error');
             return redirect()->back();
         } catch (\Exception $e) {
@@ -192,6 +199,10 @@ class CouponsController extends Controller
             $coupon->expiry_date = $data['expiry_date'];
             $coupon->status = 1;
             $coupon->save();
+
+               $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add or Edit Ecommerce Coupon', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
             Alert::toast($message, 'success');
             return redirect('admin/coupons');

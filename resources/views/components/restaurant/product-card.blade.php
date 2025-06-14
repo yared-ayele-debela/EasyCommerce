@@ -1,5 +1,9 @@
 @props(['product'])
 @php
+use App\Services\LocationService;
+
+$locationService = new LocationService();
+
     $off = $product->price - $product->getFinalPrice();
 
     $parsedPath = $product->image ? parse_url($product->image, PHP_URL_PATH) : null;
@@ -7,31 +11,48 @@
     $imageSrc = ($relativePath && Storage::disk('public')->exists($relativePath))
         ? $product->image
         : asset('restaurant_frontend/default-image.png');
+
+         $userLat = session(key: 'user_lat');
+    $userLng = session('user_lng');
+    $restLat = $product->restaurant->latitude;
+    $restLng = $product->restaurant->longitude;
+
+    $distance = $locationService->getDistance($userLat, $userLng, $restLat, $restLng);
 @endphp
 
 <div class="item my-2">
     <div class="offer-card p-1 h-100">
         <a href="{{ url('restaurant/product-detail/' . encrypt($product->id)) }}" class="text-decoration-none text-dark d-block">
             @if($off > 0)
-            <div class="btn btn-sm btn-primary" style="z-index: 1100 !important;">
-                {{ $off }} ETB OFF
+            <div class="btn btn-sm" style="z-index: 1100 !important;background-color: rgba(41, 210, 78, 0.2);">
+                <strong>{{ $off }} ETB OFF</strong>
             </div>
             @endif
             <img src="{{ $imageSrc }}" class="img-fluid mb-2 restaurant-product-image" alt="{{ $product->name }}">
             <h6 class="text-dark">{{ $product->name }}</h6>
-            <p class="mb-0">
+             @if($product->getFinalPrice() < $product->price)
                 <span class="price">{{ $product->getFinalPrice() }} ETB</span>
                 <span class="price-old">{{ $product->price }} ETB</span>
-            </p>
+                @else
+                <span class="price">{{ $product->price }} ETB</span>
+            @endif
         </a>
 
         <div class="hover-buttons">
             <button onclick="window.location.href='{{ url('restaurant/product-detail/' . encrypt($product->id)) }}'" class="btn-view">
                 <i class="bi bi-eye-fill"></i>
             </button>
-            <button class="btn-cart add-to-cart" data-product="{{ $product->id }}" data-product-price="{{ $product->price }}">
+              @if($distance > $product->restaurant->delivery_radius)
+            <button class="btn-cart add-to-cart" data-product="{{ $product->id }}" data-product-price="{{ $product->getFinalPrice() }}">
                 <i class="bi bi-cart-check-fill"></i>
             </button>
+            @else
+            <div class="tooltip-wrapper">
+            <button class="btn btn-danger" disabled>
+                <i class="bi bi-cart-check-fill"></i>
+            </button>
+            </div>
+            @endif
             <button class="btn-wishlist add-to-wishlist" data-product="{{ $product->id }}">
                 <i class="bi bi-heart text-white"></i>
             </button>

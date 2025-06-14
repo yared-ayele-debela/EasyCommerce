@@ -8,12 +8,22 @@ use App\Models\Hotel;
 use App\Models\Hotel\RoomType;
 use App\Models\Room;
 use App\Models\RoomAmenity;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class RoomController extends Controller
 {
+
+      public function __construct()
+    {
+        $this->middleware('admin.permission:view_hotel_room')->only('index');
+        $this->middleware('admin.permission:add_hotel_room')->only('store');
+        $this->middleware('admin.permission:edit_hotel_room')->only(methods: 'update');
+        $this->middleware('admin.permission:delete_hotel_room')->only('destroy');
+    }
     public function index()
     {
         $adminType = Auth::guard('admin')->user()->type;
@@ -88,6 +98,11 @@ class RoomController extends Controller
             }
         }
 
+        $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log('Add Hotel Room', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
         return redirect()->route('rooms.index')->with('success', 'Room created successfully.');
     }
 
@@ -151,6 +166,10 @@ class RoomController extends Controller
         }
 
 
+        $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log('Update Hotel Room', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
 
         return redirect()->route('rooms.index')->with('success', 'Room updated successfully.');
     }
@@ -176,6 +195,11 @@ class RoomController extends Controller
         }
         // Delete the room itself
         $room->delete();
+
+        $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete Hotel Room', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
         return redirect()->route('rooms.index')->with('success', 'Room deleted successfully.');
     }
 }

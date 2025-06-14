@@ -3,13 +3,24 @@
 namespace App\Http\Controllers\Hotel\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\HotelCoupon;
+use App\Services\ActivityLogger;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CouponController extends Controller
 {
+
+      public function __construct()
+    {
+        $this->middleware('admin.permission:view_hotel_coupon')->only('index');
+        $this->middleware('admin.permission:add_hotel_coupon')->only('store');
+        $this->middleware('admin.permission:edit_hotel_coupon')->only(methods: 'update');
+        $this->middleware('admin.permission:delete_hotel_coupon')->only('destroy');
+    }
+    
     public function index()
     {
         $adminType = Auth::guard('admin')->user()->type;
@@ -37,6 +48,12 @@ class CouponController extends Controller
 
 
         HotelCoupon::create($validated);
+
+          $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log('Add Coupon', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
         return redirect()->back()->with('success', 'Coupon created successfully!');
     }
 
@@ -55,12 +72,21 @@ class CouponController extends Controller
         : null;
 
         $coupon->update($validated);
+
+         $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log('Update Coupon', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
         return redirect()->back()->with('success', 'Coupon updated successfully!');
     }
 
     public function destroy(HotelCoupon $coupon)
     {
         $coupon->delete();
+         $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete Coupon', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
         return redirect()->back()->with('success', 'Coupon deleted successfully!');
     }
 }

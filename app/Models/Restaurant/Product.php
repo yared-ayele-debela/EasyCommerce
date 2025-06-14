@@ -45,18 +45,45 @@ class Product extends Model
            return $this->hasMany(ProductSize::class);
        }
 
+    //    public function getFinalPrice()
+    //    {
+    //        $finalPrice = $this->price;
+
+    //        if ($this->discount_type == 'percentage') {
+    //            $finalPrice = $this->price - ($this->price * ($this->discount / 100));
+    //        } elseif ($this->discount_type == 'fixed') {
+    //            $finalPrice = $this->price - $this->discount;
+    //        }
+
+    //        return number_format($finalPrice, 2);
+    //    }
+
        public function getFinalPrice()
-       {
-           $finalPrice = $this->price;
+{
+    $basePrice = $this->price;
 
-           if ($this->discount_type == 'percentage') {
-               $finalPrice = $this->price - ($this->price * ($this->discount / 100));
-           } elseif ($this->discount_type == 'fixed') {
-               $finalPrice = $this->price - $this->discount;
-           }
+    // Priority: product discount > category discount
+    if ($this->discount_type && $this->discount > 0) {
+        return $this->applyDiscount($basePrice, $this->discount_type, $this->discount);
+    }
 
-           return number_format($finalPrice, 2);
-       }
+    if ($this->category && $this->category->discount_type && $this->category->discount > 0) {
+        return $this->applyDiscount($basePrice, $this->category->discount_type, $this->category->discount);
+    }
+
+    return $basePrice;
+}
+
+private function applyDiscount($price, $type, $value)
+{
+    if ($type === 'percentage') {
+        return round($price - ($price * $value / 100), 2);
+    } elseif ($type === 'fixed') {
+        return round(max(0, $price - $value), 2);
+    }
+
+    return $price;
+}
 
        public function ratings()
        {

@@ -16,9 +16,45 @@ class RestaurantController extends Controller
     //
     public function index()
     {
-        $restaurants=Restaurant::where('is_open',1)->latest()->paginate(10);
-        return view('Restaurant.frontend.pages.restaurants.index',compact('restaurants'));
+        $auto_restaurants=Restaurant::where('is_open',1)->latest()->paginate(10);
+        $cities = Restaurant::select('city')->distinct()->pluck('city');
+        $states = Restaurant::select('state')->distinct()->pluck('state');
+        $delivery_zones = Restaurant::select('zone')->distinct()->pluck('zone');
+        $delivery_fees = Restaurant::select('start_from')->distinct()->pluck('start_from');
+        // dd($auto_restaurants);
+        return view('Restaurant.frontend.pages.restaurants.index',compact( 'auto_restaurants','cities', 'states', 'delivery_zones', 'delivery_fees'));
     }
+
+    public function filter(Request $request)
+    {
+        $query = Restaurant::where('is_open', 1);
+
+        if ($request->filled('city')) {
+            $query->where('city', 'like', '%' . $request->city . '%');
+        }
+        if ($request->filled(key: 'name')) {
+            $query->where( 'name', 'like', '%' . $request->name . '%');
+        }
+
+        if ($request->filled('state')) {
+            $query->where('state', 'like', '%' . $request->state . '%');
+        }
+
+        if ($request->filled('delivery_zone')) {
+            $query->where('zone', 'like', '%' . $request->delivery_zone . '%');
+        }
+
+        if ($request->filled('delivery_fee')) {
+            $query->where( 'start_from', '>=', $request->delivery_fee);
+        }
+
+        $auto_restaurants = $query->latest()->paginate(10);
+
+        $html = view('all_frontend_layouts.partials.restaurant-cards', compact(var_name: 'auto_restaurants'))->render();
+
+        return response()->json(['html' => $html]);
+    }
+
     public function fetchRestaurant(Request $request)
     {
         $auto_restaurants=Restaurant::where('is_open',1)->latest()->paginate(4);
@@ -59,7 +95,7 @@ class RestaurantController extends Controller
         // $latitude = $request->latitude;
         // $longitude = $request->longitude;
 
-        $latitude = session('user_lat', 9.03); 
+        $latitude = session('user_lat', 9.03);
         $longitude = session('user_lng', 38.74);
 
         if (!$latitude || !$longitude) {

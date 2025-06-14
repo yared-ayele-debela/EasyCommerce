@@ -20,6 +20,7 @@ class Roles extends Model
 
     public function hasPermission($permission)
     {
+        // dd( $this->permissions->contains('name', $permission));
         return $this->permissions->contains('name', $permission);
     }
 }

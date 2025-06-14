@@ -9,6 +9,8 @@ use App\Models\Group;
 use App\Models\Product;
 use App\Models\ProductFilter;
 use App\Models\Tax;
+use App\Services\ActivityLogger;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -113,12 +115,18 @@ class AddProduct extends Component
             $product->product_video = asset('storage/' . $videoPath); // store full URL
         }
 
-        $product->status = 0;
+        $product->status = 1;
         $product->is_featured = 'Yes';
         $product->returnable_time = $this->returnable_time;
         $product->available_for_delivery = $this->available_for_delivery;
         $product->is_returnable = $this->is_returnable;
         $product->save();
+
+         $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add Ecommerce Product', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
         session()->flash('message', 'Product Saved Successfully');
 
         return redirect()->route('products');

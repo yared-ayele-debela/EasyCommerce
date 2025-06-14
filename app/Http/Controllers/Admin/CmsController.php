@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use Illuminate\Http\Request;
 use App\Models\CmsPage;
+use App\Services\ActivityLogger;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -73,6 +75,11 @@ class CmsController extends Controller
 
             $cms->save();
 
+             $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Add Pages', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+
             Alert::toast('Cms page has been saved', 'success');
             return redirect('admin/cms-pages');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -127,6 +134,12 @@ class CmsController extends Controller
             $cms->meta_description = $request->input('meta_description');
             $cms->meta_keywords = $request->input('meta_keywords');
             $cms->update();
+
+
+             $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log('Update Pages', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
 
             Alert::toast('Cms page has been updated', 'success');
             return redirect('admin/cms-pages');
@@ -190,6 +203,11 @@ class CmsController extends Controller
 
             $cms = CmsPage::find($cms_id);
             $cms->delete();
+
+
+             $currentDateTime = Carbon::now();
+        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+        ActivityLogger::log( 'Delete Pages', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
             Alert::toast('Cms page has been deleted', 'error');
             return redirect('admin/cms-pages');
