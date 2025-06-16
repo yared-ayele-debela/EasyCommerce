@@ -135,6 +135,38 @@
         <div class="col-md-2">
              <x-restaurant.normal-product-card :product="$product" bgColor="btn-info" />
         </div>
+
+        {{-- <div class="col-md-2 col-6 my-2 product-item">
+            <div class="offer-card p-3 h-100">
+                <a href="{{ url('restaurant/product-detail/'.encrypt($product->id)) }}">
+                   @php
+                    $off = $product->price - $product->getFinalPrice();
+                    @endphp
+                    @if($off > 0)
+                    <a class="badge-offer">
+                        {{ $off }} ETB OFF
+                    </a>
+                    @endif
+
+                    <img src="{{ $product->image }}" class="img-fluid mb-2" alt="{{ $product->name }}">
+                    <h6 class="text-dark">{{ $product->name }}</h6>
+                    <p class="mb-0"><span class="price">{{ $product->getFinalPrice() }} ETB</span>
+                        <span class="price-old">{{ $product->price }} ETB</span>
+                    </p>
+                </a>
+                <div class="hover-buttons">
+                    <button onclick="window.location.href='{{ url('restaurant/product-detail/'.encrypt($product->id)) }}'" class="btn-view">
+                        <i class="bi bi-eye-fill"></i>
+                    </button>
+                    <button class="btn-cart add-to-cart" data-product="{{ $product->id }}" data-product-price="{{ $product->price }}">
+                        <i class="bi bi-cart-check-fill"></i>
+                    </button>
+                    <button class="btn-wishlist add-to-wishlist" data-product="{{ $product->id }}">
+                        <i class="bi bi-heart text-white"></i>
+                    </button>
+                </div>
+            </div>
+        </div> --}}
         @empty
         <div class="col-md-12 text-center">
             <img src="{{ asset('no-product-found..png') }}" alt="No Product Found" class="img-fluid mb-2">
@@ -154,22 +186,67 @@
             });
         });
 
-            $(document).on('click', '.category-filter', function(e) {
-                e.preventDefault();
-                var categoryId = $(this).data('id');
+        document.querySelectorAll(".category-filter").forEach(button => {
+            button.addEventListener("click", function(event) {
+                event.preventDefault();
+                let categoryId = this.getAttribute("data-id");
+                let restaurantId = "{{ $restaurant->id }}"; // Pass restaurant ID dynamically
 
-                $('.category-filter').removeClass('nav-active text-white').addClass('text-dark');
-                $(this).addClass('nav-active text-white');
+                // Remove active class from all and add to clicked one
+                document.querySelectorAll(".category-filter").forEach(nav => nav.classList.remove("nav-active", "text-white"));
+                this.classList.add("nav-active", "text-white");
 
-                $.ajax({
-                    url: "{{ route('restaurant.filter.products') }}",
-                    type: "GET",
-                    data: { category_id: categoryId },
-                    success: function(response) {
-                        $('#product-list').html(response);
-                    }
-                });
+                fetch("{{ route('restaurant.products.filter') }}", {
+                        method: "POST"
+                        , headers: {
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                            , "Content-Type": "application/json"
+                        }
+                        , body: JSON.stringify({
+                            category_id: categoryId
+                            , restaurant_id: restaurantId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        let productList = document.getElementById("product-list");
+                        productList.innerHTML = "";
+
+                        if (data.products.length === 0) {
+                            productList.innerHTML = "<p class='text-center'>No products found.</p>";
+                            return;
+                        }
+                        data.products.forEach(product => {
+                            let discount = product.price - product.final_price;
+                            productList.innerHTML += `
+                        <div class="col-md-2 col-6 my-2 product-item">
+                            <div class="offer-card p-3 h-100">
+                                <a href="/restaurant/product-detail/${product.encrypted_id}">
+                                    ${discount > 0 ? `<span class="badge-offer">${discount} ETB OFF</span>` : ""}
+                                    <img src="${product.image}" class="img-fluid mb-2" alt="${product.name}">
+                                    <h6 class="text-dark">${product.name}</h6>
+                                    <p class="mb-0">
+                                        <span class="price">${product.final_price} ETB</span>
+                                        <span class="price-old">${product.price} ETB</span>
+                                    </p>
+                                </a>
+                                 <div class="hover-buttons">
+                                        <button onclick="window.location.href='{{ url('restaurant/product-detail/${product.encrypted_id}') }}'" class="btn-view">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </button>
+                                        <button class="btn-cart add-to-cart" data-product="{{ $product->id }}">
+                                            <i class="bi bi-cart-check-fill"></i>
+                                        </button>
+                                        <button class="btn-wishlist add-to-wishlist" data-product="{{ $product->id }}">
+                                            <i class="bi bi-heart text-white"></i>
+                                        </button>
+                                    </div>
+                            </div>
+                        </div>`;
+                        });
+                    });
             });
+        });
     });
 
 </script>

@@ -24,6 +24,16 @@ class RestaurantController extends Controller
         // dd($auto_restaurants);
         return view('Restaurant.frontend.pages.restaurants.index',compact( 'auto_restaurants','cities', 'states', 'delivery_zones', 'delivery_fees'));
     }
+    public function filterProducts(Request $request)
+    {
+        $categoryId = $request->category_id;
+
+        $products = $categoryId 
+            ? Product::where('category_id', $categoryId)->get()
+            : Product::all();
+
+        return view('components.restaurant.filtered-products', compact('products'))->render();
+    }
 
     public function filter(Request $request)
     {

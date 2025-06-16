@@ -1166,6 +1166,8 @@ Route::prefix('/restaurant')->group(function () {
         return response()->json(['products' => $products]);
     })->name('restaurant.products.filter');
 
+    Route::get('/restaurant/filter-products', [FrontendRestaurantController::class, 'filterProducts'])->name('restaurant.filter.products');
+
     Route::get('/products', [FrontendProductController::class, 'filter'])->name('all-restaurant-products');
     Route::get('all-products', [FrontendProductController::class, 'index'])->name('all-restaurant-products-filter');
     Route::post('filter-all-products', [FrontendProductController::class, 'filterProducts'])->name('filter-restaurant-products');
