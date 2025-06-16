@@ -68,7 +68,7 @@ class RestaurantController extends Controller
 
     public function detail($id)
     {
-        $restaurant = Restaurant::with(['admin', 'images','ratings'])->where('id',$id)->first();
+        $restaurant = Restaurant::with(['admin', 'images','ratings'])->findOrFail($id);
         $categories = Category::whereHas('products', function ($query) use ($id) {
             $query->where('restaurant_id', $id);
         })->get();

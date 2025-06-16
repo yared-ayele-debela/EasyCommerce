@@ -1240,7 +1240,7 @@ Route::middleware('auth')->group(function () {
 
 });
 
-// routes/web.php
+// routes/detail.php
 
 
 // web.php
