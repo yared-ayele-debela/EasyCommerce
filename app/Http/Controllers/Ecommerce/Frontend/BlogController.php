@@ -60,9 +60,9 @@ class BlogController extends Controller
 
         $blogs = Blogs::FindorFail($id)->first();
         if ($blogs) {
-        return view('Ecommerce.blogs.detail', compact('blog_comment',  'blogs'));
-        
-       
+        return view('Ecommerce.blogs.detail', compact('blog_comment',  'blogs','count_blog_comment'));
+
+
     } else {
             return redirect()->back()->with('error', 'Blogs not found');
         }

@@ -50,7 +50,7 @@ $user = Auth::guard('admin')->user();
                                     @endif <br>
                                      @if($role->name == 'Super Admin' || $role->name == 'Admin' ||$role->name == 'admin' ||$role->name == 'Hotel Manager' || $role->name == 'Ecommerce Manager'|| $role->name == 'Restaurant Manager')
                                     @else
-                                    @if ($user && $user->hasPermissionByRole('edit role'))
+                                    @if($user && $user->hasPermissionByRole('edit role'))
                                     <a href="{{ route('roles.edit', $role->id) }}" class="btn btn-sm btn-secondary text-white">Edit</a>
                                     @endif
                                     @endif
