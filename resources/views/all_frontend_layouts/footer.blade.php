@@ -113,7 +113,7 @@ $cartCount = $sessionCount + $helperCount;
     </div>
 </footer>
 <!-- Location Request Modal -->
-<div class="modal fade" id="locationModal" tabindex="-1" aria-labelledby="locationModalLabel" aria-hidden="true">
+<div class="modal fade" id="locationModal" tabindex="-1" aria-labelledby="locationModalLabel" aria-hidden="true"  data-bs-backdrop="static" data-bs-keyboard="false">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content shadow">
       <div class="modal-header">
@@ -211,6 +211,7 @@ $cartCount = $sessionCount + $helperCount;
  document.addEventListener('DOMContentLoaded', function () {
     if (!localStorage.getItem('locationAllowed') && !localStorage.getItem('user_lat') && !localStorage.getItem('user_lng')) {
         const modal = new bootstrap.Modal(document.getElementById('locationModal'));
+        
         modal.show();
         document.getElementById('allowLocationBtn').addEventListener('click', function () {
             if (navigator.geolocation) {
