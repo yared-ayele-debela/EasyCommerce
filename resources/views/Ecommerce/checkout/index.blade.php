@@ -5,6 +5,9 @@
 <style>
     #map { height: 400px; width: 100%; margin-bottom: 20px; }
 </style>
+@php
+    $user= Auth::user();
+@endphp
 <div class="container mb-5 mb-md-0">
     <div class="header">
         <button class="btn btn-link text-dark" onclick="history.back()">
@@ -38,7 +41,7 @@
                     @endif
                     <div class="delivery-location mb-2">
                         <div class="d-flex justify-content-between align-items-center">
-                            <button type="button" class="btn btn-outline-primary fw-bold px-2 py-2 delivery_text" id="loadAddresses">
+                            <button type="button" class="btn btn-primary fw-bold px-2 py-2 delivery_text" id="loadAddresses">
                                 <i class="bi bi-geo-alt"></i> Get My Current Addresses
                             </button>
                             <a href="#" class="btn btn-primary fw-bold d-flex align-items-center delivery_text px-3 py-2 rounded-3" data-bs-toggle="modal" data-bs-target="#addressModal">
@@ -47,6 +50,23 @@
                         </div>
                     </div>
                     <div class="row" id="addressContainer">
+                         <input type="hidden" id="current_lat" name="current_lat">
+                         <input type="hidden" id="current_lng" name="current_lng">
+                        <div class="col-md-12 mb-2">
+                            <div class="card shadow-sm p-3 delivery-location">
+                                <div class="form-check">
+                                    <input class="form-check-input address-radio" type="radio" id="current_address" readonly name="address"
+                                        value="current_address">
+                                    <label class="form-check-label w-100" for="address">
+                                        <strong>My Current location</strong></strong> <br>
+                                        <small>
+                                        {{ $user->address }}, {{ $user->city }}, {{ $user->country??'' }} <br>
+                                        <small>Mobile: {{ $user->mobile }}</small>
+                                        </small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                        @forelse ($addresses as $ads)
                              <div class="col-md-12 mb-2">
                                 <div class="card shadow-sm p-3 delivery-location">
@@ -193,7 +213,7 @@
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
                         <span id="payment-error" class="text-danger d-none">Please select a payment method.</span>
-                            
+
                     </div>
                     <div class="modal fade" id="modalId" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg" role="document">
@@ -263,6 +283,34 @@
 @endphp
 
 @include('all_frontend_layouts.partials.delivery_address_modal')
+<script>
+document.getElementById("loadAddresses").addEventListener("click", function () {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+            const userLat = position.coords.latitude;
+            const userLng = position.coords.longitude;
+
+            // Set hidden fields
+            document.getElementById("current_lat").value = userLat;
+            document.getElementById("current_lng").value = userLng;
+
+            // Find closest address radio button
+            let closestRadio = null;
+            let minDistance = Infinity;
+
+            const currentAddressRadio = document.getElementById("current_address");
+             if (currentAddressRadio) {
+                currentAddressRadio.checked = true;
+            }
+
+        }, function (error) {
+            alert("Location access denied or unavailable.");
+        });
+    } else {
+        alert("Geolocation is not supported by this browser.");
+    }
+});
+</script>
 <script>
     const myModal = new bootstrap.Modal(
         document.getElementById("modalId")

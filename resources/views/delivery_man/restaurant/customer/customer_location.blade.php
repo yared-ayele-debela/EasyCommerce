@@ -43,7 +43,7 @@ $delivery_men = Auth::guard('deliverymen')->user();
                    </div>
                 </div>
                 <div class="card-body">
-                    
+
                     <div id="map" class="mt-3"></div>
                 </div>
             </div>
@@ -58,8 +58,8 @@ $delivery_men = Auth::guard('deliverymen')->user();
 <script src="https://cdnjs.cloudflare.com/ajax/libs/laravel-echo/1.11.3/echo.iife.js"></script>
 
 <script>
-  
-    const destinationLatLng = [{{$delivery_address->latitude}}, {{ $delivery_address->longitude }}];
+
+    const destinationLatLng = [{{$order->latitude}}, {{ $order->longitude }}];
     const deliveryManId = {{ $order->delivery_man_id }};
     let startedDriving = false;
 

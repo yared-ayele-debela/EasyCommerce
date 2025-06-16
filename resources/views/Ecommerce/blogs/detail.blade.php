@@ -46,7 +46,7 @@
              <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#leaveCommentModal">
                  Leave a Comment
              </button>
-                @endif
+            @endif
 
              <div class="modal fade" id="leaveCommentModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
                  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered " role="document">

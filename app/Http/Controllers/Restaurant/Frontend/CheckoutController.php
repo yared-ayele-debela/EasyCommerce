@@ -14,6 +14,7 @@ use App\Models\Restaurant\OrderItem;
 use App\Models\Restaurant\OrderPaymentInfo;
 use App\Models\Restaurant\Product;
 use App\Models\Restaurant\Restaurant;
+use App\Models\Restaurant\RestaurantCartItem;
 use App\Models\ShippingCharge;
 use App\Models\Tip;
 use App\Models\Vendor;
@@ -79,7 +80,7 @@ class CheckoutController extends Controller
         if ($request->payment_method === "Bank Transfer") {
             $validator = Validator::make($request->all(), [
                 'payment_method' => 'required|string',
-                'address_id' => 'required|exists:delivery_address,id',
+                // 'address_id' => 'required|exists:delivery_address,id',
                 'bank_name' => 'nullable|string|max:255',
                 'transaction_number' => 'nullable|string|max:255',
                 'receipt' => 'nullable|file|mimes:jpeg,png,pdf|max:2048',
@@ -87,8 +88,17 @@ class CheckoutController extends Controller
         } else {
             $validator = Validator::make($request->all(), [
                 'payment_method' => 'required|string',
-                'address_id' => 'required|exists:delivery_address,id',
+                // 'address_id' => 'required|exists:delivery_address,id',
             ]);
+        }
+
+        if( $request->input('address_id')){
+            $delivery_address = DeliveryAddress::find($request->input('address_id'));
+        }elseif($request->input('address')==="current_address"){
+            $current_lat= $request->input('current_lat');
+            $current_long= $request->input('current_lng');
+            $user_delivery_address=Auth::user();
+        }else{
         }
 
         if ($validator->fails()) {
@@ -117,19 +127,40 @@ class CheckoutController extends Controller
         // dd($total);
         DB::beginTransaction();
 
-        $order = Order::create([
-            'user_id' => Auth::user()->id,
-            'subtotal' => $subtotal,
-            'discount' => $discount,
-            'delivery_fee' => $delivery_fee,
-            'total' => $total,
-            'tax' => $request->input('tax', 0),
-            'tip_amount' => $tipAmount,
-            'delivery_code' => strtoupper(Str::random(6)),
-            'status' => 'pending',
-            'payment_method' => $request->input('payment_method'),
-            'delivery_address_id' => $request->input('address_id'),
-        ]);
+        $order = new Order();
+        $order->user_id = Auth::user()->id;
+        $order->subtotal = $subtotal;
+        $order->discount = $discount;
+        $order->delivery_fee = $delivery_fee;
+        $order->total = $total;
+        $order->tax = $request->input('tax', 0);
+        $order->tip_amount = $tipAmount;
+        $order->delivery_code = strtoupper(Str::random(6));
+        $order->status = 'pending';
+        $order->payment_method = $request->input('payment_method');
+        $order->delivery_address_id = $request->input('address_id');
+
+        if( $request->input('address_id')){
+        $order->address = $delivery_address->address ?? '';
+        $order->city = $delivery_address->city ?? '';
+        $order->sub_city = $delivery_address->sub_city ?? '';
+        $order->street = $delivery_address->street ?? '';
+        $order->state = $delivery_address->state ?? '';
+        $order->mobile = $delivery_address->mobile ?? Auth::user()->mobile;
+        $order->latitude = $delivery_address->latitude ?? $request->input('current_lat', null);
+        $order->longitude = $delivery_address->longitude ?? $request->input('current_lng', null);
+        }elseif($request->input('address')==="current_address"){
+            $order->address = Auth::user()->address ?? '';
+            $order->city = Auth::user()->city ?? '';
+            $order->state = Auth::user()->state ?? '';
+            $order->mobile = Auth::user()->mobile;
+            $order->latitude = $request->input('current_lat', null);
+            $order->longitude = $request->input('current_lng', null);
+        }else{
+
+        }
+        $order->save();
+        // Save address details if provided
 
         foreach ($cart as $item) {
 
@@ -156,6 +187,7 @@ class CheckoutController extends Controller
                 ]);
 
 
+                if(isset($vendor->id)){
                 $vendorId=$vendor->id;
                 $vendorWallet = VendorWallet::firstOrCreate(['vendor_id' => $vendorId]);
                 $vendorWallet->available_balance += $vendorEarning;
@@ -167,6 +199,7 @@ class CheckoutController extends Controller
                     'amount' => $vendorEarning,
                     'description' => 'Earning from Restaurant order #'.$order->id
                 ]);
+            }
 
         }
 
@@ -200,12 +233,13 @@ class CheckoutController extends Controller
             }
         }
 
-        Mail::to(Auth::user()->email)->send(new OrderConfirmationMail($order));
+        // Mail::to(Auth::user()->email)->send(new OrderConfirmationMail($order));
 
         DB::commit();
         session()->forget(['cart', 'cart_subtotal', 'discount']); // Clear cart session after successful order
         session()->forget(['order_now_cart', 'order_now_cart_subtotal', 'order_now_discount']); // Clear cart session after successful order
 
+        $cart= RestaurantCartItem::where('user_id', Auth::id())->delete(); // Clear cart from database
         return redirect()->route('restaurant.order.success', ['order' => $order->id])
             ->with('success', 'Your order has been placed successfully.');
         } catch (\Exception $e) {
@@ -259,7 +293,7 @@ class CheckoutController extends Controller
         if ($request->payment_method === "Bank Transfer") {
             $validator = Validator::make($request->all(), [
                 'payment_method' => 'required|string',
-                'address_id' => 'required|exists:delivery_address,id',
+                // 'address_id' => 'required|exists:delivery_address,id',
                 'bank_name' => 'nullable|string|max:255',
                 'transaction_number' => 'nullable|string|max:255',
                 'receipt' => 'nullable|file|mimes:jpeg,png,pdf|max:2048',
@@ -267,11 +301,21 @@ class CheckoutController extends Controller
         } else {
             $validator = Validator::make($request->all(), [
                 'payment_method' => 'required|string',
-                'address_id' => 'required|exists:delivery_address,id',
+                // 'address_id' => 'required|exists:delivery_address,id',
             ]);
         }
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
+        }
+          if( $request->input('address_id')){
+            $delivery_address = DeliveryAddress::find($request->input('address_id'));
+            dd($delivery_address);
+        }elseif($request->input('address')==="current_address"){
+            $current_lat= $request->input('current_lat');
+            $current_long= $request->input('current_lng');
+            $user_delivery_address=Auth::user();
+            dd($user_delivery_address);
+        }else{
         }
 
         $order_now_cart = session()->get('order_now_cart', []);
@@ -313,19 +357,40 @@ class CheckoutController extends Controller
 
         DB::beginTransaction();
 
-        $order = Order::create([
-            'user_id' => Auth::user()->id,
-            'subtotal' => $subtotal,
-            'discount' => $discount,
-            'delivery_fee' => $totalShipping,
-            'total' => $total,
-            'tax' => $totalTax,
-            'tip_amount' => $tipAmount,
-            'delivery_code' => strtoupper(Str::random(6)),
-            'status' => 'pending',
-            'payment_method' => $request->input('payment_method'),
-            'delivery_address_id' => $request->input('address_id'),
-        ]);
+
+        $order = new Order();
+        $order->user_id = Auth::user()->id;
+        $order->subtotal = $subtotal;
+        $order->discount = $discount;
+        $order->delivery_fee = $totalShipping;
+        $order->total = $total;
+        $order->tax = $request->input('tax', 0);
+        $order->tip_amount = $tipAmount;
+        $order->delivery_code = strtoupper(Str::random(6));
+        $order->status = 'pending';
+        $order->payment_method = $request->input('payment_method');
+        $order->delivery_address_id = $request->input('address_id');
+
+        if( $request->input('address_id')){
+        $order->address = $delivery_address->address ?? '';
+        $order->city = $delivery_address->city ?? '';
+        $order->sub_city = $delivery_address->sub_city ?? '';
+        $order->street = $delivery_address->street ?? '';
+        $order->state = $delivery_address->state ?? '';
+        $order->mobile = $delivery_address->mobile ?? Auth::user()->mobile;
+        $order->latitude = $delivery_address->latitude ?? $request->input('current_lat', null);
+        $order->longitude = $delivery_address->longitude ?? $request->input('current_lng', null);
+        }elseif($request->input('address')==="current_address"){
+            $order->address = Auth::user()->address ?? '';
+            $order->city = Auth::user()->city ?? '';
+            $order->state = Auth::user()->state ?? '';
+            $order->mobile = Auth::user()->mobile;
+            $order->latitude = $request->input('current_lat', null);
+            $order->longitude = $request->input('current_lng', null);
+        }else{
+
+        }
+        $order->save();
 
         foreach ($order_now_cart as $item) {
                 $itemSubtotal=$item['price']* $item['quantity'];
@@ -350,7 +415,7 @@ class CheckoutController extends Controller
                 'vendor_earning'=>$vendorEarning
             ]);
 
-
+                if(isset($vendor->id)){
                 $vendorId=$vendor->id;
                 $vendorWallet = VendorWallet::firstOrCreate(['vendor_id' => $vendorId]);
                 $vendorWallet->available_balance += $vendorEarning;
@@ -362,6 +427,7 @@ class CheckoutController extends Controller
                     'amount' => $vendorEarning,
                     'description' => 'Earning from Restaurant order #'.$order->id
                 ]);
+            }
 
         }
         if ($request->payment_method === "Bank Transfer") {

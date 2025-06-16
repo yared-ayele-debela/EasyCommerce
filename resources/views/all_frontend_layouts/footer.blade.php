@@ -209,7 +209,7 @@ $cartCount = $sessionCount + $helperCount;
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
 <script>
  document.addEventListener('DOMContentLoaded', function () {
-    if (!localStorage.getItem('locationAllowed')) {
+    if (!localStorage.getItem('locationAllowed') && !localStorage.getItem('user_lat') && !localStorage.getItem('user_lng')) {
         const modal = new bootstrap.Modal(document.getElementById('locationModal'));
         modal.show();
         document.getElementById('allowLocationBtn').addEventListener('click', function () {

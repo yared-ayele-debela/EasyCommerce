@@ -42,7 +42,7 @@ $delivery_men = Auth::guard('deliverymen')->user();
                    </div>
                 </div>
                 <div class="card-body">
-                    
+
                     <div id="map" class="mt-3"></div>
                 </div>
             </div>
@@ -70,7 +70,7 @@ const destination = L.marker(destinationLatLng, {
         iconSize: [40, 40],
         iconAnchor: [15, 15]
     })
-}).addTo(map).bindPopup("Hotel Location");
+}).addTo(map).bindPopup("SHop Location");
 
 // Delivery marker, routing control, and trail
 let deliveryMarker = null;

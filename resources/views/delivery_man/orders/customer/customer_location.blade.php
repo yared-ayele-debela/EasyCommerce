@@ -66,11 +66,11 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 const destination = L.marker(destinationLatLng, {
     icon: L.icon({
-        iconUrl: '{{ asset('restaurant_frontend/store.gif') }}',
+        iconUrl: '{{ asset('restaurant_frontend/placeholder.gif') }}',
         iconSize: [40, 40],
         iconAnchor: [15, 15]
     })
-}).addTo(map).bindPopup("Hotel Location");
+}).addTo(map).bindPopup("Customer Location");
 
 
 let deliveryMarker = null;

@@ -144,13 +144,13 @@ $setting = AppSetting::first();
 
             <div class="info-box">
                 <h4 class="section-title">📬 Delivery Address</h4>
-                <p><strong>Address:</strong> {{ $order->address->address ?? '-' }}</p>
-                <p><strong>City:</strong> {{ $order->address->city ?? '-' }}</p>
-                <p><strong>Sub City:</strong> {{ $order->address->sub_city ?? '-' }}</p>
-                <p><strong>Street:</strong> {{ $order->address->street ?? '-' }}</p>
-                <p><strong>State:</strong> {{ $order->address->state ?? '-' }}</p>
-                <p><strong>Country:</strong> {{ $order->address->country ?? '-' }}</p>
-                <p><strong>Pincode:</strong> {{ $order->address->pincode ?? '-' }}</p>
+                <p><strong>Address:</strong> {{ $order->address ?? '-' }}</p>
+                <p><strong>City:</strong> {{ $order->city ?? '-' }}</p>
+                <p><strong>Sub City:</strong> {{ $order->sub_city ?? '-' }}</p>
+                <p><strong>Street:</strong> {{ $order->street ?? '-' }}</p>
+                <p><strong>State:</strong> {{ $order->state ?? '-' }}</p>
+                <p><strong>Country:</strong> {{ $order->country ?? '-' }}</p>
+                <p><strong>Pincode:</strong> {{ $order->pincode ?? '-' }}</p>
             </div>
         </div>
 

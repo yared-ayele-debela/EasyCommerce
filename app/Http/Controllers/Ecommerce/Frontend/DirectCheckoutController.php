@@ -102,7 +102,7 @@ class DirectCheckoutController extends Controller
         if($request->payment_method==="Bank Transfer"){
             $validator = Validator::make($request->all(), [
                 'payment_method' => 'required|string',
-                'address_id' => 'required|exists:delivery_address,id',
+                // 'address_id' => 'required|exists:delivery_address,id',
                 'bank_name' => 'nullable|string|max:255',
                 'transaction_number' => 'nullable|string|max:255',
                 'receipt' => 'nullable|file|mimes:jpeg,png,pdf|max:2048',
@@ -110,14 +110,24 @@ class DirectCheckoutController extends Controller
         }else{
             // dd("other");
             $request->validate([
-                'address_id' => 'required',
+                // 'address_id' => 'required',
                 'payment_method' => 'required',
             ]);
         }
         $data = $request->all();
         // dd($data);
-        $deliveryAddresses = DeliveryAddress::where('id', $data['address_id'])->first()->toArray();
 
+        if($request->input('address')==="current_address"){
+            $current_lat= $request->input('current_lat');
+            $current_long= $request->input('current_lng');
+            $user_delivery_address=Auth::user();
+            // dd($user_delivery_address);
+        }elseif($request->input('address_id')){
+            $deliveryAddresses = DeliveryAddress::where('id', $data['address_id'])->first()->toArray();
+            $delivery_address = DeliveryAddress::find($request->input('address_id'));
+            // dd($delivery_address);
+        }else{
+        }
         $tipAmount = 0;
         if ($request->tip_option) {
             if (is_numeric($request->tip_option)) {
@@ -135,6 +145,7 @@ class DirectCheckoutController extends Controller
         $order = new Order();
         $order->user_id = Auth::user()->id;
         $order->order_code = $user_code;
+        if( $request->input('address_id')){
         $order->name = $deliveryAddresses['name'];
         $order->address = $deliveryAddresses['address'];
         $order->city = $deliveryAddresses['city'];
@@ -142,6 +153,20 @@ class DirectCheckoutController extends Controller
         $order->country = $deliveryAddresses['country'];
         $order->pincode = $deliveryAddresses['pincode'];
         $order->mobile = $deliveryAddresses['mobile'];
+        $order->latitude = $delivery_address->latitude ?? $request->input('current_lat', null);
+        $order->longitude = $delivery_address->longitude ?? $request->input('current_lng', null);
+        }elseif($request->input('address')==="current_address"){
+            $order->name = $user_delivery_address->name;
+            $order->address = $user_delivery_address->address;
+            $order->city = $user_delivery_address->city;
+            $order->state = $user_delivery_address->state;
+            $order->country = $user_delivery_address->country;
+            $order->pincode = $user_delivery_address->pincode;
+            $order->mobile = $user_delivery_address->mobile;
+            $order->latitude = $request->input('current_lat', null);
+            $order->longitude = $request->input('current_lng', null);
+        }else{
+        }
         $order->email = Auth::user()->email;
         $order->shipping_charges = $data['shipping'];
         $order->tax_charge = $data['tax'];

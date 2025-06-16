@@ -13,6 +13,9 @@ use App\Models\Restaurant\Product;
         border: 1px solid #2222 !important;
         margin: 5px !important;
     }
+    @php
+        $user= Auth::user();
+    @endphp
 </style>
 <div class="container mb-4">
     <div class="header">
@@ -43,8 +46,8 @@ use App\Models\Restaurant\Product;
             @endif
             <div class="delivery-location mb-2">
                 <div class="d-flex justify-content-between align-items-center">
-                    <button type="button" class="btn btn-outline-primary fw-bold px-4 py-2 delivery_text" id="loadAddresses">
-                        <i class="bi bi-geo-alt"></i> Load Delivery Addresses
+                    <button type="button" class="btn btn-primary fw-bold px-4 py-2 delivery_text" id="loadAddresses">
+                        <i class="bi bi-geo-alt"></i> Get My Current Addresses
                     </button>
 
                     <a href="#" class="btn btn-primary fw-bold d-flex align-items-center delivery_text px-3 py-2 rounded-3" data-bs-toggle="modal" data-bs-target="#addressModal">
@@ -55,7 +58,25 @@ use App\Models\Restaurant\Product;
             <form action="{{ route('restaurant.checkout.placeOrder') }}" id="checkoutForm" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="tax" value="{{ $totalTax }}">
+                <input type="hidden" id="current_lat" name="current_lat">
+                <input type="hidden" id="current_lng" name="current_lng">
+
                 <div class="row" id="addressContainer">
+                    <div class="col-md-12 mb-2">
+                    <div class="card shadow-sm p-3 delivery-location">
+                        <div class="form-check">
+                            <input class="form-check-input address-radio" type="radio" id="current_address" readonly name="address"
+                                value="current_address">
+                            <label class="form-check-label w-100" for="address">
+                                <strong>My Current location</strong></strong> <br>
+                                <small>
+                                {{ $user->address }}, {{ $user->city }}, {{ $user->country??'' }} <br>
+                                <small>Mobile: {{ $user->mobile }}</small>
+                                </small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
                    @forelse ($addresses as $address)
                              <div class="col-md-12 mb-2">
                                 <div class="card shadow-sm p-3 delivery-location">
@@ -210,7 +231,7 @@ use App\Models\Restaurant\Product;
                         </label>
                     </div>
                     <span id="payment-error" class="text-danger d-none">Please select a payment method.</span>
-                    
+
                 </div>
 
                 <!-- Modal Body -->
@@ -285,13 +306,42 @@ use App\Models\Restaurant\Product;
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 @include('all_frontend_layouts.partials.delivery_address_modal')
 <script>
+document.getElementById("loadAddresses").addEventListener("click", function () {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+            const userLat = position.coords.latitude;
+            const userLng = position.coords.longitude;
+
+            // Set hidden fields
+            document.getElementById("current_lat").value = userLat;
+            document.getElementById("current_lng").value = userLng;
+
+            // Find closest address radio button
+            let closestRadio = null;
+            let minDistance = Infinity;
+
+            const currentAddressRadio = document.getElementById("current_address");
+             if (currentAddressRadio) {
+                currentAddressRadio.checked = true;
+            }
+
+        }, function (error) {
+            alert("Location access denied or unavailable.");
+        });
+    } else {
+        alert("Geolocation is not supported by this browser.");
+    }
+});
+</script>
+
+<script>
     document.addEventListener('DOMContentLoaded', function () {
           $("#toggleItems").click(function() {
             $("#itemsSection").toggleClass("d-none");
             let isVisible = !$("#itemsSection").hasClass("d-none");
             $(this).html(isVisible ? '<i class="bi bi-eye-slash"></i> Hide Items' : '<i class="bi bi-eye"></i> Show Items');
         });
-        
+
         const tipOptions = document.querySelectorAll('.tip-option');
         const selectedTipInput = document.getElementById('selected_tip');
         const customInputContainer = document.getElementById('custom-tip-container');
@@ -312,9 +362,7 @@ use App\Models\Restaurant\Product;
             option.addEventListener('click', function () {
                 tipOptions.forEach(opt => opt.classList.remove('selected'));
                 this.classList.add('selected');
-
                 const tipValue = this.dataset.tip;
-
                 if (tipValue === 'custom') {
                     selectedTipInput.value = customInputField.value || 'custom';
                     customInputContainer.style.display = 'block';
@@ -387,7 +435,7 @@ use App\Models\Restaurant\Product;
 
 <script>
     $(document).ready(function() {
-        
+
 
         // Listen for address selection
         $(document).on("change", ".address-radio", function() {

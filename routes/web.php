@@ -1134,6 +1134,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/products/{product}/request-stock', [ProductRequestController::class, 'store'])->name('product.request-stock');
     Route::delete('/user/delete', [UserController::class, 'destroy'])->name('user.destroy');
 
+        Route::get('thanks', [FrontProductController::class, 'thanks'])->name('thanks');
+
 });
  Route::post('/forgot-password/send-otp', [ForgetPasswordController::class, 'sendOTPForReset'])->name('forgot.sendotp');
     Route::get('/verify-otp', [ForgetPasswordController::class, 'showOTPVerifyForm'])->name('forgot.verify.form');

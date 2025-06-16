@@ -194,10 +194,10 @@ class OrderController extends Controller
 
     public function getCustomerLocation($orderId){
         $order = Order::findOrFail($orderId);
-        $delivery_address=DeliveryAddress::where('id',operator: $order->delivery_address_id)->first();
+        // $delivery_address=DeliveryAddress::where('id',operator: $order->delivery_address_id)->first();
         $appsettings = AppSetting::all()->toArray();
 
         $customer=User::where('id',$order->user_id)->first();
-        return view(view: 'delivery_man.restaurant.customer.customer_location',data: compact('delivery_address','order','customer','appsettings'));
+        return view(view: 'delivery_man.restaurant.customer.customer_location',data: compact('order','customer','appsettings'));
     }
 }

@@ -14,6 +14,9 @@ use App\Models\Restaurant\Product;
         margin: 5px !important;
     }
 </style>
+@php
+    $user= Auth::user();
+@endphp
 <div class="container mb-4">
     <div class="header">
         <button class="btn btn-link text-dark" onclick="history.back()">
@@ -44,7 +47,7 @@ use App\Models\Restaurant\Product;
             @endif
             <div class="delivery-location mb-2">
                 <div class="d-flex justify-content-between align-items-center">
-                    <button type="button" class="btn btn-outline-primary fw-bold px-4 py-2 delivery_text" id="loadAddresses">
+                    <button type="button" class="btn btn-primary fw-bold px-4 py-2 delivery_text" id="loadAddresses">
                         <i class="bi bi-geo-alt"></i> Get My Current Addresses
                     </button>
 
@@ -55,7 +58,24 @@ use App\Models\Restaurant\Product;
             </div>
             <form action="{{ route('restaurant.checkout.placeOrderNow') }}" id="checkoutForm" method="POST" enctype="multipart/form-data">
                 @csrf
+                <input type="hidden" id="current_lat" name="current_lat">
+                <input type="hidden" id="current_lng" name="current_lng">
                 <div class="row" id="addressContainer">
+                    <div class="col-md-12 mb-2">
+                    <div class="card shadow-sm p-3 delivery-location">
+                        <div class="form-check">
+                            <input class="form-check-input address-radio" type="radio" id="current_address" readonly name="address"
+                                value="current_address">
+                            <label class="form-check-label w-100" for="address">
+                                <strong>My Current location</strong></strong> <br>
+                                <small>
+                                {{ $user->address }}, {{ $user->city }}, {{ $user->country??'' }} <br>
+                                <small>Mobile: {{ $user->mobile }}</small>
+                                </small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
                     @forelse ($addresses as $address)
                              <div class="col-md-12 mb-2">
                                 <div class="card shadow-sm p-3 delivery-location">
@@ -97,7 +117,7 @@ use App\Models\Restaurant\Product;
                                                 <th scope="col">Product</th>
                                                 <th scope="col" class="text-center">Quantity</th>
                                                 <th scope="col" class="text-end">Total Price</th>
-                                                
+
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -271,6 +291,34 @@ use App\Models\Restaurant\Product;
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 @include('all_frontend_layouts.partials.delivery_address_modal')
 <script>
+document.getElementById("loadAddresses").addEventListener("click", function () {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+            const userLat = position.coords.latitude;
+            const userLng = position.coords.longitude;
+
+            // Set hidden fields
+            document.getElementById("current_lat").value = userLat;
+            document.getElementById("current_lng").value = userLng;
+
+            // Find closest address radio button
+            let closestRadio = null;
+            let minDistance = Infinity;
+
+            const currentAddressRadio = document.getElementById("current_address");
+             if (currentAddressRadio) {
+                currentAddressRadio.checked = true;
+            }
+
+        }, function (error) {
+            alert("Location access denied or unavailable.");
+        });
+    } else {
+        alert("Geolocation is not supported by this browser.");
+    }
+});
+</script>
+<script>
     document.addEventListener('DOMContentLoaded', function () {
           $("#toggleItems").click(function() {
             $("#itemsSection").toggleClass("d-none");
@@ -373,41 +421,6 @@ use App\Models\Restaurant\Product;
 
 <script>
     $(document).ready(function() {
-        // $('#loadAddresses').click(function() {
-        //     $.ajax({
-        //         url: "{{ url('/addresses') }}"
-        //         , method: "GET"
-        //         , success: function(response) {
-        //             let cards = "";
-        //             if (response.length > 0) {
-        //                 response.forEach(function(address) {
-        //                     cards += `
-        //                         <div class="col-md-12 mb-1">
-        //                             <div class="card shadow-sm p-3 delivery-location">
-        //                                 <div class="form-check">
-        //                                     <input class="form-check-input address-radio" type="radio" name="address"
-        //                                         value="${address.id}" id="address-${address.id}">
-        //                                     <label class="form-check-label w-100" for="address-${address.id}">
-        //                                         <strong>${address.name}</strong> <br>
-        //                                         <small>
-        //                                         ${address.address}, ${address.city}, ${address.sub_city || '-'}, ${address.street || '-'} <br>
-        //                                         <small>Mobile: ${address.mobile}</small>
-        //                                         </small>
-        //                                     </label>
-        //                                 </div>
-        //                             </div>
-        //                         </div>`;
-        //                 });
-        //             } else {
-        //                 cards = `<p class="text-muted text-center">No addresses found.</p>`;
-        //             }
-        //             $('#addressContainer').html(cards);
-        //         }
-        //         , error: function() {
-        //             alert("Error fetching addresses.");
-        //         }
-        //     });
-        // });
 
         // Listen for address selection
         $(document).on("change", ".address-radio", function() {
