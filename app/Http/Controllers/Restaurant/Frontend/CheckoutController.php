@@ -309,12 +309,10 @@ class CheckoutController extends Controller
         }
           if( $request->input('address_id')){
             $delivery_address = DeliveryAddress::find($request->input('address_id'));
-            dd($delivery_address);
         }elseif($request->input('address')==="current_address"){
             $current_lat= $request->input('current_lat');
             $current_long= $request->input('current_lng');
             $user_delivery_address=Auth::user();
-            dd($user_delivery_address);
         }else{
         }
 
