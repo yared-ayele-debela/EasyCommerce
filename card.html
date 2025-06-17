@@ -1,117 +1,410 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Leaflet Live Search in Ethiopia</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SafeCity - Crime Reporting and Tracking System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
-    #map {
-      height: 90vh;
+    body {
+      scroll-behavior: smooth;
     }
-    #search-container {
+    .hero {
+      background: url('https://scontent.fadd3-1.fna.fbcdn.net/v/t39.30808-6/485157512_1064540085720172_160269598318649153_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=833d8c&_nc_ohc=by3FZ0Cz0fUQ7kNvwE0m447&_nc_oc=AdlpLsU9aYHT_IRa-3Zbunds6ohgQVIvVKk5V4RmK2JKbd8H-JVeQuAt6JIZn2oOw_s&_nc_zt=23&_nc_ht=scontent.fadd3-1.fna&_nc_gid=nxHrLempSpmZ3w_QYAgOOQ&oh=00_AfOcD4I6k-uG9ivPy9TTNGnEt54l6WSgbfpFCfFV10ed0g&oe=68559F95') no-repeat center center/cover;
+      color: white;
+      height: 100vh;
+      position: relative;
+    }
+    .hero-overlay {
       position: absolute;
-      top: 10px;
-      left: 50px;
-      z-index: 1000;
-      background: white;
-      padding: 10px;
-      border-radius: 5px;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
     }
-    #search-input {
-      width: 300px;
-      padding: 5px;
+    .hero-content {
+      position: relative;
+      z-index: 2;
     }
-    #suggestions {
-      border: 1px solid #ccc;
-      border-top: none;
-      max-height: 150px;
-      overflow-y: auto;
-      display: none;
-      position: absolute;
-      background: white;
-      width: 300px;
+    .feature-icon {
+      font-size: 2rem;
+      color: #030d46;
     }
-    #suggestions div {
-      padding: 5px;
-      cursor: pointer;
+
+    
+    .text-primary{
+        color: #030d46 !important;
+
     }
-    #suggestions div:hover {
-      background-color: #eee;
+    .bg-primary{
+        background-color: #030d46 !important;
     }
+    .navbar-primary {
+      background-color: #030d46 !important;
+    }
+.btn-outline-primary {
+    --bs-btn-color: #030d46 !important;
+    --bs-btn-border-color: #030d46 !important;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #030d46 !important;
+    --bs-btn-hover-border-color: #030d46 !important;
+    --bs-btn-focus-shadow-rgb: 13,110,253;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #030d46 !important;
+    --bs-btn-active-border-color: #030d46 !important;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #030d46 !important;
+    --bs-btn-disabled-bg: transparent;
+    --bs-btn-disabled-border-color: #030d46 !important;
+    --bs-gradient: none
+}
+
+.btn-primary {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #030d46 !important;
+    --bs-btn-border-color: #030d46 !important;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #030d46 !important;
+    --bs-btn-hover-border-color: #030d46 !important;
+    --bs-btn-focus-shadow-rgb: 49,132,253;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #030d46 !important;
+    --bs-btn-active-border-color: #0a53be;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: #030d46 !important;
+    --bs-btn-disabled-border-color: #030d46 !important
+}
   </style>
 </head>
 <body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-primary bg-dark fixed-top shadow">
+    <div class="container">
+      <a class="navbar-brand fw-bold text-white" href="#">
+        <img src="https://gola.adamacity.gov.et/public/uploads/images/logo.jpg" style="border-radius: 20px;" width="40" alt="">
+        SafeCity</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto text-white">
+          <li class="nav-item"><a class="nav-link text-white" href="#features">Features</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="#how">How It Works</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="#contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
-<div id="search-container">
-  <input type="text" id="search-input" placeholder="Search in Ethiopia..." autocomplete="off">
-  <div id="suggestions"></div>
-</div>
+  <!-- Hero Section -->
+  <header id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+  <div class="carousel-inner">
 
-<div id="map"></div>
+    <!-- Slide 1 -->
+    <div class="carousel-item active">
+      <div class="hero d-flex align-items-center text-center text-white" style="background: url('https://portal.adamacity.gov.et/gallery_images/1737739854.jpg') center/cover no-repeat; height: 80vh;">
+        <div class="container">
+          <h1 class="display-4 fw-bold">Empowering Communities to Stay Safe</h1>
+          <p class="lead">Report crimes, track incidents, and make your city safer.</p>
+          <a href="#contact" class="btn btn-primary btn-lg mt-3">Get Started</a>
+        </div>
+      </div>
+    </div>
 
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-  const map = L.map('map').setView([9.03, 38.74], 6); // Ethiopia center
+    <!-- Slide 2 -->
+    <div class="carousel-item">
+      <div class="hero d-flex align-items-center text-center text-white" style="background: url('https://portal.adamacity.gov.et/gallery_images/1737739854.jpg') center/cover no-repeat; height: 80vh;">
+        <div class="container">
+          <h1 class="display-4 fw-bold">Real-Time Crime Tracking</h1>
+          <p class="lead">Visualize reports and identify hotspots across the city.</p>
+          <a href="#features" class="btn btn-outline-light btn-lg mt-3">Learn More</a>
+        </div>
+      </div>
+    </div>
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors'
-  }).addTo(map);
+    <!-- Slide 3 -->
+    <div class="carousel-item">
+      <div class="hero d-flex align-items-center text-center text-white" style="background: url('https://portal.adamacity.gov.et/gallery_images/1721139717.jpg') center/cover no-repeat; height: 80vh;">
+        <div class="container">
+          <h1 class="display-4 fw-bold">Connect With Local Authorities</h1>
+          <p class="lead">Seamless reporting and communication with your local police.</p>
+          <a href="#officers" class="btn btn-warning btn-lg mt-3 text-dark">Meet the Team</a>
+        </div>
+      </div>
+    </div>
 
-  let marker;
+  </div>
 
-  const searchInput = document.getElementById('search-input');
-  const suggestionsBox = document.getElementById('suggestions');
+  <!-- Controls -->
+  <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</header>
 
-  searchInput.addEventListener('input', async () => {
-    const query = searchInput.value.trim();
-    if (query.length < 3) {
-      suggestionsBox.style.display = 'none';
-      suggestionsBox.innerHTML = '';
-      return;
-    }
 
-    // Fetch from Nominatim with country code "ET"
-    const url = `https://nominatim.openstreetmap.org/search?format=json&limit=5&countrycodes=ET&q=${encodeURIComponent(query)}`;
+  <!-- Features Section -->
+  <section id="features" class="py-5">
+    <div class="container text-center">
+      <h2 class="fw-bold mb-4">Key Features</h2>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <i class="fas fa-shield-alt feature-icon"></i>
+          <h5 class="mt-3">Secure Reporting</h5>
+          <p>Confidentially report crimes using secure channels.</p>
+        </div>
+        <div class="col-md-4">
+          <i class="fas fa-map-marked-alt feature-icon"></i>
+          <h5 class="mt-3">Real-time Tracking</h5>
+          <p>Visualize reported crimes on an interactive city map.</p>
+        </div>
+        <div class="col-md-4">
+          <i class="fas fa-chart-line feature-icon"></i>
+          <h5 class="mt-3">Crime Analytics</h5>
+          <p>Access insights and trends to promote public safety.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    const res = await fetch(url);
-    const places = await res.json();
+  
+  <section id="departments" class="py-5 bg-light">
+  <div class="container">
+    <h2 class="fw-bold text-center mb-5">Police Departments</h2>
+    <div class="row g-4">
+      <!-- Department Card -->
+      <div class="col-md-3">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body text-center">
+            <i class="fas fa-building-shield fa-2x text-primary mb-3"></i>
+            <h5 class="card-title">Central Police Station</h5>
+            <p class="card-text text-muted">123 Main Street, Addis Ababa</p>
+            <p class="card-text"><strong>Contact:</strong> +251 11 123 4567</p>
+            <a href="#" class="btn btn-outline-primary btn-sm mt-2">View Details</a>
+          </div>
+        </div>
+      </div>
 
-    suggestionsBox.innerHTML = '';
-    if (places.length > 0) {
-      places.forEach(place => {
-        const div = document.createElement('div');
-        div.textContent = place.display_name;
-        div.addEventListener('click', () => {
-          if (marker) map.removeLayer(marker);
-          const lat = parseFloat(place.lat);
-          const lon = parseFloat(place.lon);
-          marker = L.marker([lat, lon]).addTo(map)
-            .bindPopup(place.display_name)
-            .openPopup();
-          map.setView([lat, lon], 14);
-          suggestionsBox.innerHTML = '';
-          suggestionsBox.style.display = 'none';
-          searchInput.value = place.display_name;
-        });
-        suggestionsBox.appendChild(div);
-      });
-      suggestionsBox.style.display = 'block';
-    } else {
-      suggestionsBox.style.display = 'none';
-    }
-  });
+      <!-- Add more cards as needed -->
+      <div class="col-md-3">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body text-center">
+            <i class="fas fa-building-shield fa-2x text-primary mb-3"></i>
+            <h5 class="card-title">Bole Sub-City Police</h5>
+            <p class="card-text text-muted">45 Bole Road, Addis Ababa</p>
+            <p class="card-text"><strong>Contact:</strong> +251 11 654 7890</p>
+            <a href="#" class="btn btn-outline-primary btn-sm mt-2">View Details</a>
+          </div>
+        </div>
+      </div>
 
-  // Hide suggestions if user clicks outside
-  document.addEventListener('click', (e) => {
-    if (!document.getElementById('search-container').contains(e.target)) {
-      suggestionsBox.style.display = 'none';
-    }
-  });
-</script>
+      <div class="col-md-3">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body text-center">
+            <i class="fas fa-building-shield fa-2x text-primary mb-3"></i>
+            <h5 class="card-title">Kirkos Division</h5>
+            <p class="card-text text-muted">Kirkos District, Addis Ababa</p>
+            <p class="card-text"><strong>Contact:</strong> +251 11 789 4321</p>
+            <a href="#" class="btn btn-outline-primary btn-sm mt-2">View Details</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body text-center">
+            <i class="fas fa-building-shield fa-2x text-primary mb-3"></i>
+            <h5 class="card-title">Kirkos Division</h5>
+            <p class="card-text text-muted">Kirkos District, Addis Ababa</p>
+            <p class="card-text"><strong>Contact:</strong> +251 11 789 4321</p>
+            <a href="#" class="btn btn-outline-primary btn-sm mt-2">View Details</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
+<section id="officers" class="py-5">
+  <div class="container">
+    <h2 class="text-center fw-bold mb-5">Our Police Officers</h2>
+    <div class="row g-4 justify-content-center">
+      
+      <!-- Officer Card -->
+      <div class="col-md-3 col-sm-6 ">
+        <div class="card border-0 shadow text-center h-100">
+          <img src="https://www.africaintelligence.com/utils/imageresize?x=800&web=1&file64=V29ya2Zsb3dcQUlBXzE1NDU3LkpQRw==" class="card-img-top rounded-circle mx-auto mt-4" style="width: 150px; height: 150px; object-fit: cover;" alt="Officer Photo">
+          <div class="card-body">
+            <h5 class="card-title mb-1">Inspector Dawit Alemu</h5>
+            <p class="text-muted mb-2">Head of Central Police</p>
+            <p class="small">Specialist in community safety and emergency response.</p>
+            <div>
+              <a href="#" class="text-primary me-2"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" class="text-info me-2"><i class="fab fa-twitter"></i></a>
+              <a href="#" class="text-danger"><i class="fas fa-envelope"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Officer Card 2 -->
+      <div class="col-md-3 col-sm-6">
+        <div class="card border-0 shadow text-center h-100">
+          <img src="https://www.africaintelligence.com/utils/imageresize?x=800&web=1&file64=V29ya2Zsb3dcQUlBXzE1NDU3LkpQRw==" class="card-img-top rounded-circle mx-auto mt-4" style="width: 150px; height: 150px; object-fit: cover;" alt="Officer Photo">
+          <div class="card-body">
+            <h5 class="card-title mb-1">Sergeant Hana Tesfaye</h5>
+            <p class="text-muted mb-2">Patrol Officer, Bole Division</p>
+            <p class="small">Dedicated to ensuring safety and rapid incident response.</p>
+            <div>
+              <a href="#" class="text-primary me-2"><i class="fab fa-linkedin-in"></i></a>
+              <a href="#" class="text-success me-2"><i class="fas fa-phone-alt"></i></a>
+              <a href="#" class="text-danger"><i class="fas fa-envelope"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Officer Card 3 -->
+      <div class="col-md-3 col-sm-6">
+        <div class="card border-0 shadow text-center h-100">
+          <img src="https://www.africaintelligence.com/utils/imageresize?x=800&web=1&file64=V29ya2Zsb3dcQUlBXzE1NDU3LkpQRw==" class="card-img-top rounded-circle mx-auto mt-4" style="width: 150px; height: 150px; object-fit: cover;" alt="Officer Photo">
+          <div class="card-body">
+            <h5 class="card-title mb-1">Officer Samuel Getachew</h5>
+            <p class="text-muted mb-2">Investigation Unit, Kirkos</p>
+            <p class="small">Focused on criminal investigations and justice delivery.</p>
+            <div>
+              <a href="#" class="text-dark me-2"><i class="fab fa-github"></i></a>
+              <a href="#" class="text-primary me-2"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" class="text-danger"><i class="fas fa-envelope"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="card border-0 shadow text-center h-100">
+          <img src="https://www.africaintelligence.com/utils/imageresize?x=800&web=1&file64=V29ya2Zsb3dcQUlBXzE1NDU3LkpQRw==" class="card-img-top rounded-circle mx-auto mt-4" style="width: 150px; height: 150px; object-fit: cover;" alt="Officer Photo">
+          <div class="card-body">
+            <h5 class="card-title mb-1">Officer Samuel Getachew</h5>
+            <p class="text-muted mb-2">Investigation Unit, Kirkos</p>
+            <p class="small">Focused on criminal investigations and justice delivery.</p>
+            <div>
+              <a href="#" class="text-dark me-2"><i class="fab fa-github"></i></a>
+              <a href="#" class="text-primary me-2"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" class="text-danger"><i class="fas fa-envelope"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+  <!-- How It Works -->
+  <section id="how" class="bg-light py-5">
+    <div class="container">
+      <h2 class="text-center fw-bold mb-4">How It Works</h2>
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">1. Create an account or sign in anonymously</li>
+            <li class="list-group-item">2. Submit a report with details and location</li>
+            <li class="list-group-item">3. Track your report and view updates</li>
+            <li class="list-group-item">4. See crime hotspots and safety zones</li>
+          </ul>
+        </div>
+        <div class="col-md-6 text-center">
+          <img src="https://source.unsplash.com/500x400/?city,map" class="img-fluid rounded shadow" alt="Crime Map">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="py-5">
+    <div class="container text-center">
+      <h2 class="fw-bold mb-4">Stay Informed. Stay Safe.</h2>
+      <p class="mb-4">Ready to contribute to a safer community? Contact us or sign up to get started.</p>
+      <a href="#" class="btn btn-outline-primary btn-lg">Join SafeCity</a>
+    </div>
+  </section>
+
+  <section id="contact" class="py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center fw-bold mb-4">Contact Us</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+<form>
+          <div class="mb-3">
+            <label for="name" class="form-label">Your Name</label>
+            <input type="text" id="name" class="form-control" placeholder="Enter your name" required>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Your Email</label>
+            <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+          </div>
+          <div class="mb-3">
+            <label for="subject" class="form-label">Subject</label>
+            <input type="text" id="subject" class="form-control" placeholder="Enter a subject" required>
+          </div>
+          <div class="mb-3">
+            <label for="message" class="form-label">Message</label>
+            <textarea id="message" class="form-control" rows="5" placeholder="Your message..." required></textarea>
+          </div>
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary btn-lg">Send Message</button>
+          </div>
+        </form>
+        </div>
+      <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d60006.66206478795!2d39.26443765!3d8.5339447!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x164b1f65036ecb0f%3A0x6babded8f5e67ef6!2sAdama!5e1!3m2!1sen!2set!4v1750064911301!5m2!1sen!2set" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+  <!-- Footer -->
+  <footer class="bg-primary text-white pt-5 pb-4">
+  <div class="container text-md-left">
+    <div class="row text-md-left">
+      <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mb-4">
+        <h5 class="text-uppercase fw-bold">SafeCity</h5>
+        <hr class="mb-4 mt-0 d-inline-block mx-auto" style="width: 60px; background-color: #0d6efd; height: 2px"/>
+        <p>Empowering communities to report and track crime in real-time, making cities safer for everyone.</p>
+      </div>
+
+      <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
+        <h6 class="text-uppercase fw-bold">Quick Links</h6>
+        <p><a href="#features" class="text-white text-decoration-none">Features</a></p>
+        <p><a href="#how" class="text-white text-decoration-none">How It Works</a></p>
+        <p><a href="#departments" class="text-white text-decoration-none">Departments</a></p>
+        <p><a href="#contact" class="text-white text-decoration-none">Contact</a></p>
+      </div>
+
+      <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+        <h6 class="text-uppercase fw-bold">Contact</h6>
+        <p><i class="fas fa-home me-2"></i> Addis Ababa, Ethiopia</p>
+        <p><i class="fas fa-envelope me-2"></i> info@safecity.org</p>
+        <p><i class="fas fa-phone me-2"></i> +251 11 123 4567</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mt-4">
+    <small>&copy; 2025 SafeCity. All Rights Reserved.</small>
+  </div>
+</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
