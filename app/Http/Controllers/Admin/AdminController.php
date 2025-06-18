@@ -52,11 +52,11 @@ class AdminController extends Controller
 
     public function updateRole(Request $request, Admin $user)
     {
-        if (!$request->isMethod('post')) {
-            // Display an error or handle the incorrect request method
-            Alert::toast('Invalid request method!', 'error');
-            return redirect()->route('all-admins.index');
-        }
+        // if (!$request->isMethod('post')) {
+        //     // Display an error or handle the incorrect request method
+        //     Alert::toast('Invalid request method!', 'error');
+        //     return redirect()->route('all-admins.index');
+        // }
 
         $request->validate([
             'role_id' => 'required|exists:roles,id',

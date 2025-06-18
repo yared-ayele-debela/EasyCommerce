@@ -215,26 +215,29 @@ class AdminController extends Controller
             return redirect()->back()->with('error', 'Your account is not active.');
         }
 
-        // if(isset($user->type) || $user->type === '') {
+        // if($user->type === '') {
         //     Auth::guard('admin')->logout();
         // }
-        switch ($user->type) {
-            case 'Hotel Manager':
-                return redirect('/admin/hotel/dashboard');
-            case 'Restaurant Manager':
-                return redirect('/admin/restaurant/dashboard');
-            case 'Ecommerce Manager':
-            case 'Super Admin':
-            case 'vendor':
-            case 'admin':
-            break;
+        // dd($user->type?? 'No type found');
+      if ($user->type === 'Hotel Manager') {
+            return redirect('/admin/hotel/dashboard');
+        } elseif ($user->type === 'Restaurant Manager') {
+            return redirect('/admin/restaurant/dashboard');
+        } elseif (
+            $user->type === 'Ecommerce Manager' ||
+            $user->type === 'Super Admin' ||
+            $user->type === 'vendor' ||
+            $user->type === 'admin'
+
+        ) {
+        } elseif ($user->type !== null) {
+            return redirect('/admin/dashboard');
         }
 
         $formattedDateTime = now()->toDateTimeString();
         ActivityLogger::log('User login', "User logged in at {$formattedDateTime}");
-
-        // Redirect all roles to admin dashboard unless specifically handled above
         return redirect('/admin/dashboard');
+
     } else {
         return redirect()->back()->with('error', 'Your email or password is incorrect');
     }

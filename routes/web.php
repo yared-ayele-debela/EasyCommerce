@@ -297,7 +297,7 @@ Route::prefix('admin')->group(function () {
 Route::group(['middleware' => ['admin']], function () {
 Route::get('adminlogout', [AdminController::class, 'logout'])->name('adminlogout');
 });
-Route::group(['middleware' => ['admin', 'check.admin:Ecommerce Manager,vendor']], function () {
+Route::group(['middleware' => ['admin']], function () {
 
         Route::post('sales-report', [DashboardController::class, 'filterOrders'])->name('sales-report');
 
@@ -1019,7 +1019,7 @@ Route::prefix('sales')->name('sales.')->group(function () {
 
 // Restaurant Routes
 Route::prefix('admin/restaurant')->group(function () {
-    Route::group(['middleware' => ['admin', 'check.admin:Restaurant Manager']], function () {
+    Route::group(['middleware' => ['admin']], function () {
         Route::get('dashboard', [RestaurantDashboardController::class, 'index'])
             ->name('restaurant.dashboard');
         Route::get('/dashboard/orders/trend', [RestaurantDashboardController::class, 'orderTrend'])->name('orders.trend');
@@ -1076,7 +1076,7 @@ Route::post('/send-message', function () {
     return response()->json(['status' => 'Message broadcasted!']);
 });
 // Hotel Reservations
-Route::group(['middleware' => ['admin', 'check.admin:Hotel Manager']], function () {
+Route::group(['middleware' => ['admin']], function () {
     Route::resource('admin/hotels', HotelController::class);
     Route::get('admin/hotel/{id}/toggleAdvertise', [HotelController::class, 'toggleAdvertise']);
     Route::get('admin/hotel/{id}/toggleFeatured', [HotelController::class, 'toggleFeatured']);

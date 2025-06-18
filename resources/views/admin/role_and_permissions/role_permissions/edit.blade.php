@@ -21,14 +21,7 @@
                     <div class="form-group">
                         <label for="permissions">Permissions</label>
                         <div class="row">
-                            {{-- @foreach($permissions as $category)
-                                <h2><b>for {{ $category->name }} permissions </b></h2>
-                                <ul>
-                                    @foreach($category->permissions as $permission)
-                                        <li>{{ $permission->name }}</li>
-                                    @endforeach
-                                </ul>
-                            @endforeach --}}
+
                             @foreach ($permissions as $category)
                                 <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
                                     <h2><b>for {{ $category->name }} permissions </b></h2>
@@ -44,6 +37,10 @@
                             @endforeach
                         </div>
                     </div>
+                    <div class="my-3 d-flex align-items-center justify-content-left">
+                        <input type="checkbox" id="checkAll" style="height:30px;width:30px;">
+                        <p class="pt-3"> Select / Deselect All</p>
+                    </div>
                     <div class="mt-3">
                         <button type="submit" class="btn btn-primary">Save Permissions</button>
                     </div>
@@ -53,4 +50,13 @@
     </div>
 
   </section>
+  <script>
+document.getElementById('checkAll').addEventListener('change', function () {
+    const isChecked = this.checked;
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]:not(#checkAll)');
+    checkboxes.forEach(function (checkbox) {
+        checkbox.checked = isChecked;
+    });
+});
+</script>
 @endsection

@@ -22,6 +22,7 @@ class DashboardController extends Controller
     //
     public function index()
     {
+        
         $total_slider = SliderBanner::count();
         $total_category = Category::count();
         $total_subcategory = Subcategory::count();

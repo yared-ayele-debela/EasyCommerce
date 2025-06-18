@@ -34,7 +34,7 @@
        @php
        $adminType = Auth::guard('admin')->user()->type;
        @endphp
-       @if ($adminType === "Super Admin")
+       @if ($adminType === "Super Admin" || $adminType === "admin")
        <div class="form-group mb-2">
            <label for="dashboardSwitcher">Switch Dashboard</label>
            <select class="form-control" style="background-color: #F6F9FF;color:#4154F1;" id="dashboardSwitcher">
