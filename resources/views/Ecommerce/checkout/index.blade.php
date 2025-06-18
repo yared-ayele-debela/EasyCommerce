@@ -284,30 +284,18 @@
 
 @include('all_frontend_layouts.partials.delivery_address_modal')
 <script>
-document.getElementById("loadAddresses").addEventListener("click", function () {
+document.getElementById("current_address").addEventListener("click", function () {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function (position) {
-            const userLat = position.coords.latitude;
-            const userLng = position.coords.longitude;
-
-            // Set hidden fields
-            document.getElementById("current_lat").value = userLat;
-            document.getElementById("current_lng").value = userLng;
-
-            // Find closest address radio button
-            let closestRadio = null;
-            let minDistance = Infinity;
-
-            const currentAddressRadio = document.getElementById("current_address");
-             if (currentAddressRadio) {
-                currentAddressRadio.checked = true;
-            }
-
+            document.getElementById("current_lat").value = position.coords.latitude;
+            document.getElementById("current_lng").value = position.coords.longitude;
         }, function (error) {
             alert("Location access denied or unavailable.");
+            document.getElementById("current_address").checked = false;
         });
     } else {
         alert("Geolocation is not supported by this browser.");
+        document.getElementById("current_address").checked = false;
     }
 });
 </script>

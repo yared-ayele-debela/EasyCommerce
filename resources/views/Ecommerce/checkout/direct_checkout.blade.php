@@ -41,7 +41,7 @@
                     @endif
                     <div class="delivery-location mb-2">
                         <div class="d-flex justify-content-between align-items-center">
-                            <button type="button" class="btn btn-primary fw-bold px-2 py-2 delivery_text" id="loadAddresses">
+                            <button type="button" class="btn btn-primary fw-bold px-2 py-2 delivery_text">
                                 <i class="bi bi-geo-alt"></i> Get My Current Addresses
                             </button>
                             <a href="#" class="btn btn-primary fw-bold d-flex align-items-center delivery_text px-3 py-2 rounded-3" data-bs-toggle="modal" data-bs-target="#addressModal">
@@ -55,7 +55,7 @@
                         <div class="col-md-12 mb-2">
                             <div class="card shadow-sm p-3 delivery-location">
                                 <div class="form-check">
-                                    <input class="form-check-input address-radio" type="radio" id="current_address" readonly name="address"
+                                    <input class="form-check-input address-radio" type="radio" id="current_address" name="address"
                                         value="current_address">
                                     <label class="form-check-label w-100" for="address">
                                         <strong>My Current location</strong></strong> <br>
@@ -289,30 +289,18 @@
 
 @include('all_frontend_layouts.partials.delivery_address_modal')
 <script>
-document.getElementById("loadAddresses").addEventListener("click", function () {
+document.getElementById("current_address").addEventListener("click", function () {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function (position) {
-            const userLat = position.coords.latitude;
-            const userLng = position.coords.longitude;
-
-            // Set hidden fields
-            document.getElementById("current_lat").value = userLat;
-            document.getElementById("current_lng").value = userLng;
-
-            // Find closest address radio button
-            let closestRadio = null;
-            let minDistance = Infinity;
-
-            const currentAddressRadio = document.getElementById("current_address");
-             if (currentAddressRadio) {
-                currentAddressRadio.checked = true;
-            }
-
+            document.getElementById("current_lat").value = position.coords.latitude;
+            document.getElementById("current_lng").value = position.coords.longitude;
         }, function (error) {
             alert("Location access denied or unavailable.");
+            document.getElementById("current_address").checked = false;
         });
     } else {
         alert("Geolocation is not supported by this browser.");
+        document.getElementById("current_address").checked = false;
     }
 });
 </script>

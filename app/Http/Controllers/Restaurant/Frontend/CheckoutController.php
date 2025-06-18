@@ -76,7 +76,7 @@ class CheckoutController extends Controller
     public function placeOrder(Request $request)
     {
         // dd($request->all());
-        try{
+        // try{
         if ($request->payment_method === "Bank Transfer") {
             $validator = Validator::make($request->all(), [
                 'payment_method' => 'required|string',
@@ -92,13 +92,14 @@ class CheckoutController extends Controller
             ]);
         }
 
-        if( $request->input('address_id')){
-            $delivery_address = DeliveryAddress::find($request->input('address_id'));
-        }elseif($request->input('address')==="current_address"){
+       if($request->input('address')==="current_address"){
             $current_lat= $request->input('current_lat');
             $current_long= $request->input('current_lng');
             $user_delivery_address=Auth::user();
-        }else{
+        } elseif( $request->input('address_id')){
+            $delivery_address = DeliveryAddress::find($request->input('address_id'));
+        }
+        else{
         }
 
         if ($validator->fails()) {
@@ -138,9 +139,17 @@ class CheckoutController extends Controller
         $order->delivery_code = strtoupper(Str::random(6));
         $order->status = 'pending';
         $order->payment_method = $request->input('payment_method');
-        $order->delivery_address_id = $request->input('address_id');
 
-        if( $request->input('address_id')){
+        if($request->input('address')==="current_address"){
+            $order->address = Auth::user()->address ?? '';
+            $order->city = Auth::user()->city ?? '';
+            $order->state = Auth::user()->state ?? '';
+            $order->mobile = Auth::user()->mobile;
+            $order->latitude = $request->input('current_lat', null);
+            $order->longitude = $request->input('current_lng', null);
+        }elseif($request->input('address_id')){
+         $order->delivery_address_id = $delivery_address->id;
+
         $order->address = $delivery_address->address ?? '';
         $order->city = $delivery_address->city ?? '';
         $order->sub_city = $delivery_address->sub_city ?? '';
@@ -149,13 +158,6 @@ class CheckoutController extends Controller
         $order->mobile = $delivery_address->mobile ?? Auth::user()->mobile;
         $order->latitude = $delivery_address->latitude ?? $request->input('current_lat', null);
         $order->longitude = $delivery_address->longitude ?? $request->input('current_lng', null);
-        }elseif($request->input('address')==="current_address"){
-            $order->address = Auth::user()->address ?? '';
-            $order->city = Auth::user()->city ?? '';
-            $order->state = Auth::user()->state ?? '';
-            $order->mobile = Auth::user()->mobile;
-            $order->latitude = $request->input('current_lat', null);
-            $order->longitude = $request->input('current_lng', null);
         }else{
 
         }
@@ -242,10 +244,10 @@ class CheckoutController extends Controller
         $cart= RestaurantCartItem::where('user_id', Auth::id())->delete(); // Clear cart from database
         return redirect()->route('restaurant.order.success', ['order' => $order->id])
             ->with('success', 'Your order has been placed successfully.');
-        } catch (\Exception $e) {
-            DB::rollBack(); // Rollback transaction on error
-            return back()->with('error', 'Something went wrong. Please try again.')->withErrors($e->getMessage());
-        }
+        // } catch (\Exception $e) {
+        //     DB::rollBack(); // Rollback transaction on error
+        //     return back()->with('error', 'Something went wrong. Please try again.')->withErrors($e->getMessage());
+        // }
     }
 
     public function orderNowPage()
@@ -289,7 +291,12 @@ class CheckoutController extends Controller
     public function PlaceOrderNow(Request $request)
     {
         // dd($request->all());
-        try{
+                // if($request->input('address_id')==="current_address"){
+                //     dd("current_address");
+                // }else{
+                //     dd("false");
+                // }
+        // try{
         if ($request->payment_method === "Bank Transfer") {
             $validator = Validator::make($request->all(), [
                 'payment_method' => 'required|string',
@@ -307,12 +314,12 @@ class CheckoutController extends Controller
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
-          if( $request->input('address_id')){
-            $delivery_address = DeliveryAddress::find($request->input('address_id'));
-        }elseif($request->input('address')==="current_address"){
+        if($request->input('address')==="current_address"){
             $current_lat= $request->input('current_lat');
             $current_long= $request->input('current_lng');
             $user_delivery_address=Auth::user();
+        }elseif( $request->input('address_id')){
+            $delivery_address = DeliveryAddress::find($request->input('address_id'));
         }else{
         }
 
@@ -367,9 +374,15 @@ class CheckoutController extends Controller
         $order->delivery_code = strtoupper(Str::random(6));
         $order->status = 'pending';
         $order->payment_method = $request->input('payment_method');
-        $order->delivery_address_id = $request->input('address_id');
-
-        if( $request->input('address_id')){
+        if($request->input('address_id')==="current_address"){
+            $order->address = Auth::user()->address ?? '';
+            $order->city = Auth::user()->city ?? '';
+            $order->state = Auth::user()->state ?? '';
+            $order->mobile = Auth::user()->mobile;
+            $order->latitude = $request->input('current_lat', null);
+            $order->longitude = $request->input('current_lng', null);
+        }else{
+        $order->delivery_address_id = $delivery_address->id;
         $order->address = $delivery_address->address ?? '';
         $order->city = $delivery_address->city ?? '';
         $order->sub_city = $delivery_address->sub_city ?? '';
@@ -378,15 +391,6 @@ class CheckoutController extends Controller
         $order->mobile = $delivery_address->mobile ?? Auth::user()->mobile;
         $order->latitude = $delivery_address->latitude ?? $request->input('current_lat', null);
         $order->longitude = $delivery_address->longitude ?? $request->input('current_lng', null);
-        }elseif($request->input('address')==="current_address"){
-            $order->address = Auth::user()->address ?? '';
-            $order->city = Auth::user()->city ?? '';
-            $order->state = Auth::user()->state ?? '';
-            $order->mobile = Auth::user()->mobile;
-            $order->latitude = $request->input('current_lat', null);
-            $order->longitude = $request->input('current_lng', null);
-        }else{
-
         }
         $order->save();
 
@@ -462,10 +466,10 @@ class CheckoutController extends Controller
         session()->forget(['order_now_cart', 'order_now_cart_subtotal', 'order_now_discount']); // Clear order now cart session after successful order
         return redirect()->route('restaurant.order.success', ['order' => $order->id])
             ->with('success', 'Your order has been placed successfully.');
-        } catch (\Exception $e) {
-            DB::rollBack(); // Rollback transaction on error
-            return back()->with('error', 'Something went wrong. Please try again.')->withErrors($e->getMessage());
-        }
+        // } catch (\Exception $e) {
+        //     DB::rollBack(); // Rollback transaction on error
+        //     return back()->with('error', 'Something went wrong. Please try again.')->withErrors($e->getMessage());
+        // }
     }
 
     public function orderNow(Request $request)

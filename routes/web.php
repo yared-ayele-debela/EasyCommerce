@@ -1017,8 +1017,6 @@ Route::prefix('sales')->name('sales.')->group(function () {
 });
 
 
-
-
 // Restaurant Routes
 Route::prefix('admin/restaurant')->group(function () {
     Route::group(['middleware' => ['admin', 'check.admin:Restaurant Manager']], function () {

@@ -145,17 +145,7 @@ class DirectCheckoutController extends Controller
         $order = new Order();
         $order->user_id = Auth::user()->id;
         $order->order_code = $user_code;
-        if( $request->input('address_id')){
-        $order->name = $deliveryAddresses['name'];
-        $order->address = $deliveryAddresses['address'];
-        $order->city = $deliveryAddresses['city'];
-        $order->state = $deliveryAddresses['state'];
-        $order->country = $deliveryAddresses['country'];
-        $order->pincode = $deliveryAddresses['pincode'];
-        $order->mobile = $deliveryAddresses['mobile'];
-        $order->latitude = $delivery_address->latitude ?? $request->input('current_lat', null);
-        $order->longitude = $delivery_address->longitude ?? $request->input('current_lng', null);
-        }elseif($request->input('address')==="current_address"){
+        if($request->input('address')==="current_address"){
             $order->name = $user_delivery_address->name;
             $order->address = $user_delivery_address->address;
             $order->city = $user_delivery_address->city;
@@ -166,7 +156,17 @@ class DirectCheckoutController extends Controller
             $order->latitude = $request->input('current_lat', null);
             $order->longitude = $request->input('current_lng', null);
         }else{
+            $order->name = $deliveryAddresses['name'];
+            $order->address = $deliveryAddresses['address'];
+            $order->city = $deliveryAddresses['city'];
+            $order->state = $deliveryAddresses['state'];
+            $order->country = $deliveryAddresses['country'];
+            $order->pincode = $deliveryAddresses['pincode'];
+            $order->mobile = $deliveryAddresses['mobile'];
+            $order->latitude = $delivery_address->latitude ?? $request->input('current_lat', null);
+            $order->longitude = $delivery_address->longitude ?? $request->input('current_lng', null);
         }
+
         $order->email = Auth::user()->email;
         $order->shipping_charges = $data['shipping'];
         $order->tax_charge = $data['tax'];

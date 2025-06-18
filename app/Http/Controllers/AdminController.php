@@ -202,9 +202,8 @@ class AdminController extends Controller
         'email' => $request->email,
         'password' => $request->password,
         'status' => 1
-    ])) {
+    ])){
         $user = Auth::guard('admin')->user();
-        // dd($user);
 
         if ($user->type === "vendor" && $user->confirm === "No") {
             Auth::guard('admin')->logout();
@@ -216,6 +215,9 @@ class AdminController extends Controller
             return redirect()->back()->with('error', 'Your account is not active.');
         }
 
+        // if(isset($user->type) || $user->type === '') {
+        //     Auth::guard('admin')->logout();
+        // }
         switch ($user->type) {
             case 'Hotel Manager':
                 return redirect('/admin/hotel/dashboard');
@@ -224,11 +226,15 @@ class AdminController extends Controller
             case 'Ecommerce Manager':
             case 'Super Admin':
             case 'vendor':
-                return redirect('/admin/dashboard');
-            default:
-                Auth::guard('admin')->logout();
-                abort(403);
+            case 'admin':
+            break;
         }
+
+        $formattedDateTime = now()->toDateTimeString();
+        ActivityLogger::log('User login', "User logged in at {$formattedDateTime}");
+
+        // Redirect all roles to admin dashboard unless specifically handled above
+        return redirect('/admin/dashboard');
     } else {
         return redirect()->back()->with('error', 'Your email or password is incorrect');
     }

@@ -138,14 +138,13 @@ class CheckoutController extends Controller
         // dd("helldsf");
         $data = $request->all();
 
-         if($request->input('address')==="current_address"){
+         if($request->input('address_id')==="current_address"){
             $current_lat= $request->input('current_lat');
             $current_long= $request->input('current_lng');
             $user_delivery_address=Auth::user();
-        }elseif($request->input('address_id')){
+        }else{
             $deliveryAddresses = DeliveryAddress::where('id', $data['address_id'])->first()->toArray();
             $delivery_address = DeliveryAddress::find($request->input('address_id'));
-        }else{
         }
         $getCartItems = Cart::getCartItems();
         if (count($getCartItems) == 0) {
@@ -253,8 +252,10 @@ class CheckoutController extends Controller
             }
         }
 
-        $deliveryAddresses = DeliveryAddress::where('id', $data['address_id'])->first()->toArray();
-
+        if($request->input('address')==="current_address"){
+        }else{
+            $deliveryAddresses = DeliveryAddress::where('id', $data['address_id'])->first()->toArray();
+        }
         $tipAmount = 0;
         if ($request->tip_option) {
             if (is_numeric($request->tip_option)) {
@@ -275,17 +276,7 @@ class CheckoutController extends Controller
         $order = new Order();
         $order->user_id = Auth::user()->id;
         $order->order_code = $user_code;
-        if( $request->input('address_id')){
-        $order->name = $deliveryAddresses['name'];
-        $order->address = $deliveryAddresses['address'];
-        $order->city = $deliveryAddresses['city'];
-        $order->state = $deliveryAddresses['state'];
-        $order->country = $deliveryAddresses['country'];
-        $order->pincode = $deliveryAddresses['pincode'];
-        $order->mobile = $deliveryAddresses['mobile'];
-        $order->latitude = $delivery_address->latitude ?? $request->input('current_lat', null);
-        $order->longitude = $delivery_address->longitude ?? $request->input('current_lng', null);
-        }elseif($request->input('address')==="current_address"){
+        if($request->input('address')==="current_address"){
             $order->name = $user_delivery_address->name;
             $order->address = $user_delivery_address->address;
             $order->city = $user_delivery_address->city;
@@ -296,6 +287,15 @@ class CheckoutController extends Controller
             $order->latitude = $request->input('current_lat', null);
             $order->longitude = $request->input('current_lng', null);
         }else{
+            $order->name = $deliveryAddresses['name'];
+            $order->address = $deliveryAddresses['address'];
+            $order->city = $deliveryAddresses['city'];
+            $order->state = $deliveryAddresses['state'];
+            $order->country = $deliveryAddresses['country'];
+            $order->pincode = $deliveryAddresses['pincode'];
+            $order->mobile = $deliveryAddresses['mobile'];
+            $order->latitude = $delivery_address->latitude ?? $request->input('current_lat', null);
+            $order->longitude = $delivery_address->longitude ?? $request->input('current_lng', null);
         }
         $order->email = Auth::user()->email;
         $order->shipping_charges = $totalShipping;
