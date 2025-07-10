@@ -24,8 +24,8 @@ class OrderController extends Controller
      public function __construct()
     {
         $this->middleware('admin.permission:view_restaurant_order')->only('index','show');
-        $this->middleware('admin.permission:update_restaurant_status')->only(methods: 'updateStatus');
-        
+        $this->middleware('admin.permission:update_restaurant_order_status')->only(methods: 'updateStatus');
+
     }
     public function index()
     {
