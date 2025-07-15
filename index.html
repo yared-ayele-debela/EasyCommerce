@@ -399,21 +399,21 @@
         categoryItems.forEach(function (item) {
           item.addEventListener('click', function (e) {
             e.stopPropagation();
-    
+
             categoryItems.forEach(function (el) {
               if (el !== item) {
                 el.classList.remove('active');
               }
             });
-    
+
             // Toggle current item
             item.classList.toggle('active');
           });
         });
-      
+
     });
     </script>
-    
+
   <script>
     const toggleIcon = document.querySelector("#categoryToggle i");
     const categoryList = document.getElementById("categoryList");

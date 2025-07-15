@@ -28,7 +28,7 @@ class RestaurantController extends Controller
     {
         $categoryId = $request->category_id;
 
-        $products = $categoryId 
+        $products = $categoryId
             ? Product::where('category_id', $categoryId)->get()
             : Product::all();
 
@@ -121,7 +121,6 @@ class RestaurantController extends Controller
             ->orderBy('distance', 'asc')
             ->get();
 
-        // Estimate time by car (e.g., 40 km/h → 1.5 min/km)
         $carSpeed = 40; // km/h
 
         $restaurants->transform(function ($restaurant) use ($carSpeed) {

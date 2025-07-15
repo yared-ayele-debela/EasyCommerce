@@ -1,45 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Login - SafeCity</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light d-flex align-items-center" style="min-height: 100vh;">
 
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-5 col-lg-4">
-        <div class="card shadow-sm">
-          <div class="card-body p-4">
-            <h3 class="mb-4 text-center">🔐 Login to SafeCity</h3>
-            <form>
-              <div class="mb-3">
-                <label class="form-label">Email Address</label>
-                <input type="email" class="form-control" placeholder="you@example.com" required>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Password</label>
-                <input type="password" class="form-control" placeholder="••••••••" required>
-              </div>
-              <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="remember">
-                <label class="form-check-label" for="remember">Remember Me</label>
-              </div>
-              <button type="submit" class="btn btn-primary w-100">Login</button>
-              <div class="mt-3 text-center">
-                Don't have an account? <a href="register.html">Register here</a>
-              </div>
-              <div class="text-center mt-2">
-                <a href="#">Forgot Password?</a>
-              </div>
-            </form>
-          </div>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>eCommerce Splash Screens</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        <!-- body,
+    html {
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background-color: #fff;
+    } -->
+
+    .splash-screen {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 2rem;
+        z-index: 1000;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.6s ease-in-out, visibility 0.6s ease-in-out;
+    }
+
+    .splash-screen.active {
+        opacity: 1;
+        visibility: visible;
+        z-index: 1001;
+    }
+
+    #splash1 {
+        background-image: url('1.jpg');
+    }
+
+    #splash2 {
+        background-image: url('2.jpg');
+    }
+
+    #splash3 {
+        background-image: url('3.jpg');
+    }
+
+    #splash4 {
+        background-image: url('4.jpg');
+    }
+
+    .splash-screen img {
+        width: 220px;
+        height: auto;
+        margin-bottom: 20px;
+    }
+
+    .splash-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .splash-desc {
+        font-size: 1rem;
+        color: #666;
+        margin-bottom: 2rem;
+    }
+
+    .btn-group-bottom {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        position: absolute;
+        bottom: 30px;
+        left: 0;
+        padding: 0 2rem;
+    }
+
+    .skip-button {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 1rem;
+        text-decoration: underline;
+        color: #28e341 !important;
+        background: transparent;
+        text-decoration: none !important;
+        border: none;
+    }
+
+    #main-content {
+        display: none;
+        padding: 20px;
+    }
+
+    @media (min-width: 768px) {
+        .splash-screen {
+            display: none !important;
+        }
+    }
+    </style>
+</head>
+
+<body>
+    <div class="container splash-container" style="display: none;">
+    <!-- Splash Screens -->
+    <div class="splash-screen active" id="splash1">
+        <button class="skip-button" onclick="skipAll()">Skip</button>
+
+        <div class="btn-group-bottom">
+            <button class="btn btn-secondary" disabled>Previous</button>
+            <button class="btn btn-primary" onclick="nextScreen()">Next</button>
         </div>
-      </div>
     </div>
-  </div>
+
+    <div class="splash-screen" id="splash2">
+        <button class="skip-button" onclick="skipAll()">Skip</button>
+        <div class="btn-group-bottom">
+            <button class="btn btn-primary" onclick="prevScreen()">Previous</button>
+            <button class="btn btn-primary" onclick="nextScreen()">Next</button>
+        </div>
+    </div>
+
+    <div class="splash-screen" id="splash3">
+        <button class="skip-button" onclick="skipAll()">Skip</button>
+        <div class="btn-group-bottom">
+            <button class="btn btn-primary" onclick="prevScreen()">Previous</button>
+            <button class="btn btn-primary" onclick="nextScreen()">Next</button>
+        </div>
+    </div>
+    <div class="splash-screen" id="splash4">
+        <button class="skip-button" onclick="skipAll()">Skip</button>
+
+        <div class="btn-group-bottom">
+            <button class="btn btn-primary" onclick="prevScreen()">Previous</button>
+            <button class="btn btn-success" onclick="skipAll()">Start Shopping</button>
+        </div>
+    </div>
+      </div>
+
+    <!-- Main Content -->
+    <div id="main-content">
+        <h2 class="text-center">Welcome to the main site!</h2>
+        <p class="text-center">Start exploring our amazing products!</p>
+    </div>
+<script>
+  const screens = ['splash1', 'splash2', 'splash3', 'splash4'];
+  let current = 0;
+
+  function updateScreens() {
+    screens.forEach((id, index) => {
+      document.getElementById(id).classList.toggle('active', index === current);
+    });
+  }
+
+  function nextScreen() {
+    if (current < screens.length - 1) {
+      current++;
+      updateScreens();
+    }
+  }
+
+  function prevScreen() {
+    if (current > 0) {
+      current--;
+      updateScreens();
+    }
+  }
+
+  function skipAll() {
+    screens.forEach(id => {
+      document.getElementById(id).classList.remove('active');
+    });
+    document.getElementById('main-content').style.display = 'block';
+  }
+
+ document.addEventListener("DOMContentLoaded", function () {
+  const hasVisited = localStorage.getItem("hasVisited");
+
+  if (!hasVisited) {
+    document.querySelector(".splash-container").style.display = "flex";
+    localStorage.setItem("hasVisited", "true");
+  } else {
+    skipAll(); // Immediately show main content if user has visited before
+  }
+});
+
+</script>
 
 </body>
+
 </html>
