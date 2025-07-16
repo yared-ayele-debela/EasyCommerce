@@ -256,6 +256,7 @@ use Illuminate\Support\Facades\Storage;
         opacity: 1;
         visibility: visible;
         z-index: 1001;
+        pointer-events: auto;
     }
 
     #splash1 {
@@ -318,6 +319,7 @@ use Illuminate\Support\Facades\Storage;
         display: none;
         padding: 20px;
     }
+
 
     @media (min-width: 768px) {
         .splash-screen {
