@@ -208,67 +208,47 @@ $cartCount = $sessionCount + $helperCount;
 <script src="{{ asset('restaurant_frontend/assets/js/index.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
 <script>
-  let currentScreen = 1;
-  const totalScreens = 4;
+    const screens = ['splash1', 'splash2', 'splash3'];
+    let current = 0;
 
-  function updateScreen() {
-    for (let i = 1; i <= totalScreens; i++) {
-      document.getElementById(`screen-${i}`).classList.add('d-none');
-      document.getElementById(`dot-${i}`).classList.remove('active');
+    function updateScreens() {
+      screens.forEach((id, index) => {
+        document.getElementById(id).classList.toggle('active', index === current);
+      });
     }
-    document.getElementById(`screen-${currentScreen}`).classList.remove('d-none');
-    document.getElementById(`dot-${currentScreen}`).classList.add('active');
 
-    document.getElementById('prevBtn').disabled = currentScreen === 1;
-    document.getElementById('nextBtn').innerText = currentScreen === totalScreens ? 'Finish' : 'Next';
-  }
-
-  function showMainContent() {
-    document.querySelector('.onboard-container').classList.add('d-none');
-    document.getElementById('mainContent').classList.remove('d-none');
-    localStorage.setItem('hasVisited', 'true'); // Save visit
-  }
-
-  function isMobileDevice() {
-    return window.innerWidth <= 768;
-  }
-
-  function startOnboarding() {
-    updateScreen();
-    document.querySelector('.onboard-container').classList.remove('d-none');
-    document.getElementById('mainContent').classList.add('d-none');
-  }
-
-  // Button listeners
-  document.getElementById('nextBtn').addEventListener('click', () => {
-    if (currentScreen < totalScreens) {
-      currentScreen++;
-      updateScreen();
-    } else {
-      showMainContent();
+    function nextScreen() {
+      if (current < screens.length - 1) {
+        current++;
+        updateScreens();
+      }
     }
-  });
 
-  document.getElementById('prevBtn').addEventListener('click', () => {
-    if (currentScreen > 1) {
-      currentScreen--;
-      updateScreen();
+    function prevScreen() {
+      if (current > 0) {
+        current--;
+        updateScreens();
+      }
     }
-  });
 
-  document.getElementById('skipBtn').addEventListener('click', showMainContent);
-
-  // Initial check on load
-  window.onload = () => {
-    const hasVisited = localStorage.getItem('hasVisited');
-    if (hasVisited || !isMobileDevice()) {
-      // If already visited or not a mobile device, show main
-      showMainContent();
-    } else {
-      startOnboarding(); // Only mobile and first time
+    function skipAll() {
+      screens.forEach(id => {
+        document.getElementById(id).style.display = 'none';
+      });
+      document.getElementById('main').style.display = 'block';
     }
-  };
-</script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const isMobile = window.innerWidth < 768;
+      const hasVisited = localStorage.getItem("hasVisited");
+      if (isMobile && !hasVisited) {
+        document.getElementById(screens[current]).classList.add('active');
+        localStorage.setItem("hasVisited", "true");
+      } else {
+        skipAll();
+      }
+    });
+  </script>
 
 <script>
  document.addEventListener('DOMContentLoaded', function () {
