@@ -140,6 +140,7 @@
                                                 </button>
                                             </div>
                                             <div class="modal-body">
+                                                <p class="card-text"><strong>Room Number :</strong><strong> {{ $reservation->room->room_number }}</strong></p>
                                                 <p class="card-text"><strong>Room Type :</strong> {{ $reservation->room->room_type }}</p>
                                                 <p class="card-text"><strong>Capacity :</strong> {{ $reservation->room->capacity }}</p>
                                                 <p class="card-text"><strong>Room Price :</strong> {{ $reservation->room->price }} ETB</p>

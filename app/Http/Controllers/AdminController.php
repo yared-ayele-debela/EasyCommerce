@@ -219,7 +219,7 @@ class AdminController extends Controller
         //     Auth::guard('admin')->logout();
         // }
         // dd($user->type?? 'No type found');
-      if ($user->type === 'Hotel Manager') {
+        if ($user->type === 'Hotel Manager') {
             return redirect('/admin/hotel/dashboard');
         } elseif ($user->type === 'Restaurant Manager') {
             return redirect('/admin/restaurant/dashboard');
