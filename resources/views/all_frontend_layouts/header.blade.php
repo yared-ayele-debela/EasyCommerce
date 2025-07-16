@@ -136,6 +136,16 @@ use Illuminate\Support\Facades\Storage;
         body {
             top: 0px !important;
         }
+        html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #fff;
+    -webkit-overflow-scrolling: touch;
+    touch-action: manipulation;
+}
+
 
         .VIpgJd-ZVi9od-ORHb-OEVmcd {
             display: none !important;
