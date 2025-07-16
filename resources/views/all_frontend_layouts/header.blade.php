@@ -287,17 +287,7 @@ use Illuminate\Support\Facades\Storage;
       gap: 10px;
     }
 
-    .btn {
-      padding: 10px;
-      flex: 1;
-      background: #fff;
-      color: #28e341;
-      border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
+ 
     .skip-btn {
       position: absolute;
       top: 20px;
