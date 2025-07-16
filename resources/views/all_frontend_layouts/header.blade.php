@@ -230,118 +230,123 @@ use Illuminate\Support\Facades\Storage;
             max-width: 150px !important;
         }
         }
-
-
-    .splash-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
+    body, html {
       height: 100%;
+      margin: 0;
+    }
+    .onboard-container {
+      max-width: 400px;
       width: 100%;
-      background: linear-gradient(to bottom right, #28e341, #ffffff);
-      color: #fff;
-      display: none;
+      height: 100%;
+      margin: auto;
+      position: relative;
+      padding: 1rem;
+      display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 20px;
-      z-index: 9999;
-      transition: opacity 0.4s ease;
     }
-
-    .splash-screen.active {
-      display: flex;
-    }
-
-    .splash-logo {
-      width: 100px;
-      margin-bottom: 20px;
-    }
-
-    .splash-title {
-      font-size: 1.5rem;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-
-    .splash-desc {
-      font-size: 1rem;
-      margin-bottom: 30px;
-    }
-
-    .button-group {
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-      max-width: 300px;
-      gap: 10px;
-    }
-
- 
     .skip-btn {
       position: absolute;
-      top: 20px;
-      right: 20px;
-      background: none;
-      border: none;
-      color: #fff;
-      text-decoration: underline;
-      font-weight: bold;
-      cursor: pointer;
+      top: 1rem;
+      right: 1rem;
+      font-size: 0.9rem;
     }
-
-    .main-content {
-      display: none;
+    .onboard-title {
+      color: #00C853;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
     }
+    .onboard-image {
+      width: 100%;
+      max-height: 250px;
+      object-fit: contain;
+      margin-bottom: 1.5rem;
+      margin-top: 3.5rem;
+    }
+    .onboard-heading {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+    .onboard-subtext {
+      font-size: 0.95rem;
+      color: #666;
+      margin-bottom: 2rem;
+            text-align: center;
 
-    @media (min-width: 768px) {
-      .splash-screen {
-        display: none !important;
-      }
+    }
+    .dot {
+      height: 10px;
+      width: 10px;
+      margin: 0 5px;
+      background-color: #ccc;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot.active {
+      background-color: #00C853;
+    }
+    .bottom-controls {
+      margin-top: auto;
     }
     </style>
 </head>
 
 <body>
 
-<!-- Splash Screens -->
-  <div class="splash-screen active" id="splash1">
-    <button class="skip-btn" onclick="skipAll()">Skip</button>
-    <img src="{{ asset('restaurant_frontend/assets/img/1.jpg') }}" alt="Logo" class="splash-logo" />
-    <div class="splash-title">Welcome!</div>
-    <div class="splash-desc">Discover amazing products at your fingertips.</div>
-    <div class="button-group">
-      <button class="btn" disabled>Previous</button>
-      <button class="btn" onclick="nextScreen()">Next</button>
+    <div class="onboard-container">
+    <!-- Skip Button Top Right -->
+    <button class="btn btn-link text-muted skip-btn" id="skipBtn">Skip</button>
+
+    <!-- Screens -->
+    <div id="screens" class="d-none">
+      <!-- Screen 1 -->
+      <div class="screen" id="screen-1">
+        <div style="background-image: url({{asset('restaurant_frontend/assets/img/banner_o.png')}}); background-size: cover; background-position: center; background-repeat: no-repeat; width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; color: rgb(63, 193, 16); font-size: 2rem; font-weight: bold;">easy Food Delivery</div>
+        <img src="{{ asset('restaurant_frontend/assets/img/food.png') }}" alt="Step 1" class="onboard-image">
+        <div class="onboard-heading">Good food at a cheap price</div>
+        <div class="onboard-subtext">You can eat at expensive restaurants with
+affordable price</div>
+      </div>
+      <!-- Screen 2 -->
+      <div class="screen d-none" id="screen-2">
+        <div style="background-image: url('{{ asset('restaurant_frontend/assets/img/banner_o.png') }}'); background-size: cover; background-position: center; background-repeat: no-repeat; width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; color: rgb(63, 193, 16); font-size: 2rem; font-weight: bold;">Easy Hotel Booking</div>
+        <img src="{{ asset('restaurant_frontend/assets/img/hotel.png') }}" alt="Step 2" class="onboard-image">
+        <div class="onboard-heading">Comfortable Stays at Affordable Prices</div>
+        <div class="onboard-subtext">You can stay at luxury hotels for an affordable price</div>
+      </div>
+      <!-- Screen 3 -->
+      <div class="screen d-none" id="screen-3">
+        <div style="background-image: url('{{ asset('restaurant_frontend/assets/img/banner_o.png') }}'); background-size: cover; background-position: center; background-repeat: no-repeat; width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; color: rgb(63, 193, 16); font-size: 2rem; font-weight: bold;">Easy E-commerce</div>
+        <img src="{{ asset('restaurant_frontend/assets/img/goods.png') }}" alt="Step 3" class="onboard-image">
+        <div class="onboard-heading">Select Your Favorite Products</div>
+        <div class="onboard-subtext">You can shop luxury products at an affordable price</div>
+      </div>
+      <div class="screen d-none" id="screen-4">
+        <div style="background-image: url('{{ asset('restaurant_frontend/assets/img/banner_o.png') }}'); background-size: cover; background-position: center; background-repeat: no-repeat; width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; color: rgb(63, 193, 16); font-size: 2rem; font-weight: bold;">Easy E-commerce</div>
+        <img src="{{ asset('restaurant_frontend/assets/img/icon-delivery.png') }}" alt="Step 4" class="onboard-image">
+        <div class="onboard-heading">Select Your Favorite Products</div>
+        <div class="onboard-subtext">You can shop luxury products at an affordable price</div>
+      </div>
+    </div>
+
+    <!-- Bottom Controls -->
+    <div class="bottom-controls w-100">
+      <div class="d-flex justify-content-between align-items-center w-100 mb-3">
+        <button class="btn btn-outline-secondary" id="prevBtn">Previous</button>
+        <div>
+          <span class="dot" id="dot-1"></span>
+          <span class="dot" id="dot-2"></span>
+          <span class="dot" id="dot-3"></span>
+          <span class="dot" id="dot-4"></span>
+        </div>
+        <button class="btn btn-success" id="nextBtn">Next</button>
+      </div>
     </div>
   </div>
 
-  <div class="splash-screen" id="splash2">
-    <button class="skip-btn" onclick="skipAll()">Skip</button>
-    <img src="{{ asset('restaurant_frontend/assets/img/2.jpg') }}" alt="Logo" class="splash-logo" />
-    <div class="splash-title">Fast Delivery</div>
-    <div class="splash-desc">Get your orders quickly and reliably.</div>
-    <div class="button-group">
-      <button class="btn" onclick="prevScreen()">Previous</button>
-      <button class="btn" onclick="nextScreen()">Next</button>
-    </div>
-  </div>
-
-  <div class="splash-screen" id="splash3">
-    <button class="skip-btn" onclick="skipAll()">Skip</button>
-    <img src="{{ asset('restaurant_frontend/assets/img/3.jpg') }}" alt="Logo" class="splash-logo" />
-    <div class="splash-title">Get Started</div>
-    <div class="splash-desc">Join us today and enjoy the best deals.</div>
-    <div class="button-group">
-      <button class="btn" onclick="prevScreen()">Previous</button>
-      <button class="btn" onclick="skipAll()">Start</button>
-    </div>
-  </div>
-
-  <div class="main-content" id="main">
-
-
+<div id="mainContent" class="d-none p-0">
         <header>
             <!-- Top Bar -->
             <div class="bg-light border-bottom py-2">

@@ -2,89 +2,191 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Delivery Tracking Simulation</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Onboarding</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    #map {
-      height: 90vh;
-      width: 100%;
+    body, html {
+      height: 100%;
+      margin: 0;
     }
-    #info {
-      padding: 10px;
-      font-family: sans-serif;
-      background: #f4f4f4;
+    .onboard-container {
+      max-width: 400px;
+      width: 100%;
+      height: 100%;
+      margin: auto;
+      position: relative;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .skip-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      font-size: 0.9rem;
+    }
+    .onboard-title {
+      color: #00C853;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+    .onboard-image {
+      width: 100%;
+      max-height: 250px;
+      object-fit: contain;
+      margin-bottom: 1.5rem;
+      margin-top: 3.5rem;
+    }
+    .onboard-heading {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+    .onboard-subtext {
+      font-size: 0.95rem;
+      color: #666;
+      margin-bottom: 2rem;
+            text-align: center;
+
+    }
+    .dot {
+      height: 10px;
+      width: 10px;
+      margin: 0 5px;
+      background-color: #ccc;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot.active {
+      background-color: #00C853;
+    }
+    .bottom-controls {
+      margin-top: auto;
     }
   </style>
 </head>
 <body>
+  <div class="onboard-container">
+    <!-- Skip Button Top Right -->
+    <button class="btn btn-link text-muted skip-btn" id="skipBtn">Skip</button>
 
-<div id="info">
-  <strong>Tracking delivery person:</strong> <span id="delivery-name"></span>
+    <!-- Screens -->
+    <div id="screens" class="d-none">
+      <!-- Screen 1 -->
+      <div class="screen" id="screen-1">
+        <div style="background-image: url('banner_o.png'); background-size: cover; background-position: center; background-repeat: no-repeat; width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; color: rgb(63, 193, 16); font-size: 2rem; font-weight: bold;">easy Food Delivery</div>
+        <img src="food.png" alt="Step 1" class="onboard-image">
+        <div class="onboard-heading">Good food at a cheap price</div>
+        <div class="onboard-subtext">You can eat at expensive restaurants with
+affordable price</div>
+      </div>
+      <!-- Screen 2 -->
+      <div class="screen d-none" id="screen-2">
+        <div style="background-image: url('banner_o.png'); background-size: cover; background-position: center; background-repeat: no-repeat; width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; color: rgb(63, 193, 16); font-size: 2rem; font-weight: bold;">Easy Hotel Booking</div>
+        <img src="hotel.png" alt="Step 2" class="onboard-image">
+        <div class="onboard-heading">Comfortable Stays at Affordable Prices</div>
+        <div class="onboard-subtext">You can stay at luxury hotels for an affordable price</div>
+      </div>
+      <!-- Screen 3 -->
+      <div class="screen d-none" id="screen-3">
+        <div style="background-image: url('banner_o.png'); background-size: cover; background-position: center; background-repeat: no-repeat; width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; color: rgb(63, 193, 16); font-size: 2rem; font-weight: bold;">Easy E-commerce</div>
+        <img src="goods.png" alt="Step 3" class="onboard-image">
+        <div class="onboard-heading">Select Your Favorite Products</div>
+        <div class="onboard-subtext">You can shop luxury products at an affordable price</div>
+      </div>
+      <div class="screen d-none" id="screen-4">
+        <div style="background-image: url('banner_o.png'); background-size: cover; background-position: center; background-repeat: no-repeat; width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; color: rgb(63, 193, 16); font-size: 2rem; font-weight: bold;">Easy E-commerce</div>
+        <img src="delivery.png" alt="Step 4" class="onboard-image">
+        <div class="onboard-heading">Select Your Favorite Products</div>
+        <div class="onboard-subtext">You can shop luxury products at an affordable price</div>
+      </div>
+    </div>
+
+    <!-- Bottom Controls -->
+    <div class="bottom-controls w-100">
+      <div class="d-flex justify-content-between align-items-center w-100 mb-3">
+        <button class="btn btn-outline-secondary" id="prevBtn">Previous</button>
+        <div>
+          <span class="dot" id="dot-1"></span>
+          <span class="dot" id="dot-2"></span>
+          <span class="dot" id="dot-3"></span>
+          <span class="dot" id="dot-4"></span>
+        </div>
+        <button class="btn btn-success" id="nextBtn">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+<div id="mainContent" class="d-none text-center p-4">
+  <h1>Welcome to the Main App!</h1>
+  <p>This is the main content after onboarding.</p>
 </div>
-<div id="map"></div>
-
-<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
 <script>
-  // ====== CONFIG ======
-  const apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55bmFtZSI6IkVhc3kgZS1jb21tZXJjZSBob3RlbCBib29raW5nIGFuZCBkZWxpdmVyeSIsImRlc2NyaXB0aW9uIjoiMGU4ZDhhZDMtZmJhYy00OTJkLWE4OWYtZGFiZjQxNTFlNDc2IiwiaWQiOiI3OWY1ODRlYy0yZDA3LTRjNWQtYTI2Ny00MjBhNzVlMDY2NzMiLCJ1c2VybmFtZSI6ImJlZmk3NzU2In0.JgSoBiAoa4Te6ccg-jSJSifq26PZV4FnGbkhQKiTnuo";
-  const customerLocation = { lat: 9.03045, lng: 38.76530 };
+  let currentScreen = 1;
+  const totalScreens = 4;
 
-  const deliveryMen = [
-    { id: 1, name: "Amanuel", lat: 9.001370, lng: 38.767821 },
-    { id: 2, name: "Selam", lat: 8.9920, lng: 38.7825 },
-    { id: 3, name: "Mekdes", lat: 8.9940, lng: 38.7840 }
-  ];
-  let currentDelivery = deliveryMen[0]; // Simulate only Amanuel for now
-  let deliveryMarker, customerMarker, routeLine;
-  document.getElementById("delivery-name").textContent = currentDelivery.name;
-  const map = L.map('map').setView([customerLocation.lat, customerLocation.lng], 13);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-  // Customer marker
-  customerMarker = L.marker([customerLocation.lat, customerLocation.lng], {
-    title: "Customer",
-    icon: L.icon({
-      iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
-      iconSize: [30, 30],
-      iconAnchor: [15, 30]
-    })
-  }).addTo(map);
-
-  function updateDeliveryLocation() {
-    currentDelivery.lat += (Math.random() - 0.5) * 0.001;
-    currentDelivery.lng += (Math.random() - 0.5) * 0.001;
-    if (deliveryMarker) {
-      deliveryMarker.setLatLng([currentDelivery.lat, currentDelivery.lng]);
-    } else {
-      deliveryMarker = L.marker([currentDelivery.lat, currentDelivery.lng], {
-        title: "Delivery",
-        icon: L.icon({
-          iconUrl: "https://cdn-icons-png.flaticon.com/512/2921/2921822.png",
-          iconSize: [30, 30],
-          iconAnchor: [15, 30]
-        })
-      }).addTo(map);
+  function updateScreen() {
+    for (let i = 1; i <= totalScreens; i++) {
+      document.getElementById(`screen-${i}`).classList.add('d-none');
+      document.getElementById(`dot-${i}`).classList.remove('active');
     }
-    // Fetch direction from Gebeta API
-    const url = `https://mapapi.gebeta.app/api/route/direction/?origin=${currentDelivery.lat},${currentDelivery.lng}&destination=${customerLocation.lat},${customerLocation.lng}&apiKey=${apiKey}`;
-    fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        if (data.direction) {
-          const routeCoords = data.direction.map(coord => [coord[0], coord[1]]); // Lat,Lng order
-          if (routeLine) {
-            routeLine.setLatLngs(routeCoords);
-          } else {
-            routeLine = L.polyline(routeCoords, { color: "blue", weight: 4 }).addTo(map);
-          }
-          map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
-        }
-      })
-      .catch(error => console.error("Error fetching route:", error));
+    document.getElementById(`screen-${currentScreen}`).classList.remove('d-none');
+    document.getElementById(`dot-${currentScreen}`).classList.add('active');
+
+    document.getElementById('prevBtn').disabled = currentScreen === 1;
+    document.getElementById('nextBtn').innerText = currentScreen === totalScreens ? 'Finish' : 'Next';
   }
-  updateDeliveryLocation();
-  setInterval(updateDeliveryLocation, 3000);
+
+  function showMainContent() {
+    document.querySelector('.onboard-container').classList.add('d-none');
+    document.getElementById('mainContent').classList.remove('d-none');
+    localStorage.setItem('hasVisited', 'true'); // Save visit
+  }
+
+  function isMobileDevice() {
+    return window.innerWidth <= 768;
+  }
+
+  function startOnboarding() {
+    updateScreen();
+    document.querySelector('.onboard-container').classList.remove('d-none');
+    document.getElementById('mainContent').classList.add('d-none');
+  }
+
+  // Button listeners
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    if (currentScreen < totalScreens) {
+      currentScreen++;
+      updateScreen();
+    } else {
+      showMainContent();
+    }
+  });
+
+  document.getElementById('prevBtn').addEventListener('click', () => {
+    if (currentScreen > 1) {
+      currentScreen--;
+      updateScreen();
+    }
+  });
+
+  document.getElementById('skipBtn').addEventListener('click', showMainContent);
+
+  // Initial check on load
+  window.onload = () => {
+    const hasVisited = localStorage.getItem('hasVisited');
+    if (hasVisited || !isMobileDevice()) {
+      // If already visited or not a mobile device, show main
+      showMainContent();
+    } else {
+      startOnboarding(); // Only mobile and first time
+    }
+  };
 </script>
+
 </body>
 </html>
