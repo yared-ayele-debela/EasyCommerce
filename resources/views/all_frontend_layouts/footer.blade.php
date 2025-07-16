@@ -238,18 +238,19 @@ $cartCount = $sessionCount + $helperCount;
     });
     document.getElementById('main-content').style.display = 'block';
   }
+document.addEventListener("DOMContentLoaded", function () {
+  setTimeout(() => {
+    const hasVisited = localStorage.getItem("hasVisited");
 
- document.addEventListener("DOMContentLoaded", function () {
-  const hasVisited = localStorage.getItem("hasVisited");
-
-   if (window.innerWidth < 768 && !hasVisited) {
-    document.querySelector(".splash-container").classList.remove("d-none");
-
-    localStorage.setItem("hasVisited", "true");
-  } else {
-    skipAll(); // Immediately show main content if user has visited before or is on desktop
-  }
+    if (!hasVisited) {
+      document.querySelector(".splash-container").classList.remove("d-none");
+      localStorage.setItem("hasVisited", "true");
+    } else {
+      skipAll();
+    }
+  }, 200);
 });
+
 
 </script>
 <script>
