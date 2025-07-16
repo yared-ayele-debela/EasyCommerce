@@ -231,20 +231,13 @@ use Illuminate\Support\Facades\Storage;
         }
         }
 
-
-         /* body, html {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-    } */
-
     .splash-screen {
       position: fixed;
       top: 0;
       left: 0;
       height: 100%;
       width: 100%;
-      background: linear-gradient(to bottom right, #28e341, #ffffff);
+      /* background: linear-gradient(to bottom right, #28e341, #ffffff); */
       color: #fff;
       display: none;
       flex-direction: column;
@@ -322,33 +315,33 @@ use Illuminate\Support\Facades\Storage;
 <body>
 
 <!-- Splash Screens -->
-  <div class="splash-screen active" id="splash1">
+  <div class="splash-screen active" style="background-image: url({{ asset('restaurant_frontend/assets/img/2.jpg') }})" id="splash1">
     <button class="skip-btn" onclick="skipAll()">Skip</button>
-    <img src="{{ asset('restaurant_frontend/assets/img/1.jpg') }}" alt="Logo" class="splash-logo" />
+    {{-- <img src="{{ asset(path: 'restaurant_frontend/assets/img/1.jpg') }}" alt="Logo" class="splash-logo" />
     <div class="splash-title">Welcome!</div>
-    <div class="splash-desc">Discover amazing products at your fingertips.</div>
+    <div class="splash-desc">Discover amazing products at your fingertips.</div> --}}
     <div class="button-group">
       <button class="btns" disabled>Previous</button>
       <button class="btns" onclick="nextScreen()">Next</button>
     </div>
   </div>
 
-  <div class="splash-screen" id="splash2">
+  <div class="splash-screen" id="splash2" style="background-image: url({{ asset('restaurant_frontend/assets/img/3.jpg') }})">
     <button class="skip-btn" onclick="skipAll()">Skip</button>
-    <img src="{{ asset('restaurant_frontend/assets/img/2.jpg') }}" alt="Logo" class="splash-logo" />
+    {{-- <img src="{{ asset('restaurant_frontend/assets/img/2.jpg') }}" alt="Logo" class="splash-logo" />
     <div class="splash-title">Fast Delivery</div>
-    <div class="splash-desc">Get your orders quickly and reliably.</div>
+    <div class="splash-desc">Get your orders quickly and reliably.</div> --}}
     <div class="button-group">
       <button class="btns" onclick="prevScreen()">Previous</button>
       <button class="btns" onclick="nextScreen()">Next</button>
     </div>
   </div>
 
-  <div class="splash-screen" id="splash3">
+  <div class="splash-screen" id="splash3" style="background-image: url({{ asset('restaurant_frontend/assets/img/4.jpg') }})">
     <button class="skip-btn" onclick="skipAll()">Skip</button>
-    <img src="{{ asset('restaurant_frontend/assets/img/3.jpg') }}" alt="Logo" class="splash-logo" />
+    {{-- <img src="{{ asset('restaurant_frontend/assets/img/3.jpg') }}" alt="Logo" class="splash-logo" />
     <div class="splash-title">Get Started</div>
-    <div class="splash-desc">Join us today and enjoy the best deals.</div>
+    <div class="splash-desc">Join us today and enjoy the best deals.</div> --}}
     <div class="button-group">
       <button class="btns" onclick="prevScreen()">Previous</button>
       <button class="btns" onclick="skipAll()">Start</button>
