@@ -203,18 +203,21 @@ $cartCount = $sessionCount + $helperCount;
     </div>
 </nav>
 </div>
-
+<!-- Bootstrap 5 JS (Optional) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{ asset('restaurant_frontend/assets/js/index.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+
 <script>
   const screens = ['splash1', 'splash2', 'splash3', 'splash4'];
   let current = 0;
+
   function updateScreens() {
     screens.forEach((id, index) => {
       document.getElementById(id).classList.toggle('active', index === current);
     });
   }
+
   function nextScreen() {
     if (current < screens.length - 1) {
       current++;
@@ -228,6 +231,7 @@ $cartCount = $sessionCount + $helperCount;
       updateScreens();
     }
   }
+
   function skipAll() {
     screens.forEach(id => {
       document.getElementById(id).classList.remove('active');
@@ -237,13 +241,17 @@ $cartCount = $sessionCount + $helperCount;
 
  document.addEventListener("DOMContentLoaded", function () {
   const hasVisited = localStorage.getItem("hasVisited");
+
    if (window.innerWidth < 768 && !hasVisited) {
-        document.querySelector(".splash-container").classList.remove("d-none");
-        localStorage.setItem("hasVisited", "true");
+    document.querySelector(".splash-container").classList.remove("d-none");
+
+    // document.querySelector(".splash-container").style.display = "flex";
+    localStorage.setItem("hasVisited", "true");
   } else {
-    skipAll();
+    skipAll(); // Immediately show main content if user has visited before or is on desktop
   }
 });
+
 </script>
 <script>
  document.addEventListener('DOMContentLoaded', function () {
