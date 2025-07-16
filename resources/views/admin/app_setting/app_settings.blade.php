@@ -184,13 +184,7 @@
                 return false;
             }
                   // Validation for mobile (accept only 10 digits)
-           if (!/^[0-9]{10}$/.test(phone.value)) {
-                alert("Invalid mobile number! Please enter a 10-digit mobile number.");
-                phone.focus();
-                event.preventDefault();
-                return false;
-            }
-
+          
         return true; // Form will be submitted if everything is valid
     }
 
