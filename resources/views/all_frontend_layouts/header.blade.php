@@ -275,6 +275,8 @@ use Illuminate\Support\Facades\Storage;
       width: 100%;
       max-width: 300px;
       gap: 10px;
+     margin-top: auto;
+
     }
 
     .btns {
@@ -294,7 +296,7 @@ use Illuminate\Support\Facades\Storage;
       right: 20px;
       background: none;
       border: none;
-      color: #fff;
+      color: #19ad14;
       text-decoration: underline;
       font-weight: bold;
       cursor: pointer;
@@ -321,19 +323,18 @@ use Illuminate\Support\Facades\Storage;
     <div class="splash-title">Welcome!</div>
     <div class="splash-desc">Discover amazing products at your fingertips.</div> --}}
     <div class="button-group">
-      <button class="btns" disabled>Previous</button>
-      <button class="btns" onclick="nextScreen()">Next</button>
+      <button class="btn btn-secondary" disabled>Previous</button>
+      <button class="btn btn-primary" onclick="nextScreen()">Next</button>
     </div>
   </div>
-
   <div class="splash-screen" id="splash2" style="background-image: url({{ asset('restaurant_frontend/assets/img/3.jpg') }})">
     <button class="skip-btn" onclick="skipAll()">Skip</button>
     {{-- <img src="{{ asset('restaurant_frontend/assets/img/2.jpg') }}" alt="Logo" class="splash-logo" />
     <div class="splash-title">Fast Delivery</div>
     <div class="splash-desc">Get your orders quickly and reliably.</div> --}}
     <div class="button-group">
-      <button class="btns" onclick="prevScreen()">Previous</button>
-      <button class="btns" onclick="nextScreen()">Next</button>
+      <button class="btn btn-secondary" onclick="prevScreen()">Previous</button>
+      <button class="btn btn-primary" onclick="nextScreen()">Next</button>
     </div>
   </div>
 
@@ -343,8 +344,8 @@ use Illuminate\Support\Facades\Storage;
     <div class="splash-title">Get Started</div>
     <div class="splash-desc">Join us today and enjoy the best deals.</div> --}}
     <div class="button-group">
-      <button class="btns" onclick="prevScreen()">Previous</button>
-      <button class="btns" onclick="skipAll()">Start</button>
+      <button class="btn btn-secondary" onclick="prevScreen()">Previous</button>
+      <button class="btn btn-primary" onclick="skipAll()">Start</button>
     </div>
   </div>
 
