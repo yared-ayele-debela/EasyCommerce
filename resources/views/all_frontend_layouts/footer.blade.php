@@ -241,8 +241,9 @@ $cartCount = $sessionCount + $helperCount;
 
  document.addEventListener("DOMContentLoaded", function () {
   const hasVisited = localStorage.getItem("hasVisited");
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
 
-   if (window.innerWidth < 768 && !hasVisited) {
+if ((window.innerWidth < 768 || isStandalone) && !hasVisited) {
     document.querySelector(".splash-container").style.display = "flex";
     localStorage.setItem("hasVisited", "true");
   } else {
