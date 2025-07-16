@@ -243,7 +243,9 @@ $cartCount = $sessionCount + $helperCount;
   const hasVisited = localStorage.getItem("hasVisited");
 
    if (window.innerWidth < 768 && !hasVisited) {
-    document.querySelector(".splash-container").style.display = "flex";
+    document.querySelector(".splash-container").classList.remove("d-none");
+
+    // document.querySelector(".splash-container").style.display = "flex";
     localStorage.setItem("hasVisited", "true");
   } else {
     skipAll(); // Immediately show main content if user has visited before or is on desktop
