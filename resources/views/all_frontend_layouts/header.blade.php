@@ -232,15 +232,6 @@ use Illuminate\Support\Facades\Storage;
         }
 
 
-         body, html {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: sans-serif;
-      background: #f5f5f5;
-      overflow: hidden;
-    }
-
     .splash-screen {
       position: fixed;
       top: 0;
@@ -302,8 +293,6 @@ use Illuminate\Support\Facades\Storage;
 
     .main-content {
       display: none;
-      padding: 20px;
-      text-align: center;
     }
 
     @media (min-width: 768px) {
