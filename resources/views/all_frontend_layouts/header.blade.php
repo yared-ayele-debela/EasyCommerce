@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Storage;
 @endphp
 <head>
     <meta charset="UTF-8">
-    {{-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> --}}
     <title>{{ $appsetting['tiltle'] }}</title>
     <link href="{{ $appsetting['favicon'] }}" rel="shortcut icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -16,42 +15,41 @@ use Illuminate\Support\Facades\Storage;
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <link rel="stylesheet" href="{{ asset('restaurant_frontend/assets/css/index.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- In your Blade file -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
     <style>
         .tooltip-wrapper {
-  position: relative;
-  display: inline-block;
-}
+            position: relative;
+            display: inline-block;
+        }
 
-.tooltip-wrapper::after {
-  content: "Out of range product";
-  position: absolute;
-  bottom: 120%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.75);
-  color: #fff;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 13px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s;
-  z-index: 10;
-}
+        .tooltip-wrapper::after {
+            content: "Out of range product";
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.75);
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 10;
+        }
 
-.tooltip-wrapper:hover::after {
-  opacity: 1;
-}
+        .tooltip-wrapper:hover::after {
+            opacity: 1;
+        }
 
         @media (max-width: 768px) {
             .custom-order-btn {
@@ -60,6 +58,7 @@ use Illuminate\Support\Facades\Storage;
                 padding-left: 3px;
             }
         }
+
         .toggle-btn {
             display: flex;
             justify-content: space-between;
@@ -136,7 +135,6 @@ use Illuminate\Support\Facades\Storage;
         body {
             top: 0px !important;
         }
-        
 
         .VIpgJd-ZVi9od-ORHb-OEVmcd {
             display: none !important;
@@ -212,160 +210,182 @@ use Illuminate\Support\Facades\Storage;
         }
 
         .responsive-form {
-        width: 100%;
-        margin-left: 0.25rem;  /* mx-1 ≈ 0.25rem on each side */
-        margin-right: 0.25rem;
-        position: relative;
+            width: 100%;
+            margin-left: 0.25rem;
+            /* mx-1 ≈ 0.25rem on each side */
+            margin-right: 0.25rem;
+            position: relative;
         }
 
-         .search-type{
+        .search-type {
             max-width: 100px !important;
         }
+
         @media (min-width: 768px) {
-        .responsive-form {
-            width: 50%;
-            margin-left: 1.5rem;  /* mx-4 ≈ 1.5rem on each side */
-            margin-right: 1.5rem;
-            display: flex; /* equivalent to d-md-flex */
+            .responsive-form {
+                width: 50%;
+                margin-left: 1.5rem;
+                /* mx-4 ≈ 1.5rem on each side */
+                margin-right: 1.5rem;
+                display: flex;
+                /* equivalent to d-md-flex */
+            }
+
+            .search-type {
+                max-width: 150px !important;
+            }
         }
-        .search-type{
-            max-width: 150px !important;
-        }
-        }
 
-    .splash-screen {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        padding: 2rem;
-        z-index: 1000;
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.6s ease-in-out, visibility 0.6s ease-in-out;
-    }
-
-    .splash-screen.active {
-        opacity: 1;
-        visibility: visible;
-        z-index: 1001;
-    }
-
-    #splash1 {
-        background-image: url({{ asset('restaurant_frontend/assets/img/1.jpg') }});
-    }
-
-    #splash2 {
-        background-image: url({{ asset('restaurant_frontend/assets/img/2.jpg') }});
-    }
-
-    #splash3 {
-        background-image: url({{ asset('restaurant_frontend/assets/img/3.jpg') }});
-    }
-
-    #splash4 {
-        background-image: url({{ asset('restaurant_frontend/assets/img/4.jpg') }});
-    }
-
-    .splash-screen img {
-        width: 220px;
-        height: auto;
-        margin-bottom: 20px;
-    }
-
-    .splash-title {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #333;
-    }
-
-    .splash-desc {
-        font-size: 1rem;
-        color: #666;
-        margin-bottom: 2rem;
-    }
-
-    .btn-group-bottom {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        position: absolute;
-        bottom: 30px;
-        left: 0;
-        padding: 0 2rem;
-    }
-
-    .skip-button {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        font-size: 1rem;
-        text-decoration: underline;
-        color: #28e341 !important;
-        background: transparent;
-        text-decoration: none !important;
-        border: none;
-    }
-
-    #main-content {
-        display: none;
-        padding: 20px;
-    }
-
-    @media (min-width: 768px) {
         .splash-screen {
-            display: none !important;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            z-index: 1000;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.6s ease-in-out, visibility 0.6s ease-in-out;
         }
-    }
+
+        .splash-screen.active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 1001;
+        }
+
+        #splash1 {
+            background-image: url({{ asset('restaurant_frontend/assets/img/1.jpg')
+        }
+        }
+
+        );
+        }
+
+        #splash2 {
+            background-image: url({{ asset('restaurant_frontend/assets/img/2.jpg')
+        }
+        }
+
+        );
+        }
+
+        #splash3 {
+            background-image: url({{ asset('restaurant_frontend/assets/img/3.jpg')
+        }
+        }
+
+        );
+        }
+
+        #splash4 {
+            background-image: url({{ asset('restaurant_frontend/assets/img/4.jpg')
+        }
+        }
+
+        );
+        }
+
+        .splash-screen img {
+            width: 220px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        .splash-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .splash-desc {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .btn-group-bottom {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            padding: 0 2rem;
+        }
+
+        .skip-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1rem;
+            text-decoration: underline;
+            color: #28e341 !important;
+            background: transparent;
+            text-decoration: none !important;
+            border: none;
+        }
+
+        #main-content {
+            display: none;
+            padding: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .splash-screen {
+                display: none !important;
+            }
+        }
+
     </style>
 </head>
 
 <body>
-     <div class="container splash-container d-none">
-    <!-- Splash Screens -->
-    <div class="splash-screen active" id="splash1">
-        <button class="skip-button" onclick="skipAll()">Skip</button>
+    <div class="container splash-container d-none">
+        <!-- Splash Screens -->
+        <div class="splash-screen active" id="splash1">
+            <button class="skip-button" onclick="skipAll()">Skip</button>
 
-        <div class="btn-group-bottom">
-            <button class="btn btn-secondary" disabled>Previous</button>
-            <button class="btn btn-primary" onclick="nextScreen()">Next</button>
+            <div class="btn-group-bottom">
+                <button class="btn btn-secondary" disabled>Previous</button>
+                <button class="btn btn-primary" onclick="nextScreen()">Next</button>
+            </div>
+        </div>
+
+        <div class="splash-screen" id="splash2">
+            <button class="skip-button" onclick="skipAll()">Skip</button>
+            <div class="btn-group-bottom">
+                <button class="btn btn-primary" onclick="prevScreen()">Previous</button>
+                <button class="btn btn-primary" onclick="nextScreen()">Next</button>
+            </div>
+        </div>
+
+        <div class="splash-screen" id="splash3">
+            <button class="skip-button" onclick="skipAll()">Skip</button>
+            <div class="btn-group-bottom">
+                <button class="btn btn-primary" onclick="prevScreen()">Previous</button>
+                <button class="btn btn-primary" onclick="nextScreen()">Next</button>
+            </div>
+        </div>
+        <div class="splash-screen" id="splash4">
+            <button class="skip-button" onclick="skipAll()">Skip</button>
+
+            <div class="btn-group-bottom">
+                <button class="btn btn-primary" onclick="prevScreen()">Previous</button>
+                <button class="btn btn-success" onclick="skipAll()">Start Shopping</button>
+            </div>
         </div>
     </div>
-
-    <div class="splash-screen" id="splash2">
-        <button class="skip-button" onclick="skipAll()">Skip</button>
-        <div class="btn-group-bottom">
-            <button class="btn btn-primary" onclick="prevScreen()">Previous</button>
-            <button class="btn btn-primary" onclick="nextScreen()">Next</button>
-        </div>
-    </div>
-
-    <div class="splash-screen" id="splash3">
-        <button class="skip-button" onclick="skipAll()">Skip</button>
-        <div class="btn-group-bottom">
-            <button class="btn btn-primary" onclick="prevScreen()">Previous</button>
-            <button class="btn btn-primary" onclick="nextScreen()">Next</button>
-        </div>
-    </div>
-    <div class="splash-screen" id="splash4">
-        <button class="skip-button" onclick="skipAll()">Skip</button>
-
-        <div class="btn-group-bottom">
-            <button class="btn btn-primary" onclick="prevScreen()">Previous</button>
-            <button class="btn btn-success" onclick="skipAll()">Start Shopping</button>
-        </div>
-    </div>
-      </div>
-<div id="main-content" class="p-0 m-0">
+    <div id="main-content" class="p-0 m-0">
 
 
         <header>
@@ -411,7 +431,7 @@ use Illuminate\Support\Facades\Storage;
                         <img src="{{ $appsetting['logo']?? asset('restaurant_frontend/assets/img/logo.png') }}" alt="Logo" style="height: 40px;">
                     </a>
 
-                    <form class="responsive-form" >
+                    <form class="responsive-form">
                         <div class="input-group position-relative border border-1 rounded rounded-2">
                             {{-- Search type selector --}}
                             <select class="form-select w-auto border border-0 search-type" id="search-type" name="type">
@@ -464,11 +484,11 @@ use Illuminate\Support\Facades\Storage;
                                 @endif
                                 <span id="notification-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
                                     0
-                                 <span class="visually-hidden">unread messages</span>
+                                    <span class="visually-hidden">unread messages</span>
                                 </span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow">
-                                 <li>
+                                <li>
                                     <a class="dropdown-item d-flex justify-content-between align-items-center" href="{{ url('/notifications') }}">
                                         <span><i class="bi bi-bell text-primary"></i> Notifications &nbsp;</span>
                                         <span id="notification-badge1" class="badge bg-danger rounded-pill" style="display: none;">0<span>
@@ -537,40 +557,41 @@ use Illuminate\Support\Facades\Storage;
             </div>
         </header>
         @include('all_frontend_layouts.custom_order.index')
-     <script>
-        function checkNotifications() {
-            fetch('/check-notifications')
-                .then(response => response.json())
-                .then(data => {
-                    const badge = document.getElementById('notification-badge');
-                    const badge1 = document.getElementById('notification-badge1');
-                    const badge2 = document.getElementById('notification-badge2');
-                    const badge3 = document.getElementById('notification-badge3');
-                    if (data.unread > 0) {
-                        badge.innerText = data.unread;
-                        badge.style.display = 'inline-block';
-                        badge1.innerText = data.unread;
-                        badge1.style.display = 'inline-block';
-                        badge2.innerText = data.unread;
-                        badge2.style.display = 'inline-block';
-                        badge3.innerText = data.unread;
-                        badge3.style.display = 'inline-block';
-                    } else {
-                        badge.style.display = 'none';
-                        badge1.style.display = 'none';
-                        badge2.style.display = 'none';
-                        badge3.style.display = 'none';
-                    }
-                })
-                .catch(error => {
-                    console.error('Notification check failed:', error);
-                });
-        }
+        <script>
+            function checkNotifications() {
+                fetch('/check-notifications')
+                    .then(response => response.json())
+                    .then(data => {
+                        const badge = document.getElementById('notification-badge');
+                        const badge1 = document.getElementById('notification-badge1');
+                        const badge2 = document.getElementById('notification-badge2');
+                        const badge3 = document.getElementById('notification-badge3');
+                        if (data.unread > 0) {
+                            badge.innerText = data.unread;
+                            badge.style.display = 'inline-block';
+                            badge1.innerText = data.unread;
+                            badge1.style.display = 'inline-block';
+                            badge2.innerText = data.unread;
+                            badge2.style.display = 'inline-block';
+                            badge3.innerText = data.unread;
+                            badge3.style.display = 'inline-block';
+                        } else {
+                            badge.style.display = 'none';
+                            badge1.style.display = 'none';
+                            badge2.style.display = 'none';
+                            badge3.style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Notification check failed:', error);
+                    });
+            }
 
-        // Check immediately and then every 10 seconds
-        checkNotifications();
-        setInterval(checkNotifications, 5000);
-    </script>
+            // Check immediately and then every 10 seconds
+            checkNotifications();
+            setInterval(checkNotifications, 5000);
+
+        </script>
 
         <script type="text/javascript">
             function googleTranslateElementInit() {

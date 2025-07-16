@@ -52,9 +52,9 @@ class OrderController extends Controller
     public function show($id)
     {
         $delivery_mans=DeliveryMan::where('status','available')->get();
-        // Fetch the order with related order items and products
+
         $order = Order::with('orderItems.product','address')->findOrFail($id);
-        // dd($order);
+
         $delivery_man="";
         $delivery_man=DeliveryMan::where('id',$order->delivery_man_id)->first();
         $notifications=DeliveryNotification::with('deliveryman')->where('order_id',$order->id)->latest()->get();
