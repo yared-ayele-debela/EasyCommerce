@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Three Screen Splash</title>
   <style>
-    body, html {
+    /* body, html {
       margin: 0;
       padding: 0;
       height: 100%;
       font-family: sans-serif;
       background: #f5f5f5;
       overflow: hidden;
-    }
+    } */
 
     .splash-screen {
       position: fixed;
