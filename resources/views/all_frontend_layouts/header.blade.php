@@ -237,17 +237,24 @@ use Illuminate\Support\Facades\Storage;
     }
 
      .onboard-container {
-        max-width: 400px;
-        width: 100%;
-        height: 100%;
-        margin: auto;
-        position: fixed;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between; /* 👈 Ensures top & bottom content are spaced */
-            z-index: 9999;
-
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background: white; /* makes it visible above other content */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 100%; /* full width */
+  height: 100%;
+  padding: 1rem;
+  overflow-y: auto;
 }
+
 .screen{
     z-index: 10000 !important;
 }
