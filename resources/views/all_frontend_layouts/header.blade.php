@@ -317,15 +317,14 @@ use Illuminate\Support\Facades\Storage;
 <body>
 
 <!-- Splash Screens -->
-  <div class="splash-screen" style="background-image: url({{ asset('restaurant_frontend/assets/img/2.jpg') }})" id="splash1">
+  <div class="splash-screen"  id="splash1" style="background-image: url({{ asset('restaurant_frontend/assets/img/1.jpg') }})" id="splash1">
     <button class="skip-btn" onclick="skipAll()">Skip</button>
-
     <div class="button-group">
       <button class="btn btn-secondary" disabled>Previous</button>
       <button class="btn btn-primary" onclick="nextScreen()">Next</button>
     </div>
   </div>
-  <div class="splash-screen" id="splash2" style="background-image: url({{ asset('restaurant_frontend/assets/img/3.jpg') }})">
+  <div class="splash-screen" id="splash2" style="background-image: url({{ asset('restaurant_frontend/assets/img/2.jpg') }})">
     <button class="skip-btn" onclick="skipAll()">Skip</button>
 
     <div class="button-group">
@@ -334,7 +333,15 @@ use Illuminate\Support\Facades\Storage;
     </div>
   </div>
 
-  <div class="splash-screen" id="splash3" style="background-image: url({{ asset('restaurant_frontend/assets/img/4.jpg') }})">
+  <div class="splash-screen" id="splash3" style="background-image: url({{ asset('restaurant_frontend/assets/img/3.jpg') }})">
+    <button class="skip-btn" onclick="skipAll()">Skip</button>
+
+    <div class="button-group">
+      <button class="btn btn-secondary" onclick="prevScreen()">Previous</button>
+      <button class="btn btn-primary" onclick="nextScreen()">Next</button>
+    </div>
+  </div>
+  <div class="splash-screen" id="splash4" style="background-image: url({{ asset('restaurant_frontend/assets/img/4.jpg') }})">
     <button class="skip-btn" onclick="skipAll()">Skip</button>
 
     <div class="button-group">

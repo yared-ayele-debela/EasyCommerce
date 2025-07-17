@@ -208,7 +208,7 @@ $cartCount = $sessionCount + $helperCount;
 <script src="{{ asset('restaurant_frontend/assets/js/index.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
 <script>
-    const screens = ['splash1', 'splash2', 'splash3'];
+    const screens = ['splash1', 'splash2', 'splash3','splash4'];
     let current = 0;
 
     function updateScreens() {
@@ -246,7 +246,7 @@ $cartCount = $sessionCount + $helperCount;
       } else {
         skipAll();
       }
-              localStorage.setItem("hasVisited", "true");
+      localStorage.setItem("hasVisited", "true");
 
     });
   </script>
