@@ -208,49 +208,66 @@ $cartCount = $sessionCount + $helperCount;
 <script src="{{ asset('restaurant_frontend/assets/js/index.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
 <script>
-    const screens = ['splash1', 'splash2', 'splash3','splash4'];
-    let current = 0;
+    let currentScreen = 1;
+    const totalScreens = 5;
 
-    function updateScreens() {
-      screens.forEach((id, index) => {
-        document.getElementById(id).classList.toggle('active', index === current);
-      });
-    }
-
-    function nextScreen() {
-      if (current < screens.length - 1) {
-        current++;
-        updateScreens();
+    function updateScreen() {
+      for (let i = 1; i <= totalScreens; i++) {
+        document.getElementById(`screen-${i}`).classList.add('d-none');
+        document.getElementById(`dot-${i}`).classList.remove('active');
       }
+      document.getElementById(`screen-${currentScreen}`).classList.remove('d-none');
+      document.getElementById(`dot-${currentScreen}`).classList.add('active');
+
+      document.getElementById('prevBtn').disabled = currentScreen === 1;
+      document.getElementById('nextBtn').innerText = currentScreen === totalScreens ? 'Finish' : 'Next';
     }
 
-    function prevScreen() {
-      if (current > 0) {
-        current--;
-        updateScreens();
-      }
+   
+
+    function isMobileDevice() {
+      return window.innerWidth <= 768;
     }
 
-    function skipAll() {
-      screens.forEach(id => {
-        document.getElementById(id).style.display = 'none';
-      });
-      document.getElementById('main').style.display = 'block';
-    }
+    function startOnboarding() {
+  updateScreen();
+  document.querySelector('.onboard-container').style.display = 'flex';
+  document.getElementById('mainContent').classList.add('d-none');
+}
 
-    document.addEventListener("DOMContentLoaded", function () {
-      const isMobile = window.innerWidth < 768;
-      const hasVisited = localStorage.getItem("hasVisited");
-      if (isMobile && !hasVisited) {
-        document.getElementById(screens[current]).classList.add('active');
+function showMainContent() {
+  document.querySelector('.onboard-container').style.display = 'none';
+  document.getElementById('mainContent').classList.remove('d-none');
+  localStorage.setItem('hasVisited', 'true');
+}
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      if (currentScreen < totalScreens) {
+        currentScreen++;
+        updateScreen();
       } else {
-        skipAll();
+        showMainContent();
       }
-      localStorage.setItem("hasVisited", "true");
-
     });
-  </script>
 
+    document.getElementById('prevBtn').addEventListener('click', () => {
+      if (currentScreen > 1) {
+        currentScreen--;
+        updateScreen();
+      }
+    });
+
+    document.getElementById('skipBtn').addEventListener('click', showMainContent);
+
+    window.onload = () => {
+      const hasVisited = localStorage.getItem('hasVisited');
+      if (hasVisited || !isMobileDevice()) {
+        showMainContent();
+      } else {
+        startOnboarding();
+      }
+    };
+  </script>
 <script>
  document.addEventListener('DOMContentLoaded', function () {
     if (!localStorage.getItem('locationAllowed') && !localStorage.getItem('user_lat') && !localStorage.getItem('user_lng')) {
