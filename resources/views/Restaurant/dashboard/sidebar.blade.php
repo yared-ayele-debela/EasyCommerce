@@ -1,4 +1,5 @@
 <?php
+use App\Models\Roles;
 
 ?>
 <aside id="sidebar" class=" colored sidebar ">
@@ -9,6 +10,8 @@
 
         @php
         $adminType = Auth::guard('admin')->user()->type;
+        $role=Roles::where('name',$adminType)->first();
+
         @endphp
        @if ($adminType === "Super Admin" || $adminType === "admin")
         <div class="form-group mb-2">
@@ -32,17 +35,17 @@
         </script>
         <hr>
         @endif
-        @if ($adminType === "Hotel Manager")
+  @if ($role->group == "hotel")
         <li class=" {{ request()->is('admin/hotel/dashboard')?'nav-item active':'' }}">
         <a href="{{ url('admin/hotel/dashboard') }}" class="nav-link {{request()->is('admin/hotel/dashboard')}}"> <i class="bi bi-menu-button-fill"></i><span>Dashboard</span> </a>
         </li>
         @endif
-        @if ($adminType === "Restaurant Manager")
+        @if ($role->group == "restaurant")
         <li class=" {{ request()->is('admin/restaurant/dashboard')?'nav-item active':'' }}">
         <a href="{{ url('admin/restaurant/dashboard') }}" class="nav-link {{request()->is('admin/restaurant/dashboard')}}"> <i class="bi bi-menu-button-fill"></i><span>Dashboard</span> </a>
         </li>
         @endif
-        @if($adminType === "Ecomomerce Manager" || $adminType === "vendor")
+        @if($role->group == "ecomomerce")
         <li class=" {{ request()->is('admin/dashboard')?'nav-item active':'' }}">
            <a href="{{ url('admin/dashboard') }}" class="nav-link {{request()->is('admin/dashboard')}}"> <i class="bi bi-menu-button-fill"></i><span>Dashboard</span> </a>
         </li>
