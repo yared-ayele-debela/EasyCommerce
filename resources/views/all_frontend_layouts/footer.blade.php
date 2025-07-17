@@ -222,9 +222,6 @@ $cartCount = $sessionCount + $helperCount;
       document.getElementById('prevBtn').disabled = currentScreen === 1;
       document.getElementById('nextBtn').innerText = currentScreen === totalScreens ? 'Finish' : 'Next';
     }
-
-   
-
     function isMobileDevice() {
       return window.innerWidth <= 768;
     }
