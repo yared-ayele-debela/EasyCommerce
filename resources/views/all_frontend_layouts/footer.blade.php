@@ -243,10 +243,11 @@ $cartCount = $sessionCount + $helperCount;
       const hasVisited = localStorage.getItem("hasVisited");
       if (isMobile && !hasVisited) {
         document.getElementById(screens[current]).classList.add('active');
-        localStorage.setItem("hasVisited", "true");
       } else {
         skipAll();
       }
+              localStorage.setItem("hasVisited", "true");
+
     });
   </script>
 

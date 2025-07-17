@@ -7,11 +7,9 @@ use App\Models\Roles;
     $user = Auth::guard('admin')->user();
     @endphp
     <ul class="sidebar-nav" id="sidebar-nav">
-
         @php
         $adminType = Auth::guard('admin')->user()->type;
         $role=Roles::where('name',$adminType)->first();
-
         @endphp
        @if ($adminType === "Super Admin" || $adminType === "admin")
         <div class="form-group mb-2">
@@ -31,7 +29,6 @@ use App\Models\Roles;
                     window.location.href = url;
                 }
             });
-
         </script>
         <hr>
         @endif
