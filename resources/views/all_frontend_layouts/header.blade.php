@@ -230,7 +230,61 @@ use Illuminate\Support\Facades\Storage;
             max-width: 150px !important;
         }
         }
-        
+         /* body,
+    html {
+      height: 100%;
+      margin: 0;
+    } */
+
+
+    .skip-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      font-size: 0.9rem;
+    }
+    .onboard-title {
+      color: #055935;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+    .onboard-image {
+      width: 100%;
+      max-height: 250px;
+      object-fit: contain;
+      margin-bottom: 1.5rem;
+      margin-top: 3.5rem;
+    }
+    .onboard-heading {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      text-align: center;
+      color: #09051C;
+    }
+    .onboard-subtext {
+      font-size: 0.95rem;
+      color: #666;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    .dot {
+      height: 10px;
+      width: 10px;
+      margin: 0 5px;
+      background-color: #ccc;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot.active {
+      background-color: #055935;
+    }
+    .bottom-controls {
+          padding: 1rem;
+
+      margin-top: auto !important;
+    }
     </style>
 </head>
 
