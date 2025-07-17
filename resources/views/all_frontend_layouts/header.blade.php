@@ -304,7 +304,7 @@ use Illuminate\Support\Facades\Storage;
 <div class="onboard-container" >
     <button class="btn btn-link text-muted skip-btn" id="skipBtn">Skip</button>
     <!-- Screens -->
-    <div id="screens">
+    <div id="screens" style="z-index: 9999;">
       <!-- Screen 1 -->
       <div class="screen" id="screen-1">
         <div style="background-image: url('{{ asset('restaurant_frontend/assets/img/banner_o.png') }}'); background-size: cover; background-position: center; background-repeat: no-repeat; width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; color: #055935; font-size: 2rem; font-weight: bold;">Easy Food Delivery</div>
