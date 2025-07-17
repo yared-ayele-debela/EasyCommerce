@@ -302,11 +302,11 @@ use Illuminate\Support\Facades\Storage;
 
 <body>
 <div class="onboard-container" >
-    <button class="btn btn-link text-muted skip-btn" id="skipBtn">Skip</button>
+    <button class="btn btn-link text-muted skip-btn" id="skipBtn"  style="z-index: 9999;">Skip</button>
     <!-- Screens -->
     <div id="screens" style="z-index: 9999;">
       <!-- Screen 1 -->
-      <div class="screen" id="screen-1">
+      <div class="screen"  style="z-index: 9999;" id="screen-1">
         <div style="background-image: url('{{ asset('restaurant_frontend/assets/img/banner_o.png') }}'); background-size: cover; background-position: center; background-repeat: no-repeat; width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; color: #055935; font-size: 2rem; font-weight: bold;">Easy Food Delivery</div>
         <img src="{{ asset('restaurant_frontend/logo.png') }}" alt="Step 1" class="onboard-image">
         <div class="onboard-heading">Welcome</div>
@@ -314,7 +314,7 @@ use Illuminate\Support\Facades\Storage;
          Easy ordering and real-time tracking.
         </div>
       </div>
-      <div class="screen d-none" id="screen-2">
+      <div class="screen d-none"  style="z-index: 9999;" id="screen-2">
         <div style="background-image: url('{{ asset('restaurant_frontend/assets/img/banner_o.png') }}'); background-size: cover; background-position: center; background-repeat: no-repeat; width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; color: #055935; font-size: 2rem; font-weight: bold;">Easy Food Delivery</div>
         <img src="{{ asset('restaurant_frontend/assets/img/food.png') }}" alt="Step 1" class="onboard-image">
         <div class="onboard-heading">Order Foood, Fast & Fresh</div>
@@ -324,7 +324,7 @@ use Illuminate\Support\Facades\Storage;
       </div>
 
       <!-- Screen 2 -->
-      <div class="screen d-none" id="screen-3">
+      <div class="screen d-none"  style="z-index: 9999;" id="screen-3">
         <div style="background-image: url('{{ asset('restaurant_frontend/assets/img/banner_o.png') }}'); background-size: cover; background-position: center; background-repeat: no-repeat; width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; color: #055935; font-size: 2rem; font-weight: bold;">Easy Hotel Booking</div>
         <img src="{{ asset('restaurant_frontend/assets/img/hotel.png') }}" alt="Step 2" class="onboard-image">
         <div class="onboard-heading">Book Hotels, Stress-free</div>
@@ -334,7 +334,7 @@ use Illuminate\Support\Facades\Storage;
       </div>
 
       <!-- Screen 3 -->
-      <div class="screen d-none" id="screen-4">
+      <div class="screen d-none"  style="z-index: 9999;" id="screen-4">
         <div style="background-image: url('{{ asset('restaurant_frontend/assets/img/banner_o.png') }}'); background-size: cover; background-position: center; background-repeat: no-repeat; width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; color: #055935; font-size: 2rem; font-weight: bold;">Easy E-commerce</div>
         <img src="{{ asset('restaurant_frontend/assets/img/goods.png') }}" alt="Step 3" class="onboard-image">
         <div class="onboard-heading">Shop smarter, Live easy</div>
@@ -344,7 +344,7 @@ use Illuminate\Support\Facades\Storage;
       </div>
 
       <!-- Screen 4 -->
-      <div class="screen d-none" id="screen-5">
+      <div class="screen d-none"  style="z-index: 9999;" id="screen-5">
         <div style="background-image: url('{{ asset('restaurant_frontend/assets/img/banner_o.png') }}'); background-size: cover; background-position: center; background-repeat: no-repeat; width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; color: #055935; font-size: 2rem; font-weight: bold;">Fast Delivery</div>
         <img src="{{ asset('restaurant_frontend/assets/img/delivery copy.png') }}" alt="Step 4" class="onboard-image">
         <div class="onboard-heading">Quick & Reliable Delivery</div>
@@ -353,7 +353,7 @@ use Illuminate\Support\Facades\Storage;
     </div>
 
     <!-- Bottom Controls -->
-    <div class="bottom-controls w-100">
+    <div class="bottom-controls w-100"  style="z-index: 9999;">
       <div class="d-flex justify-content-between align-items-center w-100 mb-3">
         <button class="btn btn-outline-secondary" id="prevBtn">Previous</button>
         <div>
