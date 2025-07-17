@@ -311,7 +311,7 @@ use Illuminate\Support\Facades\Storage;
 </head>
 
 <body>
-<div class="onboard-container" >
+<div class="onboard-container" style="display: none;">
     <button class="btn btn-link text-muted skip-btn" id="skipBtn">Skip</button>
     <!-- Screens -->
     <div id="screens">
