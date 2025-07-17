@@ -230,11 +230,11 @@ use Illuminate\Support\Facades\Storage;
             max-width: 150px !important;
         }
         }
-         body,
+         /* body,
     html {
       height: 100%;
       margin: 0;
-    }
+    } */
 
      .onboard-container {
   max-width: 400px;
