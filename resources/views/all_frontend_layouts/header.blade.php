@@ -241,11 +241,12 @@ use Illuminate\Support\Facades\Storage;
         width: 100%;
         height: 100%;
         margin: auto;
-        position: relative;
+        position: fixed;
         display: flex;
         flex-direction: column;
         justify-content: space-between; /* 👈 Ensures top & bottom content are spaced */
-        
+            z-index: 9999;
+
 }
 .screen{
     z-index: 10000 !important;
