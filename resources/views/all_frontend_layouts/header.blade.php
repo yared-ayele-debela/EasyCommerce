@@ -230,11 +230,11 @@ use Illuminate\Support\Facades\Storage;
             max-width: 150px !important;
         }
         }
-         /* body,
+         body,
     html {
       height: 100%;
       margin: 0;
-    } */
+    }
 
      .onboard-container {
   max-width: 400px;
@@ -303,7 +303,7 @@ use Illuminate\Support\Facades\Storage;
 <body>
 <div class="onboard-container" >
     <button class="btn btn-link text-muted skip-btn" id="skipBtn">Skip</button>
-
+    <!-- Screens -->
     <div id="screens">
       <!-- Screen 1 -->
       <div class="screen" id="screen-1">
