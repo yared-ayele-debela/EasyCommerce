@@ -214,25 +214,25 @@ class AdminController extends Controller
             Auth::guard('admin')->logout();
             return redirect()->back()->with('error', 'Your account is not active.');
         }
+        $role=Roles::where('name',$user->type)->first();
+        // dd($role);
 
-        // if($user->type === '') {
-        //     Auth::guard('admin')->logout();
-        // }
-        // dd($user->type?? 'No type found');
-        if ($user->type === 'Hotel Manager') {
-            return redirect('/admin/hotel/dashboard');
-        } elseif ($user->type === 'Restaurant Manager') {
-            return redirect('/admin/restaurant/dashboard');
-        } elseif (
-            $user->type === 'Ecommerce Manager' ||
-            $user->type === 'Super Admin' ||
-            $user->type === 'vendor' ||
-            $user->type === 'admin'
+        // $role = $user->type;
 
-        ) {
-        } elseif ($user->type !== null) {
-            return redirect('/admin/dashboard');
+        $groupRedirects = [
+            'hotel'     => '/admin/hotel/dashboard',
+            'restaurant'=> '/admin/restaurant/dashboard',
+            'ecommerce' => '/admin/dashboard',
+            'general'   => '/admin/dashboard',
+        ];
+
+        $group = $role->group ?? null;
+
+        if (isset($groupRedirects[$group])) {
+            return redirect($groupRedirects[$group]);
         }
+
+        return redirect('/admin/dashboard');
 
         $formattedDateTime = now()->toDateTimeString();
         ActivityLogger::log('User login', "User logged in at {$formattedDateTime}");

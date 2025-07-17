@@ -35,6 +35,7 @@ $user = Auth::guard('admin')->user();
                             <tr>
                                 <td>{{ $role->id }}</td>
                                 <td>{{ $role->name }}</td>
+                                <td>{{ $role->group }}</td>
                                 <td>
                                     @if ($role->permissions->count() > 0)
                                     @foreach ($role->permissions as $permission)

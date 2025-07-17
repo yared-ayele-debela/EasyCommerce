@@ -319,9 +319,7 @@ use Illuminate\Support\Facades\Storage;
 <!-- Splash Screens -->
   <div class="splash-screen active" style="background-image: url({{ asset('restaurant_frontend/assets/img/2.jpg') }})" id="splash1">
     <button class="skip-btn" onclick="skipAll()">Skip</button>
-    {{-- <img src="{{ asset(path: 'restaurant_frontend/assets/img/1.jpg') }}" alt="Logo" class="splash-logo" />
-    <div class="splash-title">Welcome!</div>
-    <div class="splash-desc">Discover amazing products at your fingertips.</div> --}}
+    
     <div class="button-group">
       <button class="btn btn-secondary" disabled>Previous</button>
       <button class="btn btn-primary" onclick="nextScreen()">Next</button>
@@ -329,9 +327,7 @@ use Illuminate\Support\Facades\Storage;
   </div>
   <div class="splash-screen" id="splash2" style="background-image: url({{ asset('restaurant_frontend/assets/img/3.jpg') }})">
     <button class="skip-btn" onclick="skipAll()">Skip</button>
-    {{-- <img src="{{ asset('restaurant_frontend/assets/img/2.jpg') }}" alt="Logo" class="splash-logo" />
-    <div class="splash-title">Fast Delivery</div>
-    <div class="splash-desc">Get your orders quickly and reliably.</div> --}}
+    
     <div class="button-group">
       <button class="btn btn-secondary" onclick="prevScreen()">Previous</button>
       <button class="btn btn-primary" onclick="nextScreen()">Next</button>
@@ -340,9 +336,7 @@ use Illuminate\Support\Facades\Storage;
 
   <div class="splash-screen" id="splash3" style="background-image: url({{ asset('restaurant_frontend/assets/img/4.jpg') }})">
     <button class="skip-btn" onclick="skipAll()">Skip</button>
-    {{-- <img src="{{ asset('restaurant_frontend/assets/img/3.jpg') }}" alt="Logo" class="splash-logo" />
-    <div class="splash-title">Get Started</div>
-    <div class="splash-desc">Join us today and enjoy the best deals.</div> --}}
+   
     <div class="button-group">
       <button class="btn btn-secondary" onclick="prevScreen()">Previous</button>
       <button class="btn btn-primary" onclick="skipAll()">Start</button>

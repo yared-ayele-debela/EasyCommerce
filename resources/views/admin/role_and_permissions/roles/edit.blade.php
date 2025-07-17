@@ -22,10 +22,21 @@ $user = Auth::guard('admin')->user();
             <form class="row g-3" action="{{ route('roles.update', $role->id) }}" method="POST">
                 @csrf
                 @method('PUT')
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <label for="name" class="form-label">Role Name</label>
                     <input type="text" value="{{ $role->name }}" class="form-control" name="name">
                     @error('name')
+                    <small class=" text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
+                <div class="col-md-12">
+                    <label for="group" class="form-label">Role Group</label>
+                    <select name="group" class="form-control" id="group">
+                        <option value="ecommerce">Ecommerce</option>
+                        <option value="restaurant">Restaurant</option>
+                        <option value="hotel">Hotel</option>
+                    </select>
+                    @error('group')
                     <small class=" text-danger">{{ $message }}</small>
                     @enderror
                 </div>

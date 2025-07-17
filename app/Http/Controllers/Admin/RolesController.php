@@ -62,10 +62,12 @@ class RolesController extends Controller
             }
             $request->validate([
                 'name' => 'required|unique:roles',
+                'group' => 'required|string|in:hotel,restaurant,ecommerce', // allowed groups
             ]);
 
             Roles::create([
                 'name' => $request->name,
+                'group' => $request->group,
             ]);
 
                $currentDateTime = Carbon::now();
@@ -112,10 +114,12 @@ class RolesController extends Controller
             }
             $request->validate([
                 'name' => 'required|unique:roles,name,' . $role->id,
+                'group' => 'required|string|in:hotel,restaurant,ecommerce', // allowed groups
             ]);
 
             $role->update([
                 'name' => $request->name,
+                'group' => $request->group,
             ]);
 
                $currentDateTime = Carbon::now();

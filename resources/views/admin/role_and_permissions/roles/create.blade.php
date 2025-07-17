@@ -21,10 +21,21 @@ $user = Auth::guard('admin')->user();
         <div class="card-body pt-3">
             <form class=" g-3" action="{{ route('roles.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <label for="name" class="form-label">Role Name</label>
                     <input type="text" class="form-control" name="name">
                     @error('name')
+                    <small class=" text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
+                <div class="col-md-12">
+                    <label for="group" class="form-label">Role Group</label>
+                    <select name="group" class="form-control" id="group">
+                        <option value="ecommerce">Ecommerce</option>
+                        <option value="restaurant">Restaurant</option>
+                        <option value="hotel">Hotel</option>
+                    </select>
+                    @error('group')
                     <small class=" text-danger">{{ $message }}</small>
                     @enderror
                 </div>
