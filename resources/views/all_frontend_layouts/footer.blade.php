@@ -257,6 +257,16 @@ function showMainContent() {
     document.getElementById('skipBtn').addEventListener('click', showMainContent);
 
     window.onload = () => {
+
+          const urlParams = new URLSearchParams(window.location.search);
+  const hasVisitedParam = urlParams.get('hasVisited');
+
+  if (hasVisitedParam === 'true') {
+    localStorage.setItem('hasVisited', 'true');
+
+    // Optionally clean URL by removing query param without reload
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
       const hasVisited = localStorage.getItem('hasVisited');
       if (hasVisited || !isMobileDevice()) {
         showMainContent();
