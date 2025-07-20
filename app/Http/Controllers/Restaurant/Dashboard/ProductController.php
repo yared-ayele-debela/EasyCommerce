@@ -10,6 +10,7 @@ use App\Models\Restaurant\ProductImage;
 use App\Models\Restaurant\Restaurant;
 use App\Models\Restaurant\RestaurantMenu;
 use App\Models\Restaurant\Subcategory;
+use App\Models\Roles;
 use App\Models\Tax;
 use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
@@ -31,9 +32,11 @@ class ProductController extends Controller
     public function index()
     {
         $adminType = Auth::guard('admin')->user()->type;
-        if($adminType==="Super Admin"){
-             $restaurants=Restaurant::latest()->get();
 
+        $role=Roles::where('name',$adminType)->first();
+
+        if($role->group==="general"){
+             $restaurants=Restaurant::latest()->get();
             $products = Product::with('images','city','menu','category','subcategory')->latest()->get();
         }else{
             $restaurants=Restaurant::where('admin_id',Auth::guard('admin')->user()->id)->get();

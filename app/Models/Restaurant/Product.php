@@ -11,7 +11,7 @@ class Product extends Model
     use HasFactory;
     protected $table="restaurant_products";
     protected $fillable = [
-        'name', 'slug', 'description', 'category_id', 'city_id', 'menu_id', 'code',
+        'restaurant_id','name', 'slug', 'description', 'category_id','subcategory_id', 'city_id', 'menu_id', 'code',
         'price','product_tax', 'discount_type', 'discount', 'image', 'weight','admin_id',
         'most_populer', 'best_seller','is_free','delivery_fee','delivery_time', 'is_active'
     ];
