@@ -74,6 +74,7 @@ class ProductController extends Controller
             'price' => 'required',
             'category_id' => 'required',
             'subcategory_id'=>'required',
+            'restaurant_id'=>'required',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
