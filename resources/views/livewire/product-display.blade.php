@@ -51,9 +51,9 @@
                             <td>{{ $product['id'] }}</td>
                             <td>{{ $product['product_name']}}
                                    @php
-                                    $hasStock = $product['attributes'];
+                                    $hasStock = $product['quantity'] < 0;
                                     @endphp
-                                    @if(!$hasStock)
+                                    @if($hasStock)
                                         <span class="bg-secondary position-absolute badge bg-danger m-2" style="z-index: 1100;">Out of Stock</span>
                                     @endif
                             </td>
@@ -93,7 +93,7 @@
                                 </div>
                                 </i>
                             </td>
-                          
+
 
                             <td>
                                 <div class="d-flex">

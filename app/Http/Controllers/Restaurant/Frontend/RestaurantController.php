@@ -102,9 +102,7 @@ class RestaurantController extends Controller
 
     public function getNearbyRestaurants(Request $request)
     {
-        // $latitude = $request->latitude;
-        // $longitude = $request->longitude;
-
+        
         $latitude = session('user_lat', 9.03);
         $longitude = session('user_lng', 38.74);
 

@@ -69,10 +69,10 @@ $cartCount = $sessionCount + $helperCount;
                     <div class="col-8 col-md-8">
                         <div class="d-grid gap-2 col-8 mx-auto">
                             <a href="https://myeasyhub.com/apk/myeasyhub.apk" class="btn btn-primary" target="_blank">
-                            <img src="{{ asset('restaurant_frontend/assets/img/playstore.png') }}" alt="Google Play" class="img-fluid" style="width: 100px;">
+                                <img src="{{ asset('restaurant_frontend/assets/img/playstore.png') }}" alt="Google Play" class="img-fluid" style="width: 100px;">
                             </a>
                             <a href="https://myeasyhub.com/apk/myeasyhub.apk" class="btn btn-primary" target="_blank">
-                            <img src="{{ asset('restaurant_frontend/assets/img/appstore.png') }}" alt="App Store" class="img-fluid" style="width: 100px;">
+                                <img src="{{ asset('restaurant_frontend/assets/img/appstore.png') }}" alt="App Store" class="img-fluid" style="width: 100px;">
                             </a>
                         </div>
                     </div>
@@ -113,19 +113,19 @@ $cartCount = $sessionCount + $helperCount;
     </div>
 </footer>
 <!-- Location Request Modal -->
-<div class="modal fade" id="locationModal" tabindex="-1" aria-labelledby="locationModalLabel" aria-hidden="true"  data-bs-backdrop="static" data-bs-keyboard="false">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content shadow">
-      <div class="modal-header">
-        <h5 class="modal-title" id="locationModalLabel">Enable Your Location</h5>
-      </div>
-      <div class="modal-body text-center">
-        <p>To give you a better experience, we need your location.</p>
-        <div id="locationError" class="text-danger mb-2" style="display: none;">Failed to access location. Please allow access.</div>
-        <button id="allowLocationBtn" class="btn btn-primary">Allow Location</button>
-      </div>
+<div class="modal fade" id="locationModal" tabindex="-1" aria-labelledby="locationModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow">
+            <div class="modal-header">
+                <h5 class="modal-title" id="locationModalLabel">Enable Your Location</h5>
+            </div>
+            <div class="modal-body text-center">
+                <p>To give you a better experience, we need your location.</p>
+                <div id="locationError" class="text-danger mb-2" style="display: none;">Failed to access location. Please allow access.</div>
+                <button id="allowLocationBtn" class="btn btn-primary">Allow Location</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 <!-- Bottom Navigation Bar -->
 <nav class="bottom-nav d-md-none fixed-bottom bg-white shadow-sm">
@@ -167,9 +167,9 @@ $cartCount = $sessionCount + $helperCount;
                 <i class="bi bi-person-circle fs-5 text-primary"></i>
                 @endif
                 <span id="notification-badge2" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
-                0
-                <span class="visually-hidden">unread messages</span>
-                <div class="small text-dark">Profile</div>
+                    0
+                    <span class="visually-hidden">unread messages</span>
+                    <div class="small text-dark">Profile</div>
             </a>
             <ul class="dropdown-menu dropdown-menu-end shadow">
                 <li>
@@ -212,111 +212,113 @@ $cartCount = $sessionCount + $helperCount;
     const totalScreens = 5;
 
     function updateScreen() {
-      for (let i = 1; i <= totalScreens; i++) {
-        document.getElementById(`screen-${i}`).classList.add('d-none');
-        document.getElementById(`dot-${i}`).classList.remove('active');
-      }
-      document.getElementById(`screen-${currentScreen}`).classList.remove('d-none');
-      document.getElementById(`dot-${currentScreen}`).classList.add('active');
+        for (let i = 1; i <= totalScreens; i++) {
+            document.getElementById(`screen-${i}`).classList.add('d-none');
+            document.getElementById(`dot-${i}`).classList.remove('active');
+        }
+        document.getElementById(`screen-${currentScreen}`).classList.remove('d-none');
+        document.getElementById(`dot-${currentScreen}`).classList.add('active');
 
-      document.getElementById('prevBtn').disabled = currentScreen === 1;
-      document.getElementById('nextBtn').innerText = currentScreen === totalScreens ? 'Finish' : 'Next';
+        document.getElementById('prevBtn').disabled = currentScreen === 1;
+        document.getElementById('nextBtn').innerText = currentScreen === totalScreens ? 'Finish' : 'Next';
     }
+
     function isMobileDevice() {
-      return window.innerWidth <= 768;
+        return window.innerWidth <= 768;
     }
 
     function startOnboarding() {
-  updateScreen();
-  document.querySelector('.onboard-container').style.display = 'flex';
-  document.getElementById('mainContent').classList.add('d-none');
-}
+        updateScreen();
+        document.querySelector('.onboard-container').style.display = 'flex';
+        document.getElementById('mainContent').classList.add('d-none');
+    }
 
-function showMainContent() {
-  document.querySelector('.onboard-container').style.display = 'none';
-  document.getElementById('mainContent').classList.remove('d-none');
-  localStorage.setItem('hasVisited', 'true');
-}
+    function showMainContent() {
+        document.querySelector('.onboard-container').style.display = 'none';
+        document.getElementById('mainContent').classList.remove('d-none');
+        localStorage.setItem('hasVisited', 'true');
+    }
 
     document.getElementById('nextBtn').addEventListener('click', () => {
-      if (currentScreen < totalScreens) {
-        currentScreen++;
-        updateScreen();
-      } else {
-        showMainContent();
-      }
+        if (currentScreen < totalScreens) {
+            currentScreen++;
+            updateScreen();
+        } else {
+            showMainContent();
+        }
     });
 
     document.getElementById('prevBtn').addEventListener('click', () => {
-      if (currentScreen > 1) {
-        currentScreen--;
-        updateScreen();
-      }
+        if (currentScreen > 1) {
+            currentScreen--;
+            updateScreen();
+        }
     });
 
     document.getElementById('skipBtn').addEventListener('click', showMainContent);
 
     window.onload = () => {
 
-          const urlParams = new URLSearchParams(window.location.search);
-  const hasVisitedParam = urlParams.get('hasVisited');
+        const urlParams = new URLSearchParams(window.location.search);
+        const hasVisitedParam = urlParams.get('hasVisited');
 
-  if (hasVisitedParam === 'true') {
-    localStorage.setItem('hasVisited', 'true');
-
-    // Optionally clean URL by removing query param without reload
-    window.history.replaceState({}, document.title, window.location.pathname);
-  }
-      const hasVisited = localStorage.getItem('hasVisited');
-      if (hasVisited || !isMobileDevice()) {
-        showMainContent();
-      } else {
-        startOnboarding();
-      }
+        if (hasVisitedParam === 'true') {
+            localStorage.setItem('hasVisited', 'true');
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        const hasVisited = localStorage.getItem('hasVisited');
+        if (hasVisited || !isMobileDevice()) {
+            showMainContent();
+        } else {
+            startOnboarding();
+        }
     };
-  </script>
-<script>
- document.addEventListener('DOMContentLoaded', function () {
-    if (!localStorage.getItem('locationAllowed') && !localStorage.getItem('user_lat') && !localStorage.getItem('user_lng')) {
-        const modal = new bootstrap.Modal(document.getElementById('locationModal'));
 
-        modal.show();
-        document.getElementById('allowLocationBtn').addEventListener('click', function () {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function (position) {
-                    const userLat = position.coords.latitude;
-                    const userLng = position.coords.longitude;
-                    fetch(`/set-user-location`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ lat: userLat, lng: userLng })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        localStorage.setItem('locationAllowed', 'true');
-                        modal.hide();
-                        showAlert('success','Location saved')
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!localStorage.getItem('locationAllowed') && !localStorage.getItem('user_lat') && !localStorage.getItem('user_lng')) {
+            const modal = new bootstrap.Modal(document.getElementById('locationModal'));
+
+            modal.show();
+            document.getElementById('allowLocationBtn').addEventListener('click', function() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        const userLat = position.coords.latitude;
+                        const userLng = position.coords.longitude;
+                        fetch(`/set-user-location`, {
+                                method: 'POST'
+                                , headers: {
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                                    ,'Content-Type': 'application/json'
+                                }
+                                , body: JSON.stringify({
+                                    lat: userLat
+                                    , lng: userLng
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                localStorage.setItem('locationAllowed', 'true');
+                                modal.hide();
+                                showAlert('success', 'Location saved')
+                            });
+                    }, function() {
+                        document.getElementById('locationError').style.display = 'block';
                     });
-                }, function () {
-                    document.getElementById('locationError').style.display = 'block';
-                });
-            } else {
-            }
-        });
-    }
-});
+                } else {}
+            });
+        }
+    });
 </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const select = document.getElementById('bank-select');
         const infoDiv = document.getElementById('account-info');
         const accountNumberEl = document.getElementById('account-number');
 
-        select.addEventListener('change', function () {
+        select.addEventListener('change', function() {
             const selectedOption = select.options[select.selectedIndex];
             const accountNumber = selectedOption.getAttribute('data-account');
 
@@ -332,9 +334,10 @@ function showMainContent() {
     function copyAccountNumber() {
         const number = document.getElementById('account-number').textContent;
         navigator.clipboard.writeText(number).then(() => {
-            showAlert('success','Account Number copied!');
+            showAlert('success', 'Account Number copied!');
         });
     }
+
 </script>
 
 <script>
@@ -512,26 +515,28 @@ function showMainContent() {
             });
         });
     });
+
 </script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const categoryItems = document.querySelectorAll('#categoryList > li');
-        categoryItems.forEach(function (item) {
-          item.addEventListener('click', function (e) {
-            e.stopPropagation();
+        categoryItems.forEach(function(item) {
+            item.addEventListener('click', function(e) {
+                e.stopPropagation();
 
-            categoryItems.forEach(function (el) {
-              if (el !== item) {
-                el.classList.remove('active');
-              }
+                categoryItems.forEach(function(el) {
+                    if (el !== item) {
+                        el.classList.remove('active');
+                    }
+                });
+
+                // Toggle current item
+                item.classList.toggle('active');
             });
-
-            // Toggle current item
-            item.classList.toggle('active');
-          });
         });
 
     });
+
 </script>
 <script>
     const toggleIcon = document.querySelector("#categoryToggle i");
@@ -542,6 +547,7 @@ function showMainContent() {
         toggleIcon.classList.toggle("bi-toggle-on");
         toggleIcon.classList.toggle("bi-toggle-off");
     });
+
 </script>
 
 <script>
@@ -556,6 +562,7 @@ function showMainContent() {
             , position: 'top-end'
         });
     }
+
 </script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -808,7 +815,7 @@ function showMainContent() {
 
 </script>
 <script>
-      document.getElementById('ratingForm').addEventListener('submit', function(event) {
+    document.getElementById('ratingForm').addEventListener('submit', function(event) {
         event.preventDefault();
 
         let formData = new FormData(this);
@@ -833,42 +840,44 @@ function showMainContent() {
                 showAlert('info', "An error occurred. Please try again later.");
             });
     });
+
 </script>
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    document.addEventListener("DOMContentLoaded", function() {
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', function() {
+                let productId = this.getAttribute('data-product');
+                let productPrice = this.getAttribute('data-product-price');
 
-    document.querySelectorAll('.add-to-cart').forEach(button => {
-        button.addEventListener('click', function () {
-            let productId = this.getAttribute('data-product');
-            let productPrice = this.getAttribute('data-product-price');
-
-            fetch("{{ route('restaurant.cart.add') }}", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": token,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    product_id: productId,
-                    size: null,
-                    price: productPrice,
-                    quantity: 1
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                showAlert(data.status, data.message);
-                updateCartCount();
-            })
-            .catch(error => {
-                showAlert('info','Failed to add to cart');
+                fetch("{{ route('restaurant.cart.add') }}", {
+                        method: "POST"
+                        , headers: {
+                            "X-CSRF-TOKEN": token
+                            , "Content-Type": "application/json"
+                        }
+                        , body: JSON.stringify({
+                            product_id: productId
+                            , size: null
+                            , price: productPrice
+                            , quantity: 1
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        showAlert(data.status, data.message);
+                        updateCartCount();
+                    })
+                    .catch(error => {
+                        showAlert('info', 'Failed to add to cart');
+                    });
             });
         });
     });
-});
+
 </script>
 
 
 </body>
 </html>
+
