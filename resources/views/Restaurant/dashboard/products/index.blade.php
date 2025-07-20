@@ -95,7 +95,7 @@ $user = Auth::guard('admin')->user();
                         <td>
                                         @adminCan('edit_restaurant_product')
                             <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editProductModal{{ $product->id }}"><i class="bi bi-pencil-fill"></i></button>
-                            @endadminCan         
+                            @endadminCan
                             @adminCan('delete_restaurant_product')
 
                             <a href="{{ url('admin/restaurant/show-product/'.$product->id) }}" class="btn btn-primary btn-sm" ><i class="bi bi-eye-fill"></i></a>
@@ -141,6 +141,17 @@ $user = Auth::guard('admin')->user();
                                                         <option value="">Select Category</option>
                                                         @foreach($categories as $category)
                                                         <option @if($category->id===$product->category_id) selected @endif value="{{ $category->id }}">{{ $category->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="restaurant_id" class="form-label">Restaurant</label>
+                                                    <select class="form-control" id="restaurant_id" name="restaurant_id" required>
+                                                        <option value="">Select Restaurant</option>
+                                                        @foreach($restaurants as $restaurant)
+                                                        <option @if($restaurant->id===$product->restaurant_id) selected @endif value="{{ $restaurant->id }}">{{ $restaurant->name }}</option>
                                                         @endforeach
                                                     </select>
                                                 </div>
@@ -314,6 +325,17 @@ $user = Auth::guard('admin')->user();
                             <div class="mb-3">
                                 <label for="description" class="form-label">Description</label>
                                 <textarea class="form-control" id="description" name="description"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="restaurant_id" class="form-label">Restaurant</label>
+                                <select class="form-control" id="restaurant_id" name="restaurant_id" required>
+                                    <option value="">Select Restaurant</option>
+                                    @foreach($restaurants as $restaurant)
+                                    <option value="{{ $restaurant->id }}">{{ $restaurant->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-6">

@@ -27,11 +27,13 @@ class ProductController extends Controller
         $this->middleware('admin.permission:edit_restaurant_product')->only(methods: 'update');
         $this->middleware('admin.permission:delete_restaurant_product')->only('destroy');
     }
-    
+
     public function index()
     {
         $adminType = Auth::guard('admin')->user()->type;
         if($adminType==="Super Admin"){
+             $restaurants=Restaurant::latest()->get();
+
             $products = Product::with('images','city','menu','category','subcategory')->latest()->get();
         }else{
             $restaurants=Restaurant::where('admin_id',Auth::guard('admin')->user()->id)->get();
@@ -46,7 +48,8 @@ class ProductController extends Controller
         $menus=RestaurantMenu::all();
         $cities=City::all();
         $taxs=Tax::all();
-        return view('Restaurant.dashboard.products.index', compact('taxs','products','categories','menus','cities','subcategories'));
+
+        return view('Restaurant.dashboard.products.index', compact('taxs','products','categories','menus','cities','subcategories','restaurants'));
     }
 
     public function show($id){
@@ -82,6 +85,7 @@ class ProductController extends Controller
             'name' => $request->name,
             'slug' => Str::slug($request->name),
             'description' => $request->description,
+            'restaurant_id' => $request->restaurant_id,
             'category_id' => $request->category_id,
             'subcategory_id' => $request->subcategory_id,
             'city_id' => $request->city_id,
@@ -113,7 +117,7 @@ class ProductController extends Controller
         }
 
 
-         $currentDateTime = Carbon::now();
+        $currentDateTime = Carbon::now();
         $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
         ActivityLogger::log( 'Add Restaurant Product', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
@@ -142,6 +146,7 @@ class ProductController extends Controller
             'name' => $request->name,
             'slug' => Str::slug($request->name),
             'description' => $request->description,
+             'restaurant_id' => $request->restaurant_id,
             'category_id' => $request->category_id,
             'subcategory_id' => $request->subcategory_id,
             'city_id' => $request->city_id,
