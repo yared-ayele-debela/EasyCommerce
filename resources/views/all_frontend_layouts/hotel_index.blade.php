@@ -326,10 +326,10 @@
                     })
                     .catch(error => console.error('Error fetching restaurants:', error));
             }, () => {
-                alert("Location access denied. Enable GPS to find nearby restaurants.");
+                // alert("Location access denied. Enable GPS to find nearby restaurants.");
             });
         } else {
-            alert("Geolocation is not supported by your browser.");
+            // alert("Geolocation is not supported by your browser.");
         }
     });
 
