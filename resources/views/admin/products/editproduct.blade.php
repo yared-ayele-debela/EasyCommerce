@@ -81,14 +81,14 @@ $user = Auth::guard('admin')->user();
                     </div>
                     <div class="col-md-3 pt-2">
                         <label for="quantity" class="form-label">Product Quantity</label>
-                        <input type="number" min="0" class="form-control" name="quantity" >
+                        <input type="number" min="0" class="form-control" value="{{ $product->quantity }}" name="quantity" >
                         @error('quantity')
                         <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
                     <div class="col-md-4 pt-3">
                         <label for="product_discount" class="form-label">Product_Discount (%)</label>
-                        <input type="number" class="form-control" value="{{ $product->product_discount }}" name="product_discount">
+                        <input type="number" min="0" step="0.01" class="form-control" value="{{ $product->product_discount }}" name="product_discount">
                         @error('product_discount')
                         <small class=" text-danger">{{ $message }}</small>
                         @enderror

@@ -91,7 +91,7 @@
 
                         <div class="col-md-3 pt-2">
                             <label for="product_discount" class="form-label">Product Discount (%)</label>
-                            <input type="number"  min="0" class="form-control" wire:model="product_discount">
+                            <input type="number"  min="0" step="0.01" class="form-control" wire:model="product_discount">
                             @error('product_discount')
                             <small class="text-danger">{{ $message }}</small>
                             @enderror

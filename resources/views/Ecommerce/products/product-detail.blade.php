@@ -73,6 +73,9 @@ use App\Models\Wishlist;
             </div>
             <!-- Product Details -->
             <div class="col-md-6 order-md-3 order-3 mb-2">
+                   @php
+                                    $discountedPrice = number_format(App\Models\Product::getDiscountPrice($product->id),2);
+                    @endphp
                 <!-- Rating -->
                 <div class="mb-2">
                     <span class="text-warning">
@@ -101,7 +104,7 @@ use App\Models\Wishlist;
                 </div>
                 <div class="getAttributePrice mt-3">
                     <div class="price">
-                        <h3 class="dynamic-price fw-bolder text-dark">{{ App\Helper\Helper::currency_converter($product->product_price) }}</h3>
+                        <h3 class="dynamic-price fw-bolder text-dark"> {{ $discountedPrice }} ETB</h3>
                     </div>
                 </div>
 
@@ -126,6 +129,7 @@ use App\Models\Wishlist;
                     <span><strong>Color: <span class="color-dot selected mb-0" style="background-color: {{ $product->product_color}}"></span> </strong></span>
                 </div>
                 <!-- Size -->
+
                 @if($product['attributes'])
                 <div class="mb-2">
                     <label class="form-label fw-bold d-block">Select Size:</label>
@@ -140,8 +144,8 @@ use App\Models\Wishlist;
                 @if($totalStock>0)
                 <form id="addToCartForm">
                     <input type="hidden" id="product_id" name="product_id" value="{{ $product->id }}">
-                    <input type="hidden" id="final_price_input" name="final_price" value="{{ $product->product_price }}">
-                    <input type="hidden" id="unit_price_hidden" value="{{ $product->product_price }}">
+                    <input type="hidden" id="final_price_input" name="final_price" value="{{ $discountedPrice }}">
+                    <input type="hidden" id="unit_price_hidden" value="{{ $discountedPrice }}">
 
                     <div class="d-flex align-items-center mb-2">
                         <button type="button" class="btn btn-secondary shadow-sm" id="decrement">−</button>
@@ -156,8 +160,10 @@ use App\Models\Wishlist;
                 </form>
                 <form action="{{ route('direct.checkout', ['product_id' => $product->id]) }}" method="POST">
                     @csrf
-                    <input type="hidden" id="final_price_inputs" name="final_price" value="{{ $product->product_price }}">
-                    <input type="hidden" id="unit_price_hiddens" name="unit_price" value="{{ $product->product_price }}">
+
+                    <input type="hidden" id="final_price_inputs" name="final_price" value="{{ $discountedPrice }}">
+                    <input type="hidden" id="unit_price_hiddens" name="unit_price" value="{{ $discountedPrice }}">
+                    <input type="hidden" id="original_price" name="original_price" value="{{ $product->product_price }}">
                     <input type="hidden" id="direct_size" name="size" value="">
                     <button type="submit" class="btn btn-primary shadow-sm">
                         <img src="{{ asset('restaurant_frontend/ordernow.png') }}" height="25" alt="">    Order Now

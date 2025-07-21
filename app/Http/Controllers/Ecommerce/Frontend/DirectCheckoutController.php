@@ -67,11 +67,8 @@ class DirectCheckoutController extends Controller
 
         $tips=Tip::all();
 
-         $banks=Bank::all();
+        $banks=Bank::all();
 
-        // dd($qty);
-        // dd($request->size??'');
-        // Create a fake cart-like structure
         $item = [
             'product' => $product,
             'quantity' => $qty,

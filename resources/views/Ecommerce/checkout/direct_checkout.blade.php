@@ -146,7 +146,8 @@
                 <div class="summary-card mt-3">
                     <div class="d-flex justify-content-between mb-2">
                         <span><strong>Subtotal</strong></span>
-                        <span><strong>{{ $total }} ETB</strong></span>
+                        <span><strong>{{ number_format($total, 2) }}
+ ETB</strong></span>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span><strong>Shipping</strong></span>
