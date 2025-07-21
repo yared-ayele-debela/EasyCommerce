@@ -220,7 +220,7 @@ $user = Auth::guard('admin')->user();
                                             <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label for="discount" class="form-label">Discount</label>
-                                                    <input type="number" min="0" class="form-control" id="discount" value="{{ $product->discount }}" name="discount">
+                                                    <input type="number" min="0"  step="0.01"  class="form-control" id="discount" value="{{ $product->discount }}" name="discount">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -413,7 +413,7 @@ $user = Auth::guard('admin')->user();
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="discount" class="form-label">Discount</label>
-                                <input type="number" min="0" class="form-control" id="discount" name="discount">
+                                <input type="number" min="0"  step="0.01"  class="form-control" id="discount" name="discount">
                             </div>
                         </div>
                         <div class="col-md-6">

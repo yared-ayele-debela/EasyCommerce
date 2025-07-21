@@ -33,7 +33,7 @@
     }
 
     .btn-plus {
-        background-color: #00c600;
+        background-color: #055935;
         color: #fff;
     }
     .btn-minus {
@@ -42,7 +42,7 @@
     }
 
     .btn-plus {
-        background-color: #00c600;
+        background-color: #055935;
         color: white;
     }
 
@@ -58,7 +58,7 @@
     }
 
     .next-btn {
-        background-color: #00c600;
+        background-color: #055935;
         color: #fff;
         font-weight: bold;
         border: none;

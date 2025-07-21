@@ -275,7 +275,7 @@ Route::prefix('admin')->group(function () {
     Route::get('forgot-password', [AdminResetController::class, 'ForgetPassword'])->name('admin.forgot.password');
     Route::post('forgot-password', [AdminResetController::class, 'ForgetPasswordStore'])->name('admin.forgot.password.store');
     Route::get('reset-password/{token}', [AdminResetController::class, 'ResetPassword'])->name('admin.reset.password');
-    Route::post('reset-password', [AdminResetController::class, 'ResetPasswordStore'])->name('admin.reset.password.store');
+    Route::post(uri: 'reset-password', [AdminResetController::class, 'ResetPasswordStore'])->name('admin.reset.password.store');
 });
 
 // Auth::routes();
