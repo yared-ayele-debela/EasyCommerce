@@ -65,7 +65,7 @@ class ProductController extends Controller
     public function filter(Request $request)
     {
         try{
-            
+
         $filter = $request->input('type');
         switch ($filter) {
             case 'specail_offer':
@@ -151,7 +151,7 @@ class ProductController extends Controller
         $product = Product::with(relations: ['images', 'sizes', 'ratings', 'restaurant'])->findOrFail($id);
         $userLat = session(key: 'user_lat');
         $userLng = session('user_lng');
-        // dd($userLat, $userLng);
+
         $restLat = $product->restaurant->latitude;
         $restLng = $product->restaurant->longitude;
 

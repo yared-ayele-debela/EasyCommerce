@@ -179,15 +179,16 @@ $cartCount = $sessionCount + $helperCount;
                         <span id="notification-badge3" class="badge bg-danger rounded-pill" style="display: none;">0<span>
                     </a>
                 </li>
-                <li><a class="dropdown-item" href="{{ url('user/account/update') }}"><i class="bi bi-gear text-primary"></i> Manage Your Account</a></li>
+                <li><a class="dropdown-item" href="{{ url('user/account/update') }}"><i class="bi bi-gear text-primary"></i> Manage My Account</a></li>
                 <li><a class="dropdown-item" href="{{ url('my-orders') }}"><i class="bi bi-bag text-primary"></i> My Orders</a></li>
                 <li><a class="dropdown-item" href="{{ url('my-delivery-addresses') }}"><i class="bi bi-geo-alt text-primary"></i> My Addresses</a></li>
-                <li><a class="dropdown-item" href="{{ url('page/terms_and_conditions') }}"><i class="bi bi-geo-alt text-primary"></i> Terms and Conditions</a></li>
-                <li><a class="dropdown-item" href="{{ url('page/privacy-policy') }}"><i class="bi bi-geo-alt text-primary"></i> Privacy Policy</a></li>
+                <li><a class="dropdown-item" href="{{ url('page/terms_and_conditions') }}"><i class="bi bi-gear text-primary"></i> Terms and Conditions</a></li>
+                <li><a class="dropdown-item" href="{{ url('page/privacy-policy') }}"><i class="bi bi-gear text-primary"></i> Privacy Policy</a></li>
                 <li>
                     <hr class="dropdown-divider">
                 </li>
                 <li><a class="dropdown-item text-danger" href="{{ url('user/logout') }}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                <li><a class="dropdown-item text-danger" href="{{ url('delete-account') }}"><i class="bi bi-trash"></i>Delete Your Account</a></li>
             </ul>
         </div>
         @else
