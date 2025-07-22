@@ -21,8 +21,10 @@ class AccountController extends Controller
     // Admin action: Approve and delete
     public function deleteUser($requestId)
     {
+        // dd($requestId);
         $request = AccountDeletionRequest::findOrFail($requestId);
         $user=User::where('email', $request->user_email)->where('mobile',$request->user_phone)->first();
+        // dd($user);
         if ($user) {
             $user->delete();
         }else{
