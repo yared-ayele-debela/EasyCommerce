@@ -3,6 +3,7 @@
 use App\Events\DeliveryManLocationUpdated;
 use App\Events\MessageSent;
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\Admin\AccountController as AdminAccountController;
 use App\Http\Controllers\Admin\AdminActivityLogController;
 use App\Http\Controllers\Admin\AdminController as AdminAdminController;
 use App\Http\Controllers\Admin\AdminLoginInToVendorController;
@@ -206,6 +207,7 @@ use App\Http\Controllers\Restaurant\Frontend\RestaurantController as FrontendRes
 use App\Http\Controllers\Restaurant\Frontend\SubCategoryController as FrontendSubCategoryController;
 use App\Http\Controllers\Restaurant\Frontend\SuCategoryController;
 use App\Http\Controllers\Restaurant\Frontend\WishController;
+use App\Http\Controllers\User\AccountController;
 use App\Http\Controllers\User\ForgetPasswordController;
 use App\Http\Controllers\User\GoogleAuthController;
 use App\Http\Controllers\User\NotificationController;
@@ -275,7 +277,7 @@ Route::prefix('admin')->group(function () {
     Route::get('forgot-password', [AdminResetController::class, 'ForgetPassword'])->name('admin.forgot.password');
     Route::post('forgot-password', [AdminResetController::class, 'ForgetPasswordStore'])->name('admin.forgot.password.store');
     Route::get('reset-password/{token}', [AdminResetController::class, 'ResetPassword'])->name('admin.reset.password');
-    Route::post(uri: 'reset-password', [AdminResetController::class, 'ResetPasswordStore'])->name('admin.reset.password.store');
+    Route::post( 'reset-password', [AdminResetController::class, 'ResetPasswordStore'])->name('admin.reset.password.store');
 });
 
 // Auth::routes();
@@ -903,6 +905,9 @@ Route::group(['middleware' => ['admin']], function () {
         Route::post('/withdrawals/{id}/reject', [DeliveryManWithdrawController::class, 'reject'])->name('admin.withdrawals.reject');
 
 
+    Route::get('/account-deletion-requests', [AdminAccountController::class, 'adminList'])->name('admin.account.requests');
+    Route::post( '/delete-user/{id}', [AdminAccountController::class, 'deleteUser'])->name('admin.account.delete');
+    Route::post('/reject-request/{id}', [AdminAccountController::class, 'rejectRequest'])->name('admin.account.reject');
 
     });
         Route::group(['middleware' => 'admin'], function () {
@@ -1177,7 +1182,7 @@ Route::prefix('/restaurant')->group(function () {
     Route::get('/live-search', [FrontendProductController::class, 'liveSearch']);
 
     Route::post('/cart/add', [CartController::class, 'addToCart'])->name('restaurant.cart.add');
-    Route::get('/cart/update/{key}/{action}', [CartController::class, 'updateCart'])->name('restaurant.cart.update');;
+    Route::post('/cart/update/{key}/{action}', [CartController::class, 'updateCart'])->name('restaurant.cart.update');;
     Route::get('/cart/count', [CartController::class, 'getCartCount'])->name('restaurant.cart.count');
     Route::post('/apply-coupon', [CartController::class, 'applyCoupon'])->name('restaurant.apply.coupon');
     Route::post('/apply-coupon-order-now', [CartController::class, 'applyCouponOrderNow'])->name('restaurant.apply.coupon.order.now');
@@ -1415,3 +1420,11 @@ Route::get('/live-location', function () {
         'lng' => 8.9911
     ]);
 });
+
+Route::get('/delete-account', [AccountController::class, 'showDeletePage'])->name('delete.account.page');
+
+Route::post('/otp/send', [AccountController::class, 'sendOtp'])->name('delete.account.otp.send');
+Route::post('/otp/verify', [AccountController::class, 'verifyOtp'])->name('delete.account.otp.verify');
+Route::post('/account/delete', [AccountController::class, 'deleteAccount'])->name('delete.account.delete');
+
+Route::post('/delete-account-request', [AccountController::class, 'handleDeleteRequest'])->name('delete.account.request');

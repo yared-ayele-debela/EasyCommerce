@@ -462,6 +462,9 @@
         </li>
         @endif
 
+                <li class=" {{ request()->is('admin/account-deletion-requests')?'nav-item active':'' }} ">
+        <a class="nav-link" href="{{ url('admin/account-deletion-requests') }}"> <i class="bi bi-person-bounding-box  "></i><span>Account Deletion Requests</span><i class="bi bi-chevron-down ms-auto"></i> </a>
+        </li>
         <li class="nav-heading">Business Settings</li>
         @if ($user && $user->hasPermissionByRole('view email template')  || $user->hasPermissionByRole('view currency') || $user->hasPermissionByRole('view invoice') || $user->hasPermissionByRole('manage_appsetting'))
         <li class="{{ request()->is('admin/withdraw-settings')?'nav-item active':'' }} {{ request()->is('admin/banks')?'nav-item active':'' }} {{ request()->is('admin/tips')?'nav-item active':'' }} {{ request()->is('admin/appsettings')?'nav-item active':'' }} {{ request()->is('admin/tax-settings')?'nav-item active':'' }} {{ request()->is('admin/currency*')?'nav-item active':'' }}  {{ request()->is('admin/currencies')?'nav-item active':'' }}  {{ request()->is('admin/invoice-setting*')?'nav-item active':'' }} {{ request()->is('admin/email-template*')?'nav-item active':'' }}  ">

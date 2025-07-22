@@ -162,10 +162,7 @@ class UserController extends Controller
                 case 200:
                     $data = json_decode($response, true);
                     if (isset($data['acknowledge']) && $data['acknowledge'] === 'success') {
-                        // dd("✅ OTP Sent Successfully!");
                     } else {
-                        // dd("❌ API failure: ");
-                        // dd($data);
                     }
                     break;
                 default:

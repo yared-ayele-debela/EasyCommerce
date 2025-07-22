@@ -56,6 +56,7 @@ $cartCount = $sessionCount + $helperCount;
                     <li class="mb-2"><a href="{{ url('/') }}" class="text-white ">Home</a></li>
                     <li class="mb-2"><a href="{{ url('faq') }}" class="text-white ">FAQ</a></li>
                     <li class="mb-2"><a href="{{ url('contact') }}" class="text-white ">Contact</a></li>
+                    <li class="mb-2"><a href="{{ url('delete-account') }}" class="text-white ">Delete Your Account</a></li>
                 </ul>
             </div>
 
@@ -197,6 +198,7 @@ $cartCount = $sessionCount + $helperCount;
                 <li><a class="dropdown-item" href="{{ route('auth.login') }}">Login As Customer</a></li>
                 <li><a class="dropdown-item" href="{{ route('vendor-register') }}"> Become A Vendor</a></li>
                 <li><a class="dropdown-item" href="{{ url('register/delivery-man') }}"> Become A Delivery Man</a></li>
+                <li><a class="dropdown-item" href="{{ url('delete-account') }}"> Delete Your Account</a></li>
             </ul>
         </div>
         @endif
