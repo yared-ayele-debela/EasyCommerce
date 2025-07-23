@@ -8,6 +8,7 @@ use App\Models\Restaurant\Order;
 use App\Models\Restaurant\Product;
 use App\Models\Restaurant\Restaurant;
 use App\Models\Restaurant\RestaurantMenu;
+use App\Services\LocationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -100,11 +101,11 @@ class RestaurantController extends Controller
         return view('Restaurant.frontend.pages.restaurants.detail',compact('restaurant','categories', 'products'));
     }
 
-    public function getNearbyRestaurants(Request $request)
+    public function getNearbyRestaurants(Request $request,LocationService $locationService)
     {
-        
-        $latitude = session('user_lat', 9.03);
-        $longitude = session('user_lng', 38.74);
+        // dd($request->all());
+        $latitude = $request->latitude;
+        $longitude = $request->longitude;
 
         if (!$latitude || !$longitude) {
             return response()->json(['error' => 'Location is required'], 400);
@@ -112,7 +113,7 @@ class RestaurantController extends Controller
 
         // Calculate distance using Haversine formula
         $restaurants = Restaurant::selectRaw("
-        id, name, cover, description, address, rating, start_from, latitude, longitude,
+        id, name, cover, description, address, rating, start_from, latitude, longitude,delivery_radius,
         (6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) AS distance
             ", [$latitude, $longitude, $latitude])
             ->having('distance', '<=', 10) // Restaurants within 10 km
@@ -121,9 +122,13 @@ class RestaurantController extends Controller
 
         $carSpeed = 40; // km/h
 
-        $restaurants->transform(function ($restaurant) use ($carSpeed) {
+
+
+$restaurants->transform(function ($restaurant) use ($carSpeed, $locationService, $latitude, $longitude) {
             $restaurant->distance = round($restaurant->distance, 1); // in km
             $restaurant->time = ceil(($restaurant->distance / $carSpeed) * 60); // in minutes
+            $restaurant->diff_distance =$locationService->getDistance($latitude, $longitude, $restaurant->latitude, $restaurant->longitude);
+
             return $restaurant;
         });
 

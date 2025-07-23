@@ -610,7 +610,8 @@ $user = Auth::guard('admin')->user();
                 const addressField = container.querySelector('.delivery-address');
                 const selectedText = container.querySelector('.selected-address-text');
 
-                const map = L.map(mapDiv).setView([8.9806, 38.7578], 13);
+
+                const map = L.map(mapDiv).setView([9.6040976, 41.8207994], 13);
 
                 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
@@ -640,40 +641,48 @@ $user = Auth::guard('admin')->user();
                 });
 
                 if (searchInput) {
-                    searchInput.addEventListener('keyup', async function () {
-                        const q = this.value.trim();
-                        if (q.length < 3) return;
+                searchInput.addEventListener('keyup', async function () {
+                    const q = this.value.trim();
+                    if (q.length < 3) return;
 
-                        spinner.style.display = 'inline-block';
-                        resultsContainer.innerHTML = '';
+                    spinner.style.display = 'inline-block';
+                    resultsContainer.innerHTML = '';
 
-                        try {
-                            const res = await fetch(`/api/forward-geocode?name=${encodeURIComponent(q)}`);
-                            const data = await res.json();
-                            spinner.style.display = 'none';
+                    try {
+                        const bounds = '41.766,9.550,41.920,9.640'; // minLng,minLat,maxLng,maxLat
+                        const apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55bmFtZSI6IkVhc3kgZS1jb21tZXJjZSBob3RlbCBib29raW5nIGFuZCBkZWxpdmVyeSIsImRlc2NyaXB0aW9uIjoiMGU4ZDhhZDMtZmJhYy00OTJkLWE4OWYtZGFiZjQxNTFlNDc2IiwiaWQiOiI3OWY1ODRlYy0yZDA3LTRjNWQtYTI2Ny00MjBhNzVlMDY2NzMiLCJ1c2VybmFtZSI6ImJlZmk3NzU2In0.JgSoBiAoa4Te6ccg-jSJSifq26PZV4FnGbkhQKiTnuo'; // insert your API key if required
+                        const url = `https://mapapi.gebeta.app/api/v1/route/geocoding?name=${encodeURIComponent(q)}&apiKey=${apiKey}&bounds=${bounds}`;
 
-                            if (data.data?.length) {
-                                data.data.forEach(loc => {
-                                    const item = document.createElement('a');
-                                    item.href = "#";
-                                    item.className = 'list-group-item list-group-item-action';
-                                    item.textContent = `${loc.name}, ${loc.City}`;
-                                    item.onclick = () => {
-                                        setLocation(loc.latitude, loc.longitude, `${loc.name}, ${loc.City}`);
-                                        resultsContainer.innerHTML = '';
-                                    };
-                                    resultsContainer.appendChild(item);
-                                });
-                            } else {
-                                resultsContainer.innerHTML = '<div class="list-group-item">No results found</div>';
-                            }
+                        const res = await fetch(url);
+                        const data = await res.json();
+                        spinner.style.display = 'none';
 
-                        } catch (err) {
-                            spinner.style.display = 'none';
-                            resultsContainer.innerHTML = '<div class="list-group-item text-danger">Error</div>';
+                        if (data.data?.length) {
+                            data.data.forEach(loc => {
+                                const item = document.createElement('a');
+                                item.href = "#";
+                                item.className = 'list-group-item list-group-item-action';
+                                item.textContent = `${loc.name}${loc.City ? ', ' + loc.City : ''}`;
+
+                                item.onclick = () => {
+                                    setLocation(loc.latitude, loc.longitude, `${loc.name}${loc.City ? ', ' + loc.City : ''}`);
+                                    resultsContainer.innerHTML = '';
+                                };
+
+                                resultsContainer.appendChild(item);
+                            });
+                        } else {
+                            resultsContainer.innerHTML = '<div class="list-group-item">No results found</div>';
                         }
-                    });
-                }
+
+                    } catch (err) {
+                        spinner.style.display = 'none';
+                        resultsContainer.innerHTML = '<div class="list-group-item text-danger">Error fetching results</div>';
+                        console.error('Geocoding fetch error:', err);
+                    }
+                });
+            }
+
 
                 function setLocation(lat, lng, address) {
                     if (marker) map.removeLayer(marker);

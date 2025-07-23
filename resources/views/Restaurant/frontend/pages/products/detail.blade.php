@@ -114,7 +114,7 @@
                         @endif
                     </h4>
                     <p class="card-text text-dark">{{ $product->description }}</p>
-                    <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
                         <div class="">
                             <button class="btn bg-primary text-white rounded shadow" id="addToCart" data-product-id="{{ $product->id }}">Add To Cart</button>
                             @php
@@ -124,7 +124,7 @@
                                 <i class=" bi text-success bi-{{ $isInWishlist ? 'heart-fill' : 'heart' }}"></i>
                             </button>
                         </div>
-                        @if($distance <= $product->restaurant->delivery_radius)
+                    {{-- @if($distance <= $product->restaurant->delivery_radius)
                         <form action="{{ route('restaurant.checkout.orderNow') }}" method="POST">
                             @csrf
                             <input type="hidden" id="p_product_id" name="product_id" value="{{ $product->id }}">
@@ -136,14 +136,33 @@
                                 <i class=" bi bi-shop-window"></i> Order Now
                             </button>
                         </form>
-                        @endif
+                    @endif --}}
                     </div>
-                     @if($distance > $product->restaurant->delivery_radius)
-                        <div class="alert alert-warning shadow mt-2">
-                            Sorry, this restaurant is {{ round($distance, 1) }} km away from you. Ordering is disabled for distant locations.
+                    <div id="location-check"
+                        data-restaurant-lat="{{ $product->restaurant->latitude }}"
+                        data-restaurant-lng="{{ $product->restaurant->longitude }}"
+                        data-delivery-radius="{{ $product->restaurant->delivery_radius }}">
+
+                        {{-- Order Form (Initially Hidden) --}}
+                        <form action="{{ route('restaurant.checkout.orderNow') }}" method="POST" id="orderForm" class="d-none">
+                            @csrf
+                            <input type="hidden" id="p_product_id" name="product_id" value="{{ $product->id }}">
+                            <input type="hidden" id="p_size" name="size" value="">
+                            <input type="hidden" id="p_qty" name="qty" value="">
+                            <input type="hidden" id="p_price" name="price" value="">
+
+                            <button class="btn shadow btn-primary">
+                                <i class="bi bi-shop-window"></i> Order Now
+                            </button>
+                        </form>
+
+                        {{-- Warning Message (Initially Hidden) --}}
+                        <div class="alert alert-warning shadow mt-2 d-none" id="outOfRangeAlert">
+                            Sorry, this restaurant is <span id="distanceKm"></span> km away from you.
+                            Ordering is disabled for distant locations.
                         </div>
-                        <button class="btn btn-primary shadow" disabled>Order Now</button>
-                    @endif
+                        <button class="btn btn-primary shadow d-none" id="disabledOrderBtn" disabled>Order Now</button>
+                    </div>
 
                 </div>
             </div>
@@ -198,6 +217,67 @@
         </div>
     </div>
 </div>
+
+<script>
+function haversineDistance(lat1, lon1, lat2, lon2) {
+    const toRad = deg => deg * Math.PI / 180;
+    const R = 6371;
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const container = document.getElementById("location-check");
+    if (!container) return;
+
+    const restLat = parseFloat(container.dataset.restaurantLat);
+    const restLng = parseFloat(container.dataset.restaurantLng);
+    const deliveryRadius = parseFloat(container.dataset.deliveryRadius);
+
+    const orderForm = document.getElementById("orderForm");
+    const alertBox = document.getElementById("outOfRangeAlert");
+    const distanceSpan = document.getElementById("distanceKm");
+    const disabledBtn = document.getElementById("disabledOrderBtn");
+
+    function showForm() {
+        orderForm.classList.remove("d-none");
+    }
+
+    function showWarning(distance) {
+        distanceSpan.innerText = distance.toFixed(1);
+        alertBox.classList.remove("d-none");
+        disabledBtn.classList.remove("d-none");
+    }
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+            const userLat = position.coords.latitude;
+            const userLng = position.coords.longitude;
+
+            const distance = haversineDistance(userLat, userLng, restLat, restLng);
+
+            if (distance <= deliveryRadius) {
+                showForm();
+            } else {
+                showWarning(distance);
+            }
+
+        }, function (err) {
+            console.warn("Geolocation error:", err);
+            showWarning(999); // fallback
+        });
+    } else {
+        console.warn("Geolocation not supported.");
+        showWarning(999); // fallback
+    }
+});
+</script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('addToCart').addEventListener('click', function () {

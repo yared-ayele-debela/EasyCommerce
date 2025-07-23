@@ -35,7 +35,7 @@
                     <div class="col-md-7">
                          <div class="form-group mb-2">
                             <label for="search-address" class=" form-label">Search Address</label>
-                            <input type="text" id="search-address" class="form-control" placeholder="e.g. Bole Medhane Alem">
+                            <input type="text" id="search-address" class="form-control" placeholder="e.g. Kezira">
                             <div id="loading-spinner">
                                 <div class="spinner-border text-primary" role="status"></div>
                             </div>
@@ -152,7 +152,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
 
-        let map = L.map('map').setView([8.9806, 38.7578], 13); // Default: Addis Ababa center
+        let map = L.map('map').setView([9.6040976, 41.8207994], 13); // Default: Addis Ababa center
         let marker;
 
         // Set tile layer
@@ -188,52 +188,55 @@
 
         // Forward geocoding via search
         document.getElementById('search-address').addEventListener('keyup', async function () {
-            const searchText = this.value.trim();
-            if (searchText.length < 3) return;
+    const searchText = this.value.trim();
+    if (searchText.length < 3) return;
 
-            const container = document.getElementById('map-search-results');
-            const spinner = document.getElementById('loading-spinner');
+    const container = document.getElementById('map-search-results');
+    const spinner = document.getElementById('loading-spinner');
 
-            container.innerHTML = '';
-            spinner.style.display = 'block';
+    container.innerHTML = '';
+    spinner.style.display = 'block';
 
-            try {
-                const res = await fetch(`/api/forward-geocode?name=${encodeURIComponent(searchText)}`);
-                const results = await res.json();
+    try {
+        const bounds = '41.766,9.550,41.920,9.640'; // minLng,minLat,maxLng,maxLat
+        const apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55bmFtZSI6IkVhc3kgZS1jb21tZXJjZSBob3RlbCBib29raW5nIGFuZCBkZWxpdmVyeSIsImRlc2NyaXB0aW9uIjoiMGU4ZDhhZDMtZmJhYy00OTJkLWE4OWYtZGFiZjQxNTFlNDc2IiwiaWQiOiI3OWY1ODRlYy0yZDA3LTRjNWQtYTI2Ny00MjBhNzVlMDY2NzMiLCJ1c2VybmFtZSI6ImJlZmk3NzU2In0.JgSoBiAoa4Te6ccg-jSJSifq26PZV4FnGbkhQKiTnuo'; // if you have one, insert it here
 
-                spinner.style.display = 'none';
+        const res = await fetch(`https://mapapi.gebeta.app/api/v1/route/geocoding?name=${encodeURIComponent(searchText)}&apiKey=${apiKey}&bounds=${bounds}`);
+        const results = await res.json();
 
-                if (results.data && results.data.length > 0) {
-                    results.data.forEach(loc => {
-                        const item = document.createElement('a');
-                        item.href = "javascript:void(0)";
-                        item.classList.add('list-group-item', 'list-group-item-action');
-                        item.textContent = loc.name + ", " + loc.City;
+        spinner.style.display = 'none';
 
-                        item.addEventListener('click', () => {
-                            const lat = loc.latitude;
-                            const lng = loc.longitude;
-                            const address = loc.name + ", " + loc.City;
+        if (results.data && results.data.length > 0) {
+            results.data.forEach(loc => {
+                const item = document.createElement('a');
+                item.href = "javascript:void(0)";
+                item.classList.add('list-group-item', 'list-group-item-action');
+                item.textContent = loc.name + (loc.City ? `, ${loc.City}` : '');
 
-                            setLocationOnMap(lat, lng, address);
-                            container.innerHTML = '';
-                            document.getElementById('search-address').value = address;
-                        });
-                        container.appendChild(item);
-                    });
-                } else {
-                    container.innerHTML = '<div class="list-group-item text-muted">No results found</div>';
-                }
+                item.addEventListener('click', () => {
+                    const lat = loc.latitude;
+                    const lng = loc.longitude;
+                    const address = loc.name + (loc.City ? `, ${loc.City}` : '');
 
-            } catch (err) {
-                console.error('Forward geocode error:', err);
-                container.innerHTML = '<div class="list-group-item text-danger">Error fetching results</div>';
-            } finally {
-                spinner.style.display = 'none';
-            }
-        });
+                    setLocationOnMap(lat, lng, address);
+                    container.innerHTML = '';
+                    document.getElementById('search-address').value = address;
+                });
+                container.appendChild(item);
+            });
+        } else {
+            container.innerHTML = '<div class="list-group-item text-muted">No results found</div>';
+        }
 
-        // Set marker and form fields
+    } catch (err) {
+        console.error('Forward geocode error:', err);
+        container.innerHTML = '<div class="list-group-item text-danger">Error fetching results</div>';
+    } finally {
+        spinner.style.display = 'none';
+    }
+});
+
+
         function setLocationOnMap(lat, lng, address) {
             map.setView([lat, lng], 15);
             if (marker) map.removeLayer(marker);
@@ -242,7 +245,6 @@
             }).addTo(map)
                 .bindPopup(`<strong>${address}</strong>`)
                 .openPopup();
-
             document.getElementById('selected-address-text').innerText = address;
             document.getElementById('delivery-address').value = address;
             document.getElementById('delivery-lat').value = lat;
@@ -252,7 +254,6 @@
             document.getElementById('address').value=address;
         }
 
-        // ✅ Fix for modal map rendering
         document.addEventListener('shown.bs.modal', function (event) {
             if (event.target.id === 'addressModal') {
                 setTimeout(() => {
@@ -270,10 +271,8 @@
                 document.getElementById('latitude').value = position.coords.latitude;
                 document.getElementById('longitude').value = position.coords.longitude;
             }, function (error) {
-                alert('Error fetching location: ' + error.message);
             });
         } else {
-            alert('Geolocation is not supported by this browser.');
         }
     });
 </script>

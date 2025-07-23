@@ -1,7 +1,7 @@
 <!-- Reusable Map Section -->
 <div class="map-section">
     <label class="form-label">Search Address</label>
-    <input type="text" class="form-control search-address" placeholder="e.g. Bole Medhane Alem">
+    <input type="text" class="form-control search-address" placeholder="e.g. Kezira">
 
     <div class="spinner-border text-primary mt-2 loading-spinner" role="status" style="display: none;"></div>
     <div class="map-search-results list-group mt-1 bg-white shadow-sm rounded"></div>

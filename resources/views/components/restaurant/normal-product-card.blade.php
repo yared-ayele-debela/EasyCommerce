@@ -10,16 +10,16 @@ $locationService = new LocationService();
         ? $product->image
         : asset('restaurant_frontend/default-image.png');
 
-    $userLat = session(key: 'user_lat');
-    $userLng = session('user_lng');
-    // dd($userLat, $userLng);
     $restLat = $product->restaurant->latitude;
     $restLng = $product->restaurant->longitude;
-
-    $distance = $locationService->getDistance($userLat, $userLng, $restLat, $restLng);
+    $radius = $product->restaurant->delivery_radius;
 @endphp
 
-<div class="item my-2">
+<div class="item my-2 product-card"
+     data-restaurant-lat="{{ $restLat }}"
+     data-restaurant-lng="{{ $restLng }}"
+     data-delivery-radius="{{ $radius }}"
+     data-product-id="{{ $product->id }}">
     <div class="offer-card p-2 h-100">
         <a href="{{ url('restaurant/product-detail/' . encrypt($product->id)) }}" class="text-decoration-none text-dark d-block">
              {{-- @if($badge)
@@ -43,18 +43,12 @@ $locationService = new LocationService();
             <button onclick="window.location.href='{{ url('restaurant/product-detail/' . encrypt($product->id)) }}'" class="btn-view">
                 <i class="bi bi-eye-fill"></i>
             </button>
-             @if($distance <= $product->restaurant->delivery_radius)
-            <button class="btn-cart add-to-cart" data-product="{{ $product->id }}" data-product-price="{{ $product->getFinalPrice() }}">
+            <button class="btn-cart add-to-cart d-none" data-product="{{ $product->id }}" data-product-price="{{ $product->getFinalPrice() }}">
                 <i class="bi bi-cart-check-fill"></i>
             </button>
-            @else
-             <div class="tooltip-wrapper">
-                <button class="btn btn-danger" disabled>
-                    <i class="bi bi-cart-check-fill"></i>
-                </button>
-                </div>
-            @endif
-
+            <button class="btn btn-danger cart-disabled d-none" disabled>
+                <i class="bi bi-cart-check-fill"></i>
+            </button>
             <button class="btn-wishlist add-to-wishlist" data-product="{{ $product->id }}">
                 <i class="bi bi-heart text-white"></i>
             </button>

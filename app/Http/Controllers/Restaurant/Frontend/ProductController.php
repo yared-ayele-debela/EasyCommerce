@@ -156,7 +156,7 @@ class ProductController extends Controller
         $restLng = $product->restaurant->longitude;
 
         $distance = $locationService->getDistance($userLat, $userLng, $restLat, $restLng);
-        // dd($distance);
+
         $related_products = Product::where('category_id', $product->category_id)->where('id', '!=', $product->id)->get();
 
         $hasOrdered = false;
@@ -167,7 +167,6 @@ class ProductController extends Controller
                 $query->where('user_id', $user->id);
             })->where('product_id', $productId)->exists();
         }
-        // dd($hasOrdered);
 
         return view('Restaurant.frontend.pages.products.detail', compact('product','distance', 'related_products', 'hasOrdered'));
     }

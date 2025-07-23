@@ -212,6 +212,64 @@ $cartCount = $sessionCount + $helperCount;
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{ asset('restaurant_frontend/assets/js/index.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+
+<script>
+function haversineDistance(lat1, lon1, lat2, lon2) {
+    const toRad = deg => deg * Math.PI / 180;
+    const R = 6371;
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a = Math.sin(dLat / 2) ** 2 +
+              Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+              Math.sin(dLon / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function processProducts(lat, lng) {
+    document.querySelectorAll('.product-card').forEach(card => {
+        const restLat = parseFloat(card.dataset.restaurantLat);
+        const restLng = parseFloat(card.dataset.restaurantLng);
+        const radius = parseFloat(card.dataset.deliveryRadius);
+
+        const distance = haversineDistance(lat, lng, restLat, restLng);
+
+        const addToCartBtn = card.querySelector('.add-to-cart');
+        const disabledBtn = card.querySelector('.cart-disabled');
+
+        if (distance <= radius) {
+            addToCartBtn.classList.remove('d-none');
+        } else {
+            disabledBtn.classList.remove('d-none');
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const storedLat = localStorage.getItem('user_lat');
+    const storedLng = localStorage.getItem('user_lng');
+
+    if (storedLat && storedLng) {
+        processProducts(parseFloat(storedLat), parseFloat(storedLng));
+    } else {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+
+                localStorage.setItem('user_lat', lat);
+                localStorage.setItem('user_lng', lng);
+
+                processProducts(lat, lng);
+            }, function (error) {
+                console.warn('Geolocation denied:', error);
+                document.querySelectorAll('.product-card .cart-disabled').forEach(btn => {
+                    btn.classList.remove('d-none');
+                });
+            });
+        }
+    }
+});
+</script>
 <script>
     let currentScreen = 1;
     const totalScreens = 5;
@@ -261,9 +319,7 @@ $cartCount = $sessionCount + $helperCount;
     });
 
     document.getElementById('skipBtn').addEventListener('click', showMainContent);
-
     window.onload = () => {
-
         const urlParams = new URLSearchParams(window.location.search);
         const hasVisitedParam = urlParams.get('hasVisited');
 
@@ -282,7 +338,7 @@ $cartCount = $sessionCount + $helperCount;
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        if (!localStorage.getItem('locationAllowed') && !localStorage.getItem('user_lat') && !localStorage.getItem('user_lng')) {
+        if (!localStorage.getItem('locationAllowed') || !localStorage.getItem('user_lat')|| !localStorage.getItem('user_lng')) {
             const modal = new bootstrap.Modal(document.getElementById('locationModal'));
 
             modal.show();
@@ -291,6 +347,11 @@ $cartCount = $sessionCount + $helperCount;
                     navigator.geolocation.getCurrentPosition(function(position) {
                         const userLat = position.coords.latitude;
                         const userLng = position.coords.longitude;
+
+                        localStorage.setItem('user_lat', userLat);
+                        localStorage.setItem('user_lng', userLng);
+                        localStorage.setItem('locationAllowed', 'true');
+
                         fetch(`/set-user-location`, {
                                 method: 'POST'
                                 , headers: {

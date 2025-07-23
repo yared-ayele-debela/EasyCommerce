@@ -521,7 +521,7 @@
                 const addressField = container.querySelector('.delivery-address');
                 const selectedText = container.querySelector('.selected-address-text');
 
-                const map = L.map(mapDiv).setView([8.9806, 38.7578], 13);
+                const map = L.map(mapDiv).setView([9.6040976, 41.8207994], 13);
 
                 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 

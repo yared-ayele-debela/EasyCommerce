@@ -318,7 +318,8 @@ use Illuminate\Support\Facades\Storage;
         container.innerHTML = '';
 
         restaurants.forEach(restaurant => {
-             const isOutOfRange = parseFloat(restaurant.distance) > parseFloat(restaurant.delivery_radius);
+            
+             const isOutOfRange = parseFloat(restaurant.diff_distance) > parseFloat(restaurant.delivery_radius);
 
     const outOfRangeHTML = isOutOfRange
         ? `
