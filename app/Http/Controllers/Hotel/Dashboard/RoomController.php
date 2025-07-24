@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Amenity;
 use App\Models\Hotel;
 use App\Models\Hotel\RoomType;
+use App\Models\Roles;
 use App\Models\Room;
 use App\Models\RoomAmenity;
 use App\Services\ActivityLogger;
@@ -29,7 +30,11 @@ class RoomController extends Controller
         $adminType = Auth::guard('admin')->user()->type;
         $hotels = Hotel::where('admin_id', Auth::guard('admin')->user()->id)->latest()->paginate(10);
 
-        if ($adminType === "Super Admin") {
+        $role=Roles::where('name',$adminType)->first();
+
+        $group = $role->group ?? null;
+
+        if ($group === "general") {
             $rooms = Room::with('images', 'amenities')->latest()->paginate(10);
         } else {
             $hotelId = $hotels->pluck('id');
