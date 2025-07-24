@@ -56,8 +56,7 @@ class OrdersController extends Controller
             if ($group === "general") {
              $orders = Order::with('orders_products')
                     ->orderBy('id', 'DESC')
-                    ->get()
-                    ->toArray();
+                    ->paginate(15);
             }else{
                 $vendorStatus = Auth::guard('admin')->user()->status;
                 if ($vendorStatus == 0) {
@@ -68,8 +67,7 @@ class OrdersController extends Controller
                     $query->where('vendor_id', $vendor_id);
                 }])
                     ->orderBy('id', 'DESC')
-                    ->get()
-                    ->toArray();
+                    ->paginate(15);
             }
 
             // dd($orders);

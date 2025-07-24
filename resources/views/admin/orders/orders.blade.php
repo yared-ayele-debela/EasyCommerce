@@ -183,7 +183,7 @@ $user = Auth::guard('admin')->user();
                   </tbody>
                </table>
                <div class=" pagination-sm">
-                  {{-- {{ $categories->links() }} --}}
+                  {{ $orders->links() }}
                </div>
             </div>
          </div>
