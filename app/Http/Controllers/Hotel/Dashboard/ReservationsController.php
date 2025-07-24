@@ -8,6 +8,7 @@ use App\Mail\HotelReservationStatusUpdated;
 use App\Models\AppSetting;
 use App\Models\HotelReservationPaymentInfo;
 use App\Models\Reservation;
+use App\Models\Roles;
 use App\Services\ActivityLogger;
 use App\Services\NotificationService;
 use App\Services\SmsService;
@@ -22,7 +23,14 @@ class ReservationsController extends Controller
     public function index()
     {
         $adminType = Auth::guard('admin')->user()->type;
-        if ($adminType === "Super Admin") {
+
+         $role=Roles::where('name',$adminType)->first();
+
+        $group = $role->group ?? null;
+
+
+
+        if ($group === "general") {
             $reservations = Reservation::with('user', 'hotel', 'room', 'hotel_reservation_payment_info')->latest()->get();
         } else {
             $hotelIds = Auth::guard('admin')->user()->hotel()->pluck('id'); // assuming a relationship `hotels()`
