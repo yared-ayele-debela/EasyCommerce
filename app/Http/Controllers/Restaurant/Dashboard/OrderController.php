@@ -136,6 +136,6 @@ public function old()
     // dd('Old Orders');
     $oldOrders = Order::with('orderItems.product','paymentInfo')->where('is_old', operator: true)->latest()->paginate(10);
 
-    return view('restaurant.dashboard.orders.old_order', compact('oldOrders'));
+    return view('Restaurant.dashboard.orders.old_order', compact('oldOrders'));
 }
 }

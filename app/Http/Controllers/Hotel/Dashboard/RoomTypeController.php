@@ -11,7 +11,7 @@ class RoomTypeController extends Controller
     public function index()
 {
     $roomTypes = RoomType::latest()->paginate(10);
-    return view('hotel.dashboard.room-types.index', compact('roomTypes'));
+    return view('Hotel.dashboard.room-types.index', compact('roomTypes'));
 }
 
 public function store(Request $request)
