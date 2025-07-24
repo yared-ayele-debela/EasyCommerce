@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Restaurant\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Restaurant\Coupon;
+use App\Models\Roles;
 use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -18,11 +19,17 @@ class CouponController extends Controller
         $this->middleware('admin.permission:edit_restaurant_coupon')->only(methods: 'update');
         $this->middleware('admin.permission:delete_restaurant_coupon')->only('destroy');
     }
-    
+
     public function index()
     {
         $adminType = Auth::guard('admin')->user()->type;
-        if ($adminType === "Super Admin") {
+
+         $role=Roles::where('name',$adminType)->first();
+
+        $group = $role->group ?? null;
+
+        if ($group === "general") {
+
             $coupons = Coupon::latest()->get();
         } else {
             $coupons = Coupon::where('admin_id', Auth::guard('admin')->user()->id)->latest()->get();

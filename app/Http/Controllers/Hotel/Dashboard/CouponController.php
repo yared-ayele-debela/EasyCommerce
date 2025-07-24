@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Hotel\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\HotelCoupon;
+use App\Models\Roles;
 use App\Services\ActivityLogger;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -20,11 +21,16 @@ class CouponController extends Controller
         $this->middleware('admin.permission:edit_hotel_coupon')->only(methods: 'update');
         $this->middleware('admin.permission:delete_hotel_coupon')->only('destroy');
     }
-    
+
     public function index()
     {
         $adminType = Auth::guard('admin')->user()->type;
-        if($adminType==="Super Admin"){
+          $role=Roles::where('name',$adminType)->first();
+
+        $group = $role->group ?? null;
+
+        if ($group === "general") {
+
             $coupons = HotelCoupon::latest()->get();
         }else{
             $coupons = HotelCoupon::where('admin_id',Auth::guard('admin')->user()->id)->latest()->get();
