@@ -11,6 +11,7 @@ use App\Models\Group;
 use App\Models\Month;
 use App\Models\Product;
 use App\Models\ProductFilter;
+use App\Models\Roles;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
@@ -61,7 +62,11 @@ class ProductDisplay extends Component
         $adminType = $user->type;
         $vendor_id = $user->vendor_id;
 
-        if ($adminType == "vendor") {
+          $role=Roles::where('name',$adminType)->first();
+
+        $group = $role->group ?? null;
+
+        if ($group === "ecommerce") {
             $vendorStatus = $user->status;
             if ($vendorStatus == 0) {
                 Alert::toast('Your Vendor Account is not approved yet. Please make sure to fill your valid personal, business, and bank details', 'Inactive Vendor Account!', 'success');
@@ -80,7 +85,7 @@ class ProductDisplay extends Component
 ]);
 
 
-        if ($adminType == 'vendor') {
+        if ($group !== "general") {
             $productsQuery = $productsQuery->where('vendor_id', $vendor_id);
         }
 

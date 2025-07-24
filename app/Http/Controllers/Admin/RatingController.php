@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use App\Models\Rating;
+use App\Models\Roles;
 use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -24,17 +25,21 @@ class RatingController extends Controller
             $appsettings = AppSetting::all()->toArray();
             $user_type = Auth::guard('admin')->user()->type;
 
-            if ($user_type === "vendor") {
+              $role=Roles::where('name',$user_type)->first();
+
+        $group = $role->group ?? null;
+
+        if ($group === "general") {
+                            $ratings = Rating::with(['user', 'product'])->get()->toArray();
+
+        }else {
                 $ratings = Rating::with(['user', 'product'])
                     ->whereHas('product', function ($query) {
                         $query->where('admin_id', Auth::guard('admin')->user()->id);
                     })
                     ->get()
                     ->toArray();
-            } else {
-                $ratings = Rating::with(['user', 'product'])->get()->toArray();
             }
-
             return view('admin.ratings.ratings', compact('ratings', 'appsettings'));
         } catch (\Exception $e) {
             Alert::toast('something is wrong!!', 'error');

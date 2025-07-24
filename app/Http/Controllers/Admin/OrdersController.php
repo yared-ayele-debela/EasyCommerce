@@ -21,6 +21,7 @@ use Dompdf\Dompdf;
 
 use App\Models\OrderStatus;
 use App\Models\Payment;
+use App\Models\Roles;
 use App\Models\User;
 use App\Models\Vendor;
 use App\Services\NotificationService;
@@ -48,23 +49,24 @@ class OrdersController extends Controller
             $adminType = Auth::guard('admin')->user()->type;
             $vendor_id = Auth::guard('admin')->user()->vendor_id;
 
-            if ($adminType == "vendor") {
-                $vendorStatus = Auth::guard('admin')->user()->status;
+            $role=Roles::where('name',$adminType)->first();
 
+            $group = $role->group ?? null;
+
+            if ($group === "general") {
+             $orders = Order::with('orders_products')
+                    ->orderBy('id', 'DESC')
+                    ->get()
+                    ->toArray();
+            }else{
+                $vendorStatus = Auth::guard('admin')->user()->status;
                 if ($vendorStatus == 0) {
                     return redirect("admin/update-vendor-details/personal")
                         ->with('error_message', 'Your Vendor Account is not approved yet. Please make sure to fill your valid personal, business, and bank details');
                 }
-
                 $orders = Order::with(['orders_products' => function ($query) use ($vendor_id) {
                     $query->where('vendor_id', $vendor_id);
                 }])
-                    ->orderBy('id', 'DESC')
-                    ->get()
-                    ->toArray();
-
-            } else {
-                $orders = Order::with('orders_products')
                     ->orderBy('id', 'DESC')
                     ->get()
                     ->toArray();
@@ -366,7 +368,7 @@ class OrdersController extends Controller
                 // optionally log SMS failure
             }
         }
-        
+
             Alert::toast('Order payment status has been updated!', 'success');
             return redirect()->back();
     }
@@ -992,7 +994,14 @@ class OrdersController extends Controller
             $vendor_type=Auth::guard('admin')->user()->type;
             $vendor_id=Auth::guard('admin')->user()->vendor_id;
 
-            if($vendor_type=="vendor"){
+              $role=Roles::where('name',$adminType)->first();
+
+        $group = $role->group ?? null;
+
+        if ($group === "general") {
+             $return_request = ReturnRequest::get()->toArray();
+            return view('admin.return_request.list_return_request', compact('appsettings', 'return_request'));
+        }else{
                 $order = DB::table('orders')
                 ->join('orders_products', 'orders.id', '=', 'orders_products.order_id')
                 ->where('orders_products.vendor_id', $vendor_id)->get();
@@ -1011,12 +1020,7 @@ class OrdersController extends Controller
             }
 
             }
-            else
-            {
 
-            $return_request = ReturnRequest::get()->toArray();
-            return view('admin.return_request.list_return_request', compact('appsettings', 'return_request'));
-            }
 
         } catch (\Exception $e) {
             Alert::toast('something is wrong!!', 'error');
