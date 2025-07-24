@@ -79,25 +79,33 @@ class Product extends Model
     }
 
 
-    public static function getDiscountPrice($product_id){
+    public static function getDiscountPrice($product_id)
+{
+    $product = Product::select('product_price', 'product_discount', 'category_id')->find($product_id);
 
-        $proDetails=Product::select('product_price','product_discount','category_id')->where('id',$product_id)->first();
-        $proDetails=json_decode(json_encode($proDetails),true);
-        $catDetails=Category::select('discount')->where('id',$proDetails['category_id'])->first();
-        $catDetails=json_decode(json_encode($catDetails),true);
-
-        if($proDetails['product_discount']>0){
-            $discounted_price=$proDetails['product_price']-($proDetails['product_price']*$proDetails['product_discount']/100);
-        }else if($catDetails['discount']>0){
-            $discounted_price=$proDetails['product_price']-($proDetails['product_price']*$catDetails['discount']/100);
-        }
-        else{
-            $discounted_price=0;
-        }
-
-        return $discounted_price;
-
+    if (!$product) {
+        return null; // or throw an exception
     }
+
+    $price = $product->product_price;
+    $productDiscount = $product->product_discount;
+
+    // Use product discount if available
+    if ($productDiscount > 0) {
+        return round($price - ($price * $productDiscount / 100), 2);
+    }
+
+    // Else check category discount
+    $category = Category::select('discount')->find($product->category_id);
+
+    if ($category && $category->discount > 0) {
+        return round($price - ($price * $category->discount / 100), 2);
+    }
+
+    // No discount
+    return $price;
+}
+
     public static function getDiscountAttributePrice($product_id,$size)
     {
 

@@ -74,7 +74,7 @@ use App\Models\Wishlist;
             <!-- Product Details -->
             <div class="col-md-6 order-md-3 order-3 mb-2">
                    @php
-                                    $discountedPrice = number_format(App\Models\Product::getDiscountPrice($product->id),2);
+                      $discountedPrice = number_format(App\Models\Product::getDiscountPrice($product->id),2);
                     @endphp
                 <!-- Rating -->
                 <div class="mb-2">
