@@ -21,7 +21,7 @@ $user = Auth::guard('admin')->user();
      <div class="card-header d-flex justify-content-between align-items-center">
         <h5>All Orders</h5>
         <div class="btn btn-sm btn-primary">
-            <a href="{{ url('admin/restaurant/orders/old') }}" class="text-white">
+            <a href="{{ url('admin/restaurant/old/orders') }}" class="text-white">
                 <i class="bi bi-clock-history"></i> View Old Orders
             </a>
         </div>
