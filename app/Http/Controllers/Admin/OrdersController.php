@@ -88,6 +88,15 @@ class OrdersController extends Controller
         }
     }
 
+        public function destroy($id)
+    {
+        $order = Order::findOrFail($id);
+        $order->delete();
+
+        Alert::toast('Order deleted successfully.', 'success');
+        return redirect()->back();
+    }
+
     public function filterOrders(Request $request)
     {
         try {

@@ -666,6 +666,8 @@ Route::group(['middleware' => ['admin']], function () {
         Route::get('users/{user_id}/delete', [AdminUserController::class, 'destory'])->name('delete_user');
 
         Route::get('orders', [OrdersController::class, 'orders'])->name('allorders');
+        Route::delete('/orders/{id}', action: [OrdersController::class, 'destroy'])->name('ecommerce.orders.destroy');
+
         Route::post('order-filter-reports', [OrdersController::class, 'filterOrders'])->name('order-filter-reposts');
         Route::get('orders/{order_id}', [OrdersController::class, 'orderDetails']);
         Route::post('update-order-status', [OrdersController::class, 'updateOrderStatus']);
