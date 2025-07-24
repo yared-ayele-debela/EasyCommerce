@@ -92,15 +92,7 @@ $notifications_histories=DeliveryNotification::where('delivery_man_id',Auth::gua
                                                 <p><strong>State:</strong> {{ $order->state??'' }}</p>
                                                 <p><strong>Country:</strong> {{ $order->country??'' }}</p>
                                                 <p><strong>Pincode:</strong> {{ $order->pincode??'' }}</p>
-                                                 @php
-                                                    $latitude = $order->latitude;
-                                                    $longitude = $order->longitude;
-                                                    $mapUrl = "https://www.google.com/maps?q={$latitude},{$longitude}";
-                                                @endphp
-
-                                                <a href="{{ $mapUrl }}" target="_blank" class="btn btn-success">
-                                                    Get Customer Location
-                                                </a>
+                                                 <a href="{{ url('delivery-boy/get-customer-location/'.$order->id) }}" class="btn btn-primary">Get Customer Location</a>
                                             </div>
                                         </div>
                                     </div>
@@ -148,16 +140,7 @@ $notifications_histories=DeliveryNotification::where('delivery_man_id',Auth::gua
                                                                     <img src="{{ $item->product->restaurant->cover }}" class="rounded" style="width: 60px; height: 40px; object-fit: cover;">
                                                                 </div>
                                                                 <hr>
-                                                                 @php
-                                                                    $latitude = $item->product->restaurant->latitude;
-                                                                    $longitude = $item->product->restaurant->longitude;
-                                                                    $mapUrl = "https://www.google.com/maps?q={$latitude},{$longitude}";
-                                                                @endphp
-
-                                                                <a href="{{ $mapUrl }}" target="_blank" class="btn btn-success">
-                                                                    Get Restaurant Location
-                                                                </a>
-                                                                {{-- <a href="{{ url('delivery-boy/pickup-order/'.$order->id.'/'.$item->product->restaurant->id) }}" class="btn btn-primary">Get Restaurant Location</a> --}}
+                                                                <a href="{{ url('delivery-boy/pickup-order/'.$order->id.'/'.$item->product->restaurant->id) }}" class="btn btn-primary">Get Restaurant Location</a>
                                                                 <p class="mt-3">
                                                                    <strong>Pickup Status: </strong> <div class="btn btn-sm btn-primary">
                                                                     {{ $item->picked_status }}

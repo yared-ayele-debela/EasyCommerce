@@ -28,7 +28,7 @@ class OrderController extends Controller
 
             $appsettings = AppSetting::all()->toArray();
             $deliveryManId = DeliveryMan::where('id', Auth::guard('deliverymen')->user()->id)->first();
-            $orders = Order::with('orderItems')->where('delivery_man_id', $deliveryManId->id)->orderBy('id', 'Desc')->paginate(10);
+            $orders = Order::with('orderItems')->where('delivery_man_id', $deliveryManId->id)->latest()->paginate(10);
 
             // Notifications (unseen assigned orders)
             $notifications = DeliveryNotification::where('delivery_man_id', $deliveryManId->id)

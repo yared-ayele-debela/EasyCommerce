@@ -162,19 +162,9 @@ $user = Auth::guard('deliverymen')->user();
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
                         <h1 class=" card-title">Customer Details</h1>
-                        @php
-                            $latitude = $orderDetails['latitude'];
-                            $longitude = $orderDetails['longitude'];
-                            $mapUrl = "https://www.google.com/maps?q={$latitude},{$longitude}";
-                        @endphp
-
-                        <a href="{{ $mapUrl }}" target="_blank" class="btn btn-success">
+                        <a href="{{url('delivery-boy/ecommerce/get-customer-location/'.$orderDetails['id'])}}" class="btn btn-primary">
                             Get Customer Location
                         </a>
-
-                        {{-- <a href="{{url('delivery-boy/ecommerce/get-customer-location/'.$orderDetails['id'])}}" class="btn btn-primary">
-                            Get Customer Location
-                        </a> --}}
                     </div>
                 </div>
                 <div class="card-body pt-3">
@@ -499,16 +489,10 @@ $user = Auth::guard('deliverymen')->user();
                                                             <div class="col-md-6">
                                                                 <p><strong>Mobile :</strong> {{ $vendor->mobile }}</p>
                                                                 <p><strong>Email :</strong> {{ $vendor->email }}</p>
-                                                                 @php
-                                                                    $latitude = $vendor->latitude;
-                                                                    $longitude = $vendor->longitude;
-                                                                    $mapUrls = "https://www.google.com/maps?q={$latitude},{$longitude}";
-                                                                @endphp
-
-                                                                <a href="{{ $mapUrls }}" target="_blank" class="btn btn-success">
+                                                                <!-- Add more details here if needed -->
+                                                                <a href="{{ url('delivery-boy/ecommerce/pickup-order/'.$orderDetails['id'].'/'.$vendor->id) }}" class="btn btn-primary">
                                                                     Get Shop Location
                                                                 </a>
-
                                                             </div>
                                                         </div>
                                                     </div>
