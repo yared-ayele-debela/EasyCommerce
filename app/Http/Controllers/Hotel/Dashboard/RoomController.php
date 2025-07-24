@@ -28,15 +28,18 @@ class RoomController extends Controller
     public function index()
     {
         $adminType = Auth::guard('admin')->user()->type;
-        $hotels = Hotel::where('admin_id', Auth::guard('admin')->user()->id)->latest()->get();
 
         $role=Roles::where('name',$adminType)->first();
 
         $group = $role->group ?? null;
 
         if ($group === "general") {
+                    $hotels = Hotel::latest()->get();
+
             $rooms = Room::with('images', 'amenities')->latest()->paginate(10);
         } else {
+                    $hotels = Hotel::where('admin_id', Auth::guard('admin')->user()->id)->latest()->get();
+
             $hotelId = $hotels->pluck('id');
             $rooms = Room::with('images', 'amenities')->whereIn('hotel_id', $hotelId)->latest()->paginate(10);
             // dd($rooms);
