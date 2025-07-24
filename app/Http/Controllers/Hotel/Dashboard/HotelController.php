@@ -8,6 +8,7 @@ use App\Models\City;
 use App\Models\Country;
 use App\Models\Hotel;
 use App\Models\HotelCategory;
+use App\Models\Roles;
 use App\Models\State;
 use App\Models\SubCity;
 use App\Services\ActivityLogger;
@@ -30,7 +31,13 @@ class HotelController extends Controller
     public function index()
     {
         $adminType = Auth::guard('admin')->user()->type;
-        if($adminType==="Super Admin"){
+
+        $role=Roles::where('name',$adminType)->first();
+
+        $group = $role->group ?? null;
+
+        if ($group === "general") {
+
             $hotels = Hotel::with('category')->latest()->get();
         }else{
             $hotels = Hotel::with('category')->where('admin_id',Auth::guard('admin')->user()->id)->latest()->get();
@@ -77,12 +84,12 @@ class HotelController extends Controller
 
         Hotel::create($validated);
 
-        
+
          $currentDateTime = Carbon::now();
         $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
         ActivityLogger::log('Add Category', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
-        
+
         return redirect()->back()->with('success', 'Hotel created successfully!');
     }
 
@@ -126,7 +133,7 @@ class HotelController extends Controller
         $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
         ActivityLogger::log('Update Hotel', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
-        
+
         return redirect()->back()->with('success', 'Hotel updated successfully!');
     }
 
@@ -148,7 +155,7 @@ class HotelController extends Controller
           $currentDateTime = Carbon::now();
         $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
         ActivityLogger::log('Delete Hotel', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
-        
+
         return redirect()->back()->with('success', 'Hotel deleted!');
     }
 

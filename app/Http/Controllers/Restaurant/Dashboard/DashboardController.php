@@ -12,6 +12,7 @@ use App\Models\Restaurant\Restaurant;
 use App\Models\Restaurant\RestaurantMenu;
 use App\Models\Restaurant\SliderBanner;
 use App\Models\Restaurant\Subcategory;
+use App\Models\Roles;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +23,7 @@ class DashboardController extends Controller
     //
     public function index()
     {
-        
+
         $total_slider = SliderBanner::count();
         $total_category = Category::count();
         $total_subcategory = Subcategory::count();
@@ -30,7 +31,12 @@ class DashboardController extends Controller
 
         $admin = Auth::guard('admin')->user();
 
-        if ($admin->type === 'Super Admin') {
+        $role=Roles::where('name',$admin->type)->first();
+
+        $group = $role->group ?? null;
+
+        if ($group === "general") {
+
             // 🧠 Super Admin: Show global counts
             $total_coupon = Coupon::count();
             $total_product = Product::count();

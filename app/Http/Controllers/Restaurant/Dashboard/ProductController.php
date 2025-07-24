@@ -35,6 +35,7 @@ class ProductController extends Controller
 
         $role=Roles::where('name',$adminType)->first();
 
+        
         if($role->group==="general"){
              $restaurants=Restaurant::latest()->get();
             $products = Product::with('images','city','menu','category','subcategory')->latest()->paginate(10);

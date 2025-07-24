@@ -9,6 +9,7 @@ use App\Models\DeliveryNotification;
 use App\Models\OrderStatus;
 use App\Models\Restaurant\Order;
 use App\Models\Restaurant\Restaurant;
+use App\Models\Roles;
 use App\Services\ActivityLogger;
 use App\Services\NotificationService;
 use App\Services\SmsService;
@@ -35,7 +36,12 @@ class OrderController extends Controller
         $restaurant=Restaurant::where('admin_id',$admin->id)->get();
         $restaurantId=$restaurant->pluck('id');
         $adminType = Auth::guard('admin')->user()->type;
-        if ($adminType === "Super Admin") {
+
+         $role=Roles::where('name',$adminType)->first();
+
+        $group = $role->group ?? null;
+
+        if ($group === "general") {
             $orders = Order::with('orderItems.product','paymentInfo')->where('is_old', operator: false)->latest()->paginate(10);
         }
         else

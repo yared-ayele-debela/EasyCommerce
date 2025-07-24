@@ -13,6 +13,7 @@ use App\Models\Country;
 use App\Models\Delivery_Zone;
 use App\Models\Restaurant\Restaurant as RestaurantRestaurant;
 use App\Models\Restaurant\RestaurantImage;
+use App\Models\Roles;
 use App\Models\State;
 use App\Services\ActivityLogger;
 use Illuminate\Support\Carbon;
@@ -30,7 +31,12 @@ class RestaurantController extends Controller
     public function index()
     {
         $adminType = Auth::guard('admin')->user()->type;
-        if ($adminType === "Super Admin") {
+        $role=Roles::where('name',$adminType)->first();
+
+        $group = $role->group ?? null;
+
+        if ($group === "general") {
+
             $restaurants = RestaurantRestaurant::with(['admin', 'images'])->latest()->paginate(5);
         } else {
             $restaurants = RestaurantRestaurant::with(['admin', 'images'])->where('admin_id', Auth::guard('admin')->user()->id)->latest()->paginate(5);
