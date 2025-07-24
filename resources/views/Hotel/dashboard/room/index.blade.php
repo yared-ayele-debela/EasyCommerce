@@ -171,13 +171,13 @@
                                                 <div class="col-md-6">
                                                     <div class="mb-3">
                                                         <div class="form-group">
-                                                            <label for="room_type">Room Type</label>
+                                                             <label for="room_type">Room Type</label>
                                                             <select class="form-control" name="room_type" id="room_type" required>
-                                                                <option @if($room->room_type==="Presidential") selected @endif value="Presidential">Presidential</option>
-                                                                <option @if($room->room_type==="Sweet") selected @endif value="Sweet">Sweet</option>
-                                                                <option @if($room->room_type==="Family") selected @endif value="Family">Family</option>
-                                                                <option @if($room->room_type==="Double") selected @endif value="Double">Double</option>
+                                                                @foreach ($room_types as $room_t)
+                                                                <option @if($room->room_type===$room_t->name) selected @endif value="{{ $room_t->name }}">{{ $room_t->name }}</option>
+                                                                @endforeach
                                                             </select>
+
                                                         </div>
                                                         @error('room_type')
                                                         <span class="alert alert-danger">{{ $message }}</span>
@@ -320,7 +320,7 @@
                             </div>
                             @endadminCan
 
-                                                                @adminCan('delete_hotel_room')
+                            @adminCan('delete_hotel_room')
 
                             <form action="{{ route('rooms.destroy', $room->id) }}" method="POST" style="display:inline;">
                                 @csrf @method('DELETE')
@@ -332,6 +332,9 @@
                     @endforeach
                 </tbody>
             </table>
+            <div>
+                {{ $rooms->links() }}
+            </div>
         </div>
     </div>
 </div>

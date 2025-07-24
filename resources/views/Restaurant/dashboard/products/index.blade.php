@@ -32,6 +32,7 @@ $user = Auth::guard('admin')->user();
             <table class="table">
                 <thead>
                     <tr>
+                        <th>#</th>
                         <th>Name</th>
                         <th>Category</th>
                         <th>Sub Category</th>
@@ -52,6 +53,7 @@ $user = Auth::guard('admin')->user();
                 <tbody>
                     @foreach($products as $product)
                     <tr>
+                        <td>{{$product->id}}</td>
                         <td>{{ $product->name }}</td>
                         <td>
                             @if($product->category)
@@ -299,6 +301,9 @@ $user = Auth::guard('admin')->user();
                 </tbody>
             </table>
            </div>
+            <div class="">
+                {{ $products->links() }}
+            </div>
         </div>
     </div>
 </div>

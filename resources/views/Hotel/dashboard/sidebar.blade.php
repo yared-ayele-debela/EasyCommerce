@@ -93,7 +93,17 @@ use App\Models\Roles;
                     {{-- @endif --}}
                 </ul>
             </li>
-@endadminCan
+           @endadminCan
+            @adminCan('view_hotel_hotel_category')
+            <li class="{{ request()->is('admin/hotel/room-types')?'nav-item active':'' }}">
+                <a class="nav-link {{request()->is('admin/hotel/room-types')}}" data-bs-target="#hotel-room-type-nav" data-bs-toggle="collapse" href="javascripit:void(0);" aria-expanded="false"> <i class="bi bi-bookmark"></i><span>Room Type Managements</span><i class="bi bi-chevron-down  ms-auto"></i> </a>
+                <ul id="hotel-room-type-nav" class="nav-content collapse  {{ request()->is('admin/hotel/room-types')?'show':'' }} " data-bs-parent="" style="">
+                    {{-- @if ($user && $user->hasPermissionByRole('view_product')) --}}
+                    <li> <a href="{{ route('room-types.index') }}" class=" {{ request()->is('admin/hotel/room-types')?' nav-link active':'' }}"> <i class="bi bi-circle"></i><span>List of Room Types</span> </a></li>
+                    {{-- @endif --}}
+                </ul>
+            </li>
+           @endadminCan
             @adminCan('view_hotel_hotel')
             <li class="{{ request()->is('admin/hotels')?'nav-item active':'' }}">
                 <a class="nav-link {{request()->is('admin/hotels')}}" data-bs-target="#nav-hotelss" data-bs-toggle="collapse" href="javascripit:void(0);" aria-expanded="false"> <i class="bi bi-building"></i><span>Hotels Management</span><i class="bi bi-chevron-down  ms-auto"></i> </a>

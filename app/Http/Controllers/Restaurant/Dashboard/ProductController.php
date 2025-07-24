@@ -37,11 +37,11 @@ class ProductController extends Controller
 
         if($role->group==="general"){
              $restaurants=Restaurant::latest()->get();
-            $products = Product::with('images','city','menu','category','subcategory')->latest()->get();
+            $products = Product::with('images','city','menu','category','subcategory')->latest()->paginate(10);
         }else{
             $restaurants=Restaurant::where('admin_id',Auth::guard('admin')->user()->id)->get();
             $restaurantId= $restaurants->pluck('id');
-            $products = Product::with('images','city','menu','category','subcategory')->whereIn('restaurant_id',$restaurantId)->latest()->get();
+            $products = Product::with('images','city','menu','category','subcategory')->whereIn('restaurant_id',$restaurantId)->latest()->paginate(10);
         }
 
         // $products = Product::with('images','city','menu','category','subcategory')->get();

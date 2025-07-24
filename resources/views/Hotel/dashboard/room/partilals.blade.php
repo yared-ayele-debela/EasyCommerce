@@ -19,10 +19,9 @@
             <div class="form-group">
                 <label for="room_type">Room Type</label>
                 <select class="form-control" name="room_type" id="room_type" required>
-                    <option value="Presidential">Presidential</option>
-                    <option value="Sweet">Sweet</option>
-                    <option value="Family">Family</option>
-                    <option value="Double">Double</option>
+                    @foreach ($room_types as $room)
+                    <option value="{{ $room->name }}">{{ $room->name }}</option>
+                    @endforeach
                 </select>
             </div>
             @error('room_type')

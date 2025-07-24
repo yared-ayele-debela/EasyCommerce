@@ -14,17 +14,12 @@ $user = Auth::guard('admin')->user();
             <li class="breadcrumb-item">
                 <a href="{{ route('restaurant.dashboard') }}">Home</a>
             </li>
-            <li class="breadcrumb-item active" aria-current="page">Orders</li>
+            <li class="breadcrumb-item active" aria-current="page">Old Orders</li>
         </ol>
     </nav>
    <div class="card">
-     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5>All Orders</h5>
-        <div class="btn btn-sm btn-primary">
-            <a href="{{ url('admin/restaurant/orders/old') }}" class="text-white">
-                <i class="bi bi-clock-history"></i> View Old Orders
-            </a>
-        </div>
+     <div class="card-header">
+        <h5>All Old Orders</h5>
      </div>
      <div class="card-body">
        <div class="table-responsive">
@@ -46,7 +41,7 @@ $user = Auth::guard('admin')->user();
                 </tr>
             </thead>
             <tbody>
-                @foreach ($orders as $order)
+                @foreach ($oldOrders as $order)
                     <tr>
                         <td>{{ $order->id }}</td>
                         <td>{{ $order->user->name }}</td>
@@ -114,13 +109,6 @@ $user = Auth::guard('admin')->user();
                                 <i class="bi bi-trash-fill"></i> Delete
                             </button>
                         </form>
-                        &nbsp;
-                        <form action="{{ route('restaurant.orders.markAsOld', $order->id) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('PATCH')
-                            <button type="submit" class="btn btn-warning btn-sm"><small>Mark as Old</small></button>
-                        </form>
-
 
                         </td>
                     </tr>
@@ -129,7 +117,7 @@ $user = Auth::guard('admin')->user();
         </table>
        </div>
        <div>
-        {{ $orders->links() }}
+        {{ $oldOrders->links() }}
        </div>
      </div>
    </div>

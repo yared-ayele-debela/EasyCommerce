@@ -16,6 +16,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use RealRashid\SweetAlert\Facades\Alert;
+
 class OrderController extends Controller
 {
     //
@@ -34,13 +36,13 @@ class OrderController extends Controller
         $restaurantId=$restaurant->pluck('id');
         $adminType = Auth::guard('admin')->user()->type;
         if ($adminType === "Super Admin") {
-            $orders = Order::with('orderItems.product','paymentInfo')->latest()->get();
+            $orders = Order::with('orderItems.product','paymentInfo')->where('is_old', operator: false)->latest()->paginate(10);
         }
         else
         {
-            $orders = Order::with('paymentInfo')->whereHas('orderItems.product', function ($query) use ($restaurantId) {
+            $orders = Order::with('paymentInfo')->where('is_old', operator: false)->whereHas('orderItems.product', function ($query) use ($restaurantId) {
                 $query->whereIn('restaurant_id', $restaurantId);
-            })->with('orderItems.product')->latest()->get();
+            })->with('orderItems.product')->latest()->paginate(10);
         }
 
 
@@ -109,4 +111,31 @@ class OrderController extends Controller
 
         return redirect()->route('restaurant.orders.show', $order->id)->with('success', 'Order status updated successfully.');
     }
+
+
+    public function destroy(Order $order)
+    {
+        // Optional: add authorization logic here
+        $order->delete();
+
+        Alert::toast('Order deleted successfully.', 'success');
+        return redirect()->back();
+    }
+
+    public function markAsOld(Order $order)
+{
+
+    $order->update(['is_old' => true]);
+
+    Alert::toast('Order marked as old successfully.', 'success');
+    return redirect()->back();
+}
+
+public function old()
+{
+    // dd('Old Orders');
+    $oldOrders = Order::with('orderItems.product','paymentInfo')->where('is_old', operator: true)->latest()->paginate(10);
+
+    return view('restaurant.dashboard.orders.old_order', compact('oldOrders'));
+}
 }

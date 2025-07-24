@@ -152,6 +152,7 @@ use App\Http\Controllers\Hotel\Dashboard\HotelPhotoController;
 use App\Http\Controllers\Hotel\Dashboard\HotelReviewController;
 use App\Http\Controllers\Hotel\Dashboard\ReservationsController;
 use App\Http\Controllers\Hotel\Dashboard\RoomController;
+use App\Http\Controllers\Hotel\Dashboard\RoomTypeController;
 use App\Http\Controllers\Hotel\Dashboard\SliderBannerController as DashboardSliderBannerController;
 use App\Http\Controllers\Hotel\Dashboard\VendorBalanceController as HotelDashboardVendorBalanceController;
 use App\Http\Controllers\Hotel\Frontend\BookingController;
@@ -1062,7 +1063,11 @@ Route::prefix('admin/restaurant')->group(function () {
         Route::get('/orders/{id}', [DashboardOrderController::class, 'show'])->name('restaurant.orders.show');
         Route::post('/assignToDeliveryMan/{order_id}', [AssignOrderController::class, 'assignToDeliveryMan'])->name('restaurant.assignToDeliveryMan');
         Route::post('/orders/{id}/update', [DashboardOrderController::class, 'updateStatus'])->name('restaurant.orders.updateStatus');
+        Route::delete('/orders/{order}', [DashboardOrderController::class, 'destroy'])->name('restaurant.orders.destroy');
 
+        Route::patch('/orders/{order}/mark-old', [DashboardOrderController::class, 'markAsOld'])->name('restaurant.orders.markAsOld');
+        // Route::get('/orders/old', [DashboardOrderController::class, 'old'])->name('restaurant.orders.old');
+        Route::get('old/orders', [DashboardOrderController::class, 'old'])->name('restaurant.old.orders');
 
         Route::get('/nearby-deliverymen/{order_id}',[DashboardNearbyDeliveryMenMapController::class,'index']);
         Route::get('/api/orders/{order}/nearby-deliverymen', action: [DashboardNearbyDeliveryMenMapController::class, 'getNearbyDeliveryMen']);
@@ -1088,6 +1093,9 @@ Route::group(['middleware' => ['admin']], function () {
         Route::get('dashboard', [DashboardDashboardController::class, 'index'])
             ->name('hotel.dashboard');
             Route::post('/dashboard/filter', [DashboardDashboardController::class, 'filterStats'])->name('dashboard.filter');
+
+            // routes/web.php
+Route::resource('room-types', controller: RoomTypeController::class);
 
         Route::resource('amenities', AmenityController::class);
         Route::resource('hotel-categories', HotelCategoryController::class);

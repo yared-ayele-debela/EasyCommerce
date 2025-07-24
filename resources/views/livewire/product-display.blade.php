@@ -193,9 +193,13 @@
                                 @endif
                                 @if ($user && $user->hasPermissionByRole('delete_product'))
                                 <i class="cont">
-                                <button id="popoverButton" wire:click="deleteProduct({{ $product['id'] }})" data-toggle="modal" data-target="#deleteProductModal" class="btn btn-sm btn-danger">
-                                    <i class=" ri-delete-bin-6-fill text-white"></i>
+                                <button wire:click="deleteProduct({{ $product['id'] }})"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteProductModal"
+                                        class="btn btn-sm btn-danger">
+                                    <i class="ri-delete-bin-6-fill text-white"></i>
                                 </button>
+
                                 <div id="popover" class="popover">
                                     <div class="popover-content">
                                         <p>Delete Product</p>
@@ -241,6 +245,31 @@
             </div>
         </div>
     @endif
+
+    <div class="modal fade" id="deleteProductModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true" wire:ignore.self>
+    <div class="modal-dialog">
+        <form wire:submit.prevent="destroyProduct" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" wire:click="$set('productId', null)"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this product?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger">Yes, Delete</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    window.addEventListener('close-modal', () => {
+        const modal = bootstrap.Modal.getInstance(document.getElementById('deleteProductModal'));
+        modal.hide();
+    });
+</script>
+
     </section>
 
 </div>

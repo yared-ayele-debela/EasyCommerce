@@ -27,19 +27,20 @@ class RoomController extends Controller
     public function index()
     {
         $adminType = Auth::guard('admin')->user()->type;
-        $hotels = Hotel::where('admin_id', Auth::guard('admin')->user()->id)->latest()->get();
+        $hotels = Hotel::where('admin_id', Auth::guard('admin')->user()->id)->latest()->paginate(10);
 
         if ($adminType === "Super Admin") {
-            $rooms = Room::with('images', 'amenities')->latest()->get();
+            $rooms = Room::with('images', 'amenities')->latest()->paginate(10);
         } else {
             $hotelId = $hotels->pluck('id');
-            $rooms = Room::with('images', 'amenities')->whereIn('hotel_id', $hotelId)->latest()->get();
+            $rooms = Room::with('images', 'amenities')->whereIn('hotel_id', $hotelId)->latest()->paginate(10);
             // dd($rooms);
         }
 
         // dd($hotels);
         $amenities = Amenity::all();
-        return view('Hotel.dashboard.room.index', compact('rooms', 'hotels', 'amenities'));
+        $room_types= RoomType::all();
+        return view('Hotel.dashboard.room.index', compact('rooms', 'hotels', 'amenities', 'room_types'));
     }
 
     public function create()

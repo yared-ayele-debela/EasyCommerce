@@ -12,7 +12,7 @@ class Order extends Model
 {
     use HasFactory;
     protected $table="restaurant_orders";
-    protected $fillable = ['user_id', 'subtotal', 'discount', 'delivery_fee', 'total','tax','tip_amount','delivery_man_id','delivery_code','status','delivery_status','payment_status', 'payment_method', 'delivery_address_id','address','city','sub_city','street','satate','mobile','latitude','longitude'];
+    protected $fillable = ['user_id', 'subtotal', 'discount', 'delivery_fee', 'total','tax','tip_amount','delivery_man_id','delivery_code','status','delivery_status','payment_status', 'payment_method', 'delivery_address_id','address','city','sub_city','street','satate','mobile','latitude','longitude','is_old'];
 
         public function user()
     {
