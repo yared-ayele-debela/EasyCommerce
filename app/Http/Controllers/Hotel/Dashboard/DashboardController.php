@@ -7,6 +7,7 @@ use App\Models\Amenity;
 use App\Models\Hotel;
 use App\Models\HotelCategory;
 use App\Models\Reservation;
+use App\Models\Roles;
 use App\Models\Room;
 use App\Models\User;
 use Carbon\Carbon;
@@ -19,11 +20,15 @@ class DashboardController extends Controller
     //
    public function index(Request $request)
 {
-    // ───────────────────────────────────────────────────────────────
-    // 1. Who is logged-in?
-    // ───────────────────────────────────────────────────────────────
-    $admin    = Auth::guard('admin')->user();
-    $isSuper  = strcasecmp($admin->type, string2: 'Super Admin') === 0;   // true / false
+
+
+    $admin= Auth::guard('admin')->user();
+
+     $role=Roles::where('name',operator: $admin->type)->first();
+
+     $group = $role->group ?? null;
+
+    $isSuper  = strcasecmp($group, string2: 'general') === 0;   // true / false
 
     // ───────────────────────────────────────────────────────────────
     // 2. Which hotel IDs are we allowed to “see”?
