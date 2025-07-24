@@ -28,7 +28,7 @@ class RoomController extends Controller
     public function index()
     {
         $adminType = Auth::guard('admin')->user()->type;
-        $hotels = Hotel::where('admin_id', Auth::guard('admin')->user()->id)->latest()->paginate(10);
+        $hotels = Hotel::where('admin_id', Auth::guard('admin')->user()->id)->latest()->get();
 
         $role=Roles::where('name',$adminType)->first();
 
