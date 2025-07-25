@@ -682,7 +682,7 @@ document.addEventListener('DOMContentLoaded', function () {
         , nav: true,
 navText: [
       '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
-      '<button class="custom-nexts">"><i class="bi bi-arrow-right"></i></button>'
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
     ]
 
         , dots: false
