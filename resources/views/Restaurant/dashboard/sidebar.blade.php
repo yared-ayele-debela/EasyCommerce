@@ -11,7 +11,7 @@ use App\Models\Roles;
         $adminType = Auth::guard('admin')->user()->type;
         $role=Roles::where('name',$adminType)->first();
         @endphp
-       @if ($adminType === "Super Admin" || $adminType === "admin")
+       @if ($role->group === "general")
         <div class="form-group mb-2">
             <label for="dashboardSwitcher">Switch Dashboard</label>
             <select class="form-control" style="background-color: #F6F9FF;color:#4154F1;" id="dashboardSwitcher">
@@ -32,7 +32,8 @@ use App\Models\Roles;
         </script>
         <hr>
         @endif
-  @if ($role->group == "hotel")
+
+        @if ($role->group == "hotel")
         <li class=" {{ request()->is('admin/hotel/dashboard')?'nav-item active':'' }}">
         <a href="{{ url('admin/hotel/dashboard') }}" class="nav-link {{request()->is('admin/hotel/dashboard')}}"> <i class="bi bi-menu-button-fill"></i><span>Dashboard</span> </a>
         </li>

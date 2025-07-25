@@ -263,7 +263,7 @@
             <div class="offer-card h-100">
                 @if($room->image)
                 <a href="{{ url('hotel/room/'.$room->id.'/detail') }}">
-                    <img class="card-img-top" src="{{ $room->image }}" alt="{{ $room->room_type }}">
+                    <img class="card-img-top" src="{{ $room->image }}" alt="{{ $room->room_type }}" style="height:200px; object-fit:cover;">
                     @else
                     <img class="card-img-top" src="{{ asset('restaurant_frontend/default-image.png')}}" alt="{{ $room->room_type }}">
                     @endif

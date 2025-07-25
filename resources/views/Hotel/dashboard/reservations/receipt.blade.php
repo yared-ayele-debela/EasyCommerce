@@ -194,10 +194,9 @@ $settings = AppSetting::first();
                 </div>
             </div>
             <hr>
-            <p class="totals">Final Price: {{ number_format($reservation->total_price, 2) }} ETB</p>
-            <p class="totals">Discount Amount: {{ number_format($reservation->discount_amount, 2) }} ETB</p>
+
             <hr>
-            <p class="total">Total: {{ number_format($reservation->final_price, 2) }} ETB</p>
+            <p class="total">Total: {{ number_format($reservation->vendor_earning, 2) }} ETB</p>
             <p class="date"><small class="font-italic float-right">Date: {{ $reservation->created_at->format('F d, Y') }}</small></p>
             <div class="mt-4">
                 <p>If you have any questions or need further assistance, please don't hesitate to <a href="{{ $settings->email_address }}" class="text-primary">{{ $settings->email_address }}</a>.</p>

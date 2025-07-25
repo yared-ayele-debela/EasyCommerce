@@ -36,8 +36,7 @@
                             <th>Room</th>
                             <th>Check-in Date</th>
                             <th>Check-out Date</th>
-                            <th>Amount</th>
-                            <th>Discount Amount</th>
+
                             <th>Total Amount</th>
                             <th>Other Info</th>
                             <th>Reservation Status</th>
@@ -157,9 +156,8 @@
                             </td>
                             <td>{{ $reservation->check_in_date }}</td>
                             <td>{{ $reservation->check_out_date }}</td>
-                            <td>{{ number_format($reservation->total_price, 2) }} ETB</td>
-                            <td>{{ number_format($reservation->discount_amount, 2) }} ETB</td>
-                            <td>{{ number_format($reservation->final_price, 2) }} ETB</td>
+
+                            <td>{{ number_format($reservation->vendor_earning, 2) }} ETB</td>
                             <td>
                                 <!-- Button trigger modal -->
                                 <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#otherInfo{{ $reservation->id }}">
@@ -317,7 +315,7 @@
                                                 {{-- <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid" alt="{{ $reservation->hotel_reservation_payment_info->bank_name }}"> --}}
                                                 <p class="card-text"><strong>Bank Name :</strong> {{ $reservation->hotel_reservation_payment_info->bank_name }}</p>
                                                 <p class="card-text"><strong>Transaction Number :</strong> <strong>{{ $reservation->hotel_reservation_payment_info->transaction_number }}</strong></p>
-                                                <p class="card-text"><strong>Amount Paid :</strong> {{ $reservation->hotel_reservation_payment_info->amount_paid }} ETB</p>
+                                                <p class="card-text"><strong>Amount Paid :</strong> {{ $reservation->vendor_earning }} ETB</p>
                                                 <p class="card-text"><strong>Payment Status :</strong> {{ $reservation->hotel_reservation_payment_info->payment_status }}</p>
                                             </div>
                                             <div class="modal-footer">

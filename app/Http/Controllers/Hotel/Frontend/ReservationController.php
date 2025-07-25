@@ -55,20 +55,20 @@ class ReservationController extends Controller
         $total_price = $room->price * $request->total_night;
         // dd($total_price);
 
-        $hotel=Hotel::findOrFail($room->hotel_id);
+        $hotel = Hotel::findOrFail($room->hotel_id);
 
-                $admin=Admin::findOrFail($hotel->admin_id);
+        $admin = Admin::findOrFail($hotel->admin_id);
 
-                $vendor = Vendor::find($admin->vendor_id);
+        $vendor = Vendor::find($admin->vendor_id);
 
-                $commissionRate = $vendor->commission ?? 5; // default to 10%
+        $commissionRate = $vendor->commission ?? 5;
 
-                                // dd(vars: $commissionRate);
+        // dd(vars: $commissionRate);
 
-                // Admin commission and vendor earning
-                $itemSubtotal=$request->final_price;
-                $adminCommission = round($itemSubtotal * $commissionRate / 100, 2);
-                $vendorEarning = $itemSubtotal - $adminCommission;
+        // Admin commission and vendor earning
+        $itemSubtotal = $request->final_price;
+        $adminCommission = round($itemSubtotal * $commissionRate / 100, 2);
+        $vendorEarning = $itemSubtotal - $adminCommission;
 
 
         $reservation =  Reservation::create([
@@ -78,7 +78,7 @@ class ReservationController extends Controller
             'total_night' => $request->total_night,
             'check_in_date' => Carbon::parse($request->check_in_date),
             'check_out_date' => Carbon::parse($request->check_out_date),
-            'discount_amount'=>$request->discount_amount,
+            'discount_amount' => $request->discount_amount,
             'total_price' => $request->total_price,
             'final_price' => $request->final_price,
             'total_adult' => $request->total_adult,
@@ -87,63 +87,62 @@ class ReservationController extends Controller
             'status' => 'Pending', // Example status
             'payment_status' => 'Pending', // Example payment status
             'admin_commission' => $adminCommission,
-            'vendor_earning'=>$vendorEarning
+            'vendor_earning' => $vendorEarning
         ]);
 
 
-                $vendorId=$vendor->id;
-                $vendorWallet = VendorWallet::firstOrCreate(['vendor_id' => $vendorId]);
-                $vendorWallet->available_balance += $vendorEarning;
-                $vendorWallet->save();
+        $vendorId = $vendor->id;
+        $vendorWallet = VendorWallet::firstOrCreate(['vendor_id' => $vendorId]);
+        $vendorWallet->available_balance += $vendorEarning;
+        $vendorWallet->save();
 
-                VendorWalletTransaction::create([
-                    'vendor_id' => $vendorId,
-                    'type' => 'credit',
-                    'amount' => $vendorEarning,
-                    'description' => 'Earning from reservation #'.$reservation->id
-                ]);
+        VendorWalletTransaction::create([
+            'vendor_id' => $vendorId,
+            'type' => 'credit',
+            'amount' => $vendorEarning,
+            'description' => 'Earning from reservation #' . $reservation->id
+        ]);
 
-        if($request->input('discount_amount') > 0){
+        if ($request->input('discount_amount') > 0) {
             $coupon = HotelCoupon::find($request->input('coupon_id'));
             if ($coupon) {
                 $coupon->increment('used');
             }
         }
 
-        $payment= new HotelReservationPaymentInfo();
-        $payment->reservation_id=$reservation->id;
-        $payment->user_id=$request->user_id;
-        $payment->bank_name=$request->bank_name;
-        $payment->transaction_number=$request->transaction_number;
+        $payment = new HotelReservationPaymentInfo();
+        $payment->reservation_id = $reservation->id;
+        $payment->user_id = $request->user_id;
+        $payment->bank_name = $request->bank_name;
+        $payment->transaction_number = $request->transaction_number;
         if ($request->hasFile('receipt')) {
             $path = $request->file('receipt')->store('hotel', 'public');
             $payment->receipt = asset('storage/' . $path); // Store the full URL
         }
-        $payment->amount_paid=$request->final_price;
+        $payment->amount_paid = $request->final_price;
         $payment->save();
 
-           NotificationService::send(
-                userId: $reservation->user_id,
-                title: 'Hotel Reservation Placed',
-                message: "Your hotel reservation has been placed."
-            );
+        NotificationService::send(
+            userId: $reservation->user_id,
+            title: 'Hotel Reservation Placed',
+            message: "Your hotel reservation has been placed."
+        );
 
-            $phone = $reservation->user->mobile ?? null;
-            if ($phone) {
-                // dd($phone);
-                $message = "Hi {$reservation->user->name}, Your hotel reservation has been placed.";
-                try {
+        $phone = $reservation->user->mobile ?? null;
+        if ($phone) {
+            // dd($phone);
+            $message = "Hi {$reservation->user->name}, Your hotel reservation has been placed.";
+            try {
                 SmsService::send($phone, $message);
-                } catch (\Exception $e) {
-                    // Optionally log error
-                }
+            } catch (\Exception $e) {
+                // Optionally log error
             }
+        }
 
         // Mail::to($reservation->user->email)->send(new ReservationConfirmationMail($reservation));
 
         return redirect()->route('reservations.receipt', ['id' => encrypt($reservation->id)])
-        ->with('success', 'Your reservation has been made successfully!');
-
+            ->with('success', 'Your reservation has been made successfully!');
     }
     public function preview(Request $request)
     {
@@ -158,10 +157,10 @@ class ReservationController extends Controller
         ]);
 
         $room = Room::findOrFail($request->room_id);
-        $av_rating=HotelReview::where('room_id',$room->id)->avg('rating');
+        $av_rating = HotelReview::where('room_id', $room->id)->avg('rating');
 
-        $banks=Bank::all();
-        return view('Hotel.frontend.pages.reservations.preview', compact('validated', 'room','banks','av_rating'));
+        $banks = Bank::all();
+        return view('Hotel.frontend.pages.reservations.preview', compact('validated', 'room', 'banks', 'av_rating'));
     }
 
 
@@ -176,7 +175,7 @@ class ReservationController extends Controller
     {
         $user = auth()->user()->id;
         $user = User::findOrFail($user);
-        $reservations = $user->reservations()->with(['hotel', 'room','hotel_reservation_payment_info'])->latest()->paginate(4);
+        $reservations = $user->reservations()->with(['hotel', 'room', 'hotel_reservation_payment_info'])->latest()->paginate(4);
 
         return view('Hotel.frontend.pages.reservations.my_reservation', compact('reservations'));
     }

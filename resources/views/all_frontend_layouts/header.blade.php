@@ -439,7 +439,7 @@ use Illuminate\Support\Facades\Storage;
                                 <i class="bi bi-search"></i>
                             </button>
                         </div>
-                        <div id="search-results" class="list-group position-absolute w-100 shadow-sm bg-white rounded d-none" style="top: 100%; z-index: 999;"></div>
+                        <div id="search-results" class="list-group position-absolute w-100 shadow-sm bg-white rounded d-none" style="top: 100%; z-index: 10000;"></div>
                     </form>
 
                     <!-- Icons -->
