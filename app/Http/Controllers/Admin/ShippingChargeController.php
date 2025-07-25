@@ -61,7 +61,7 @@ class ShippingChargeController extends Controller
 
     public function edit(Request $request)
     {
-        try {
+        // try {
             if (!$request->method('put')) {
                 Alert::toast('something is wrong!!', 'error');
                 return redirect()->back();
@@ -96,14 +96,14 @@ class ShippingChargeController extends Controller
 
             Alert::toast('shipping charges is updated!', 'success');
             return redirect('admin/shipping-charges');
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Laravel's built-in validation exception
-            return redirect()->back()->withErrors($e->validator->errors())->withInput();
-        }  catch (\Exception $e) {
-            // Log or handle the exception as needed
-            Alert::toast('something is wrong!!', 'error');
-            return redirect()->back();
-        }
+        // } catch (\Illuminate\Validation\ValidationException $e) {
+        //     // Laravel's built-in validation exception
+        //     return redirect()->back()->withErrors($e->validator->errors())->withInput();
+        // }  catch (\Exception $e) {
+        //     // Log or handle the exception as needed
+        //     Alert::toast('something is wrong!!', 'error');
+        //     return redirect()->back();
+        // }
     }
 
     public function display()

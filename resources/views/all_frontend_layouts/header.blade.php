@@ -426,7 +426,8 @@ use Illuminate\Support\Facades\Storage;
                         <div class="input-group position-relative border border-1 rounded rounded-2">
                             {{-- Search type selector --}}
                             <select class="form-select w-auto border border-0 search-type" id="search-type" name="type">
-                                <option value="restaurant" selected>Restaurant</option>
+                                <option value="all" selected>Restaurant</option>
+                                <option value="restaurant">Restaurant</option>
                                 <option value="hotel">Hotel</option>
                                 <option value="ecommerce">E-commerce</option>
                             </select>

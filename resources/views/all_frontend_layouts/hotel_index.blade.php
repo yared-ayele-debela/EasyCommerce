@@ -193,7 +193,7 @@
         <form action="{{ url('hotels') }}" method="GET">
             @csrf
             <button type="submit" class="btn btn-outline-primary btn-sm">
-                 <i class="bi bi-funnel"></i> Filter Hotels
+                 <i class="bi bi-funnel"></i> View All Hotels
             </button>
         </form>
     </h5>
@@ -249,7 +249,7 @@
         <form action="{{ url('hotel/rooms') }}" method="GET">
             @csrf
             <button type="submit" class="btn btn-outline-primary btn-sm">
-                <i class="bi bi-funnel"></i> Filter Hotel Rooms
+                <i class="bi bi-funnel"></i> View All Hotel Rooms
             </button>
         </form>
     </h5>
