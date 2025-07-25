@@ -642,7 +642,7 @@ use Illuminate\Support\Facades\Storage;
                                     });
 
                                     resultsBox.classList.remove('d-none');
-                                    resultsBox.classList.add('fade-in');
+                                    // resultsBox.classList.add('fade-in');
                                 } else {
                                     resultsBox.classList.add('d-none');
                                 }
