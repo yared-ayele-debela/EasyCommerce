@@ -619,7 +619,7 @@ use Illuminate\Support\Facades\Storage;
                             .then(response => response.json())
                             .then(data => {
                                 console.log('Response:', data); // for debugging
-resultsBox.innerHTML = '<div class="p-2">Found ' + data.length + ' items</div>';
+                                resultsBox.innerHTML = '';
 
                                 if (data.length > 0) {
                                     data.forEach(item => {
@@ -642,7 +642,7 @@ resultsBox.innerHTML = '<div class="p-2">Found ' + data.length + ' items</div>';
                                     });
 
                                     resultsBox.classList.remove('d-none');
-                                    // resultsBox.classList.add('fade-in');
+                    resultsBox.style.display = 'block';
                                 } else {
                                     resultsBox.classList.add('d-none');
                                 }
