@@ -619,7 +619,7 @@ use Illuminate\Support\Facades\Storage;
                             .then(response => response.json())
                             .then(data => {
                                 console.log('Response:', data); // for debugging
-                                resultsBox.innerHTML = '';
+resultsBox.innerHTML = '<div class="p-2">Found ' + data.length + ' items</div>';
 
                                 if (data.length > 0) {
                                     data.forEach(item => {
