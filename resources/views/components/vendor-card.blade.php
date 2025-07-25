@@ -13,7 +13,7 @@
 <div class="item mb-2 h-100">
     <div class="offer-card h-100 rounded-2">
         <div class="shop-banner-container position-relative">
-            <img src="{{ $shopImage }}" class="w-100" style="height: 150px; object-fit: cover;" alt="Shop Banner">
+            <img src="{{ $shopImage }}" class="w-100" style="height: 150px; min-width: 300px !important; object-fit: cover;" alt="Shop Banner">
 
             <div class="position-absolute bottom-0 start-0 translate-middle-y ms-3 mb-1">
                 <img src="{{ $vendorImage }}" class="rounded-circle border border-2" width="60" height="60" style="object-fit: cover;" alt="Vendor Image">

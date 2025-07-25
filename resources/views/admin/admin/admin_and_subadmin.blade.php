@@ -40,7 +40,7 @@ $user = Auth::guard('admin')->user();
                      </tr>
                   </thead>
                   <tbody>
-                    @foreach ($admin_subadmins as $k => $admin)
+                    @foreach ($admin_subadmins as $admin)
                      <tr>
                         <td>{{ $admin['id'] }}</td>
                         <td>{{ $admin['name']}}</td>

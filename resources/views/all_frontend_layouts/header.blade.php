@@ -307,6 +307,8 @@ use Illuminate\Support\Facades\Storage;
 
       margin-top: auto !important;
     }
+
+
     </style>
 </head>
 
@@ -426,7 +428,7 @@ use Illuminate\Support\Facades\Storage;
                         <div class="input-group position-relative border border-1 rounded rounded-2">
                             {{-- Search type selector --}}
                             <select class="form-select w-auto border border-0 search-type" id="search-type" name="type">
-                                <option value="all" selected>Restaurant</option>
+                                <option value="all" selected>All</option>
                                 <option value="restaurant">Restaurant</option>
                                 <option value="hotel">Hotel</option>
                                 <option value="ecommerce">E-commerce</option>
@@ -635,6 +637,7 @@ use Illuminate\Support\Facades\Storage;
                                         <div>
                                             <strong>${item.name}</strong><br>
                                             <small class="text-muted"> ${shortDescription}, <b>Price: ${item.price} ETB</b></small>
+                                            <span class="text-primary shadow-sm px-2">${item.type}</span>
                                         </div>
                                         <i class="bi bi-eye-fill text-primary"></i>
                                     `;

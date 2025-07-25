@@ -11,9 +11,11 @@ class VendorController extends Controller
 {
     //
     public function index() {
+
         $allvendors = Vendor::with(['vendorbusinessdetails', 'adminvendor'])
         ->withCount('products')
         ->where('status', 1)
+        ->where('vendor_type', 'ecommerce')
         ->inRandomOrder()
         ->paginate(12);
 

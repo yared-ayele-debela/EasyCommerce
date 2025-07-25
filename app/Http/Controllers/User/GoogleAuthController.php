@@ -35,7 +35,11 @@ class GoogleAuthController extends Controller
 
             Auth::login($user);
 
-            return redirect('/my-cart')->with('hasVisited', true);
+            return redirect('/user/account/update')
+            ->with('hasVisited', true)
+            ->with('warning', 'Please update your profile and add your phone number before you order.');
+
+            // return redirect('/my-cart')->with('hasVisited', true);
 
 
         } catch (Exception $e) {

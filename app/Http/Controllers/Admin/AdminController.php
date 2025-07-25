@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\AppSetting;
 use App\Models\Roles;
+use App\Models\Vendor;
 use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -52,11 +53,6 @@ class AdminController extends Controller
 
     public function updateRole(Request $request, Admin $user)
     {
-        // if (!$request->isMethod('post')) {
-        //     // Display an error or handle the incorrect request method
-        //     Alert::toast('Invalid request method!', 'error');
-        //     return redirect()->route('all-admins.index');
-        // }
 
         $request->validate([
             'role_id' => 'required|exists:roles,id',
@@ -64,13 +60,6 @@ class AdminController extends Controller
         ]);
 
         try {
-            $role = Roles::find($request->role_id);
-
-            if (!$role) {
-                Alert::toast('Role does not exist!', 'error');
-                return redirect()->route('all-admins.index');
-            }
-
             $admin = Admin::find($request->input('user_id'));
 
             if (!$admin) {
@@ -78,16 +67,54 @@ class AdminController extends Controller
                 return redirect()->route('all-admins.index');
             }
 
-            $admin->type = $role->name;
-            $admin->save();
+            $newRole = Roles::find($request->role_id);
+            $newGroup = $newRole->group ?? null;
 
+            if (!$newRole) {
+                Alert::toast('Role does not exist!', 'error');
+                return redirect()->route('all-admins.index');
+            }
+
+            // Get current role group
+            $currentRole = $admin->roles()->first();
+            $currentGroup = $currentRole->group ?? null;
+
+            // Group types that require a vendor entry
+            $vendorGroups = ['ecommerce', 'hotel', 'restaurant'];
+
+            // CASE 1: If current group is ecommerce, and new group is not in vendor groups → delete vendor
+            if ($currentGroup === 'ecommerce' && !in_array(needle: $newGroup, $vendorGroups)) {
+                Vendor::where('email', $admin->email)->delete();
+                $admin->vendor_id = null;
+            }
+
+            // CASE 2: If new group is ecommerce, hotel, or restaurant → insert/update vendor
+            if (in_array($newGroup, $vendorGroups)) {
+                // Check if vendor already exists
+                $vendor = Vendor::where('email', $admin->email)->first();
+
+                if (!$vendor) {
+                    $vendor = new Vendor();
+                }
+
+                $vendor->name = $admin->name;
+                $vendor->mobile = $admin->mobile;
+                $vendor->email = $admin->email;
+                $vendor->status = 1;
+                $vendor->confirm = "Yes";
+                $vendor->vendor_type = $newGroup;
+                $vendor->save();
+
+                $admin->vendor_id = $vendor->id;
+            }
+
+            // Update admin's type and role
+            $admin->type = $newRole->name;
+            $admin->save();
             $admin->roles()->sync([$request->role_id]);
 
-
-
-        $currentDateTime = Carbon::now();
-        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
-        ActivityLogger::log( 'Assign Role', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+            // Log
+            ActivityLogger::log('Assign Role', Auth::guard('admin')->user()->name . " at " . now()->toDateTimeString());
 
 
             Alert::toast('Role assigned to user successfully!', 'success');

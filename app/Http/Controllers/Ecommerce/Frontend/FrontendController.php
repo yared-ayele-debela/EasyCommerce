@@ -25,6 +25,7 @@ class FrontendController extends Controller
         $allvendor = Vendor::with(['vendorbusinessdetails', 'adminvendor'])
         ->withCount('products')
         ->where('status', 1)
+        ->where('vendor_type', 'ecommerce')
         ->inRandomOrder()
         ->get();
 

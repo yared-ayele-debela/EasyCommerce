@@ -123,6 +123,26 @@
     }
   }
 
+
+
+    .custom-prevs, .custom-nexts {
+ padding:6px 12px;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background-color: #f1f1f1;
+  color: #333;
+  font-weight: bold;
+  transition: all 0.3s ease-in-out;
+}
+.owl-theme .owl-nav {
+    margin: 10px !important;
+}
+
+.custom-prevs:hover, .custom-nexts:hover {
+  background-color: #dee6e2;
+  border: none;
+}
+
 /* Smooth fade-in animation */
 .fade-in {
     animation: fadeInUp 0.3s ease-out forwards;
@@ -539,9 +559,9 @@ input[type="number"] {
 }
 
 .categories button {
-  padding: 10px 20px;
+  padding:6px 12px;
   border: 2px solid transparent;
-  border-radius: 30px;
+  border-radius: 10px;
   background-color: #f1f1f1;
   color: #333;
   font-weight: bold;
@@ -1236,4 +1256,3 @@ input[type="number"] {
 
 
 
-  

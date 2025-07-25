@@ -12,6 +12,12 @@
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-8 col-12">
+            @if (session('warning'))
+                <div class="alert alert-warning">
+                    {{ session('warning') }}
+                </div>
+            @endif
+
             <h3 class="text-left text-dark mb-3">Update Your Personal Details</h3>
             <div class="offer-card shadow-sm rounded">
                 <div class="card-body">

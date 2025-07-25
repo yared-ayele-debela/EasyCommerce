@@ -52,7 +52,7 @@ class UserController extends Controller
 
     public function userRegister(Request $request)
     {
-        try {
+        // try {
             // dd($request->all());
 
             $data = $this->validate($request, [
@@ -100,14 +100,14 @@ class UserController extends Controller
             // });
 
             return redirect()->back()->with('success', 'Your account has been created successfully! Please log in to continue.');
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Laravel's built-in validation exception
-            return redirect()->back()->withErrors($e->validator->errors())->withInput();
-        } catch (\Exception $e) {
-            // Log or handle the exception as needed
+        // } catch (\Illuminate\Validation\ValidationException $e) {
+        //     // Laravel's built-in validation exception
+        //     return redirect()->back()->withErrors($e->validator->errors())->withInput();
+        // } catch (\Exception $e) {
+        //     // Log or handle the exception as needed
 
-            return redirect()->back()->with('error', 'something was wrong');
-        }
+        //     return redirect()->back()->with('error', 'something was wrong');
+        // }
     }
     public function showOTPVerification(Request $request)
     {

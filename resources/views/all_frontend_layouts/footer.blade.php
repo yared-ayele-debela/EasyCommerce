@@ -679,15 +679,24 @@ document.addEventListener('DOMContentLoaded', function () {
     $('.products').owlCarousel({
         loop: true
         , margin: 30
-        , nav: false
-        , dots: true
+        , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts">"><i class="bi bi-arrow-right"></i></button>'
+    ]
+
+        , dots: false
         , autoplay: true
         , autoplayHoverPause: false // Stops autoplay when hovered
         , responsiveClass: true
         , responsive: {
             0: {
                 items: 3
-                , nav: false
+                , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
             }
             , 1024: {
                 items: 6
@@ -697,15 +706,23 @@ document.addEventListener('DOMContentLoaded', function () {
     $('.ecommerce_products').owlCarousel({
         loop: true
         , margin: 30
-        , nav: false
-        , dots: true
+        , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
+        , dots: false
         , autoplay: true
         , autoplayHoverPause: true // Stops autoplay when hovered
         , responsiveClass: true
         , responsive: {
             0: {
                 items: 2
-                , nav: false
+                , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
             }
             , 1024: {
                 items: 5
@@ -715,15 +732,23 @@ document.addEventListener('DOMContentLoaded', function () {
     $('.vendors').owlCarousel({
         loop: true
         , margin: 30
-        , nav: false
-        , dots: true
+        , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
+        , dots: false
         , autoplay: true
         , autoplayHoverPause: true // Stops autoplay when hovered
         , responsiveClass: true
         , responsive: {
             0: {
                 items: 1
-                , nav: false
+                , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
             }
             , 1024: {
                 items: 4
@@ -733,15 +758,23 @@ document.addEventListener('DOMContentLoaded', function () {
     $('.ecommerce_sliders').owlCarousel({
         loop: true
         , margin: 30
-        , nav: false
-        , dots: true
+        , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
+        , dots: false
         , autoplay: true
         , autoplayHoverPause: true // Stops autoplay when hovered
         , responsiveClass: true
         , responsive: {
             0: {
                 items: 1
-                , nav: false
+                , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
             }
             , 1024: {
                 items: 1
@@ -751,15 +784,23 @@ document.addEventListener('DOMContentLoaded', function () {
     $('.ecommerce_categories').owlCarousel({
         loop: true
         , margin: 30
-        , nav: false
-        , dots: true
+        , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
+        , dots: false
         , autoplay: true
         , autoplayHoverPause: true // Stops autoplay when hovered
         , responsiveClass: true
         , responsive: {
             0: {
                 items: 3
-                , nav: false
+                , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
             }
             , 1024: {
                 items: 6
@@ -769,15 +810,23 @@ document.addEventListener('DOMContentLoaded', function () {
     $('.hotel').owlCarousel({
         loop: true
         , margin: 30
-        , nav: false
-        , dots: true
+        , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
+        , dots: false
         , autoplay: true
         , autoplayHoverPause: true // Stops autoplay when hovered
         , responsiveClass: true
         , responsive: {
             0: {
                 items: 1
-                , nav: false
+                , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
             }
             , 1024: {
                 items: 4
@@ -787,15 +836,23 @@ document.addEventListener('DOMContentLoaded', function () {
     $('.imgs').owlCarousel({
         loop: true
         , margin: 30
-        , nav: false
-        , dots: true
+        , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
+        , dots: false
         , autoplay: true
         , autoplayHoverPause: true // Stops autoplay when hovered
         , responsiveClass: true
         , responsive: {
             0: {
                 items: 1
-                , nav: false
+                , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
             }
             , 1024: {
                 items: 1
@@ -805,15 +862,23 @@ document.addEventListener('DOMContentLoaded', function () {
     $('.categories').owlCarousel({
         loop: true
         , margin: 30
-        , nav: false
-        , dots: true
+        , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
+        , dots: false
         , autoplay: true
         , autoplayHoverPause: true // Stops autoplay when hovered
         , responsiveClass: true
         , responsive: {
             0: {
                 items: 3
-                , nav: false
+                , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
             }
             , 1024: {
                 items: 8
@@ -823,15 +888,23 @@ document.addEventListener('DOMContentLoaded', function () {
     $('.sliders').owlCarousel({
         loop: true
         , margin: 30
-        , nav: false
-        , dots: true
+        , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
+        , dots: false
         , autoplay: true
         , autoplayHoverPause: true // Stops autoplay when hovered
         , responsiveClass: true
         , responsive: {
             0: {
                 items: 1
-                , nav: false
+                , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
             }
             , 1024: {
                 items: 3
@@ -841,8 +914,12 @@ document.addEventListener('DOMContentLoaded', function () {
     $('.pro').owlCarousel({
         loop: true
         , margin: 30
-        , nav: false
-        , dots: true
+        , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
+        , dots: false
         , autoplay: true
         , autoplayHoverPause: true // Stops autoplay when hovered
 
@@ -850,7 +927,11 @@ document.addEventListener('DOMContentLoaded', function () {
         , responsive: {
             0: {
                 items: 1
-                , nav: false
+                , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
             }
             , 1024: {
                 items: 1

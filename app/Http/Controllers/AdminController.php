@@ -655,7 +655,9 @@ class AdminController extends Controller
             $appsettings = AppSetting::all()->toArray();
             $cms_pages = CmsPage::get()->toArray();
 
-            $admin_subadmins = Admin::all();
+            $admin_subadmins = Admin::latest()->get();
+        
+            dd($admin_subadmins);
             return view('admin.admin.admin_and_subadmin', compact('appsettings', 'admin_subadmins', 'cms_pages'));
         } catch (\Exception $e) {
             Alert::toast('something is wrong!!', 'error');
@@ -743,16 +745,20 @@ class AdminController extends Controller
             ]);
 
             $role = Roles::where('name',$request->type)->first();
-            // dd($role);
+           $group=$role->group ?? null;
+          
             // List of types that require vendor creation
             $typesWithVendors = ['vendor', 'ecommerce manager', 'hotel manager', 'restaurant manager'];
 
             $vendorId = null;
 
-            if (in_array(strtolower($request->input('type')), $typesWithVendors)) {
+             $role = Roles::where('name',$request->type)->first();
+           $group=$role->group ?? null;
+            if ($group==="ecommerce" || $group==="hotel" || $group==="restaurant") {
                 // Create vendor
                 // dd('vendor');
                 $vendor = new Vendor();
+                $vendor->vendor_type = $group; // Set vendor type based on group
                 $vendor->name = $request->input('name');
                 $vendor->mobile = $request->input('mobile');
                 $vendor->email = $request->input('email');
@@ -860,34 +866,51 @@ class AdminController extends Controller
                 $admin->image = asset('storage/' . $path); // Save full URL
         }
 
-        $typesWithVendors = ['vendor', 'ecommerce manager', 'hotel manager', 'restaurant manager'];
+        // $admin = Admin::find($adminId); // or use your existing $admin reference
 
-        if (in_array(strtolower($request->input('type')), $typesWithVendors)) {
-            if ($admin->vendor_id) {
+        $role= Roles::where('name', $request->input('type'))->first();
+        // dd($role);
+        
+    $updatedType = $role->group;
+    // dd(vars: $updatedType);
+    $typesWithVendors = ['ecommerce', 'hotel', 'restaurant'];
 
-                $vendor = Vendor::find($admin->vendor_id);
-                if ($vendor) {
-                    $vendor->name = $request->input('name');
-                    $vendor->mobile = $request->input('mobile');
-                    $vendor->email = $request->input('email');
-                    $vendor->save();
-                }
-            } else {
-                // Create new vendor
-                $vendor = new Vendor();
+    if (in_array($updatedType, $typesWithVendors)) {
+        if ($admin->vendor_id) {
+            $vendor = Vendor::find($admin->vendor_id);
+
+            if ($vendor) {
+                $vendor->vendor_type = $updatedType;
                 $vendor->name = $request->input('name');
                 $vendor->mobile = $request->input('mobile');
                 $vendor->email = $request->input('email');
-                $vendor->status = 1;
-                 $vendor->confirm="Yes";
                 $vendor->save();
-
-                $admin->vendor_id = $vendor->id;
             }
         } else {
-            // Remove vendor link if not applicable anymore
-            $admin->vendor_id = null;
+            // Create new vendor
+            $vendor = new Vendor();
+            $vendor->vendor_type = $updatedType;
+            $vendor->name = $request->input('name');
+            $vendor->mobile = $request->input('mobile');
+            $vendor->email = $request->input('email');
+            $vendor->status = 1;
+            $vendor->confirm = "Yes";
+            $vendor->save();
+
+            $admin->vendor_id = $vendor->id;
         }
+    } else {
+        // Remove vendor link only if current vendor_type was ecommerce
+        if ($admin->vendor_id) {
+            $existingVendor = Vendor::find($admin->vendor_id);
+            if ($existingVendor && $existingVendor->vendor_type === 'ecommerce' || $existingVendor->vendor_type === 'hotel' || $existingVendor->vendor_type === 'restaurant') {
+                $existingVendor->delete();
+            }
+        }
+
+        $admin->vendor_id = null;
+    }
+        // Sync roles
 
         $admin->save();
 

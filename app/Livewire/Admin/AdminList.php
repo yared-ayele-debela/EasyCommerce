@@ -12,7 +12,7 @@ class AdminList extends Component
 
     public function mount()
     {
-        $this->admins =Admin::where('type', '<>', 'vendor')->get();
+        $this->admins =Admin::latest()->get();
     }
 
     public function toggleStatus($Id)

@@ -53,8 +53,8 @@
                             </div>
                             <div class="col-md-12">
                                 <div class="mb-3">
-                                    <label for="emails" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="emails" name="emails" placeholder="Enter your email" required>
+                                    <label for="emails" class="form-label">Email (Optional)</label>
+                                    <input type="email" class="form-control" id="emails" name="emails" placeholder="Enter your email">
                                     @error('emails')
                                     <small class=" text-danger">{{ $message }}</small>
                                     @enderror

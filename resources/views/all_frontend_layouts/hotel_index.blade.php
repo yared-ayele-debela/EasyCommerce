@@ -386,8 +386,13 @@
                         container.innerHTML = data.html; // server will send pre-rendered HTML
                         $('.owl-carousel.hotel').owlCarousel({
                             loop: true,
-                            margin: 10,
-                            nav: false,
+                            , margin: 30
+                            , nav: true,
+                            navText: [
+                                '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+                                '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+                                ]
+                                    , dots: false
                             responsive: {
                                 0: {
                                     items: 1
