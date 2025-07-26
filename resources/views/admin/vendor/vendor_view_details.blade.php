@@ -29,42 +29,42 @@
                         </div>
                         <div class="col-md-8 pt-1">
                             <label for="vendor_address" class="form-label">Address</label>
-                             <input type="text" class="form-control" value="{{ $vendorDetails['address'] }}" readonly name="vendor_address">
+                             <input type="text" class="form-control" value="{{ $vendorDetails['address']??'' }}" readonly name="vendor_address">
                              @error('vendor_address')
                              <small class=" text-danger">{{ $message }}</small>
                              @enderror
                          </div>
                          <div class="col-md-8 pt-1">
                             <label for="vendor_city" class="form-label">City</label>
-                             <input type="text" class="form-control" value="{{ $vendorDetails['city'] }}" readonly name="vendor_city">
+                             <input type="text" class="form-control" value="{{ $vendorDetails['city']??'' }}" readonly name="vendor_city">
                              @error('vendor_city')
                              <small class=" text-danger">{{ $message }}</small>
                              @enderror
                          </div>
                          <div class="col-md-8 pt-1">
                             <label for="vendor_state" class="form-label">State</label>
-                             <input type="text" class="form-control" value="{{ $vendorDetails['state'] }}" readonly  name="vendor_state">
+                             <input type="text" class="form-control" value="{{ $vendorDetails['state']??'' }}" readonly  name="vendor_state">
                              @error('vendor_state')
                              <small class=" text-danger">{{ $message }}</small>
                              @enderror
                          </div>
                          <div class="col-md-8 pt-1">
                            <label for="vendor_country" class="form-label">Country</label>
-                            <input type="text" class="form-control" value="{{ $vendorDetails['country'] }}" readonly  name="vendor_country">
+                            <input type="text" class="form-control" value="{{ $vendorDetails['country']??'' }}" readonly  name="vendor_country">
                             @error('vendor_country')
                             <small class=" text-danger">{{ $message }}</small>
                             @enderror
                         </div>
                         <div class="col-md-8 pt-1">
                            <label for="vendor_pincode" class="form-label">Pincode</label>
-                            <input type="text" class="form-control" value="{{ $vendorDetails['pincode'] }}" readonly  name="vendor_pincode">
+                            <input type="text" class="form-control" value="{{ $vendorDetails['pincode']??'' }}" readonly  name="vendor_pincode">
                             @error('vendor_pincode')
                             <small class=" text-danger">{{ $message }}</small>
                             @enderror
                         </div>
                         <div class="col-md-8 pt-1">
                            <label for="vendor_mobile" class="form-label">Mobile</label>
-                            <input type="text" class="form-control" value="{{ $vendorDetails['mobile'] }}" readonly   name="vendor_mobile">
+                            <input type="text" class="form-control" value="{{ $vendorDetails['mobile']??'' }}" readonly   name="vendor_mobile">
                             @error('vendor_mobile')
                             <small class=" text-danger">{{ $message }}</small>
                             @enderror

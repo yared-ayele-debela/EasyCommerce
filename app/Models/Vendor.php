@@ -12,6 +12,7 @@ class Vendor extends Model
     use HasFactory;
     protected $table='vendor';
     protected  $fillable=[
+            'vendor_type',
             'name',
             'address',
             'city',
@@ -21,6 +22,7 @@ class Vendor extends Model
             'zone',
             'mobile',
             'email',
+            'commission',
             'status',
             'created_at',
             'updated_at',

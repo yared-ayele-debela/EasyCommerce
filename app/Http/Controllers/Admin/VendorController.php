@@ -134,7 +134,7 @@ class VendorController extends Controller
     {
         try {
             $appsettings = AppSetting::all()->toArray();
-            $vendor = Vendor::where('id', '<>', '0')->get();
+$vendor = Vendor::whereIn('vendor_type', ['ecommerce', 'hotel', 'restaurant'])->get();
 
             return view('admin.vendor.allvendors', compact('vendor', 'appsettings'));
         } catch (\Exception $e) {

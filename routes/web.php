@@ -721,7 +721,6 @@ Route::group(['middleware' => ['admin']], function () {
         Route::put('udpate_user', [AdminUserController::class, 'update_user'])->name('update_user');
 
         //to delete vendor
-
         Route::get('vendors', [VendorController::class, 'allvendors'])->name('vendors');
         Route::get('vendors/active/{id}', [VendorController::class, 'active'])->name('acive-vendors');
         Route::get('vendors/inactive/{id}', [VendorController::class, 'inactive_vendor'])->name('inactive-vendors');

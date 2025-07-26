@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Ecommerce\Vendor;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\EmailTemplate;
+use App\Models\Roles;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -48,10 +49,17 @@ class VendorRegistrationController extends Controller
     }
 
     try {
+        $role=Roles::where('name', $request->input('vendor_type', 'vendor'))->first();
+        if (!$role) {
+            return redirect()->back()->with('error', 'Invalid vendor type selected');
+        }
+        // dd($role->group); // Debugging line to check the role group
+
         DB::beginTransaction();
 
         // Step 3: Create vendor
         $vendor = Vendor::create([
+            'vendor_type' => $role->group, // Default to 'vendor' if not provided
             'name'    => $validated['name'],
             'mobile'  => $validated['phone'],
             'email'   => $validated['email'],
@@ -61,7 +69,7 @@ class VendorRegistrationController extends Controller
 
         // Step 4: Create corresponding admin
         Admin::create([
-            'type'      => 'vendor',
+            'type'      => $request->input('vendor_type', 'vendor'), // Default to 'vendor' if not provided
             'vendor_id' => $vendor->id,
             'name'      => $validated['name'],
             'mobile'    => $validated['phone'],
@@ -71,19 +79,6 @@ class VendorRegistrationController extends Controller
             'confirm'   => 'Yes',
         ]);
 
-        // Step 5: Optional email sending (currently commented)
-        /*
-        $emailTemplate = EmailTemplate::first();
-        $messageData = [
-            'email_template' => $emailTemplate,
-            'email'          => $email,
-            'name'           => $validated['name'],
-            'code'           => base64_encode($email),
-        ];
-        Mail::send('emails.vendor_confirmation', $messageData, function ($message) use ($email) {
-            $message->to($email)->subject('Confirm your Vendor Account');
-        });
-        */
 
         DB::commit();
         return redirect()->back()->with('success', 'Vendor registered successfully');

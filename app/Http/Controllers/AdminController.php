@@ -656,7 +656,7 @@ class AdminController extends Controller
             $cms_pages = CmsPage::get()->toArray();
 
             $admin_subadmins = Admin::latest()->get();
-        
+
             dd($admin_subadmins);
             return view('admin.admin.admin_and_subadmin', compact('appsettings', 'admin_subadmins', 'cms_pages'));
         } catch (\Exception $e) {
@@ -746,9 +746,8 @@ class AdminController extends Controller
 
             $role = Roles::where('name',$request->type)->first();
            $group=$role->group ?? null;
-          
+
             // List of types that require vendor creation
-            $typesWithVendors = ['vendor', 'ecommerce manager', 'hotel manager', 'restaurant manager'];
 
             $vendorId = null;
 
@@ -870,7 +869,7 @@ class AdminController extends Controller
 
         $role= Roles::where('name', $request->input('type'))->first();
         // dd($role);
-        
+
     $updatedType = $role->group;
     // dd(vars: $updatedType);
     $typesWithVendors = ['ecommerce', 'hotel', 'restaurant'];

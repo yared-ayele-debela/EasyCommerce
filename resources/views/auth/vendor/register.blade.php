@@ -45,11 +45,26 @@
                             @enderror
                         </div>
                     </div>
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                         <div class="mb-3">
                             <label for="emails" class="form-label">Email</label>
                             <input type="email" class="form-control" id="emails" name="email" placeholder="Enter your email" required>
                             @error('email')
+                            <small class=" text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <div class="form-group">
+                              <label for="vendor_type" class="form-label">Vendor Type</label>
+                              <select class="form-control" name="vendor_type" id="vendor_type">
+                                <option value="Ecommerce Manager">Ecommerce Manager</option>
+                                <option value="Hotel Manager">Hotel Manager</option>
+                                <option value="Restaurant Manager">Restaurant Manager</option>
+                              </select>
+                            </div>
+                            @error('vendor_type')
                             <small class=" text-danger">{{ $message }}</small>
                             @enderror
                         </div>
