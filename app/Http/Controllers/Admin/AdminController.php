@@ -83,7 +83,7 @@ class AdminController extends Controller
             $vendorGroups = ['ecommerce', 'hotel', 'restaurant'];
 
             // CASE 1: If current group is ecommerce, and new group is not in vendor groups → delete vendor
-            if ($currentGroup === 'ecommerce' && !in_array(needle: $newGroup, $vendorGroups)) {
+            if ($currentGroup === 'ecommerce' && !in_array( $newGroup,  $vendorGroups)) {
                 Vendor::where('email', $admin->email)->delete();
                 $admin->vendor_id = null;
             }
