@@ -668,6 +668,10 @@ Route::group(['middleware' => ['admin']], function () {
         Route::get('orders', [OrdersController::class, 'orders'])->name('allorders');
         Route::delete('/orders/{id}', action: [OrdersController::class, 'destroy'])->name('ecommerce.orders.destroy');
 
+
+        Route::patch('/ecommerce/{order}/mark-old', [OrdersController::class, 'markAsOld'])->name(name: 'ecommerce.order.markAsOld');
+        Route::get('old/ecommerce/order', [OrdersController::class, 'old'])->name('old.ecommerce.order');
+
         Route::post('order-filter-reports', [OrdersController::class, 'filterOrders'])->name('order-filter-reposts');
         Route::get('orders/{order_id}', [OrdersController::class, 'orderDetails']);
         Route::post('update-order-status', [OrdersController::class, 'updateOrderStatus']);
@@ -1068,7 +1072,6 @@ Route::prefix('admin/restaurant')->group(function () {
         Route::delete('/orders/{order}', [DashboardOrderController::class, 'destroy'])->name('restaurant.orders.destroy');
 
         Route::patch('/orders/{order}/mark-old', [DashboardOrderController::class, 'markAsOld'])->name('restaurant.orders.markAsOld');
-        // Route::get('/orders/old', [DashboardOrderController::class, 'old'])->name('restaurant.orders.old');
         Route::get('old/orders', [DashboardOrderController::class, 'old'])->name('restaurant.old.orders');
 
         Route::get('/nearby-deliverymen/{order_id}',[DashboardNearbyDeliveryMenMapController::class,'index']);
@@ -1108,6 +1111,10 @@ Route::resource('room-types', controller: RoomTypeController::class);
         Route::put('/reservations/{id}/status', [ReservationsController::class, 'updateStatus'])->name('reservations.updateStatus');
         Route::put('/reservations/{id}/payment_status', [ReservationsController::class, 'updatePaymentStatus'])->name('reservations.updatePaymentStatus');
         Route::delete('/reservations/{id}', [ReservationsController::class, 'destroy'])->name('reservations.destroy');
+
+         Route::patch('/reservations/{order}/mark-old', [ReservationsController::class, 'markAsOld'])->name(name: 'reservations.markAsOld');
+        Route::get('old/reservations', [ReservationsController::class, 'old'])->name('old.reservations');
+
         Route::resource('rooms', RoomController::class);
         Route::get('my-hotel', [HotelController::class, 'my_hotel'])->name('my-hotel');
         Route::resource('/hotel-slider-banners', DashboardSliderBannerController::class);

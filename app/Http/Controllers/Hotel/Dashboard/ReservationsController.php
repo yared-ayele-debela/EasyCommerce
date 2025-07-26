@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class ReservationsController extends Controller
 {
@@ -24,19 +25,18 @@ class ReservationsController extends Controller
     {
         $adminType = Auth::guard('admin')->user()->type;
 
-         $role=Roles::where('name',$adminType)->first();
+        $role=Roles::where('name',$adminType)->first();
 
         $group = $role->group ?? null;
 
-
-
         if ($group === "general") {
-            $reservations = Reservation::with('user', 'hotel', 'room', 'hotel_reservation_payment_info')->latest()->get();
+            $reservations = Reservation::with('user', 'hotel', 'room', 'hotel_reservation_payment_info')->where('is_old',false)->latest()->get();
         } else {
             $hotelIds = Auth::guard('admin')->user()->hotel()->pluck('id'); // assuming a relationship `hotels()`
 
             $reservations = Reservation::with(['user', 'hotel', 'room', 'hotel_reservation_payment_info'])
                 ->whereIn('hotel_id', $hotelIds)
+                ->where('is_old', operator: false)
                 ->latest()
                 ->get();
             }
@@ -145,5 +145,37 @@ class ReservationsController extends Controller
         $settings=AppSetting::first();
 
         return view('Hotel.dashboard.reservations.receipt', compact('reservation','settings'));
+    }
+
+    public function markAsOld(Reservation $order)
+    {
+
+        $order->update(['is_old' => true]);
+
+        Alert::toast('Reservation marked as old successfully.', 'success');
+        return redirect()->back();
+    }
+
+    public function old()
+    {
+        $adminType = Auth::guard('admin')->user()->type;
+
+        $role=Roles::where('name',$adminType)->first();
+
+        $group = $role->group ?? null;
+
+        if ($group === "general") {
+            $reservations = Reservation::with('user', 'hotel', 'room', 'hotel_reservation_payment_info')->where('is_old',true)->latest()->get();
+        } else {
+            $hotelIds = Auth::guard('admin')->user()->hotel()->pluck('id'); // assuming a relationship `hotels()`
+
+            $reservations = Reservation::with(['user', 'hotel', 'room', 'hotel_reservation_payment_info'])
+                ->whereIn('hotel_id', $hotelIds)
+                ->where('is_old', operator: true)
+                ->latest()
+                ->get();
+            }
+
+        return view('Hotel.dashboard.reservations.old_reservation', compact(var_name: 'reservations'));
     }
 }

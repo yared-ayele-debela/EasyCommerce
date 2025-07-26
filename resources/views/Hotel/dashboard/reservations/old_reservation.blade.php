@@ -13,17 +13,12 @@
             <li class="breadcrumb-item">
                 <a href="{{ route('hotel.dashboard') }}">Home</a>
             </li>
-            <li class="breadcrumb-item active" aria-current="page">Reservations</li>
+            <li class="breadcrumb-item active" aria-current="page">REservations</li>
         </ol>
     </nav>
     <div class="card">
         <div class="card-header">
             <h4>All Reservations</h4>
-            <div class="btn btn-sm btn-primary">
-            <a href="{{ url('admin/hotel/old/reservations') }}" class="text-white">
-                <i class="bi bi-clock-history"></i> View Old Reservations
-            </a>
-           </div>
             @session('success')
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('success') }}
@@ -345,11 +340,6 @@
                                     @csrf
                                     <input type="hidden" name="id" value="{{ encrypt( $reservation->id) }}">
                                     <button type="submit" class="btn btn-secondary btn-sm "><i class="bi bi-printer-fill"></i></button>
-                                </form>
-                                <form action="{{ route('reservations.markAsOld', $reservation->id) }}" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button type="submit" class="btn btn-warning btn-sm"><small>Mark as Old</small></button>
                                 </form>
                             </td>
                         </tr>
