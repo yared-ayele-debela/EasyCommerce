@@ -20,9 +20,10 @@
             <div class="{{ $colClass }} mb-4">
                 <img
                     loading="lazy"
-                    src="{{$photo->photo_url }}"
+                    src="{{ asset('storage/' . $photo->photo_url) }}"
                     alt="{{ $hotel->name }}"
                     class="p-1 border border-2 card-img-top custom-border-radius w-100"
+                    loading="lazy"
                 >
             </div>
         @empty

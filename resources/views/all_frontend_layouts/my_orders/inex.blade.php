@@ -97,7 +97,7 @@ use App\Models\Order;
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         <div class="d-flex align-items-center">
                                             <!-- Product Image -->
-                                            <img src="{{ $item->product->image }}" alt="{{ $item->product->name }}" class="img-thumbnail me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                            <img src="{{ asset('storage/' . $item->product->image) ?? asset('restaurant_frontend/default-image.png') }}" alt="{{ $item->product->name }}" class="img-thumbnail me-3" style="width: 50px; height: 50px; object-fit: cover;">
 
                                             <div>
                                                 <strong>{{ $item->product->name }}</strong> (x{{ $item->quantity }})
@@ -202,7 +202,7 @@ use App\Models\Order;
                                         <div class="d-flex align-items-center">
                                             @if($reservation->room->cover_image)
                                             <a href="{{ url('hotel/room/'.$reservation->room->id.'/detail') }}">
-                                                <img src="{{ $reservation->room->cover_image }}" class="img-thumbnail me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                                <img src="{{ asset('storage/' . $reservation->room->cover_image) ?? asset('restaurant_frontend/default-image.png') }}" class="img-thumbnail me-3" style="width: 50px; height: 50px; object-fit: cover;">
                                             </a>
                                             @endif
                                             <div>
@@ -301,12 +301,11 @@ use App\Models\Order;
                             <button class="btn btn-outline-primary btn-sm " type="button" data-bs-toggle="collapse" data-bs-target="#goodsorderDetails{{ $order->id }}">
                                 View Ordered Products
                             </button>
-
                             <div id="goodsorderDetails{{ $order->id }}" class="collapse mt-3">
                                 <div class="border rounded-2 p-2 bg-light">
                                     @foreach ($order['orders_products'] as $product)
                                     <div class="d-flex align-items-center mb-3">
-                                        <img src="{{ Product::getProductImage($product['product_id']) }}" alt="Product Image" class="rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                        <img src="{{ asset('storage/' . Product::getProductImage($product['product_id'])) ?? asset('restaurant_frontend/default-image.png')}}" alt="Product Image" class="rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
                                         <div class="flex-grow-1">
                                             <h6 class="mb-1">{{ $product['product_name'] }}</h6>
                                             <small class="text-muted">Code: {{ $product['product_code'] }}</small><br>

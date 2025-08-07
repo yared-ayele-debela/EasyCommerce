@@ -176,7 +176,7 @@ class ProductController extends Controller
 
                 return view('products.listing', compact('cms_pages', 'appsettings', 'categoryDetails', 'categoryProducts', 'allcategoryProducts'));
             } else {
-              
+
                     $allcategoryProducts = Product::all()->toArray();
                     $categoryProducts = Product::with('brand')->where('status', 1);
 
@@ -198,7 +198,7 @@ class ProductController extends Controller
                     $appsettings = AppSetting::all()->toArray();
                     $url="";
                     return view('products.listing', compact('url','cms_pages', 'appsettings',   'categoryProducts', 'allcategoryProducts'));
-               
+
             }
         }
     }
@@ -521,29 +521,36 @@ class ProductController extends Controller
                     if (!in_array($item['product']['category_id'], $catArr)) {
                         $message = "This coupon code is not for one of the selected products.";
                     }
-                    $attrPrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
+                     if(!empty($item['size'])){
+                                $attrPrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
+                        }else{
+                            $attrPrice=Product::getDiscountProductPrice($item['product_id']);
+                        }
+                        // dd($attrPrice);
+
+                    // $attrPrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
                     // echo "<pre>";print _r($attrPrice);die;
                     $total_amount = $total_amount + ($attrPrice['final_price'] * $item['quantity']);
-                }
+                    // dd($total_amount);
+                                }
 
                 //check if coupon is from selected users
-                if (isset($couponDetails->users) && !empty($couponDetails->users)) {
-                    $userArr = explode(",", $couponDetails->users);
-                    //Get user Id's of all selected users
-                    // echo "<pre>";print_r($userArr);die;
-                    if (count($userArr)) {
-                        foreach ($userArr as $key => $user) {
-                            $getUserId = User::select('id')->where('email', $user)->first()->toArray();
-                            $usersId[] = $getUserId['id'];
-                        }
-                        //Check if any Cart item not belong to coupon user
-                        foreach ($getCartItems as $item) {
-                            if (!in_array($item['user_id'], $usersId)) {
-                                $message = "This coupon code is not for for you. Try with valid coupon code!";
-                            }
-                        }
-                    }
-                }
+                if ($couponDetails && $couponDetails->users) {
+    // Get list of allowed emails from the coupon
+    $userEmails = explode(',', $couponDetails->users);
+
+    // Get authenticated user's email
+    $userEmail = Auth::check() ? Auth::user()->email : null;
+
+    if (!$userEmail || !in_array($userEmail, $userEmails)) {
+        return response()->json([
+            'success' => false,
+            'message' => 'This coupon is not available for your account.',
+        ]);
+    }
+
+} 
+
 
 
 

@@ -58,7 +58,7 @@
                         @enderror
                         @if(!empty(Auth::guard('admin')->user()->image))
                             <div class="mt-2">
-                                <img src="{{ Auth::guard('admin')->user()->image }}" class="rounded border" width="60" height="60" alt="Admin Image">
+                                <img src="{{ asset('storage/' . Auth::guard('admin')->user()->image) }}" class="rounded border" width="60" height="60" alt="Admin Image">
                             </div>
                         @endif
                     </div>

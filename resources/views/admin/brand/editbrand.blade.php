@@ -40,7 +40,7 @@ $user = Auth::guard('admin')->user();
                     @enderror
                     <div class="pt-3">
                         <div class="row">
-                            <img src="{{$brand->image}}" style="width:80px; margin-left:15px;  border:1px solid black; height:50px" class=" rounded" alt="">
+                            <img src="{{ asset('storage/' . $brand->image) }}" style="width:80px; margin-left:15px;  border:1px solid black; height:50px" class=" rounded" alt="">
                         </div>
                     </div>
                 </div>

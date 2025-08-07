@@ -551,6 +551,7 @@ use Illuminate\Support\Facades\Storage;
             </div>
         </header>
         @include('all_frontend_layouts.custom_order.index')
+        @if(Auth::check())
      <script>
         function checkNotifications() {
             fetch('/check-notifications')
@@ -585,7 +586,7 @@ use Illuminate\Support\Facades\Storage;
         checkNotifications();
         setInterval(checkNotifications, 5000);
     </script>
-
+    @endif
         <script type="text/javascript">
             function googleTranslateElementInit() {
                 new google.translate.TranslateElement({

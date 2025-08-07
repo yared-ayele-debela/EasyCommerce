@@ -1,6 +1,6 @@
 @extends('all_frontend_layouts.layouts')
 @section('content')
-<div class="container">
+<div class="container-fluid">
     <div class="header">
         <button class="btn btn-link text-dark" onclick="history.back()">
             <i class="bi bi-arrow-left"></i>
@@ -11,13 +11,13 @@
         {{-- Vendor Banner --}}
         <div class="position-relative">
             @if(!empty($allvendor->vendorbusinessdetails['shop_image']))
-                <img src="{{ $allvendor->vendorbusinessdetails['shop_image'] }}" class="w-100 rounded" style="height: 250px; object-fit: cover;" alt="Shop Banner">
+                <img src="{{ asset('storage/'.$allvendor->vendorbusinessdetails['shop_image']) }}" class="w-100 rounded" style="height: 250px; object-fit: cover;" alt="Shop Banner">
             @else
                 <img src="{{ asset('banner.png') }}" class="w-100 rounded" style="height: 250px; object-fit: cover;" alt="Shop Banner">
             @endif
             <div class="position-absolute bottom-0 start-0 translate-middle-y ms-4 mb-2">
                 @if(!empty($allvendor->adminvendor['image']))
-                    <img src="{{ $allvendor->adminvendor['image']}}" class="rounded-circle border border-2 bg-white" width="100" height="100" style="object-fit: cover;" alt="Vendor Image">
+                    <img src="{{ asset('storage/'.$allvendor->adminvendor['image']) }}" class="rounded-circle border border-2 bg-white" width="100" height="100" style="object-fit: cover;" alt="Vendor Image">
                 @else
                     <img src="{{ asset('no_vendor.png') }}" class="rounded-circle border border-2 bg-white" width="100" height="100" style="object-fit: cover;" alt="Vendor Image">
                 @endif

@@ -16,7 +16,7 @@
             <span>{{ $blogs->created_at->format('F j, Y') }}</span>
         </div>
         <div class="mb-4">
-            <img class="img-fluid rounded shadow-sm" src="{{ $blogs['image'] }}" alt="Blog Image">
+            <img class="img-fluid rounded shadow-sm" src="{{ asset('storage/' . $blogs->image) }}" alt="Blog Image">
         </div>
 
         <!-- Blog Content -->

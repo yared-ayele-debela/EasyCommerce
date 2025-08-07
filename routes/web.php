@@ -110,6 +110,7 @@ use App\Http\Controllers\Admin\WithdrawSettingController;
 use App\Http\Controllers\Delivery\Ecommerce\GetLocationController;
 use App\Http\Controllers\Delivery\OrderController as DeliveryOrderController;
 use App\Http\Controllers\Delivery\WithdrawController;
+use App\Http\Controllers\DeliverySettingController;
 use App\Http\Controllers\Ecommerce\Frontend\BlogController;
 use App\Http\Controllers\Ecommerce\Frontend\CartController as FrontendCartController;
 use App\Http\Controllers\Ecommerce\Frontend\CategoriesController as FrontendCategoriesController;
@@ -772,6 +773,9 @@ Route::group(['middleware' => ['admin']], function () {
         Route::get('newslettersubscribers/active/{id}', [NewletterSubscriberController::class, 'active'])->name('active_newslettersubscribers');
         Route::get('newslettersubscribers/delete/{id}', [NewletterSubscriberController::class, 'delete'])->name('delete_newslettersubscribers');
 
+        Route::get('/delivery-settings', [DeliverySettingController::class, 'index'])->name('delivery-settings.index');
+Route::put('/delivery-settings', [DeliverySettingController::class, 'update'])->name('delivery-settings.update');
+
         Route::get('send-email-to-all', [NewletterSubscriberController::class, 'create'])->name('send-email-to-all');
         Route::post('send-email-to-all-users', [NewletterSubscriberController::class, 'send'])->name('send-email-to-all-users');
         //routing for advertisement
@@ -1115,6 +1119,9 @@ Route::resource('room-types', controller: RoomTypeController::class);
         Route::get('old/reservations', [ReservationsController::class, 'old'])->name('old.reservations');
 
         Route::resource('rooms', RoomController::class);
+        Route::post('reservations/store', [RoomController::class, 'reservation'])->name('reservations.store');
+        Route::get('/rooms/{room}/reserved-dates', [RoomController::class, 'getReservedDates']);
+
         Route::get('my-hotel', [HotelController::class, 'my_hotel'])->name('my-hotel');
         Route::resource('/hotel-slider-banners', DashboardSliderBannerController::class);
         Route::get('/coupons', [DashboardCouponController::class, 'index'])->name('hotel.coupon.index');
@@ -1148,6 +1155,8 @@ Route::prefix('auth')->middleware('guest')->group(function () {
 
 // User Account Routes (Requires Authentication)
 Route::middleware('auth')->group(function () {
+        Route::post('/apply-coupon', [FrontProductController::class, 'applyCoupon']);
+
     Route::put('account', [UserController::class, 'userAccount'])->name('account.update');
     Route::post('/products/{product}/request-stock', [ProductRequestController::class, 'store'])->name('product.request-stock');
     Route::delete('/user/delete', [UserController::class, 'destroy'])->name('user.destroy');
@@ -1214,15 +1223,19 @@ Route::prefix('/restaurant')->group(function () {
             return response()->json(['count' => Auth::check() ? \App\Models\Restaurant\Wishlist::where('user_id', Auth::id())->count() : 0]);
         })->name('wishlist.count');
 
-        Route::get('check-out', [CheckoutController::class, 'index'])->name('restaurant.checkout');
+        Route::get('check-out', action: [CheckoutController::class, 'index'])->name('restaurant.checkout');
         Route::get('checkout/order-now',[CheckoutController::class, 'orderNowPage'])->name('restaurant.checkout.orderNowPage');
         Route::post('/checkout/order-now', [CheckoutController::class, 'orderNow'])->name('restaurant.checkout.orderNow');
         Route::post('order-now/checkout/applyCoupon', [CheckoutController::class, 'applyCoupon'])->name('restaurant.checkout.orderNow.applyCoupon');
+
+        Route::post('/calculate-shipping-fee', [CheckoutController::class, 'calculateShipping'])->name('calculate.shipping.fee');
+        Route::post('/order-now-calculate-shipping-fee', [CheckoutController::class, 'orderNowcalculateShipping'])->name('order.now.calculate.shipping.fee');
 
 
         Route::post('/checkout/place-order', [CheckoutController::class, 'placeOrder'])->name('restaurant.checkout.placeOrder');
         Route::post('/checkout/place-order-now', [CheckoutController::class, 'placeOrderNow'])->name('restaurant.checkout.placeOrderNow');        Route::get('/order/success/{order}', [FrontendOrderController::class, 'success'])->name('restaurant.order.success');
         Route::post('/order-receipt', [FrontendOrderController::class, 'receipt']);
+
 
         Route::get('/order/{order}/track', [FrontendOrderController::class, 'track'])->name('order.track');
     });
@@ -1259,9 +1272,6 @@ Route::middleware('auth')->group(function () {
 
 
 });
-
-// routes/detail.php
-
 
 // web.php
 Route::post('/set-user-location', function (\Illuminate\Http\Request $request) {
@@ -1329,9 +1339,7 @@ Route::prefix('/ecommerce')->group(function () {
     Route::get('/products/discounted', action: [ProductsController::class, 'discounted'])->name('ecommerce.products.discounted');
     Route::get('/all-products', [ProductsController::class, 'all'])->name('ecommerce.products.all');
     Route::get('/ecommerce/products/load', [ProductsController::class, 'fetchMore'])->name('ecommerce.products.load');
-
     Route::get('brand/{id}', [FrontendCategoriesController::class, 'bybrands'])->name('product_by_brands');
-
     Route::get('/vendors', [FrontendVendorController::class, 'index'])->name('ecommerce.vendors.index');
     Route::middleware('auth')->group(function () {
         Route::match(['GET', 'POST'], '/orders/{id}/cancel', [EcommerceFrontendOrderController::class, 'ordercancel']);
@@ -1348,17 +1356,20 @@ Route::prefix('/ecommerce')->group(function () {
     Route::post('/checkout', [FrontendCheckoutController::class, 'placeOrder'])->name('ecommerce.checkout.placeOrder');
 
     Route::post(uri: '/checkout/direct', action: [DirectCheckoutController::class, 'directCheckout'])->name('direct.checkout');
-    Route::post('/checkout/direct/submit', [DirectCheckoutController::class, 'placeOrder'])->name('checkout.submit.direct');
+    Route::post('/checkout/direct/submit', action: [DirectCheckoutController::class, 'placeOrder'])->name('checkout.submit.direct');
+    Route::post( '/ecommerce-calculate-shipping', [DirectCheckoutController::class, 'calculateShipping'])->name('ecommerce.order.now.calculate.shipping');
 
     Route::post('/rate-ecommerce-product', [EcommerceFrontendRatingController::class, 'product_rating_store'])->name('ecommerce.product.rate');
 
         // routes/web.php
-    Route::post('/calculate-shipping', [FrontendCheckoutController::class, 'calculateShipping']);
+    Route::post('/calculate-shipping', [FrontendCheckoutController::class, 'calculateShipping'])->name('ecommerce.checkout.shipping.calculation');
 
-    Route::get('/products/filter', action: [FilterProductController::class, 'filter'])->name('products.filter');
-    Route::get('/products/search', [FilterProductController::class, 'search'])->name('ecommerce.products.search');
 
     });
+      Route::get('/products/filter', action: [FilterProductController::class, 'filter'])->name('products.filter');
+    Route::get('/products/search', [FilterProductController::class, 'search'])->name('ecommerce.products.search');
+
+
 });
 
 

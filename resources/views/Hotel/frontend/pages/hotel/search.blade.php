@@ -109,6 +109,8 @@
     <div class="row" id="hotel-list"></div>
 </div>
 <script>
+        const storageUrl = "{{ asset('storage') }}";
+
     function fetchHotels() {
     // Gather selected filters
     const selectedCategory = $('#category').val();
@@ -142,11 +144,13 @@
                 html = '<div class="col-12"><p>No hotels found.</p></div>';
             } else {
                 response.hotels.forEach(hotel => {
+                        const bannerSrc = `${storageUrl}/${hotel.banner_image}`;
+
                     html += `
                     <div class="col-md-3 mb-4">
                         <div class="offer-card h-100">
                              <a href="{{ url('hotel/${hotel.id}/detail') }}">
-                            <img src="${hotel.banner_image}" class="card-img-top" alt="Hotel Image" style="height:200px; object-fit:cover;">
+                            <img src="${bannerSrc}" class="card-img-top" alt="Hotel Image" style="height:200px; object-fit:cover;">
                             </a>
                             <div class="card-body">
                                 <span class="badge bg-primary mt-0">${hotel.category.name}</span>

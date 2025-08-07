@@ -23,7 +23,7 @@
     <div class="row g-3">
         <div class="col-md-12 col-12">
             <div class="restaurants-card">
-                <img id="mainProductImage" src="{{$restaurant->cover }}" alt="Restaurant">
+                <img id="mainProductImage" src="{{ asset('storage/' . $restaurant->cover) ?? asset('restaurant_frontend/default-image.png') }}" alt="Restaurant">
 
                 <div class="info">
                     <h4>{{ $restaurant->name }}</h4>
@@ -50,9 +50,9 @@
             </div>
         </div>
         <div class="d-flex justify-content-start mt-3">
-            <img src="{{ asset($restaurant->cover) }}" width="100" class="thumbnail mx-2 p-2 border rounded" alt="{{ $restaurant->name }}" style="cursor: pointer;">
+            <img src="{{ asset('storage/' . $restaurant->cover) ?? asset('restaurant_frontend/default-image.png') }}" width="100" class="thumbnail mx-2 p-2 border rounded" alt="{{ $restaurant->name }}" style="cursor: pointer;">
             @foreach($restaurant->images as $key => $image)
-            <img src="{{ asset($image->image_path)}}" width="100" class="thumbnail mx-2 p-2 border rounded" alt="{{ $restaurant->name }}" style="cursor: pointer;">
+            <img src="{{ asset('storage/' . $image->image_path) ?? asset('restaurant_frontend/default-image.png') }}" width="100" class="thumbnail mx-2 p-2 border rounded" alt="{{ $restaurant->name }}" style="cursor: pointer;">
             @endforeach
         </div>
         <h4>{{ $restaurant->name }}</h4>

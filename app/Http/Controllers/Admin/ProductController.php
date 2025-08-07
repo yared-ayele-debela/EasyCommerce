@@ -259,10 +259,9 @@ class ProductController extends Controller
             $product->description = $data['description'];
 
             if ($request->hasFile('image')) {
-                // Delete old image if updating
-                if (!empty($product->product_image)) {
-                    $oldPath = str_replace(asset('storage') . '/', '', $product->product_image); // Convert full URL back to relative
-                    Storage::disk('public')->delete($oldPath);
+                // Delete old image if exists
+                if (!empty($product->product_image) && Storage::disk('public')->exists($product->product_image)) {
+                    Storage::disk('public')->delete($product->product_image);
                 }
 
                 // Get original file name and extension
@@ -273,23 +272,19 @@ class ProductController extends Controller
                 // Create unique file name
                 $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                // Store image
-                $request->file('image')->storeAs('public/products', $fileNameToStore);
+                // Store image in 'products' folder
+                $request->file('image')->storeAs('products', $fileNameToStore, 'public');
 
-                // Optional resize (requires Intervention Image)
-                // $image = Image::make(public_path('storage/products/' . $fileNameToStore))->resize(488, 488);
-                // $image->save();
-
-                // Save full image URL
-                $product->product_image = asset('storage/products/' . $fileNameToStore);
+                // Save relative path only
+                $product->product_image = 'products/' . $fileNameToStore;
             }
 
 
             //for upload video
             if ($request->hasFile('product_video')) {
                 // Delete old video if it exists
-                if (!empty($product->product_video)) {
-                    Storage::disk('public')->delete('products/video/' . basename($product->product_video));
+                if (!empty($product->product_video) && Storage::disk('public')->exists($product->product_video)) {
+                    Storage::disk('public')->delete($product->product_video);
                 }
 
                 // Get file name and extension
@@ -298,13 +293,13 @@ class ProductController extends Controller
                 $extension = $request->file('product_video')->getClientOriginalExtension();
 
                 // Generate unique file name
-                $fileNameToStorevideo = $fileName . '_' . time() . '.' . $extension;
+                $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                // Store video in the 'public/products/video' folder
-                $request->file('product_video')->storeAs('public/products/video', $fileNameToStorevideo);
+                // Store video in 'products/video' folder on public disk
+                $request->file('product_video')->storeAs('products/video', $fileNameToStore, 'public');
 
-                // Save full URL to DB
-                $product->product_video = asset('storage/products/video/' . $fileNameToStorevideo);
+                // Save relative path only
+                $product->product_video = 'products/video/' . $fileNameToStore;
             }
 
             $product->update();
@@ -527,22 +522,18 @@ class ProductController extends Controller
                     $extension = $image->getClientOriginalExtension();
                     $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                    // Upload image to storage
-                    $path = $image->storeAs('public/products', $fileNameToStore);
+                    // Upload image to 'storage/app/public/products'
+                    $image->storeAs('products', $fileNameToStore, 'public');
 
-                    // Save to DB
+                    // Save to DB (relative path only)
                     $productImage = new ProductsImage();
-                    // Option 1: Just the filename
-                    // $productImage->image = $fileNameToStore;
-
-                    // Option 2: Full URL
-                    $productImage->image = asset('storage/products/' . $fileNameToStore);
-
+                    $productImage->image = 'products/' . $fileNameToStore; // ✅ Relative path only
                     $productImage->product_id = $data['id'];
                     $productImage->status = 1;
                     $productImage->save();
                 }
             }
+
 
             Alert::toast('Product image has been created !!', 'success');
             return redirect()->back();
@@ -604,17 +595,13 @@ class ProductController extends Controller
             }
             $productImage = ProductsImage::find($id);
 
-            if ($productImage) {
+           if ($productImage) {
                 // Delete the image file from storage
-                if ($productImage->image) {
-                    // If stored as just the filename
-                    $imagePath = str_replace(asset('storage') . '/', '', $productImage->image);
-                    Storage::delete('public/' . $imagePath);
-
-                    // OR if only the filename was saved (no asset() used)
-                    // Storage::delete('public/products/' . $productImage->image);
+                if ($productImage->image && Storage::disk('public')->exists($productImage->image)) {
+                    Storage::disk('public')->delete($productImage->image);
                 }
-                // Delete the DB record
+
+                // Delete the database record
                 $productImage->delete();
             }
             Alert::toast('Product attribute has been deleted!', 'error');

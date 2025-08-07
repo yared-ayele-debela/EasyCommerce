@@ -68,8 +68,8 @@
                     <small class=" text-danger">{{ $message }}</small>
                     @enderror
                     @if(!empty($vendorbusiness['shop_image']))
-                    <img src="{{$vendorbusiness['shop_image']}}" style="width: 40px; height:40px;" class="" alt="">
-                    <input type="hidden" name="current_shop_image" value="{{ $vendorbusiness['shop_image'] }}">
+                    <img src="{{ asset('storage/' . $vendorbusiness['shop_image']) }}" style="width: 40px; height:40px;" class="" alt="">
+                    <input type="hidden" name="current_shop_image" value="{{ asset('storage/' . $vendorbusiness['shop_image']) }}">
                     @endif
                 </div>
 
@@ -129,8 +129,8 @@
                     <small class=" text-danger">{{ $message }}</small>
                     @enderror
                     @if(!empty($vendorbusiness['address_proof_image']))
-                    <img src="{{ $vendorbusiness['address_proof_image'] }}" style="width: 40px; height:40px;" class="" alt="">
-                    <input type="hidden" name="current_address_proof" value="{{ $vendorbusiness['address_proof_image'] }}">
+                    <img src="{{ asset('storage/' . $vendorbusiness['address_proof_image']) }}" style="width: 40px; height:40px;" class="" alt="">
+                    <input type="hidden" name="current_address_proof" value="{{ asset('storage/' . $vendorbusiness['address_proof_image']) }}">
                     @endif
                 </div>
                 <div class="col-md-4 pt-3">

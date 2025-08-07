@@ -60,13 +60,14 @@ use App\Models\Restaurant\Product;
                 <input type="hidden" name="tax" value="{{ $totalTax }}">
                 <input type="hidden" id="current_lat" name="current_lat">
                 <input type="hidden" id="current_lng" name="current_lng">
+                <span id="location_status" style="font-size: 14px; color: gray;"></span>
 
                 <div class="row" id="addressContainer">
                     <div class="col-md-12 mb-2">
                     <div class="card shadow-sm p-3 delivery-location">
                         <div class="form-check">
                             <input class="form-check-input address-radio" type="radio" id="current_address" name="address"
-                                value="current_address">
+                                value="current_address" >
                             <label class="form-check-label w-100" for="address">
                                 <strong>My Current location</strong></strong> <br>
                                 <small>
@@ -82,7 +83,8 @@ use App\Models\Restaurant\Product;
                                 <div class="card shadow-sm p-3 delivery-location">
                                     <div class="form-check">
                                         <input class="form-check-input address-radio" type="radio" name="address"
-                                            value="{{ $address->id }}" id="address-{{ $address->id }}">
+                                            value="{{ $address->id }}" id="address-{{ $address->id }}"  data-lat="{{ $address->latitude }}"
+       data-lng="{{ $address->longitude }}">
                                         <label class="form-check-label w-100" for="address-{{ $address->id }}">
                                             <strong>{{ $address->name }}</strong></strong> <br>
                                             <small>
@@ -129,17 +131,8 @@ use App\Models\Restaurant\Product;
                                             @endphp
                                             <tr>
                                                 <td class="d-flex align-items-center">
-                                                    @php
-                                                    $imagePath = $product->image
-                                                        ? str_replace(asset('storage') . '/', '', $product->image)
-                                                        : null;
-                                                @endphp
+                                                    <img src="{{ asset('storage/'.$product->image) ?? asset('restaurant_frontend/default-image.png') }}" class="img-fluid rounded shadow-sm border me-3" style="width: 40px; height: 40px;">
 
-                                                @if($product->image && Storage::disk('public')->exists($imagePath))
-                                                    <img src="{{ $product->image }}" class="img-fluid rounded shadow-sm border me-3" style="width: 40px; height: 40px;">
-                                                @else
-                                                    <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="img-fluid rounded shadow-sm border me-3" style="width: 40px; height: 40px;">
-                                                @endif
                                                     <span class="fw-semibold">{{ $product['name'] }}</span>
                                                 </td>
                                                 <td class="text-center">
@@ -162,12 +155,11 @@ use App\Models\Restaurant\Product;
 
         </div>
         @php
-        $delivery_fee = $totalShipping;
         $discount = session('discount', 0);
         $subtotal = session('cart_subtotal', 0);
         $tax= $totalTax;
 
-        $total = max(($subtotal - $discount), 0) + $tax + $delivery_fee;
+        $total = max(($subtotal - $discount), 0) + $tax ;
         @endphp
 
         <div class="col-lg-4 mb-2">
@@ -188,20 +180,23 @@ use App\Models\Restaurant\Product;
                     <span><strong>Discount</strong></span>
                     <span id="discount_value"><strong> {{ $discount }} ETB</strong></span>
                 </div>
+
                 <div class="d-flex justify-content-between mb-2">
-                    <span><strong>Delivery Fee</strong></span>
-                    <span><strong>{{ $delivery_fee }} ETB</strong></span>
+                    <span><strong>Shipping Fee</strong></span>
+                    <span><strong id="shipping_fee_display">0.00 ETB</strong></span>
                 </div>
                 <div class="d-flex justify-content-between mb-2">
                     <span><strong>Tax</strong></span>
                     <span><strong>{{ $tax }} ETB</strong></span>
                 </div>
                 <div class="line"></div>
-                <div class="d-flex justify-content-between">
-                    <span><strong>Total</strong></span>
-                    <span class="total"><strong>{{ $total }} ETB</strong></span>
+
+                <div class="d-flex justify-content-between mb-2">
+                    <span><strong>Total (with Tip)</strong></span>
+                    <span class="total"><strong id="final_total_display">0.00 ETB</strong></span>
                 </div>
-                <input type="hidden" name="delivery_fee" value="{{ $delivery_fee }}">
+
+                <input type="hidden" name="delivery_fee" value="">
                 <div class="delivery-location mt-3 p-3">
                     <h6 class="fw-bold text-dark mb-2">Tip For Driver</h6>
                     <input type="hidden" name="tip_option" id="selected_tip" value="0"> <!-- Default selected -->
@@ -306,147 +301,222 @@ use App\Models\Restaurant\Product;
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 @include('all_frontend_layouts.partials.delivery_address_modal')
 <script>
-document.getElementById("current_address").addEventListener("click", function () {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function (position) {
-            document.getElementById("current_lat").value = position.coords.latitude;
-            document.getElementById("current_lng").value = position.coords.longitude;
-        }, function (error) {
-            alert("Location access denied or unavailable.");
-            document.getElementById("current_address").checked = false;
-        });
-    } else {
-        alert("Geolocation is not supported by this browser.");
-        document.getElementById("current_address").checked = false;
-    }
-});
-</script>
+(function () {
+    const subtotal = parseFloat(@json($subtotal));
+    const discount = parseFloat(@json($discount));
+    const tax = parseFloat(@json($tax));
+    let shippingFee = 0;
+
+    const elements = {
+        tipOptions: document.querySelectorAll('.tip-option'),
+        selectedTipInput: document.getElementById('selected_tip'),
+        customTipContainer: document.getElementById('custom-tip-container'),
+        customTipField: document.getElementById('custom_tip_amount'),
+        shippingFeeDisplay: document.getElementById('shipping_fee_display'),
+        finalTotalDisplay: document.getElementById('final_total_display')
+    };
+
+    function updateTotal(tipAmount = 0) {
+    let usedSubtotal = typeof window.discountedSubtotal !== 'undefined'
+        ? window.discountedSubtotal
+        : subtotal;
+
+const total = Math.max(usedSubtotal - discount) + tax + shippingFee + parseFloat(tipAmount || 0);
+
+    elements.finalTotalDisplay.innerHTML = `<strong>${total.toFixed(2)} ETB</strong>`;
+}
 
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-          $("#toggleItems").click(function() {
-            $("#itemsSection").toggleClass("d-none");
-            let isVisible = !$("#itemsSection").hasClass("d-none");
-            $(this).html(isVisible ? '<i class="bi bi-eye-slash"></i> Hide Items' : '<i class="bi bi-eye"></i> Show Items');
-        });
+    function fetchShippingFee(addressId, tip = 0) {
+         const data = {
+            address_id: addressId,
+            _token: '{{ csrf_token() }}'
+        };
 
-        const tipOptions = document.querySelectorAll('.tip-option');
-        const selectedTipInput = document.getElementById('selected_tip');
-        const customInputContainer = document.getElementById('custom-tip-container');
-        const customInputField = customInputContainer.querySelector('input[name="custom_tip_amount"]');
-
-        const subtotal = parseFloat(@json($subtotal));
-        const discount = parseFloat(@json($discount));
-        const deliveryFee = parseFloat(@json($delivery_fee));
-        const tax = parseFloat(@json($tax));
-        const totalDisplay = document.querySelector('.total');
-
-        function updateTotal(tipAmount = 0) {
-            const total = Math.max((subtotal - discount), 0) + tax + deliveryFee + parseFloat(tipAmount || 0);
-            totalDisplay.innerHTML = `<strong>${total.toFixed(2)} ETB</strong>`;
+        if (addressId === 'current_address') {
+            data.current_lat = localStorage.getItem('user_lat');  // Or get from geolocation
+            data.current_lng = localStorage.getItem('user_lng');
         }
 
-        tipOptions.forEach(option => {
+        $.ajax({
+            url: "{{ route('calculate.shipping.fee') }}",
+            method: 'POST',
+            data,
+            success: function (res) {
+                if (res.success) {
+                    shippingFee = parseFloat(res.shipping_fee);
+                    const totalWithoutTip = parseFloat(res.total_amount);
+                    const finalTotal =   Math.max(totalWithoutTip - discount) + tax+ parseFloat(tip || 0);
+
+                    elements.shippingFeeDisplay.textContent = `${shippingFee.toFixed(2)} ETB`;
+                    elements.finalTotalDisplay.innerHTML = `<strong>${finalTotal.toFixed(2)} ETB</strong>`;
+                    $('input[name="delivery_fee"]').val(shippingFee);
+                }
+            }
+        });
+    }
+
+    function handleTipSelection() {
+        elements.tipOptions.forEach(option => {
             option.addEventListener('click', function () {
-                tipOptions.forEach(opt => opt.classList.remove('selected'));
+                elements.tipOptions.forEach(opt => opt.classList.remove('selected'));
                 this.classList.add('selected');
+
                 const tipValue = this.dataset.tip;
                 if (tipValue === 'custom') {
-                    selectedTipInput.value = customInputField.value || 'custom';
-                    customInputContainer.style.display = 'block';
-                    customInputField.focus();
-                    updateTotal(customInputField.value); // update with current input value
+                    elements.selectedTipInput.value = elements.customTipField.value || 'custom';
+                    elements.customTipContainer.style.display = 'block';
+                    elements.customTipField.focus();
+                    updateTotal(elements.customTipField.value);
                 } else {
-                    selectedTipInput.value = tipValue;
-                    customInputContainer.style.display = 'none';
+                    elements.selectedTipInput.value = tipValue;
+                    elements.customTipContainer.style.display = 'none';
                     updateTotal(tipValue);
                 }
             });
         });
 
-        customInputField.addEventListener('input', function () {
+        elements.customTipField.addEventListener('input', function () {
             if (document.querySelector('.tip-option.selected')?.dataset.tip === 'custom') {
-                selectedTipInput.value = this.value;
+                elements.selectedTipInput.value = this.value;
                 updateTotal(this.value);
             }
         });
 
-        // Init total with default selected tip
+        // Initial total with selected tip
         const initialTip = document.querySelector('.tip-option.selected')?.dataset.tip || 0;
         updateTotal(initialTip);
-    });
-</script>
-
-
-<script>
-    // JavaScript to handle payment method selection
-    document.querySelectorAll('.payment-method').forEach(method => {
-    method.addEventListener('click', function() {
-        document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
-        this.classList.add('selected');
-        this.querySelector('input').checked = true; // Set the radio input as checked
-        document.getElementById("payment-error").classList.add("d-none"); // Hide error on selection
-
-        });
-    });
-
-    // JavaScript to handle tip selection
-    document.querySelectorAll('.tip-option').forEach((tip) => {
-        tip.addEventListener('click', function() {
-            document.querySelectorAll('.tip-option').forEach((el) => el.classList.remove('selected'));
-            this.classList.add('selected');
-        });
-    });
-    document.getElementById("placeOrder").addEventListener("click", function() {
-    let selectedPayment = document.querySelector("input[name='payment_method']:checked");
-    let selectedAddress = document.querySelector("input[name='address']:checked");
-
-    let paymentError = document.getElementById("payment-error");
-    let addressError = document.getElementById("address-error");
-    paymentError.classList.add("d-none");
-    addressError.classList.add("d-none");
-
-    if (!selectedAddress) {
-        addressError.classList.remove("d-none");
-        showAlert('error','Please select delivery address');
-        return;
     }
-    if (!selectedPayment) {
-        paymentError.classList.remove("d-none");
-        showAlert('error','Please select Payment Method');
-        return;
-    }
-    document.getElementById("checkoutForm").submit();
 
-});
-</script>
-
-<script>
-    $(document).ready(function() {
-
-
-        // Listen for address selection
-        $(document).on("change", ".address-radio", function() {
-            let selectedAddress = $(this).val();
-            $("#selected_address_id").val(selectedAddress);
-            $("#placeOrderBtn").prop("disabled", false); // Enable Place Order button
+    function handleAddressSelection() {
+        $(document).on('change', '.address-radio', function () {
+            const addressId = $(this).val();
+            const tip = parseFloat(elements.selectedTipInput.value) || 0;
+            fetchShippingFee(addressId, tip);
+            $('#selected_address_id').val(addressId);
+            $('#placeOrderBtn').prop('disabled', false);
         });
 
-        $('#country').change(function() {
+        // Load initial shipping fee
+        const selectedAddressId = $('.address-radio:checked').val();
+        const selectedTip = parseFloat(elements.selectedTipInput.value) || 0;
+        if (selectedAddressId) {
+            fetchShippingFee(selectedAddressId, selectedTip);
+        }
+    }
+
+    function handleLocationDetection() {
+    document.getElementById("current_address")?.addEventListener("click", function () {
+        const status = document.getElementById("location_status");
+        document.getElementById("current_lat").value = localStorage.getItem('user_lat');
+        document.getElementById("current_lng").value = localStorage.getItem('user_lng');
+        status.innerText = "Location detected.";
+
+    });
+}
+
+
+    function handleCouponApply() {
+        document.getElementById("apply_coupon").addEventListener("click", function () {
+            const couponCode = document.getElementById("coupon_code").value;
+            const messageDiv = document.getElementById("coupon_message");
+
+            fetch("{{ route('restaurant.apply.coupon') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                },
+                body: JSON.stringify({ coupon_code: couponCode })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        messageDiv.classList.remove("text-danger");
+                        messageDiv.classList.add("text-success");
+                        messageDiv.innerText = "Coupon applied successfully!";
+                        document.getElementById("discount_value").innerText = `-${data.discount} ETB`;
+                        updateTotal(elements.selectedTipInput.value || 0);
+                    } else {
+                        messageDiv.classList.remove("text-success");
+                        messageDiv.classList.add("text-danger");
+                        messageDiv.innerText = data.message;
+                    }
+                });
+        });
+    }
+
+    function handlePaymentSelection() {
+        document.querySelectorAll('.payment-method').forEach(method => {
+            method.addEventListener('click', function () {
+                document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
+                this.classList.add('selected');
+                this.querySelector('input').checked = true;
+                document.getElementById("payment-error").classList.add("d-none");
+            });
+        });
+    }
+
+    function handlePlaceOrderValidation() {
+        document.getElementById("placeOrder").addEventListener("click", function () {
+            let selectedPayment = document.querySelector("input[name='payment_method']:checked");
+            let selectedAddress = document.querySelector("input[name='address']:checked");
+
+            let paymentError = document.getElementById("payment-error");
+            let addressError = document.getElementById("address-error");
+
+            paymentError.classList.add("d-none");
+            addressError.classList.add("d-none");
+
+            if (!selectedAddress) {
+                addressError.classList.remove("d-none");
+                showAlert('error', 'Please select delivery address');
+                return;
+            }
+            if (!selectedPayment) {
+                paymentError.classList.remove("d-none");
+                showAlert('error', 'Please select Payment Method');
+                return;
+            }
+            document.getElementById("checkoutForm").submit();
+        });
+    }
+
+    function handleAddressForm() {
+        $('#addressForm').submit(function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: "{{ url('/addresses') }}",
+                method: "POST",
+                data: $(this).serialize(),
+                success: function (response) {
+                    showAlert('success', response.success);
+                    $('#addressModal').modal('hide');
+                    $('#addressForm')[0].reset();
+                },
+                error: function () {
+                    alert("Error saving address!");
+                }
+            });
+        });
+    }
+
+    function initLocationDropdowns() {
+        $('#country').change(function () {
             let countryId = $(this).val();
             $('#state').html('<option value="">Loading...</option>');
-            $.get(`/states/${countryId}`, function(data) {
+            $.get(`/states/${countryId}`, function (data) {
                 $('#state').html('<option value="">Select state</option>');
                 data.forEach(state => {
                     $('#state').append(`<option value="${state.id}">${state.name}</option>`);
                 });
             });
         });
-        $('#state').change(function() {
+
+        $('#state').change(function () {
             let stateId = $(this).val();
             $('#city').html('<option value="">Loading...</option>');
-            $.get(`/cities/${stateId}`, function(data) {
+            $.get(`/cities/${stateId}`, function (data) {
                 $('#city').html('<option value="">Select City</option>');
                 data.forEach(city => {
                     $('#city').append(`<option value="${city.id}">${city.name}</option>`);
@@ -454,10 +524,10 @@ document.getElementById("current_address").addEventListener("click", function ()
             });
         });
 
-        $('#city').change(function() {
+        $('#city').change(function () {
             let cityId = $(this).val();
             $('#sub_city').html('<option value="">Loading...</option>');
-            $.get(`/sub-cities/${cityId}`, function(data) {
+            $.get(`/sub-cities/${cityId}`, function (data) {
                 $('#sub_city').html('<option value="">Select Sub City</option>');
                 data.forEach(subCity => {
                     $('#sub_city').append(`<option value="${subCity.id}">${subCity.name}</option>`);
@@ -465,105 +535,32 @@ document.getElementById("current_address").addEventListener("click", function ()
             });
         });
 
-        $('#sub_city').change(function() {
+        $('#sub_city').change(function () {
             let subCityId = $(this).val();
             $('#street').html('<option value="">Loading...</option>');
-            $.get(`/streets/${subCityId}`, function(data) {
+            $.get(`/streets/${subCityId}`, function (data) {
                 $('#street').html('<option value="">Select Street</option>');
                 data.forEach(street => {
                     $('#street').append(`<option value="${street.name}">${street.name}</option>`);
                 });
             });
         });
-    });
-    $(document).ready(function() {
-        $('#addressForm').submit(function(e) {
-            e.preventDefault();
+    }
 
-            $.ajax({
-                url: "{{ url('/addresses') }}"
-                , method: "POST"
-                , data: $(this).serialize()
-                , success: function(response) {
-                    showAlert('success', response.success);
-                    $('#addressModal').modal('hide');
-                    $('#addressForm')[0].reset();
-                }
-                , error: function(xhr) {
-                    alert("Error saving address!");
-                }
-            });
-        });
-    });
+    function init() {
+        handleTipSelection();
+        handleAddressSelection();
+        handleLocationDetection();
+        handleCouponApply();
+        handlePaymentSelection();
+        handlePlaceOrderValidation();
+        handleAddressForm();
+        initLocationDropdowns();
+    }
 
+    document.addEventListener('DOMContentLoaded', init);
+})();
 </script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        document.querySelectorAll(".remove-item").forEach(button => {
-            button.addEventListener("click", function() {
-                let key = this.getAttribute("data-key");
 
-                fetch(`/restaurant/cart/remove/${key}`, {
-                        method: "GET"
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload(); // Refresh the cart page
-                        } else {
-                            alert("Failed to remove item from cart.");
-                        }
-                    });
-            });
-        });
-        document.getElementById("apply_coupon").addEventListener("click", function() {
-            let couponCode = document.getElementById("coupon_code").value;
-            let messageDiv = document.getElementById("coupon_message");
-
-            fetch("{{ route('restaurant.apply.coupon') }}", {
-                    method: "POST"
-                    , headers: {
-                        "Content-Type": "application/json"
-                        , "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                    }
-                    , body: JSON.stringify({
-                        coupon_code: couponCode
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        messageDiv.classList.remove("text-danger");
-                        messageDiv.classList.add("text-success");
-                        messageDiv.innerText = "Coupon applied successfully!";
-
-                        document.querySelector(".total").innerText = data.new_total + " ETB"; // Update total
-                        document.getElementById("discount_value").innerText = "-" + data.discount + " ETB"; // Update discount
-                    } else {
-                        messageDiv.classList.remove("text-success");
-                        messageDiv.classList.add("text-danger");
-                        messageDiv.innerText = data.message; // Show error message
-                    }
-                });
-        });
-    });
-    document.addEventListener("DOMContentLoaded", function() {
-        document.querySelectorAll(".add, .subtract").forEach(button => {
-            button.addEventListener("click", function() {
-                let key = this.getAttribute("data-key");
-                let action = this.classList.contains("add") ? "increase" : "decrease";
-                fetch(`/restaurant/cart/update/${key}/${action}`, {
-                        method: "GET"
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload();
-                        }
-                    });
-            });
-        });
-    });
-</script>
 @endsection
 

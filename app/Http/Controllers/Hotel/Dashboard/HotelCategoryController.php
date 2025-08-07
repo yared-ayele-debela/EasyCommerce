@@ -20,7 +20,7 @@ class HotelCategoryController extends Controller
         $this->middleware('admin.permission:edit_hotel_hotel_category')->only(methods: 'update');
         $this->middleware('admin.permission:delete_hotel_hotel_category')->only('destroy');
     }
-    
+
     public function index()
     {
         $categories = HotelCategory::latest()->paginate(8);
@@ -35,15 +35,14 @@ class HotelCategoryController extends Controller
         ]);
 
         $storedPath = $request->file('image')->store('hotel_categories', 'public');
-        $fullImageUrl = asset('storage/' . $storedPath);
-
         HotelCategory::create([
-            'name' => $request->name,
-            'image' => $fullImageUrl,
+            'name'  => $request->name,
+            'image' => $storedPath, // store only the path, not full URL
         ]);
+        // Log the activity
 
 
-         $currentDateTime = Carbon::now();
+        $currentDateTime = Carbon::now();
         $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
         ActivityLogger::log('Add Hotel Category', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
@@ -53,27 +52,28 @@ class HotelCategoryController extends Controller
 
     public function update(Request $request, $id)
     {
-        $category = HotelCategory::findOrFail($id);
-
         $request->validate([
             'name' => 'required|string',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,svg|max:2048'
         ]);
 
+        $category = HotelCategory::findOrFail($id);
+
         if ($request->hasFile('image')) {
             // Delete old image if it exists
             if ($category->image) {
-                $oldImagePath = str_replace(asset('storage') . '/', '', $category->image);
-                Storage::disk('public')->delete($oldImagePath);
+                Storage::disk('public')->delete($category->image); // Use stored relative path directly
             }
 
-            // Store new image with URL
+            // Store new image without full URL
             $path = $request->file('image')->store('hotel_categories', 'public');
-            $category->image = asset('storage/' . $path);
+            $category->image = $path; // Store only the relative path
         }
 
+        // Update name
         $category->name = $request->name;
         $category->save();
+
 
          $currentDateTime = Carbon::now();
         $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
@@ -87,17 +87,12 @@ class HotelCategoryController extends Controller
     public function destroy($id)
     {
         $category = HotelCategory::findOrFail($id);
-
         if ($category->image) {
-            $imagePath = str_replace(asset('storage') . '/', '', $category->image);
-            if (Storage::disk('public')->exists($imagePath)) {
-                Storage::disk('public')->delete($imagePath);
-            }
+                Storage::disk('public')->delete($category->image); // Use stored relative path directly
         }
-
         $category->delete();
 
-        
+
          $currentDateTime = Carbon::now();
         $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
         ActivityLogger::log( 'Delete Hotel Category', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");

@@ -58,7 +58,7 @@
                                 {!! QrCode::size(100)->generate($orderDetails['order_code']) !!}
                             </div>
                             @endif
-                           
+
                         </div>
                         <div class="col-md-6">
                             <div class="d-flex justify-content-between py-2 border-bottom">
@@ -311,7 +311,7 @@
         <div class="col-md-2 col-6 mb-2">
             <div class="offer-card h-100 text-center">
                 <div class="card-body p-2">
-                    <img src="{{ \App\Models\Product::getProductImage($product['product_id'])??asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" style="max-height: 80px;">
+                    <img src="{{ asset('storage/'.\App\Models\Product::getProductImage($product['product_id']))??asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2" style="max-height: 80px;">
                     <h6>{{ $product['product_name'] }}</h6>
                     <p class="mb-1">
                         Code: {{ $product['product_code'] }}<br>

@@ -89,7 +89,7 @@
         <div class="item mb-2 position-relative">
                    <a href="{{ $banner->link }}" target="_blank" class="text-decoration-none text-white">
                     {{-- @if ($banner && $banner->image && Storage::exists('public/' .$banner->image)) --}}
-                        <img src="{{ $banner->image}}" alt="{{ $banner->link }}" style="border-radius:8px;" class="img-fluid">
+                        <img src="{{ asset('storage/' . $banner->image) }}" alt="{{ $banner->link }}" style="border-radius:8px;" class="img-fluid" loading="lazy">
                     {{-- @else
                         <img src="{{asset('no_banner.png') }}" class="img-fluid" alt="{{ $banner->link }}"> <!-- Optionally display a fallback message or image -->
                     @endif --}}
@@ -115,8 +115,8 @@
             <div class="item mb-2">
                 <div class="category-item">
                     <a href="{{ url('hotel/categories/'.$category->id) }}">
-                        <img src="{{ $category->image }}" class="p-2 shadow restaurant-category-image" style="border:4px solid rgb(162, 159, 159);"  alt="{{ $category->name }}">
-                        <p class="text-dark text-center">{{ $category->name }}</p>
+                        <img src="{{ asset('storage/' . $category->image) ?? asset('restaurant_frontend/default-image.png') }}" class="p-2 shadow restaurant-category-image" style="border:4px solid rgb(162, 159, 159);"  alt="{{ $category->name??'' }}" loading="lazy">
+                        <p class="text-dark text-center">{{ $category->name??'' }}</p>
                     </a>
                 </div>
             </div>
@@ -143,7 +143,7 @@
                 <div class="offer-card h-100">
                     <a href="{{ url('hotel/'.$hotel->id.'/detail') }}">
                         @if($hotel->banner_image)
-                        <img class="card-img-top img-fluid" src="{{ $hotel->banner_image }}" alt="{{ $hotel->name }}" style="height: 200px; object-fit: cover;">
+                        <img class="card-img-top img-fluid" src="{{ asset('storage/' . $hotel->banner_image) }}" alt="{{ $hotel->name }}" style="height: 200px; object-fit: cover;" loading="lazy">
                         @else
                         <img class="card-img-top img-fluid" src="{{ asset('restaurant_frontend/default-image.png') }}" alt="{{ $hotel->name }}" style="height: 200px; object-fit: cover;">
                         @endif
@@ -172,7 +172,7 @@
             <div class="col-12 col-md-12">
             <div class="card border-0 rounded-3 shadow-sm overflow-hidden">
                 <a href="{{ $after_discount_hotels->adv_links??'' }}" target="_blank">
-                <img src="{{ $after_discount_hotels->image }}"
+                <img src="{{ asset('storage/' . $after_discount_hotels->image) }}"
                     alt="{{ $after_discount_hotels->title??'' }}"
                     class="img-fluid w-100 d-block" style="max-height: 250px; ">
                 </a>
@@ -205,7 +205,7 @@
             <div class="offer-card h-100">
                 <a href="{{ url('hotel/'.$hotel->id.'/detail') }}">
                     @if($hotel->banner_image)
-                    <img class="card-img-top img-fluid" src="{{$hotel->banner_image}}" alt="{{ $hotel->name }}" style="height: 200px; object-fit: cover;">
+                    <img class="card-img-top img-fluid" src="{{ asset('storage/' . $hotel->banner_image) }}" alt="{{ $hotel->name }}" style="height: 200px; object-fit: cover;" loading="lazy">
                     @else
                     <img class="card-img-top img-fluid" src="{{ asset('restaurant_frontend/default-image.png') }}" alt="{{ $hotel->name }}" style="height: 200px; object-fit: cover;">
                     @endif
@@ -234,7 +234,7 @@
         <div class="col-12 col-md-12">
         <div class="card border-0 rounded-3 shadow-sm overflow-hidden">
             <a href="{{ $after_latest_hotels->adv_links??'' }}" target="_blank">
-            <img src="{{ $after_latest_hotels->image }}"
+            <img src="{{ asset('storage/' . $after_latest_hotels->image) }}"
                 alt="{{ $after_latest_hotels->title??'' }}"
                 class="img-fluid w-100 d-block" style="max-height: 250px; ">
             </a>
@@ -263,7 +263,7 @@
             <div class="offer-card h-100">
                 @if($room->image)
                 <a href="{{ url('hotel/room/'.$room->id.'/detail') }}">
-                    <img class="card-img-top" src="{{ $room->image }}" alt="{{ $room->room_type }}" style="height:200px; object-fit:cover;">
+                    <img class="card-img-top" src="{{ asset('storage/' . $room->image) }}" loading="lazy" alt="{{ $room->room_type }}" style="height:200px; object-fit:cover;">
                     @else
                     <img class="card-img-top" src="{{ asset('restaurant_frontend/default-image.png')}}" alt="{{ $room->room_type }}">
                     @endif
@@ -297,7 +297,7 @@
             <div class="col-12 col-md-12">
             <div class="card border-0 rounded-3 shadow-sm overflow-hidden">
                 <a href="{{ $after_latest_rooms->adv_links??'' }}" target="_blank">
-                <img src="{{ $after_latest_rooms->image }}"
+                <img src="{{ asset('storage/' . $after_latest_rooms->image) }}"
                     alt="{{ $after_latest_rooms->title??'' }}"
                     class="img-fluid w-100 d-block" style="max-height: 250px; ">
                 </a>
@@ -305,79 +305,14 @@
             </div>
         </div>
     @endif
-
-
 @include('all_frontend_layouts.partial_index')
-
 </div>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(position => {
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
-
-                fetch(`/restaurants/nearby?latitude=${latitude}&longitude=${longitude}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            renderRestaurants(data.restaurants);
-                        }
-                    })
-                    .catch(error => console.error('Error fetching restaurants:', error));
-            }, () => {
-                // alert("Location access denied. Enable GPS to find nearby restaurants.");
-            });
-        } else {
-            // alert("Geolocation is not supported by your browser.");
-        }
-    });
-
-    function renderRestaurants(restaurants) {
-        const container = document.getElementById('restaurant-container');
-        container.innerHTML = '';
-
-        restaurants.forEach(restaurant => {
-            container.innerHTML += `
-                <div class="col-md-6">
-                    <div class="offer-card mb-3 p-2">
-                        <div class="row g-0">
-                            <div class="col-md-6">
-                            <a href="{{ url('restaurant/${restaurant.id}/detail') }}">
-                                <img src="/storage/${restaurant.cover}" class="img-fluid rounded-start" alt="Restaurant">
-                            </a>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="card-body">
-                                    <h5 class="card-title">${restaurant.name}</h5>
-                                    <p class="mb-1">${restaurant.description.substring(0, 50)}...</p>
-                                    <div class="mb-2">
-                                        <span class="badge resturant_badge p-2">Around ${restaurant.distance.toFixed(2)} km</span>
-                                    </div>
-                                    <p class="mb-1"> <i class="bi bi-pin-map-fill text-primary"></i> ${restaurant.address}</p>
-                                    <div class="d-flex justify-content-between align-items-center mt-3">
-                                    <div class="text-warning me-2">
-
-                                        <span><span class="bi bi-star-fill text-primary"></span> ${restaurant.rating}</span>
-                                    </div>
-                                    <div><img src="{{ asset('restaurant_frontend/assets/img/scooter-02.png') }}" style="width: 20%;" alt=""> From ${restaurant.start_from} ETB</div>
-                                </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-    }
-
-</script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(function(position) {
-                const lat = position.coords.latitude;
-                const lng = position.coords.longitude;
+                const lat = localStorage.getItem('user_lat');
+                const lng = localStorage.getItem('user_lng');
 
                 fetch(`/get-nearby-hotels?lat=${lat}&lng=${lng}`)
                     .then(response => response.json())
@@ -385,26 +320,27 @@
                         const container = document.getElementById("nearby-hotels");
                         container.innerHTML = data.html; // server will send pre-rendered HTML
                         $('.owl-carousel.hotel').owlCarousel({
-                            loop: true,
-                            , margin: 30
-                            , nav: true,
-                            navText: [
-                                '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
-                                '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
-                                ]
-                                    , dots: false
-                            responsive: {
-                                0: {
-                                    items: 1
-                                },
-                                600: {
-                                    items: 2
-                                },
-                                1000: {
-                                    items: 4
-                                }
-                            }
-                        });
+    loop: true,
+    margin: 30,
+    nav: true,
+    navText: [
+        '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+        '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ],
+    dots: false,
+    responsive: {
+        0: {
+            items: 1
+        },
+        600: {
+            items: 2
+        },
+        1000: {
+            items: 4
+        }
+    }
+});
+
                 });
             });
         } else {

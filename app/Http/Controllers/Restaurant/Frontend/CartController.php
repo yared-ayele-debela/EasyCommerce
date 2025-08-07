@@ -24,6 +24,24 @@ class CartController extends Controller
         // dd($request->all());
         // $cart = session()->get('cart', []);
 
+         $product = Product::findOrFail($request->product_id);
+         $restaurant = $product->restaurant;
+
+        //  dd($restaurant);
+          $userLat = $request->input('user_lat');
+          $userLng = $request->input('user_lng');
+        //   dd($userLat, $userLng);
+
+            if (!$userLat || !$userLng) {
+                return response()->json(['success' => false, 'message' => 'Location not provided'], 400);
+            }
+
+            $distance = $this->calculateDistance($userLat, $userLng, $restaurant->latitude, $restaurant->longitude);
+
+            if ($distance > $restaurant->delivery_radius) {
+                return response()->json(['success' => false, 'message' => 'You are out of the delivery area'], 403);
+            }
+
         $cartItem=[
             'product_id' => $request->product_id,
             'size' => $request->size? $request->size : '',
@@ -47,6 +65,23 @@ class CartController extends Controller
         return response()->json(['status' => 'success', 'message' => 'Product added to cart!']);
     }
 
+    private function calculateDistance($lat1, $lng1, $lat2, $lng2)
+{
+    $earthRadius = 6371; // km
+
+    $latFrom = deg2rad($lat1);
+    $lonFrom = deg2rad($lng1);
+    $latTo = deg2rad($lat2);
+    $lonTo = deg2rad($lng2);
+
+    $latDelta = $latTo - $latFrom;
+    $lonDelta = $lonTo - $lonFrom;
+
+    $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
+        cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
+
+    return $earthRadius * $angle;
+}
 public function updateCart($key, $action)
 {
     if (Auth::check()) {
@@ -214,7 +249,7 @@ public function removeFromCart($key)
         $couponCode = $request->coupon_code;
         $subtotal = session()->get('order_now_cart_subtotal', 0);
 
-        
+
         if ($subtotal <= 0) {
             return response()->json(['success' => false, 'message' => 'Cart is empty.'], 400);
         }

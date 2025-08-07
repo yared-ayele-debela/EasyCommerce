@@ -2,15 +2,16 @@
 
 <div class="col-md-2 col-6 mb-2 h-100">
     <div class="offer-card position-relative shadow-sm rounded-4 overflow-hidden h-100">
-        @php
+       @php
             $hasStock = $product->quantity > 0;
             $discountedPrice = App\Models\Product::getDiscountPrice($product->id);
-            $hasDiscount = $discountedPrice > 0;
+            $hasDiscount = $discountedPrice < $product->product_price;
             $averageRating = round($product->ratings_avg_rating ?? 0, 1);
             $fullStars = floor($averageRating);
             $halfStar = ($averageRating - $fullStars) >= 0.5;
             $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
         @endphp
+
 
         @if(!$hasStock)
             <span class="badge bg-danger position-absolute top-0 end-0 p-2 m-2" style="z-index: 1100;">Out of Stock</span>
@@ -18,12 +19,13 @@
 
         @if($hasDiscount)
             <span class="badge bg-primary position-absolute top-0 start-0 p-2 m-2" style="z-index: 1100;">
-                -{{ round(100 - ($discountedPrice / $product->product_price) * 100) }}%
+                {{ round(100 - ($discountedPrice / $product->product_price) * 100) }}%
             </span>
         @endif
 
+
         <a href="{{ url('ecommerce/product/' . encrypt($product->id)) }}">
-            <img src="{{ $product->product_image ?? asset('restaurant_frontend/default-image.png') }}"
+            <img src="{{ asset('storage/' . $product->product_image) ?? asset('restaurant_frontend/default-image.png') }}"
                  class="card-img-top p-3" alt="{{ $product->product_name }}" loading="lazy">
         </a>
 

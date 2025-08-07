@@ -47,7 +47,7 @@
         @foreach($room->images as $img)
         <div class="col-md-4">
             <div class="card border-0 shadow-sm rounded-3 h-100">
-                <img src="{{ $img->photo_url }}" class="card-img-top rounded-3" alt="Room Image">
+                <img src="{{ asset('storage/' . $img->photo_url) }}" class="card-img-top rounded-3" alt="Room Image">
             </div>
         </div>
         @endforeach
@@ -84,17 +84,19 @@
             @foreach ($room->amenities as $am)
                 <div class="col-4 col-sm-4 col-md-3 col-lg-1 mb-2">
                     <div class="offer-card p-2 text-center border rounded shadow-sm amenity-box h-100">
-                        @php $icon = optional($am)->icon; @endphp
+                       @php
+                            $iconPath = $am->icon ? asset('storage/' . $am->icon) : asset('restaurant_frontend/default-image.png');
+                        @endphp
+
                         <img
-                            src="{{ $icon
-                                ? $icon
-                                : asset('restaurant_frontend/default-image.png')
-                            }}"
+                            src="{{ $iconPath }}"
                             alt="{{ $am->name }}"
                             width="16"
                             height="16"
                             class="my-2"
-                        >
+                            loading="lazy"
+                        />
+
                         <p class="mb-0 small fw-semibold text-dark" style="font-size: 11px;">{{ $am->name }}</p>
                     </div>
                 </div>

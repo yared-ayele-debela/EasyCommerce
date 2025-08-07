@@ -42,17 +42,18 @@ class SliderBannerController extends Controller
         $imagePath = null;
 
         if ($request->hasFile('image')) {
-            $storedPath = $request->file('image')->store('banners', 'public');
-            $imagePath = asset('storage/' . $storedPath); // Full URL like https://yourdomain.com/storage/banners/filename.jpg
+            // Store and get only the relative path like 'banners/filename.jpg'
+            $imagePath = $request->file('image')->store('banners', 'public');
         }
 
         SliderBanner::create([
             'title'       => $request->title,
             'description' => $request->description,
             'link'        => $request->link,
-            'image'       => $imagePath,
+            'image'       => $imagePath, // Store relative path only
             'is_active'   => $request->is_active
         ]);
+        // Convert to full URL for display
 
           $currentDateTime = Carbon::now();
         $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
@@ -74,17 +75,18 @@ class SliderBannerController extends Controller
             'is_active'   => 'required|boolean'
         ]);
 
-        if ($request->hasFile('image')) {
-            // Delete old image (handle both full URL or relative path)
-            if ($sliderBanner->image) {
-                $oldPath = str_replace(asset('storage') . '/', '', $sliderBanner->image);
-                Storage::disk('public')->delete($oldPath);
-            }
 
-            // Store new image
-            $storedPath = $request->file('image')->store('banners', 'public');
-            $sliderBanner->image = asset('storage/' . $storedPath); // Save full URL
-        }
+if ($request->hasFile('image')) {
+    // Delete old image if it exists
+    if ($sliderBanner->image) {
+        $oldPath = $sliderBanner->image; // This should be something like 'banners/oldfile.jpg'
+        Storage::disk('public')->delete($oldPath);
+    }
+
+    // Store new image and keep only relative path
+    $storedPath = $request->file('image')->store('banners', 'public');
+    $sliderBanner->image = $storedPath;
+}
 
 
         $sliderBanner->update([
@@ -108,10 +110,11 @@ class SliderBannerController extends Controller
     public function destroy(SliderBanner $sliderBanner)
     {
         // Delete the image
+       
         if ($sliderBanner->image) {
-            $imagePath = str_replace(asset('storage') . '/', '', $sliderBanner->image);
-            Storage::disk('public')->delete($imagePath);
-        }
+                $oldPath = $sliderBanner->image; // This should be something like 'banners/oldfile.jpg'
+                Storage::disk('public')->delete($oldPath);
+            }
 
         $sliderBanner->delete();
 

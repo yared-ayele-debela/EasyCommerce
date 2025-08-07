@@ -4,11 +4,6 @@
 
     $off = $product->price - $product->getFinalPrice();
 
-    $parsedPath = $product->image ? parse_url($product->image, PHP_URL_PATH) : null;
-    $relativePath = $parsedPath ? str_replace('storage/', '', ltrim($parsedPath, '/')) : null;
-    $imageSrc = ($relativePath && Storage::disk('public')->exists($relativePath))
-        ? $product->image
-        : asset('restaurant_frontend/default-image.png');
 
     $restLat = $product->restaurant->latitude;
     $restLng = $product->restaurant->longitude;
@@ -27,7 +22,7 @@
                     <strong>{{ $off }} ETB OFF</strong>
                 </div>
             @endif
-            <img src="{{ $imageSrc }}" class="img-fluid mb-2 restaurant-product-image" alt="{{ $product->name }}">
+            <img src="{{ asset('storage/' . $product->image) ?? asset('restaurant_frontend/default-image.png') }}"  class="img-fluid mb-2 restaurant-product-image" alt="{{ $product->name }}" loading="lazy">
             <h6 class="text-dark">{{ $product->name }}</h6>
             @if($product->getFinalPrice() < $product->price)
                 <span class="price">{{ $product->getFinalPrice() }} ETB</span>

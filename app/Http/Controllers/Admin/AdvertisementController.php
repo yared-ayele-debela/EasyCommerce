@@ -90,9 +90,13 @@ class AdvertisementController extends Controller
                 $extension = $file->getClientOriginalExtension();
                 $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                $file->storeAs('public/adver', $fileNameToStore);
-                $adver->image = asset('storage/adver/' . $fileNameToStore); // Store full URL
+                // Store in storage/app/public/adver
+                $file->storeAs('adver', $fileNameToStore, 'public');
+
+                // Save only the relative path, not the full URL
+                $adver->image = 'adver/' . $fileNameToStore;
             }
+            // Save the advertisement
 
             $adver->save();
 
@@ -163,34 +167,24 @@ class AdvertisementController extends Controller
             $adver->description = $request->input('description');
             $adver->adv_links = $request->input('adver_links');
 
-            if ($request->hasFile('image')) {
+           if ($request->hasFile('image')) {
                 $file = $request->file('image');
-
-                // Check if the file is valid
-                if (!$file->isValid()) {
-                    throw new \Exception('Invalid file upload.');
+                // Delete old image if it exists
+                if ($adver->image && Storage::disk('public')->exists($adver->image)) {
+                    Storage::disk('public')->delete($adver->image);
                 }
 
-                // If there's an existing image, delete it
-                if ($adver->image) {
-                    // Extract the file name from the URL
-                    $oldImagePath = str_replace(asset('storage'), 'public', $adver->image);
-
-                    // Delete the old image from storage
-                    Storage::delete($oldImagePath);
-                }
-
-                // Generate a new file name
+                // Generate a unique filename
                 $fileNameWithExt = $file->getClientOriginalName();
                 $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
                 $extension = $file->getClientOriginalExtension();
                 $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                // Store the new file
-                $file->storeAs('public/adver', $fileNameToStore);
+                // Store the new image in 'public/adver'
+                $file->storeAs('adver', $fileNameToStore, 'public');
 
-                // Save the full URL of the new image
-                $adver->image = asset('storage/adver/' . $fileNameToStore);
+                // Save only the relative path (not full URL)
+                $adver->image = 'adver/' . $fileNameToStore;
             }
 
 
@@ -263,8 +257,8 @@ class AdvertisementController extends Controller
             }
 
             $adver = Advertisement::find($id);
-            if ($adver->image) {
-                Storage::delete('public/category/' . $adver->image);
+            if ($adver->image && Storage::disk('public')->exists($adver->image)) {
+                    Storage::disk('public')->delete($adver->image);
             }
             $adver->delete();
 

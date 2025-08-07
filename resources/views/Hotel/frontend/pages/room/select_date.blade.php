@@ -146,7 +146,7 @@
 
     <div class="offer-card shadow-sm mb-4">
         @if($room->image)
-        <img src="{{ $room->image }}" class="w-100 rounded-img" height="400" alt="Room">
+        <img src="{{ asset('storage/' . $room->image) }}" class="w-100 rounded-img" loading="lazy" height="400" alt="Room">
         @endif
         <div class="card-body">
             <div class="d-md-flex justify-content-between">

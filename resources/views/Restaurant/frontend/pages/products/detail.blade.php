@@ -50,14 +50,14 @@
                 <div class="image-container position-relative">
                     <img src="{{ asset('restaurant_frontend/assets/img/product_background.png') }}" alt="Background" class="background-image img-fluid">
                     <img id="mainProductImage"
-                         src="{{ $product->image ? $product->image : asset('restaurant_frontend/default-image.png') }}"
+                         src="{{ asset('storage/' . $product->image) ?? asset('restaurant_frontend/default-image.png') }}"
                          alt="Product"
                          class="product-image img-fluid position-absolute top-50 start-50 translate-middle">
                 </div>
             </div>
             <div class="d-flex justify-content-center mt-3">
                 @foreach($product->images as $key => $image)
-                <img src="{{ $image->image_path}}" width="50" class="thumbnail mx-2 p-2 border rounded" alt="Product Image" style="cursor: pointer;">
+                <img src="{{ asset('storage/' . $image->image_path) }}" width="50" class="thumbnail mx-2 p-2 border rounded" alt="Product Image" style="cursor: pointer;">
                 @endforeach
             </div>
             @if($product->sizes->count() > 0)
@@ -116,7 +116,7 @@
                     <p class="card-text text-dark">{{ $product->description }}</p>
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <div class="">
-                            <button class="btn bg-primary text-white rounded shadow" id="addToCart" data-product-id="{{ $product->id }}">Add To Cart</button>
+                            <button class="btn bg-primary text-white rounded shadow d-block" id="addToCart" data-product-id="{{ $product->id }}">Add To Cart</button>
                             @php
                             $isInWishlist = Auth::check() && \App\Models\Restaurant\Wishlist::where('user_id', Auth::id())->where('product_id', $product->id)->exists();
                             @endphp
@@ -124,19 +124,7 @@
                                 <i class=" bi text-success bi-{{ $isInWishlist ? 'heart-fill' : 'heart' }}"></i>
                             </button>
                         </div>
-                    {{-- @if($distance <= $product->restaurant->delivery_radius)
-                        <form action="{{ route('restaurant.checkout.orderNow') }}" method="POST">
-                            @csrf
-                            <input type="hidden" id="p_product_id" name="product_id" value="{{ $product->id }}">
-                            <input type="hidden" id="p_size" name="size" value="">
-                            <input type="hidden" id="p_qty" name="qty" value="">
-                            <input type="hidden" id="p_price" name="price" value="">
 
-                            <button class="btn shadow btn-primary">
-                                <i class=" bi bi-shop-window"></i> Order Now
-                            </button>
-                        </form>
-                    @endif --}}
                     </div>
                     <div id="location-check"
                         data-restaurant-lat="{{ $product->restaurant->latitude }}"
@@ -150,7 +138,9 @@
                             <input type="hidden" id="p_size" name="size" value="">
                             <input type="hidden" id="p_qty" name="qty" value="">
                             <input type="hidden" id="p_price" name="price" value="">
-
+                            <input type="hidden" name="user_lat" id="user_lat">
+                            <input type="hidden" name="user_lng" id="user_lng">
+                            <input type="hidden" name="restaurant_id" value="{{ $product->restaurant->id }}">
                             <button class="btn shadow btn-primary">
                                 <i class="bi bi-shop-window"></i> Order Now
                             </button>
@@ -217,18 +207,29 @@
         </div>
     </div>
 </div>
-
 <script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("orderForm");
+
+    if (form) {
+        const lat = localStorage.getItem("user_lat");
+        const lng = localStorage.getItem("user_lng");
+
+        if (lat && lng) {
+            document.getElementById("user_lat").value = lat;
+            document.getElementById("user_lng").value = lng;
+        }
+    }
+});
 function haversineDistance(lat1, lon1, lat2, lon2) {
     const toRad = deg => deg * Math.PI / 180;
     const R = 6371;
     const dLat = toRad(lat2 - lat1);
     const dLon = toRad(lon2 - lon1);
-    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    const a = Math.sin(dLat / 2) ** 2 +
               Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-              Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
+              Math.sin(dLon / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -243,17 +244,34 @@ document.addEventListener("DOMContentLoaded", function () {
     const alertBox = document.getElementById("outOfRangeAlert");
     const distanceSpan = document.getElementById("distanceKm");
     const disabledBtn = document.getElementById("disabledOrderBtn");
+    const addToCartBtn = document.getElementById("addToCart");
 
-    function showForm() {
+    function showAvailableActions() {
         orderForm.classList.remove("d-none");
+        addToCartBtn.classList.remove("d-none");
     }
 
-    function showWarning(distance) {
+    function showOutOfRangeWarning(distance) {
         distanceSpan.innerText = distance.toFixed(1);
         alertBox.classList.remove("d-none");
         disabledBtn.classList.remove("d-none");
+
+        // Hide and disable real buttons for security
+        orderForm.classList.add("d-none");
+        addToCartBtn.classList.add("d-none");
+        addToCartBtn.disabled = true;
     }
 
+    function fallbackOutOfRange() {
+        distanceSpan.innerText = "unknown";
+        alertBox.classList.remove("d-none");
+        disabledBtn.classList.remove("d-none");
+        orderForm.classList.add("d-none");
+        addToCartBtn.classList.add("d-none");
+        addToCartBtn.disabled = true;
+    }
+
+    // Use user's stored or real-time geolocation
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function (position) {
             const userLat = position.coords.latitude;
@@ -262,21 +280,22 @@ document.addEventListener("DOMContentLoaded", function () {
             const distance = haversineDistance(userLat, userLng, restLat, restLng);
 
             if (distance <= deliveryRadius) {
-                showForm();
+                showAvailableActions();
             } else {
-                showWarning(distance);
+                showOutOfRangeWarning(distance);
             }
 
         }, function (err) {
-            console.warn("Geolocation error:", err);
-            showWarning(999); // fallback
+            console.warn("Geolocation error:", err.message);
+            fallbackOutOfRange();
         });
     } else {
         console.warn("Geolocation not supported.");
-        showWarning(999); // fallback
+        fallbackOutOfRange();
     }
 });
 </script>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -298,6 +317,8 @@ document.addEventListener("DOMContentLoaded", function () {
             },
             body: JSON.stringify({
                 product_id: productId,
+                user_lat: localStorage.getItem('user_lat'),
+                user_lng: localStorage.getItem('user_lng'),
                 size: size,
                 price: price,
                 quantity: quantity

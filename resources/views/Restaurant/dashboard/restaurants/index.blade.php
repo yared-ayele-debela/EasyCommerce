@@ -24,7 +24,12 @@ $user = Auth::guard('admin')->user();
             <h2>Restaurants</h2>
             @adminCan('add_restaurant_restaurant')
             <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRestaurantModal">Add Restaurant</a>
-@endadminCan
+             @endadminCan
+             @session('success')
+            <div class="alert alert-success mt-2">
+                {{ session('success') }}
+            </div>
+             @endsession
         </div>
         <div class="card-body">
 
@@ -60,8 +65,8 @@ $user = Auth::guard('admin')->user();
                         <td><div class="btn btn-sm btn-info">
                             {{ $restaurant->delivery_radius }} KM
                             </div></td>
-                        <td><img src="{{ $restaurant->logo }}" width="50" /></td>
-                        <td><img src="{{ $restaurant->cover }}" width="50" /></td>
+                        <td><img src="{{ asset('storage/' . $restaurant->logo) }}" width="50" /></td>
+                        <td><img src="{{ asset('storage/' . $restaurant->cover) }}" width="50" /></td>
                         <td>
                            <!-- Button trigger modal -->
                            <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#restaurant{{ $restaurant->id }}">
@@ -515,7 +520,7 @@ $user = Auth::guard('admin')->user();
                                 <label for="logo" class="form-label">Restaurant Logo</label>
                                 <input type="file" id="logo" name="logo" class="form-control">
                                 @if($restaurant->logo)
-                                <img src="{{ $restaurant->logo }}" width="50" />
+                                <img src="{{ asset('storage/' . $restaurant->logo) }}" width="50" />
                                 @endif
                                 @error('logo')
                                     <small class="text-danger">{{ $message }}</small>
@@ -528,7 +533,7 @@ $user = Auth::guard('admin')->user();
                                 <label for="cover_image" class="form-label">Restaurant Cover Image</label>
                                 <input type="file" id="cover_image" name="cover_image" class="form-control">
                                 @if($restaurant->cover_image)
-                                <img src="{{$restaurant->cover_image}}" width="50" />
+                                <img src="{{ asset('storage/' . $restaurant->logo) }}" width="50" />
                                 @endif
                                 @error('cover_image')
                                     <small class="text-danger">{{ $message }}</small>

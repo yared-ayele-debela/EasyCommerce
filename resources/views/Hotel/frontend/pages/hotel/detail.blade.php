@@ -10,7 +10,7 @@
     <div class="row">
         <div class="col-md-6">
             @if($hotel->banner_image)
-                <img id="mainImage"   class="img-fluid rounded" src="{{ $hotel->banner_image }}" alt="{{ $hotel->name }}" >
+                <img id="mainImage"   class="img-fluid rounded" src="{{ asset('storage/' . $hotel->banner_image) }}" loading="lazy" alt="{{ $hotel->name }}" >
             @else
                 <img  class="img-fluid rounded" src="{{ asset('restaurant_frontend/default-image.png') }}" alt="{{ $hotel->name }}" >
             @endif
@@ -78,62 +78,11 @@
         <div class="row d-flex photo-gallery">
             @foreach($hotel->photos as $photo)
             <div class="col-3 col-sm-4 col-md-1 mb-1">
-                <img loading="lazy" src="{{ $photo->photo_url }}" alt="{{ $hotel->name }}" class="gallery-image img-fluid rounded rounded-2">
+                <img loading="lazy" src="{{ asset('storage/' . $photo->photo_url) }}" alt="{{ $hotel->name }}" class="gallery-image img-fluid rounded rounded-2">
             </div>
             @endforeach
         </div>
 
-        {{-- <div class="row pt-4">
-            <h5 class="text-dark">Amenities</h5>
-            <div class=" col-3 col-sm-4 col-md-1 text-center ">
-                <img src="assets/hotel/ic_bedroom.png" class="text-center" alt="">
-                <p class="text-dark text-center">1 Bedroom</p>
-            </div>
-            <div class=" col-3 col-sm-4 col-md-1 text-center ">
-                <img src="assets/hotel/ic_bedroom.png" class="text-center" alt="">
-                <p class="text-dark text-center">1 Bedroom</p>
-            </div>
-            <div class=" col-3 col-sm-4 col-md-1 text-center ">
-                <img src="assets/hotel/ic_bedroom.png" class="text-center" alt="">
-                <p class="text-dark text-center">1 Bedroom</p>
-            </div>
-            <div class=" col-3 col-sm-4 col-md-1 text-center ">
-                <img src="assets/hotel/ic_bedroom.png" class="text-center" alt="">
-                <p class="text-dark text-center">1 Bedroom</p>
-            </div>
-            <div class=" col-3 col-sm-4 col-md-1 text-center ">
-                <img src="assets/hotel/ic_bedroom.png" class="text-center" alt="">
-                <p class="text-dark text-center">1 Bedroom</p>
-            </div>
-            <div class=" col-3 col-sm-4 col-md-1 text-center ">
-                <img src="assets/hotel/ic_bedroom.png" class="text-center" alt="">
-                <p class="text-dark text-center">1 Bedroom</p>
-            </div>
-            <div class=" col-3 col-sm-4 col-md-1 text-center ">
-                <img src="assets/hotel/ic_bedroom.png" class="text-center" alt="">
-                <p class="text-dark text-center">1 Bedroom</p>
-            </div>
-            <div class=" col-3 col-sm-4 col-md-1 text-center ">
-                <img src="assets/hotel/ic_bedroom.png" class="text-center" alt="">
-                <p class="text-dark text-center">1 Bedroom</p>
-            </div>
-            <div class=" col-3 col-sm-4 col-md-1 text-center ">
-                <img src="assets/hotel/ic_bedroom.png" class="text-center" alt="">
-                <p class="text-dark text-center">1 Bedroom</p>
-            </div>
-            <div class=" col-3 col-sm-4 col-md-1 text-center ">
-                <img src="assets/hotel/ic_bedroom.png" class="text-center" alt="">
-                <p class="text-dark text-center">1 Bedroom</p>
-            </div>
-            <div class=" col-3 col-sm-4 col-md-1 text-center ">
-                <img src="assets/hotel/ic_bedroom.png" class="text-center" alt="">
-                <p class="text-dark text-center">1 Bedroom</p>
-            </div>
-            <div class=" col-3 col-sm-4 col-md-1 text-center ">
-                <img src="assets/hotel/ic_bedroom.png" class="text-center" alt="">
-                <p class="text-dark text-center">1 Bedroom</p>
-            </div>
-        </div> --}}
 
         <!-- Navigation -->
         <div class="row d-flex justify-content-center align-items-center py-4">
@@ -159,8 +108,8 @@
                     <div class="offer-card h-100">
                         @if($room->image)
                             <a href="{{ url('hotel/room/'.$room->id.'/detail') }}">
-                                <img class="card-img-top" src="{{$room->image }}"
-                                    alt="{{ $room->room_type }}">
+                                <img class="card-img-top" src="{{ asset('storage/' . $room->image) }}"
+                                    alt="{{ $room->room_type }}" loading="lazy">
                         @else
                             <img class="card-img-top" src="{{ asset('restaurant_frontend/default-image.png')}}"
                                 alt="{{ $room->room_type }}">

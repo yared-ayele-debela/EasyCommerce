@@ -104,14 +104,19 @@ class AdminController extends Controller
 
             $admin = Auth::guard('admin')->user();
 
-            if ($admin->type === 'Super Admin') {
+            $adminType = Auth::guard('admin')->user()->type;
+
+            $role=Roles::where('name',$adminType)->first();
+
+            $group = $role->group ?? null;
+
+            if ($group === "general" || $group === "ecommerce") {
                 return view('admin.auth.updateadmindetails', compact('adminDetails'));
-            } elseif ($admin->type === 'Hotel Manager') {
+            } elseif ($group === 'hotel') {
                 return view('Hotel.dashboard.admin.updateadmindetails', compact('adminDetails'));
-            } elseif ($admin->type === 'Restaurant Manager') {
+            } elseif ($admin->type === 'restaurant') {
                 return view('Restaurant.dashboard.admin.updateadmindetails', compact('adminDetails'));
             }
-
             return view('admin.auth.updateadmindetails', compact('adminDetails', 'appsettings', 'cms_pages'));
         } catch (\Exception $e) {
             Alert::toast('Error', 'Something is wrong!', 'error');
@@ -140,20 +145,23 @@ class AdminController extends Controller
             if ($request->hasFile('image')) {
                 // Delete old image if not default
                 if (!empty($admin->image) && $admin->image !== 'noimage.jpg') {
-                    Storage::delete('public/admin/image/' . basename($admin->image)); // handles full URLs
+                    // If stored as full URL previously, convert to relative path
+                    $oldPath = str_replace(asset('storage') . '/', '', $admin->image);
+                    Storage::disk('public')->delete($oldPath);
                 }
 
-                // Generate new file name
                 $file = $request->file('image');
                 $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
                 $extension = $file->getClientOriginalExtension();
                 $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
                 // Store image
-                $file->storeAs('public/admin/image', $fileNameToStore);
+                $file->storeAs('admin/image', $fileNameToStore, 'public');
 
-                // Save full URL
-                $admin->image = asset('storage/admin/image/' . $fileNameToStore);
+                // ✅ Save only relative path
+                $admin->image = 'admin/image/' . $fileNameToStore;
+
+                $admin->save();
             }
 
 
@@ -291,34 +299,29 @@ class AdminController extends Controller
             }
             $data = $request->all();
             // dd($data);
-            if ($request->hasFile('vendor_image')) {
-                $admin = Auth::guard('admin')->user();
+                    if ($request->hasFile('vendor_image')) {
+            $admin = Auth::guard('admin')->user();
 
-                // Delete old image if not default
-                if (!empty($admin->image) && $admin->image !== 'noimage.jpg') {
-                    Storage::delete('public/admin/image/' . $admin->image);
-                }
-
-                // Get uploaded file
-                $file = $request->file('vendor_image');
-                $fileNameWithExt = $file->getClientOriginalName();
-                $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                $extension = $file->getClientOriginalExtension();
-                $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
-
-                // Store the file
-                $file->storeAs('public/admin/image', $fileNameToStore);
-
-                // Option 1: Store just filename
-                // Admin::where('id', $admin->id)->update([
-                //     'image' => $fileNameToStore
-                // ]);
-
-                // ✅ Option 2: Store full image URL
-                Admin::where('id', $admin->id)->update([
-                    'image' => asset('storage/admin/image/' . $fileNameToStore)
-                ]);
+            // Delete old image if not default
+            if (!empty($admin->image) && $admin->image !== 'noimage.jpg' && Storage::disk('public')->exists($admin->image)) {
+                Storage::disk('public')->delete($admin->image);
             }
+
+            // Get uploaded file
+            $file = $request->file('vendor_image');
+            $fileNameWithExt = $file->getClientOriginalName();
+            $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
+
+            // Store the file in 'admin/image' folder
+            $file->storeAs('admin/image', $fileNameToStore, 'public');
+
+            // ✅ Save only the relative path (not full URL)
+            Admin::where('id', $admin->id)->update([
+                'image' => 'admin/image/' . $fileNameToStore
+            ]);
+        }
 
 
             Admin::where('id', Auth::guard('admin')->user()->id)->update([
@@ -412,38 +415,38 @@ class AdminController extends Controller
         $addressProofImage = '';
         $shopImage = '';
 
-        // Address Proof Image Handling
-        // Address Proof Image
+       // Address Proof Image
         if ($request->hasFile('address_proof_image')) {
-            if ($vendor && $vendor->address_proof_image) {
-                Storage::delete('public/admin/image/' . $vendor->address_proof_image);
+            if ($vendor && $vendor->address_proof_image && Storage::disk('public')->exists($vendor->address_proof_image)) {
+                Storage::disk('public')->delete($vendor->address_proof_image);
             }
 
             $file = $request->file('address_proof_image');
             $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->storeAs('public/admin/image', $fileName);
+            $file->storeAs('admin/image', $fileName, 'public');
 
-            // Save full public URL
-            $addressProofImage = Storage::url('admin/image/' . $fileName);
+            // ✅ Save only relative path
+            $addressProofImage = 'admin/image/' . $fileName;
         } elseif (!empty($data['current_address_proof'])) {
             $addressProofImage = $data['current_address_proof'];
         }
 
         // Shop Image
         if ($request->hasFile('shop_image')) {
-            if ($vendor && $vendor->shop_image) {
-                Storage::delete('public/admin/image/' . $vendor->shop_image);
+            if ($vendor && $vendor->shop_image && Storage::disk('public')->exists($vendor->shop_image)) {
+                Storage::disk('public')->delete($vendor->shop_image);
             }
 
             $file = $request->file('shop_image');
             $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->storeAs('public/admin/image', $fileName);
+            $file->storeAs('admin/image', $fileName, 'public');
 
-            // Save full public URL
-            $shopImage = Storage::url('admin/image/' . $fileName);
+            // ✅ Save only relative path
+            $shopImage = 'admin/image/' . $fileName;
         } elseif (!empty($data['current_shop_image'])) {
             $shopImage = $data['current_shop_image'];
         }
+
 
 
         // Prepare common data

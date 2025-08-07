@@ -48,7 +48,7 @@ $user = Auth::guard('admin')->user();
                         <td>{{ $parentcategory }}</td>
                         <td>{{ $category['url'] }}</td>
 
-                        <td><img src="{{ $category['image']}}" style="width: 25px; height:25px;" alt=""></td>
+                        <td><img src="{{ asset('storage/' . $category['image']) }}" style="width: 25px; height:25px;" alt=""></td>
                         <td>
                             @if ($user && $user->hasPermissionByRole('edit_category'))
                             @if($category['status']==1)

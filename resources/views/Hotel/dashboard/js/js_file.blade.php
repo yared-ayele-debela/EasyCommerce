@@ -21,6 +21,20 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.print.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('.select-delivery-zone').each(function () {
+            const modalId = $(this).data('modal'); // e.g., "#reservationModal23"
+            $(this).select2({
+                placeholder: 'Select a customer',
+                allowClear: true,
+                dropdownParent: $(modalId) // set the correct modal as parent
+            });
+        });
+    });
+</script>
 
 <script>
     $('#datatables').DataTable({

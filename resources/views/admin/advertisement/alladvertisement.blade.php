@@ -41,7 +41,7 @@ $user = Auth::guard('admin')->user();
                         <td><div class="btn btn-sm btn-outline-secondary">{{ $ad['type'] }}</div></td>
                         <td>{{ $ad['position'] }}</td>
                         <td>{{ $ad['title'] }}</td>
-                        <td><img src="{{ $ad['image'] }}" style="width: 80px; height:40px; box-shadow:1px 1px 2px 1px gray" alt=""></td>
+                        <td><img src="{{ asset('storage/' . $ad['image']) }}" style="width: 80px; height:40px; box-shadow:1px 1px 2px 1px gray" alt=""></td>
                         <td>{{ $ad['description'] }}</td>
                         <td>{{ \Illuminate\Support\Str::limit($ad['adv_links'], 20) }}</td>
                         <td>

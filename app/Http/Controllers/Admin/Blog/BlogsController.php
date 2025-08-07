@@ -74,18 +74,19 @@ class BlogsController extends Controller
             // dd($request->all());
             $blog = new Blogs();
 
-            if ($request->hasFile('image')) {
-                $fileNameWithExt = $request->file('image')->getClientOriginalName();
-                $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                $extension = $request->file('image')->getClientOriginalExtension();
+           if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension = $file->getClientOriginalExtension();
                 $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                // Store the file in the public disk
-                $path = $request->file('image')->storeAs('blog', $fileNameToStore, 'public');
+                // Store the file in public/storage/blog
+                $file->storeAs('blog', $fileNameToStore, 'public');
 
-                // Save the full URL to the image
-                $blog->image = asset('storage/' . $path);
+                // Save only the relative path
+                $blog->image = 'blog/' . $fileNameToStore;
             }
+
 
             $blog->title       = $request->input('title');
             $blog->category_id = $request->input('category_id');
@@ -149,28 +150,24 @@ class BlogsController extends Controller
             $blog = Blogs::find($request->input('id'));
 
             if ($request->hasFile('image')) {
-                // Check if a previous image exists and delete it
-                if ($blog->image) {
-                    // Extract the relative path from the full URL
-                    $imagePath = str_replace(asset('storage') . '/', '', $blog->image);
+    // Delete previous image if it exists
+    if ($blog->image) {
+        // No need to extract from URL if you only store relative path
+        Storage::disk('public')->delete($blog->image);
+    }
 
-                    // Delete the image using the relative path
-                    Storage::disk('public')->delete($imagePath);
-                }
+    // Generate unique filename
+    $file = $request->file('image');
+    $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+    $extension = $file->getClientOriginalExtension();
+    $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
+    // Store image
+    $file->storeAs('blog', $fileNameToStore, 'public');
 
-                // Get file name with extension
-                $fileNameWithExt = $request->file('image')->getClientOriginalName();
-                $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                $extension = $request->file('image')->getClientOriginalExtension();
-                $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
-
-                // Store image and get the path
-                $path = $request->file('image')->storeAs('blog', $fileNameToStore, 'public');
-
-                // Save the full URL to the image in the database
-                $blog->image = asset('storage/' . $path);
-            }
+    // Save relative path only
+    $blog->image = 'blog/' . $fileNameToStore;
+}
 
             $blog->title = $request->input('title');
             $blog->category_id = $request->input('category_id');
@@ -206,13 +203,9 @@ class BlogsController extends Controller
         $blog = Blogs::find($id);
 
         // Check if the blog has an image and delete it
-        if ($blog->image) {
-            // Extract the relative path from the full URL
-            $imagePath = str_replace(asset('storage') . '/', '', $blog->image);
-
-            // Delete the image using the relative path
-            Storage::disk('public')->delete($imagePath);
-        }
+        if ($blog->image && Storage::disk('public')->exists($blog->image)) {
+        Storage::disk('public')->delete($blog->image);
+    }
 
         // Delete the blog
         $blog->delete();

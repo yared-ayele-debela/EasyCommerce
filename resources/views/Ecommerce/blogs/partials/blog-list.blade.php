@@ -1,7 +1,7 @@
 @if(count($blogs) > 0)
     @foreach ($blogs as $blog)
         <div class="offer-card mb-4 shadow-sm">
-            <img src="{{ $blog['image'] }}" class="card-img-top" alt="{{ $blog->title }}">
+            <img src="{{ asset('storage/' . $blog->image) }}" class="card-img-top" alt="{{ $blog->title }}">
             <div class="card-body">
                 <h5 class="card-title">
                     <a href="{{ url('blogs/details/' . encrypt($blog->id)) }}" class="text-decoration-none text-dark">{{ $blog->title }}</a>

@@ -40,7 +40,7 @@
         @foreach($banners as $banner)
         <tr>
             <td>{{ $banner->id }}</td>
-            <td><img src="{{ $banner->image }}" width="100"></td>
+            <td><img src="{{ asset('storage/' . $banner->image) }}" width="100"></td>
             <td>{{ $banner->title }}</td>
             <td>
                 <div class="btn btn-sm {{ $banner->is_active ? 'btn-success' : 'btn-warning' }}">

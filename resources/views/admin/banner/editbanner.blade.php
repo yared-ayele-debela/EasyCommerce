@@ -61,13 +61,13 @@ $user = Auth::guard('admin')->user();
                              <input type="file" class="form-control" name="image">
                              <small class="text-sm text-danger ">Recomended size for silder (683px x 407px)</small><br>
                              <small class="text-sm text-danger">Recomended size for fixed(1280px x 250px)</small>
-                        
+
                              @error('image')
                              <small class=" text-danger">{{ $message }}</small>
                              @enderror
                              <div class="pt-3">
                                 <div class="row">
-                                  <img src="{{ $banner['image'] }}" style="width:80px; height:40px" class=" rounded" alt="">
+                                  <img src="{{ asset('storage/banner/' . $banner->image) }}" style="width:80px; height:40px" class=" rounded" alt="">
                                 </div>
                              </div>
                          </div>

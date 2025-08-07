@@ -65,7 +65,7 @@
                     <h5 class="mb-3">Recent Posts</h5>
                     @foreach ($latestFiveBlogs as $blog)
                     <div class="d-flex mb-3">
-                        <img src="{{ $blog['image'] }}" class="me-3 rounded" alt="Recent Post" style="width: 80px; height: 80px; object-fit: cover;">
+                        <img src="{{ asset('storage/' . $blog->image) }}" class="me-3 rounded" alt="Recent Post" style="width: 80px; height: 80px; object-fit: cover;">
                         <div>
                             <a href="{{ url('blogs/details/'.encrypt($blog->id)) }}" class="text-decoration-none d-block text-dark">{{ $blog->title }}</a>
                             <small class="text-muted">{{ $blog->created_at->format('M d, Y') }}</small>

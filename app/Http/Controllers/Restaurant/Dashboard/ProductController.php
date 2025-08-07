@@ -35,7 +35,7 @@ class ProductController extends Controller
 
         $role=Roles::where('name',$adminType)->first();
 
-        
+
         if($role->group==="general"){
              $restaurants=Restaurant::latest()->get();
             $products = Product::with('images','city','menu','category','subcategory')->latest()->paginate(10);
@@ -83,8 +83,9 @@ class ProductController extends Controller
 
         if ($request->hasFile('cover_image')) {
             $path = $request->file('cover_image')->store('product_images', 'public');
-            $imagePath = asset('storage/' . $path); // Full URL: https://yourdomain.com/storage/product_images/filename.jpg
+            $imagePath = $path; // Just 'product_images/filename.jpg'
         }
+
         // dd($request->all());
         $product = Product::create([
             'name' => $request->name,
@@ -112,14 +113,15 @@ class ProductController extends Controller
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
-                $path = $image->store('product_images', 'public');
+                $path = $image->store('product_images', 'public'); // e.g., 'product_images/filename.jpg'
 
                 ProductImage::create([
                     'product_id' => $product->id,
-                    'image_path' => asset('storage/' . $path), // Store full URL
+                    'image_path' => $path, // Store only the relative path
                 ]);
             }
         }
+
 
 
         $currentDateTime = Carbon::now();
@@ -129,79 +131,76 @@ class ProductController extends Controller
         return back()->with('success', 'Product added successfully!');
     }
 
-    public function update(Request $request, Product $product)
-    {
-        // dd($request->all());
-        // $product->update($request->all());
+   public function update(Request $request, Product $product)
+{
+    // Find the product (you already have $product injected, no need to refind)
+    // $product = Product::find($product->id); // not needed, you already have $product
 
-        $product= Product::find($product->id);
-        // dd($product);
-        if ($request->hasFile('cover_image')) {
-            // Delete old image if it exists
-            if (!empty($product->cover_image)) {
-                $oldPath = str_replace(asset('storage') . '/', '', $product->cover_image);
-                Storage::disk('public')->delete($oldPath);
-            }
-
-            // Store and get new image URL
-            $path = $request->file('cover_image')->store('product_images', 'public');
-            $product->image = asset('storage/' . $path);
-        }
-        $product->update([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name),
-            'description' => $request->description,
-             'restaurant_id' => $request->restaurant_id,
-            'category_id' => $request->category_id,
-            'subcategory_id' => $request->subcategory_id,
-            'city_id' => $request->city_id,
-            'menu_id' => $request->menu_id,
-            'code' => $request->code,
-            'price' => $request->price,
-            'product_tax' =>$request->product_tax,
-            'discount_type' => $request->discount_type,
-            'discount' => $request->discount,
-            'admin_id' => $request->admin_id,
-            'most_populer' => $request->most_populer,
-            'best_seller' => $request->best_seller,
-            'is_free' => $request->is_free,
-            'delivery_fee' => $request->delivery_fee,
-            'delivery_time' => $request->delivery_time,
-            'is_active' => $request->is_active,
-        ]);
-
-         // Delete old images
-
-         if ($request->hasFile('images')) {
-            // Delete old images
-            $oldImages = ProductImage::where('product_id', $product->id)->get();
-
-            foreach ($oldImages as $image) {
-                // If image_path is full URL, extract relative path
-                $relativePath = str_replace(asset('storage') . '/', '', $image->image_path);
-                Storage::disk('public')->delete($relativePath);
-
-                $image->delete();
-            }
-
-            // Store new images
-            foreach ($request->file('images') as $imageFile) {
-                $path = $imageFile->store('product_images', 'public');
-
-                ProductImage::create([
-                    'product_id' => $product->id,
-                    'image_path' => asset('storage/' . $path) // or just $path if you're storing relative
-                ]);
-            }
+    // Handle cover image update
+    if ($request->hasFile('cover_image')) {
+        // Delete old image if exists (image path stored as relative path)
+        if ($product->image && Storage::disk('public')->exists($product->image)) {
+            Storage::disk('public')->delete($product->image);
         }
 
-         $currentDateTime = Carbon::now();
-        $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
-        ActivityLogger::log( 'Update Restaurant Product', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
-
-
-        return back()->with('success', 'Product updated successfully!');
+        // Store new image and save relative path (without full URL)
+        $path = $request->file('cover_image')->store('product_images', 'public');
+        $product->image = $path;
     }
+
+    // Update other fields including new image path (if any)
+    $product->update([
+        'name' => $request->name,
+        'slug' => Str::slug($request->name),
+        'description' => $request->description,
+        'restaurant_id' => $request->restaurant_id,
+        'category_id' => $request->category_id,
+        'subcategory_id' => $request->subcategory_id,
+        'city_id' => $request->city_id,
+        'menu_id' => $request->menu_id,
+        'code' => $request->code,
+        'price' => $request->price,
+        'product_tax' => $request->product_tax,
+        'discount_type' => $request->discount_type,
+        'discount' => $request->discount,
+        'admin_id' => $request->admin_id,
+        'most_populer' => $request->most_populer,
+        'best_seller' => $request->best_seller,
+        'is_free' => $request->is_free,
+        'delivery_fee' => $request->delivery_fee,
+        'delivery_time' => $request->delivery_time,
+        'is_active' => $request->is_active,
+        'image' => $product->image, // set image relative path here
+    ]);
+
+    // Delete old images if new images uploaded
+    if ($request->hasFile('images')) {
+        $oldImages = ProductImage::where('product_id', $product->id)->get();
+        foreach ($oldImages as $image) {
+            if (Storage::disk('public')->exists($image->image_path)) {
+                Storage::disk('public')->delete($image->image_path);
+            }
+            $image->delete();
+        }
+
+        // Store new images with relative path
+        foreach ($request->file('images') as $imageFile) {
+            $path = $imageFile->store('product_images', 'public');
+            ProductImage::create([
+                'product_id' => $product->id,
+                'image_path' => $path, // store relative path, not full URL
+            ]);
+        }
+    }
+
+    // Logging activity
+    $currentDateTime = Carbon::now();
+    $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
+    ActivityLogger::log('Update Restaurant Product', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
+
+    return back()->with('success', 'Product updated successfully!');
+}
+
 
     public function destroy($id)
 {
@@ -216,10 +215,14 @@ class ProductController extends Controller
     }
 
     // Delete main product image
-    if ($product->image) {
-        $mainImagePath = str_replace(asset('storage') . '/', '', $product->image);
+if ($product->image) {
+    $mainImagePath = str_replace(url('storage') . '/', '', $product->image);
+
+    if (Storage::disk('public')->exists($mainImagePath)) {
         Storage::disk('public')->delete($mainImagePath);
     }
+}
+
 
     $product->delete();
      $currentDateTime = Carbon::now();

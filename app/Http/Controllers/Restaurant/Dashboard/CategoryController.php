@@ -40,21 +40,23 @@ class CategoryController extends Controller
         ]);
 
         $imagePath = null;
+
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('categories', 'public');
-            $imagePath = asset('storage/' . $path); // Full URL like https://yourdomain.com/storage/categories/image.jpg
+            $imagePath = $request->file('image')->store('categories', 'public'); // e.g., categories/image.jpg
         }
+
         Category::create([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name),
-            'description' => $request->description,
-            'image' => $imagePath,
-            'is_active' => $request->is_active,
-            'discount' => $request->discount,
+            'name'          => $request->name,
+            'slug'          => Str::slug($request->name),
+            'description'   => $request->description,
+            'image'         => $imagePath, // Store only the relative path
+            'is_active'     => $request->is_active,
+            'discount'      => $request->discount,
             'discount_type' => $request->discount_type,
         ]);
 
-          
+
+
         $currentDateTime = Carbon::now();
         $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
         ActivityLogger::log( 'Add Restaurant Category', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
@@ -75,25 +77,26 @@ class CategoryController extends Controller
 
 
     if ($request->hasFile('image')) {
-        // Delete old image if it exists
-        if ($category->image) {
-            // Convert URL to storage path
-            $oldImagePath = str_replace(asset('storage') . '/', '', $category->image);
-            Storage::disk('public')->delete($oldImagePath);
-        }
-
-        // Store new image and save full URL
-        $path = $request->file('image')->store('categories', 'public');
-        $category->image = asset('storage/' . $path);
+    // Delete old image if it exists
+    if ($category->image && Storage::disk('public')->exists($category->image)) {
+        Storage::disk('public')->delete($category->image);
     }
+
+        // Store new image and save relative path
+        $path = $request->file('image')->store('categories', 'public');
+        $category->image = $path; // Save only the relative path
+    }
+
+    // Update other fields
     $category->update([
-        'name' => $request->name,
-        'slug' => Str::slug($request->name),
-        'description' => $request->description,
-        'is_active' => $request->is_active,
-        'discount' => $request->discount,
-        'discount_type' => $request->discount_type,
+        'name'           => $request->name,
+        // 'slug'           => Str::slug($request->name),
+        'description'    => $request->description,
+        'is_active'      => $request->is_active,
+        'discount'       => $request->discount,
+        'discount_type'  => $request->discount_type,
     ]);
+
 
     $currentDateTime = Carbon::now();
         $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
@@ -104,9 +107,9 @@ class CategoryController extends Controller
 
     public function destroy(Category $category)
     {
-        if ($category->image) {
-            Storage::disk('public')->delete($category->image);
-        }
+        if ($category->image && Storage::disk('public')->exists($category->image)) {
+        Storage::disk('public')->delete($category->image);
+    }
         $category->delete();
 
         $currentDateTime = Carbon::now();

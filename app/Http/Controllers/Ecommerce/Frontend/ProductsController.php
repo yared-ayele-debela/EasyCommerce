@@ -24,9 +24,7 @@ class ProductsController extends Controller
 {
     // Decrypt the product ID
     $id = decrypt($Id);
-    // dd($id);
 
-    // Eager load all necessary relationships and apply conditions
     $product = Product::with([
         'group',
         'category',

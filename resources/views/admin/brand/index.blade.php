@@ -37,7 +37,7 @@ $user = Auth::guard('admin')->user();
                      <tr>
                         <td>{{ $k++ }}</td>
                         <td>{{ $brand->name }}</td>
-                        <td><img src="{{ $brand->image }}" style="width: 25px; height:25px" alt=""></td>
+                        <td><img src="{{ asset('storage/' . $brand->image) }}" style="width: 25px; height:25px" alt=""></td>
 
                         <td>
                             @if ($user && $user->hasPermissionByRole('edit_brand'))
@@ -62,7 +62,7 @@ $user = Auth::guard('admin')->user();
                   </tbody>
                </table>
                <div class=" pagination-sm">
-                  {{-- {{ $categories->links() }} --}}
+                  {{ $brands->links() }}
                </div>
 
             </div>

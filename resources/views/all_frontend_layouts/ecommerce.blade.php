@@ -291,7 +291,7 @@
                 <div class="carousel-inner">
                     @foreach ($banners as $index => $banner)
                     <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                        <div class="d-flex align-items-center banner-box {{ $index % 2 === 0 ? 'text-white' : 'text-dark' }}" style="border-radius:8px; background: url('{{$banner['image'] }}') center center / cover no-repeat;">
+                        <div class="d-flex align-items-center banner-box {{ $index % 2 === 0 ? 'text-white' : 'text-dark' }}" style="border-radius:8px; background: url('{{ asset('storage/banner/' . $banner['image']) }}') center center / cover no-repeat;">
                             <div class="container py-5 px-4">
                                 <h1 class="display-6 fw-bold">{{ $banner['title'] ?? 'Promotion' }}</h1>
                                 <p class="lead">{{ $banner['alt'] ?? 'Don’t miss out on our latest offers!' }}</p>
@@ -505,7 +505,7 @@
             <div class="col-12 col-md-12">
             <div class="card border-0 rounded-3 shadow-sm overflow-hidden">
                 <a href="{{ $ad_after_featured_products->adv_links??'' }}" target="_blank">
-                <img src="{{ $ad_after_featured_products->image }}"
+                <img src="{{ asset('storage/' . $ad_after_featured_products->image) }}"
                     alt="{{ $ad_after_featured_products->title??'' }}"
                     class="img-fluid w-100 d-block" style="max-height: 250px; ">
                 </a>
@@ -560,7 +560,7 @@
             <div class="col-12 col-md-12">
             <div class="card border-0 rounded-3 shadow-sm overflow-hidden">
                 <a href="{{ $ad_after_discounted_products->adv_links??'' }}" target="_blank">
-                <img src="{{ $ad_after_discounted_products->image }}"
+                <img src="{{ asset('storage/' . $ad_after_discounted_products->image) }}"
                     alt="{{ $ad_after_discounted_products->title??'' }}"
                     class="img-fluid w-100 d-block" style="max-height: 250px; ">
                 </a>
@@ -592,7 +592,7 @@
             <div class="col-12 col-md-12">
             <div class="card border-0 rounded-3 shadow-sm overflow-hidden">
                 <a href="{{ $ad_after_vendors->adv_links??'' }}" target="_blank">
-                <img src="{{ $ad_after_vendors->image }}"
+                <img src="{{ asset('storage/' . $ad_after_vendors->image) }}"
                     alt="{{ $ad_after_vendors->title??'' }}"
                     class="img-fluid w-100 d-block" style="max-height: 250px; ">
                 </a>

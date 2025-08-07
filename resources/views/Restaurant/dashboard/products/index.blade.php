@@ -71,11 +71,11 @@ $user = Auth::guard('admin')->user();
                         <td>{{ $product->discount_type }}</td>
                         <td>{{ $product->discount }} Birr</td>
                         <td>
-                            <img src="{{$product->image}}" width="50">
+                            <img src="{{ asset('storage/' . $product->image) }}" loading="lazy" width="50">
                         </td>
                         <td>
                             @foreach($product->images as $image)
-                                <img src="{{ $image->image_path }}" width="50">
+                                <img src="{{ asset('storage/' . $image->image_path) }}" width="50">
                             @endforeach
                         </td>
                         <td>
@@ -232,7 +232,7 @@ $user = Auth::guard('admin')->user();
               <span class="text-danger">height: 1200 px width: 1200 px</span>
                                                     <input type="file" class="form-control" id="cover_image" name="cover_image">
                                                     @if($product->image)
-                                                    <img src="{{ $product->image }}" width="50">
+                                                    <img src="{{ asset('storage/' . $product->image) }}" width="50">
                                                     @endif
                                                 </div>
                                             </div>
@@ -243,7 +243,7 @@ $user = Auth::guard('admin')->user();
               <span class="text-danger">height: 1200 px width: 1200 px</span>
                                                     <input type="file" class="form-control" id="images" name="images[]" multiple>
                                                     @foreach($product->images as $image)
-                                                    <img src="{{ $image->image_path }}" width="50">
+                                                    <img src="{{ asset('storage/' . $image->image_path) }}" loading="lazy" width="50">
                                                     @endforeach
                                                 </div>
                                             </div>

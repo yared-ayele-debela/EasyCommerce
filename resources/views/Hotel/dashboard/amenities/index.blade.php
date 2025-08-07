@@ -42,9 +42,9 @@
                         <tr>
                             <td>
                                 @if($amenity->icon)
-                                <img src="{{ $amenity->icon }}" width="40" height="40" alt="icon">
+                                <img src="{{ asset('storage/' . $amenity->icon) }}" width="40" height="40" alt="icon">
                                 @else
-                                <img src="{{ asset('restaurant_frontend/default-image.png') }}" width="40" height="40" alt="">
+                                <img src="{{ asset('restaurant_frontend/default-image.png') }}" width="40" height="40" alt="" loading="lazy">
                                 @endif
                             </td>
                             <td>{{ $amenity->name }}</td>
@@ -84,7 +84,7 @@
                                                 <label>Icon (optional)</label>
                                                 <input type="file" class="form-control" name="icon">
                                                 @if($amenity->icon)
-                                                <img src="{{ $amenity->icon }}" class="mt-2" width="60" height="60">
+                                                <img src="{{ asset('storage/' . $amenity->icon) }}" class="mt-2" width="60" height="60" loading="lazy">
                                                 @endif
                                             </div>
                                         </div>

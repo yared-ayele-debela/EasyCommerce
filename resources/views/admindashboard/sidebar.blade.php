@@ -462,14 +462,14 @@
         </li>
         @endif
 
-                <li class=" {{ request()->is('admin/account-deletion-requests')?'nav-item active':'' }} ">
+        <li class=" {{ request()->is('admin/account-deletion-requests')?'nav-item active':'' }} ">
         <a class="nav-link" href="{{ url('admin/account-deletion-requests') }}"> <i class="bi bi-person-bounding-box  "></i><span>Account Deletion Requests</span><i class="bi bi-chevron-down ms-auto"></i> </a>
         </li>
         <li class="nav-heading">Business Settings</li>
         @if ($user && $user->hasPermissionByRole('view email template')  || $user->hasPermissionByRole('view currency') || $user->hasPermissionByRole('view invoice') || $user->hasPermissionByRole('manage_appsetting'))
-        <li class="{{ request()->is('admin/withdraw-settings')?'nav-item active':'' }} {{ request()->is('admin/banks')?'nav-item active':'' }} {{ request()->is('admin/tips')?'nav-item active':'' }} {{ request()->is('admin/appsettings')?'nav-item active':'' }} {{ request()->is('admin/tax-settings')?'nav-item active':'' }} {{ request()->is('admin/currency*')?'nav-item active':'' }}  {{ request()->is('admin/currencies')?'nav-item active':'' }}  {{ request()->is('admin/invoice-setting*')?'nav-item active':'' }} {{ request()->is('admin/email-template*')?'nav-item active':'' }}  ">
+        <li class="{{ request()->is('admin/withdraw-settings')?'nav-item active':'' }} {{ request()->is('admin/delivery-settings')?'nav-item active':'' }} {{ request()->is('admin/banks')?'nav-item active':'' }} {{ request()->is('admin/tips')?'nav-item active':'' }} {{ request()->is('admin/appsettings')?'nav-item active':'' }} {{ request()->is('admin/tax-settings')?'nav-item active':'' }} {{ request()->is('admin/currency*')?'nav-item active':'' }}  {{ request()->is('admin/currencies')?'nav-item active':'' }}  {{ request()->is('admin/invoice-setting*')?'nav-item active':'' }} {{ request()->is('admin/email-template*')?'nav-item active':'' }}  ">
             <a class="nav-link" data-bs-target="#app-nav" data-bs-toggle="collapse" href="javascripit:void(0);"> <i class=" ri-group-2-fill"></i><span>Website Settings</span><i class="bi bi-chevron-down ms-auto"></i> </a>
-            <ul id="app-nav" class="nav-content collapse {{ request()->is('admin/withdraw-settings')?'show':'' }} {{ request()->is('admin/banks')?'show':'' }} {{ request()->is('admin/tips')?'show':'' }} {{ request()->is('admin/currency*')?'show':'' }} {{ request()->is('admin/tax-settings')?'show':'' }} {{ request()->is('admin/currencies')?'show':'' }}    {{ request()->is('admin/appsettings')?'show':'' }} {{ request()->is('admin/invoice-setting*')?'show':'' }}  {{ request()->is('admin/email-template*')?'show':'' }}  " data-bs-parent="#sidebar-nav">
+            <ul id="app-nav" class="nav-content collapse {{ request()->is('admin/delivery-settings')?'show':'' }} {{ request()->is('admin/withdraw-settings')?'show':'' }} {{ request()->is('admin/banks')?'show':'' }} {{ request()->is('admin/tips')?'show':'' }} {{ request()->is('admin/currency*')?'show':'' }} {{ request()->is('admin/tax-settings')?'show':'' }} {{ request()->is('admin/currencies')?'show':'' }}    {{ request()->is('admin/appsettings')?'show':'' }} {{ request()->is('admin/invoice-setting*')?'show':'' }}  {{ request()->is('admin/email-template*')?'show':'' }}  " data-bs-parent="#sidebar-nav">
                 @if($user->hasPermissionByRole('manage_appsetting'))
                 <li> <a href="{{ url('admin/appsettings') }}" class="{{ request()->is('admin/appsettings*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>General Settings</span></a></li>
                 @endif
@@ -478,6 +478,9 @@
                 @endif
                 @if($user->hasPermissionByRole('manage_appsetting'))
                 <li> <a href="{{ url('admin/banks') }}" class="{{ request()->is('admin/banks')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Banks Account Setting</span></a></li>
+                @endif
+                @if($user->hasPermissionByRole('manage_appsetting'))
+                <li> <a href="{{ url('admin/delivery-settings') }}" class="{{ request()->is('admin/delivery-settings')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Delivery Setting</span></a></li>
                 @endif
                 @if($user->hasPermissionByRole('view email template'))
                 <li> <a href="{{ route('email_templates') }}" class="{{ request()->is('admin/email-template*')?'nav-link active':'' }}"> <i class=" bi bi-circle active "></i><span>Email Settings</span></a></li>

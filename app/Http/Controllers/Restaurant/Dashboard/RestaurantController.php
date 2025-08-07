@@ -60,35 +60,36 @@ class RestaurantController extends Controller
     {
 
         $request->validate([
-            'admin_id'  => 'required|exists:users,id',
+            'admin_id'  => 'required|exists:admins,id',
             'name'      => 'required|string|max:255',
             'email'     => 'required|email|unique:restaurants,email',
             'phone'     => 'nullable|string|max:20',
             'address'   => 'nullable|string',
-            'cover_image'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'latitude'  => 'nullable|numeric',
-            'longitude' => 'nullable|numeric',
-            'logo'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'cover_image'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:20048',
+            'latitude'  => 'nullable',
+            'longitude' => 'nullable',
+            'logo'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:20048',
             'is_active' => 'required|boolean',
-            'images.*'  => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'images.*'  => 'nullable|image|mimes:jpeg,png,jpg,gif|max:20048',
             'zone' => 'required|string|max:255',
             'delivery_radius' => 'required|numeric|min:0',
         ]);
 
 
         // Upload Logo
-        $logoPath = null;
-        $coverPath = null;
+$logoPath = null;
+$coverPath = null;
 
-        if ($request->hasFile('logo')) {
-            $logoStoredPath = $request->file('logo')->store('restaurants', 'public');
-            $logoPath = asset('storage/' . $logoStoredPath); // Full URL
-        }
+if ($request->hasFile('logo')) {
+    $logoStoredPath = $request->file('logo')->store('restaurants', 'public');
+    $logoPath = $logoStoredPath; // Store relative path only, e.g. 'restaurants/filename.jpg'
+}
 
-        if ($request->hasFile('cover_image')) {
-            $coverStoredPath = $request->file('cover_image')->store('restaurants', 'public');
-            $coverPath = asset('storage/' . $coverStoredPath); // Full URL
-        }
+if ($request->hasFile('cover_image')) {
+    $coverStoredPath = $request->file('cover_image')->store('restaurants', 'public');
+    $coverPath = $coverStoredPath; // Store relative path only
+}
+
 
         // Create Restaurant
         $restaurant = RestaurantRestaurant::create([
@@ -115,15 +116,14 @@ class RestaurantController extends Controller
 
         // Upload and Save Multiple Images
         if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $storedPath = $image->store('restaurant_images', 'public');
-                $fullUrl = asset('storage/' . $storedPath);
+    foreach ($request->file('images') as $image) {
+        $storedPath = $image->store('restaurant_images', 'public');
 
-                $restaurant->images()->create([
-                    'image_path' => $fullUrl
-                ]);
-            }
-        }
+        $restaurant->images()->create([
+            'image_path' => $storedPath  // store relative path only
+        ]);
+    }
+}
 
            $currentDateTime = Carbon::now();
         $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
@@ -143,12 +143,12 @@ class RestaurantController extends Controller
             'email'     => 'required|email|unique:restaurants,email,' . $restaurant->id,
             'phone'     => 'nullable|string|max:20',
             'address'   => 'nullable|string',
-            'cover_image'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'latitude'  => 'nullable|numeric',
-            'longitude' => 'nullable|numeric',
-            'logo'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'cover_image'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:20048',
+            'latitude'  => 'nullable',
+            'longitude' => 'nullable',
+            'logo'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:20048',
             'is_active' => 'required|boolean',
-            'images.*'  => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'images.*'  => 'nullable|image|mimes:jpeg,png,jpg,gif|max:20048',
             'zone' => 'nullable|string|max:255',
             'delivery_radius' => 'nullable|numeric|min:0',
         ]);
@@ -173,45 +173,46 @@ class RestaurantController extends Controller
             'delivery_radius' => $request->delivery_radius ? $request->delivery_radius : $restaurant->delivery_radius,
         ]);
 
-        // Update logo if a new one is uploaded
         if ($request->hasFile('logo')) {
-            if ($restaurant->logo) {
-                // Delete old logo (convert URL to storage path if needed)
-                $oldLogoPath = str_replace(asset('storage') . '/', '', $restaurant->logo);
-                Storage::disk('public')->delete($oldLogoPath);
-            }
+    if ($restaurant->logo) {
+        $oldLogoPath = str_replace(asset('storage') . '/', '', $restaurant->logo);
+        Storage::disk('public')->delete($oldLogoPath);
+    }
 
-            $logoPath = $request->file('logo')->store('restaurants', 'public');
-            $restaurant->logo = asset('storage/' . $logoPath);
-            $restaurant->save();
-        }
-        // Update cover image
-        if ($request->hasFile('cover_image')) {
-            if ($restaurant->cover_image) {
-                $oldCoverPath = str_replace(asset('storage') . '/', '', $restaurant->cover_image);
-                Storage::disk('public')->delete($oldCoverPath);
-            }
-            $coverPath = $request->file('cover_image')->store('restaurants', 'public');
-            $restaurant->cover= asset('storage/' . $coverPath);
-            $restaurant->save();
-        }
+    $logoPath = $request->file('logo')->store('restaurants', 'public');
+    $restaurant->logo = $logoPath;  // Store relative path
+    $restaurant->save();
+}
 
-        // Optionally delete old multiple images before uploading new ones
-        if ($request->hasFile('images')) {
-            foreach ($restaurant->images as $image) {
-                $oldImagePath = str_replace(asset('storage') . '/', '', $image->image_path);
-                Storage::disk('public')->delete($oldImagePath);
-                $image->delete();
-            }
+if ($request->hasFile('cover_image')) {
+    if ($restaurant->cover) {
+        $oldCoverPath = str_replace(asset('storage') . '/', '', $restaurant->cover_image);
+        Storage::disk('public')->delete($oldCoverPath);
+    }
 
-            // Upload and Save New Multiple Images
-            foreach ($request->file('images') as $image) {
-                $path = $image->store('restaurant_images', 'public');
-                $restaurant->images()->create([
-                    'image_path' => asset('storage/' . $path)
-                ]);
-            }
-        }
+    $coverPath = $request->file('cover_image')->store('restaurants', 'public');
+    $restaurant->cover = $coverPath;  // Store relative path
+    $restaurant->save();
+}
+
+if ($request->hasFile('images')) {
+    // Delete old multiple images
+    foreach ($restaurant->images as $image) {
+        $oldImagePath = str_replace(asset('storage') . '/', '', $image->image_path);
+        Storage::disk('public')->delete($oldImagePath);
+        $image->delete();
+    }
+
+    // Upload and save new multiple images (store relative path)
+    foreach ($request->file('images') as $imageFile) {
+        $path = $imageFile->store('restaurant_images', 'public');
+        $restaurant->images()->create([
+            'image_path' => $path
+        ]);
+    }
+}
+
+
 
              $currentDateTime = Carbon::now();
         $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
@@ -227,20 +228,20 @@ class RestaurantController extends Controller
 {
     // Delete logo
     if ($restaurant->logo) {
-        $logoPath = str_replace(asset('storage') . '/', '', $restaurant->logo);
-        Storage::disk('public')->delete($logoPath);
+        $oldLogoPath = str_replace(asset('storage') . '/', '', $restaurant->logo);
+        Storage::disk('public')->delete($oldLogoPath);
     }
 
     // Delete cover image
-    if ($restaurant->cover_image) {
-        $coverPath = str_replace(asset('storage') . '/', '', $restaurant->cover_image);
-        Storage::disk('public')->delete($coverPath);
+   if ($restaurant->cover_image) {
+        $oldCoverPath = str_replace(asset('storage') . '/', '', $restaurant->cover);
+        Storage::disk('public')->delete($oldCoverPath);
     }
 
     // Delete multiple images
     foreach ($restaurant->images as $image) {
-        $imagePath = str_replace(asset('storage') . '/', '', $image->image_path);
-        Storage::disk('public')->delete($imagePath);
+        $oldImagePath = str_replace(asset('storage') . '/', '', $image->image_path);
+        Storage::disk('public')->delete($oldImagePath);
         $image->delete();
     }
 

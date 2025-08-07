@@ -35,16 +35,16 @@ class AmenityController extends Controller
             'icon' => 'nullable|image|mimes:jpg,jpeg,png,svg|max:2048',
         ]);
 
-        $iconPath = null;
+       $iconPath = null;
 
         if ($request->hasFile('icon')) {
-            $storedPath = $request->file('icon')->store('icons', 'public');
-            $iconPath = asset('storage/' . $storedPath); // Convert to full URL
+            // Store the file and keep only the relative path
+            $iconPath = $request->file('icon')->store('icons', 'public'); // e.g., icons/icon_123.png
         }
 
         Amenity::create([
             'name' => $request->name,
-            'icon' => $iconPath,
+            'icon' => $iconPath, // Store just the relative path
         ]);
         $currentDateTime = Carbon::now();
         $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
@@ -65,16 +65,16 @@ class AmenityController extends Controller
         ]);
 
         if ($request->hasFile('icon')) {
-            // Delete old icon if it exists (even if stored as full URL)
+            // Delete old icon if it exists
             if ($amenity->icon) {
-                $oldIconPath = str_replace(asset('storage') . '/', '', $amenity->icon);
-                Storage::disk('public')->delete($oldIconPath);
+                Storage::disk('public')->delete($amenity->icon);
             }
 
-            // Store new icon and save full URL
+            // Store new icon and save relative path
             $storedPath = $request->file('icon')->store('icons', 'public');
-            $amenity->icon = asset('storage/' . $storedPath);
+            $amenity->icon = $storedPath; // Store only the path, not full URL
         }
+
 
         $amenity->name = $request->name;
         $amenity->save();
@@ -92,10 +92,9 @@ class AmenityController extends Controller
     {
         $amenity = Amenity::findOrFail($id);
 
-        if ($amenity->icon) {
-            $iconPath = str_replace(asset('storage') . '/', '', $amenity->icon);
-            Storage::disk('public')->delete($iconPath);
-        }
+           if ($amenity->icon) {
+                Storage::disk('public')->delete($amenity->icon);
+            }
 
         $amenity->delete();
 

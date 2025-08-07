@@ -4,11 +4,6 @@ use App\Services\LocationService;
 $locationService = new LocationService();
 
     $off = $product->price - $product->getFinalPrice();
-    $parsedPath = $product->image ? parse_url($product->image, PHP_URL_PATH) : null;
-    $relativePath = $parsedPath ? str_replace('storage/', '', ltrim($parsedPath, '/')) : null;
-    $imageSrc = ($relativePath && Storage::disk('public')->exists($relativePath))
-        ? $product->image
-        : asset('restaurant_frontend/default-image.png');
 
     $restLat = $product->restaurant->latitude;
     $restLng = $product->restaurant->longitude;
@@ -27,7 +22,7 @@ $locationService = new LocationService();
                 {{ $badge }}
             </span>
             @endif --}}
-            <img src="{{ $imageSrc }}" class="img-fluid mb-2 restaurant-product-image" alt="{{ $product->name }}" >
+            <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid mb-2 restaurant-product-image" alt="{{ $product->name }}" loading="lazy">
             <h6 class="text-dark">{{ $product->name }}</h6>
             <p class="mb-0">
                 @if($product->getFinalPrice() < $product->price)

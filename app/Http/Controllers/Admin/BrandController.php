@@ -27,7 +27,7 @@ class BrandController extends Controller
             }
 
             $appsettings = AppSetting::all()->toArray();
-            $brands = Brand::all();
+            $brands = Brand::latest()->paginate(10);
 
             return view('admin.brand.index', compact('brands', 'appsettings'));
         } catch (\Exception $e) {
@@ -70,16 +70,17 @@ class BrandController extends Controller
 
             $brand = new Brand();
 
-            if ($request->hasFile('image')) {
+           if ($request->hasFile('image')) {
                 $fileNameWithExt = $request->file('image')->getClientOriginalName();
                 $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
                 $extension = $request->file('image')->getClientOriginalExtension();
                 $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                $request->file('image')->storeAs('public/brand', $fileNameToStore);
+                // Store the file in storage/app/public/brand
+                $request->file('image')->storeAs('brand', $fileNameToStore, 'public');
 
-                // Save full URL
-                $brand->image = asset('storage/brand/' . $fileNameToStore);
+                // Save only the relative path in the database
+                $brand->image = 'brand/' . $fileNameToStore;
             }
 
             $brand->name = $request->input('name');
@@ -157,24 +158,25 @@ class BrandController extends Controller
             $brand->name = $request->input('name');
 
             if ($request->hasFile('image')) {
+                $file = $request->file('image');
+
                 // Delete old image if it exists
-                if ($brand->image) {
-                    $oldPath = str_replace(asset('storage') . '/', '', $brand->image); // convert URL to relative path
-                    Storage::disk('public')->delete($oldPath);
+                if ($brand->image && Storage::disk('public')->exists($brand->image)) {
+                    Storage::disk('public')->delete($brand->image);
                 }
 
-                // Prepare new image
-                $fileNameWithExt = $request->file('image')->getClientOriginalName();
+                // Prepare new filename
+                $fileNameWithExt = $file->getClientOriginalName();
                 $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-                $extension = $request->file('image')->getClientOriginalExtension();
+                $extension = $file->getClientOriginalExtension();
                 $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                $request->file('image')->storeAs('public/brand', $fileNameToStore);
+                // Store new image in 'brand' folder inside public disk
+                $file->storeAs('brand', $fileNameToStore, 'public');
 
-                // Store full URL
-                $brand->image = asset('storage/brand/' . $fileNameToStore);
+                // Save relative path to DB
+                $brand->image = 'brand/' . $fileNameToStore;
             }
-
 
             $brand->update();
 
@@ -204,10 +206,10 @@ class BrandController extends Controller
 
             $brand = Brand::find($brand_id);
 
-            if ($brand->image) {
-                $oldPath = str_replace(asset('storage') . '/', '', $brand->image); // convert URL to relative path
-                Storage::disk('public')->delete($oldPath);
-            }
+           if ($brand->image && Storage::disk('public')->exists($brand->image)) {
+                    Storage::disk('public')->delete($brand->image);
+                }
+
 
             $brand->delete();
 

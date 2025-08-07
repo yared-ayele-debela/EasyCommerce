@@ -50,7 +50,6 @@ use App\Models\Restaurant\Product;
                     <button type="button" class="btn btn-primary fw-bold px-4 py-2 delivery_text" >
                         <i class="bi bi-geo-alt"></i> Get My Current Addresses
                     </button>
-
                     <a href="#" class="btn btn-primary fw-bold d-flex align-items-center delivery_text px-3 py-2 rounded-3" data-bs-toggle="modal" data-bs-target="#addressModal">
                         <i class="bi bi-plus-circle me-1"></i> Add New Address
                     </a>
@@ -58,8 +57,11 @@ use App\Models\Restaurant\Product;
             </div>
             <form action="{{ route('restaurant.checkout.placeOrderNow') }}" id="checkoutForm" method="POST" enctype="multipart/form-data">
                 @csrf
+                <input type="hidden" name="tax" value="{{ $totalTax }}">
                 <input type="hidden" id="current_lat" name="current_lat">
                 <input type="hidden" id="current_lng" name="current_lng">
+                <span id="location_status" style="font-size: 14px; color: gray;"></span>
+
                 <div class="row" id="addressContainer">
                     <div class="col-md-12 mb-2">
                     <div class="card shadow-sm p-3 delivery-location">
@@ -97,8 +99,8 @@ use App\Models\Restaurant\Product;
                         @endforelse
                 </div>
                 <span id="address-error" class="text-danger d-none">Please select a delivery address.</span>
-
                 <input type="hidden" name="address_id" id="selected_address_id">
+
                 <div class="d-flex justify-content-between align-items-center">
                     <button type="button" class="btn btn-outline-primary fw-bold px-4 py-2" id="toggleItems">
                         <i class="bi bi-eye"></i> Show Items ({{ count(session('order_now_cart', [])) }})
@@ -125,7 +127,7 @@ use App\Models\Restaurant\Product;
                                                 $discount = session('order_now_discount', 0);
                                                 $delivery_fee= $totalShipping;
                                                 $tax= $totalTax;
-                                            $subtotal = 0;
+                                                $subtotal = 0;
                                              @endphp
                                             @foreach(session('order_now_cart') as $key => $item)
                                                 @php
@@ -156,37 +158,49 @@ use App\Models\Restaurant\Product;
                 </div>
 
         </div>
+         @php
+        $discount = session('order_now_discount', 0);
+        $subtotal = session('order_now_cart_subtotal', 0);
+        $tax= $totalTax;
+
+        $total = max(($subtotal - $discount), 0) + $tax ;
+        @endphp
+
         <div class="col-lg-4 mb-2">
             <!-- Promo Code Input -->
             <div class="promo-code">
                 <input type="text" id="coupon_code" class="promo-input" placeholder="Enter Promo Code">
                 <button id="apply_coupon" class="bg-primary text-white">APPLY</button>
             </div>
-            <p id="coupon_message" class="text-primary mt-2"></p> <!-- Coupon error/success message -->
-            <p id="coupon_error_message" class="text-danger mt-2"></p> <!-- Coupon error/success message -->
+            <p id="coupon_message" class="text-primary mt-2"></p>
+            <p id="coupon_error_message" class="text-danger mt-2"></p>
             <!-- Order Summary -->
             <div class="summary-card mt-3">
                 <div class="d-flex justify-content-between mb-2">
                     <span><strong>SubTotal</strong></span>
-                    <span><strong id="subtotal_value">{{ session('order_now_cart_subtotal', 0) }} ETB</strong></span>
+                    <span><strong id="subtotal_value">{{ $subtotal }} ETB</strong></span>
                 </div>
                 <div class="d-flex justify-content-between mb-2">
                     <span><strong>Discount</strong></span>
-                    <span id="discount_value"><strong>{{ session('order_now_discount', 0) }} ETB</strong></span>
+                    <span id="discount_value"><strong> {{ $discount }} ETB</strong></span>
                 </div>
+
                 <div class="d-flex justify-content-between mb-2">
-                    <span><strong>Delivery Fee</strong></span>
-                    <span><strong>{{ $totalShipping }}</strong></span>
+                    <span><strong>Shipping Fee</strong></span>
+                    <span><strong id="shipping_fee_display">0.00 ETB</strong></span>
                 </div>
                 <div class="d-flex justify-content-between mb-2">
                     <span><strong>Tax</strong></span>
-                    <span><strong>{{ $totalTax }}</strong></span>
+                    <span><strong>{{ $tax }} ETB</strong></span>
                 </div>
                 <div class="line"></div>
-                <div class="d-flex justify-content-between">
-                    <span><strong>Total</strong></span>
-                    <span class="total"><strong>{{ $total = max($subtotal - session('order_now_discount', 0), 0) + $totalTax + $totalShipping }} ETB</strong></span>
+
+                <div class="d-flex justify-content-between mb-2">
+                    <span><strong>Total (with Tip)</strong></span>
+                    <span class="total"><strong id="final_total_display">0.00 ETB</strong></span>
                 </div>
+
+                <input type="hidden" name="delivery_fee" value="">
 
                 <!-- Payment Method Selection -->
                 <div class="delivery-location mt-3 p-3">
@@ -291,100 +305,8 @@ use App\Models\Restaurant\Product;
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 @include('all_frontend_layouts.partials.delivery_address_modal')
 <script>
-document.getElementById("current_address").addEventListener("click", function () {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function (position) {
-            document.getElementById("current_lat").value = position.coords.latitude;
-            document.getElementById("current_lng").value = position.coords.longitude;
-        }, function (error) {
-            alert("Location access denied or unavailable.");
-            document.getElementById("current_address").checked = false;
-        });
-    } else {
-        alert("Geolocation is not supported by this browser.");
-        document.getElementById("current_address").checked = false;
-    }
-});
-</script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-          $("#toggleItems").click(function() {
-            $("#itemsSection").toggleClass("d-none");
-            let isVisible = !$("#itemsSection").hasClass("d-none");
-            $(this).html(isVisible ? '<i class="bi bi-eye-slash"></i> Hide Items' : '<i class="bi bi-eye"></i> Show Items');
-        });
-
-        const tipOptions = document.querySelectorAll('.tip-option');
-        const selectedTipInput = document.getElementById('selected_tip');
-        const customInputContainer = document.getElementById('custom-tip-container');
-        const customInputField = customInputContainer.querySelector('input[name="custom_tip_amount"]');
-
-        const subtotal = parseFloat(@json($subtotal));
-        const discount = parseFloat(@json($discount));
-        const deliveryFee = parseFloat(@json($delivery_fee));
-        const tax = parseFloat(@json($tax));
-        const totalDisplay = document.querySelector('.total');
-
-        function updateTotal(tipAmount = 0) {
-            const total = Math.max((subtotal - discount), 0) + tax + deliveryFee + parseFloat(tipAmount || 0);
-            totalDisplay.innerHTML = `<strong>${total.toFixed(2)} ETB</strong>`;
-        }
-
-        tipOptions.forEach(option => {
-            option.addEventListener('click', function () {
-                tipOptions.forEach(opt => opt.classList.remove('selected'));
-                this.classList.add('selected');
-
-                const tipValue = this.dataset.tip;
-
-                if (tipValue === 'custom') {
-                    selectedTipInput.value = customInputField.value || 'custom';
-                    customInputContainer.style.display = 'block';
-                    customInputField.focus();
-                    updateTotal(customInputField.value); // update with current input value
-                } else {
-                    selectedTipInput.value = tipValue;
-                    customInputContainer.style.display = 'none';
-                    updateTotal(tipValue);
-                }
-            });
-        });
-
-        customInputField.addEventListener('input', function () {
-            if (document.querySelector('.tip-option.selected')?.dataset.tip === 'custom') {
-                selectedTipInput.value = this.value;
-                updateTotal(this.value);
-            }
-        });
-
-        // Init total with default selected tip
-        const initialTip = document.querySelector('.tip-option.selected')?.dataset.tip || 0;
-        updateTotal(initialTip);
-    });
-</script>
-
-
-<script>
-    // JavaScript to handle payment method selection
-    document.querySelectorAll('.payment-method').forEach(method => {
-    method.addEventListener('click', function() {
-        document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
-        this.classList.add('selected');
-        this.querySelector('input').checked = true; // Set the radio input as checked
-        document.getElementById("payment-error").classList.add("d-none"); // Hide error on selection
-
-        });
-    });
-
-    // JavaScript to handle tip selection
-    document.querySelectorAll('.tip-option').forEach((tip) => {
-        tip.addEventListener('click', function() {
-            document.querySelectorAll('.tip-option').forEach((el) => el.classList.remove('selected'));
-            this.classList.add('selected');
-        });
-    });
     document.getElementById("placeOrder").addEventListener("click", function() {
+
     let selectedPayment = document.querySelector("input[name='payment_method']:checked");
     let selectedAddress = document.querySelector("input[name='address']:checked");
 
@@ -407,101 +329,125 @@ document.getElementById("current_address").addEventListener("click", function ()
 
 });
 </script>
-
 <script>
-    $(document).ready(function() {
+(function () {
+    const subtotal = parseFloat(@json($subtotal));
+    const discount = parseFloat(@json($discount));
+    const tax = parseFloat(@json($tax));
+    let shippingFee = 0;
 
-        // Listen for address selection
-        $(document).on("change", ".address-radio", function() {
-            let selectedAddress = $(this).val();
-            $("#selected_address_id").val(selectedAddress);
-            $("#placeOrderBtn").prop("disabled", false); // Enable Place Order button
-        });
+    const elements = {
+        tipOptions: document.querySelectorAll('.tip-option'),
+        selectedTipInput: document.getElementById('selected_tip'),
+        customTipContainer: document.getElementById('custom-tip-container'),
+        customTipField: document.getElementById('custom_tip_amount'),
+        shippingFeeDisplay: document.getElementById('shipping_fee_display'),
+        finalTotalDisplay: document.getElementById('final_total_display')
+    };
 
-        $('#country').change(function() {
-            let countryId = $(this).val();
-            $('#state').html('<option value="">Loading...</option>');
-            $.get(`/states/${countryId}`, function(data) {
-                $('#state').html('<option value="">Select state</option>');
-                data.forEach(state => {
-                    $('#state').append(`<option value="${state.id}">${state.name}</option>`);
-                });
-            });
-        });
-        $('#state').change(function() {
-            let stateId = $(this).val();
-            $('#city').html('<option value="">Loading...</option>');
-            $.get(`/cities/${stateId}`, function(data) {
-                $('#city').html('<option value="">Select City</option>');
-                data.forEach(city => {
-                    $('#city').append(`<option value="${city.id}">${city.name}</option>`);
-                });
-            });
-        });
+   function updateTotal(tipAmount = 0) {
+    let usedSubtotal = typeof window.discountedSubtotal !== 'undefined'
+        ? window.discountedSubtotal
+        : subtotal;
 
-        $('#city').change(function() {
-            let cityId = $(this).val();
-            $('#sub_city').html('<option value="">Loading...</option>');
-            $.get(`/sub-cities/${cityId}`, function(data) {
-                $('#sub_city').html('<option value="">Select Sub City</option>');
-                data.forEach(subCity => {
-                    $('#sub_city').append(`<option value="${subCity.id}">${subCity.name}</option>`);
-                });
-            });
-        });
+const total = Math.max(usedSubtotal - discount) + tax + shippingFee + parseFloat(tipAmount || 0);
 
-        $('#sub_city').change(function() {
-            let subCityId = $(this).val();
-            $('#street').html('<option value="">Loading...</option>');
-            $.get(`/streets/${subCityId}`, function(data) {
-                $('#street').html('<option value="">Select Street</option>');
-                data.forEach(street => {
-                    $('#street').append(`<option value="${street.name}">${street.name}</option>`);
-                });
-            });
-        });
-    });
-    $(document).ready(function() {
-        $('#addressForm').submit(function(e) {
-            e.preventDefault();
+    elements.finalTotalDisplay.innerHTML = `<strong>${total.toFixed(2)} ETB</strong>`;
+}
 
-            $.ajax({
-                url: "{{ url('/addresses') }}"
-                , method: "POST"
-                , data: $(this).serialize()
-                , success: function(response) {
-                    showAlert('success', response.success);
-                    $('#addressModal').modal('hide');
-                    $('#addressForm')[0].reset();
+
+    function fetchShippingFee(addressId, tip = 0) {
+         const data = {
+            address_id: addressId,
+            _token: '{{ csrf_token() }}'
+        };
+
+        if (addressId === 'current_address') {
+            data.current_lat = localStorage.getItem('user_lat');  // Or get from geolocation
+            data.current_lng = localStorage.getItem('user_lng');
+        }
+
+        $.ajax({
+            url: "{{ route('order.now.calculate.shipping.fee') }}",
+            method: 'POST',
+            data,
+            success: function (res) {
+                if (res.success) {
+                    shippingFee = parseFloat(res.shipping_fee);
+                    const totalWithoutTip = parseFloat(res.total_amount);
+                    const finalTotal =   Math.max(totalWithoutTip - discount) + tax+ parseFloat(tip || 0);
+
+                    elements.shippingFeeDisplay.textContent = `${shippingFee.toFixed(2)} ETB`;
+                    elements.finalTotalDisplay.innerHTML = `<strong>${finalTotal.toFixed(2)} ETB</strong>`;
+                    $('input[name="delivery_fee"]').val(shippingFee);
                 }
-                , error: function(xhr) {
-                    alert("Error saving address!");
+            }
+        });
+    }
+
+    function handleTipSelection() {
+        elements.tipOptions.forEach(option => {
+            option.addEventListener('click', function () {
+                elements.tipOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+
+                const tipValue = this.dataset.tip;
+                if (tipValue === 'custom') {
+                    elements.selectedTipInput.value = elements.customTipField.value || 'custom';
+                    elements.customTipContainer.style.display = 'block';
+                    elements.customTipField.focus();
+                    updateTotal(elements.customTipField.value);
+                } else {
+                    elements.selectedTipInput.value = tipValue;
+                    elements.customTipContainer.style.display = 'none';
+                    updateTotal(tipValue);
                 }
             });
         });
-    });
 
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        document.querySelectorAll(".remove-item").forEach(button => {
-            button.addEventListener("click", function() {
-                let key = this.getAttribute("data-key");
-
-                fetch(`/restaurant/cart/remove/${key}`, {
-                        method: "GET"
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload(); // Refresh the cart page
-                        } else {
-                            alert("Failed to remove item from cart.");
-                        }
-                    });
-            });
+        elements.customTipField.addEventListener('input', function () {
+            if (document.querySelector('.tip-option.selected')?.dataset.tip === 'custom') {
+                elements.selectedTipInput.value = this.value;
+                updateTotal(this.value);
+            }
         });
-        document.getElementById("apply_coupon").addEventListener("click", function() {
+
+        // Initial total with selected tip
+        const initialTip = document.querySelector('.tip-option.selected')?.dataset.tip || 0;
+        updateTotal(initialTip);
+    }
+
+    function handleAddressSelection() {
+        $(document).on('change', '.address-radio', function () {
+            const addressId = $(this).val();
+            const tip = parseFloat(elements.selectedTipInput.value) || 0;
+            fetchShippingFee(addressId, tip);
+            $('#selected_address_id').val(addressId);
+            $('#placeOrderBtn').prop('disabled', false);
+        });
+
+        // Load initial shipping fee
+        const selectedAddressId = $('.address-radio:checked').val();
+        const selectedTip = parseFloat(elements.selectedTipInput.value) || 0;
+        if (selectedAddressId) {
+            fetchShippingFee(selectedAddressId, selectedTip);
+        }
+    }
+
+    function handleLocationDetection() {
+    document.getElementById("current_address")?.addEventListener("click", function () {
+        const status = document.getElementById("location_status");
+        document.getElementById("current_lat").value = localStorage.getItem('user_lat');
+        document.getElementById("current_lng").value = localStorage.getItem('user_lng');
+        status.innerText = "Location detected.";
+
+    });
+}
+
+
+
+function handleCouponApply() {
+    document.getElementById("apply_coupon").addEventListener("click", function() {
             let couponCode = document.getElementById("coupon_code").value;
             let messageDiv = document.getElementById("coupon_message");
 
@@ -517,39 +463,136 @@ document.getElementById("current_address").addEventListener("click", function ()
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success) {
+                     if (data.success) {
                         messageDiv.classList.remove("text-danger");
                         messageDiv.classList.add("text-success");
                         messageDiv.innerText = "Coupon applied successfully!";
-location.reload()
+                        document.getElementById("discount_value").innerText = `-${data.order_now_discount} ETB`;
 
-                        document.querySelector(".total").innerText = data.new_total + " ETB"; // Update total
-                        // document.getElementById("discount_value").innerText = "-" + data.discount + " ETB"; // Update discount
+                        updateTotal(elements.selectedTipInput.value || 0);
                     } else {
                         messageDiv.classList.remove("text-success");
                         messageDiv.classList.add("text-danger");
-                        messageDiv.innerText = data.message; // Show error message
+                        messageDiv.innerText = data.message;
                     }
                 });
         });
-    });
-    document.addEventListener("DOMContentLoaded", function() {
-        document.querySelectorAll(".add, .subtract").forEach(button => {
-            button.addEventListener("click", function() {
-                let key = this.getAttribute("data-key");
-                let action = this.classList.contains("add") ? "increase" : "decrease";
-                fetch(`/restaurant/cart/update/${key}/${action}`, {
-                        method: "GET"
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload();
-                        }
-                    });
+
+    }
+    function handlePaymentSelection() {
+        document.querySelectorAll('.payment-method').forEach(method => {
+            method.addEventListener('click', function () {
+                document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
+                this.classList.add('selected');
+                this.querySelector('input').checked = true;
+                document.getElementById("payment-error").classList.add("d-none");
             });
         });
-    });
+    }
+
+    function handlePlaceOrderValidation() {
+        document.getElementById("placeOrder").addEventListener("click", function () {
+            let selectedPayment = document.querySelector("input[name='payment_method']:checked");
+            let selectedAddress = document.querySelector("input[name='address']:checked");
+
+            let paymentError = document.getElementById("payment-error");
+            let addressError = document.getElementById("address-error");
+
+            paymentError.classList.add("d-none");
+            addressError.classList.add("d-none");
+
+            if (!selectedAddress) {
+                addressError.classList.remove("d-none");
+                showAlert('error', 'Please select delivery address');
+                return;
+            }
+            if (!selectedPayment) {
+                paymentError.classList.remove("d-none");
+                showAlert('error', 'Please select Payment Method');
+                return;
+            }
+            document.getElementById("checkoutForm").submit();
+        });
+    }
+
+    function handleAddressForm() {
+        $('#addressForm').submit(function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: "{{ url('/addresses') }}",
+                method: "POST",
+                data: $(this).serialize(),
+                success: function (response) {
+                    showAlert('success', response.success);
+                    $('#addressModal').modal('hide');
+                    $('#addressForm')[0].reset();
+                },
+                error: function () {
+                    alert("Error saving address!");
+                }
+            });
+        });
+    }
+
+    function initLocationDropdowns() {
+        $('#country').change(function () {
+            let countryId = $(this).val();
+            $('#state').html('<option value="">Loading...</option>');
+            $.get(`/states/${countryId}`, function (data) {
+                $('#state').html('<option value="">Select state</option>');
+                data.forEach(state => {
+                    $('#state').append(`<option value="${state.id}">${state.name}</option>`);
+                });
+            });
+        });
+
+        $('#state').change(function () {
+            let stateId = $(this).val();
+            $('#city').html('<option value="">Loading...</option>');
+            $.get(`/cities/${stateId}`, function (data) {
+                $('#city').html('<option value="">Select City</option>');
+                data.forEach(city => {
+                    $('#city').append(`<option value="${city.id}">${city.name}</option>`);
+                });
+            });
+        });
+
+        $('#city').change(function () {
+            let cityId = $(this).val();
+            $('#sub_city').html('<option value="">Loading...</option>');
+            $.get(`/sub-cities/${cityId}`, function (data) {
+                $('#sub_city').html('<option value="">Select Sub City</option>');
+                data.forEach(subCity => {
+                    $('#sub_city').append(`<option value="${subCity.id}">${subCity.name}</option>`);
+                });
+            });
+        });
+
+        $('#sub_city').change(function () {
+            let subCityId = $(this).val();
+            $('#street').html('<option value="">Loading...</option>');
+            $.get(`/streets/${subCityId}`, function (data) {
+                $('#street').html('<option value="">Select Street</option>');
+                data.forEach(street => {
+                    $('#street').append(`<option value="${street.name}">${street.name}</option>`);
+                });
+            });
+        });
+    }
+
+    function init() {
+        handleTipSelection();
+        handleAddressSelection();
+        handleLocationDetection();
+        handlePaymentSelection();
+        handlePlaceOrderValidation();
+        handleAddressForm();
+        initLocationDropdowns();
+        handleCouponApply();
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+})();
 </script>
 @endsection
 

@@ -56,14 +56,14 @@ use App\Models\Wishlist;
     <div class="row g-4 py-4">
         <div class="row">
                 <div class="col-12 col-md-5 order-1 order-md-2 mb-3 mb-md-0 mb-2">
-                    <img id="mainProductImage" src="{{ $product['product_image'] ?? asset('restaurant_frontend/default-image.png') }}" class="img-fluid border-0 rounded w-100" alt="{{ $product->product_name }}" />
+                    <img id="mainProductImage" src="{{ asset('storage/' . $product->product_image) ?? asset('restaurant_frontend/default-image.png') }}" class="img-fluid border-0 rounded w-100" alt="{{ $product->product_name }}" />
                 </div>
 
                 <!-- Thumbnails -->
                 <div class="col-12 col-md-1 d-flex flex-md-column gap-3 order-2 order-md-1 mb-2">
                     @foreach ($product['images'] as $image )
                     <img
-                        src="{{ $image['image'] ?? asset('restaurant_frontend/default-image.png') }}"
+                        src="{{asset('storage/' . $image->image) ?? asset('restaurant_frontend/default-image.png') }}"
                         class="img-fluid border rounded thumbnail-image"
                         style="cursor: pointer; max-width: 80px;"
                         alt="{{ $product->product_name }}"

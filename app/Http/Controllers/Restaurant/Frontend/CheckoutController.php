@@ -8,6 +8,7 @@ use App\Mail\Restaurant\OrderConfirmationMail;
 use App\Models\Bank;
 use App\Models\Country;
 use App\Models\DeliveryAddress;
+use App\Models\DeliverySetting;
 use App\Models\Restaurant\Coupon;
 use App\Models\Restaurant\Order;
 use App\Models\Restaurant\OrderItem;
@@ -33,6 +34,171 @@ class CheckoutController extends Controller
 {
     //
 
+    public function calculateShipping(Request $request)
+{
+    $addressId = $request->address_id;
+    if ($addressId === 'current_address') {
+        if (!$request->has('current_lat') || !$request->has('current_lng')) {
+            return response()->json(['success' => false, 'message' => 'Missing current location']);
+        }
+        $address = (object)[
+            'latitude' => $request->current_lat,
+            'longitude' => $request->current_lng
+        ];
+    } else {
+        $address = DeliveryAddress::find($addressId);
+        if (!$address) {
+            return response()->json(['success' => false, 'message' => 'Invalid address']);
+        }
+    }
+    $cart = Helper::RestaurantCartItems();
+
+    $vendorShipping = [];
+    $subtotal = 0;
+
+    foreach ($cart as $item) {
+        $product = Product::find($item['product_id']);
+        if (!$product || !$product->restaurant) continue;
+
+        $vendorId = $product->restaurant->admin_id;
+
+        $vendorLat = $product->restaurant->latitude;
+        $vendorLng = $product->restaurant->longitude;
+
+        $customerLat = $address->latitude;
+        $customerLng = $address->longitude;
+
+        $distance = $this->calculateDistances($vendorLat, $vendorLng, $customerLat, $customerLng);
+        $weight = $product->weight ?? 1;
+        $zone = $product->restaurant->zone;
+
+        // Get shipping charge per vendor
+        $baseShipping = ShippingCharge::getShippingCharges($weight, zone: $zone); // ← Modify this method to accept vendor
+
+        $delivery_settings=DeliverySetting::first();
+        $distanceFeePerKm = $delivery_settings->fee_per_km; // ETB per KM
+        $distanceShipping = $distance * $distanceFeePerKm;
+
+        $shipping = $baseShipping + $distanceShipping;
+
+        // Grouping shipping per vendor
+        if (!isset($vendorShipping[$vendorId])) {
+            $vendorShipping[$vendorId] = [
+                'shipping' => 0,
+                'products' => [],
+            ];
+        }
+
+        $vendorShipping[$vendorId]['shipping'] += $shipping;
+        $vendorShipping[$vendorId]['products'][] = $product->id;
+
+        $subtotal += $item['price'];
+    }
+    // Sum final shipping from all vendors
+    $finalShipping = collect($vendorShipping)->sum('shipping');
+
+    $totalAmount = $subtotal + $finalShipping;
+
+    // dd($finalShipping, $totalAmount, $vendorShipping);
+    return response()->json([
+        'success' => true,
+        'shipping_fee' => number_format($finalShipping, 2),
+        'total_amount' => number_format($totalAmount, 2),
+        'vendor_details' => $vendorShipping // Optional: useful for debugging
+    ]);
+}
+    public function orderNowcalculateShipping(Request $request)
+{
+    $addressId = $request->address_id;
+    if ($addressId === 'current_address') {
+        if (!$request->has('current_lat') || !$request->has('current_lng')) {
+            return response()->json(['success' => false, 'message' => 'Missing current location']);
+        }
+        $address = (object)[
+            'latitude' => $request->current_lat,
+            'longitude' => $request->current_lng
+        ];
+    } else {
+        $address = DeliveryAddress::find($addressId);
+        if (!$address) {
+            return response()->json(['success' => false, 'message' => 'Invalid address']);
+        }
+    }
+    $cart = session()->get('order_now_cart', []);
+    // dd($cart);
+
+    $vendorShipping = [];
+    $subtotal = 0;
+
+    foreach ($cart as $item) {
+        $product = Product::find($item['product_id']);
+        if (!$product || !$product->restaurant) continue;
+
+        $vendorId = $product->restaurant->admin_id;
+
+        $vendorLat = $product->restaurant->latitude;
+        $vendorLng = $product->restaurant->longitude;
+
+        $customerLat = $address->latitude;
+        $customerLng = $address->longitude;
+
+        $distance = $this->calculateDistances($vendorLat, $vendorLng, $customerLat, $customerLng);
+        $weight = $product->weight ?? 1;
+        $zone = $product->restaurant->zone;
+
+        // Get shipping charge per vendor
+        $baseShipping = ShippingCharge::getShippingCharges($weight, zone: $zone); // ← Modify this method to accept vendor
+
+        $delivery_settings=DeliverySetting::first();
+        $distanceFeePerKm = $delivery_settings->fee_per_km; // ETB per KM
+        $distanceShipping = $distance * $distanceFeePerKm;
+
+        $shipping = $baseShipping + $distanceShipping;
+
+        // Grouping shipping per vendor
+        if (!isset($vendorShipping[$vendorId])) {
+            $vendorShipping[$vendorId] = [
+                'shipping' => 0,
+                'products' => [],
+            ];
+        }
+
+        $vendorShipping[$vendorId]['shipping'] += $shipping;
+        $vendorShipping[$vendorId]['products'][] = $product->id;
+
+        $subtotal += $item['price'];
+    }
+    // Sum final shipping from all vendors
+    $finalShipping = collect($vendorShipping)->sum('shipping');
+
+    $totalAmount = $subtotal + $finalShipping;
+
+    // dd($finalShipping, $totalAmount, $vendorShipping);
+    return response()->json([
+        'success' => true,
+        'shipping_fee' => number_format($finalShipping, 2),
+        'total_amount' => number_format($totalAmount, 2),
+        'vendor_details' => $vendorShipping // Optional: useful for debugging
+    ]);
+}
+
+
+private function calculateDistances($lat1, $lon1, $lat2, $lon2)
+{
+    $earthRadius = 6371; // Radius in KM
+    $dLat = deg2rad($lat2 - $lat1);
+    $dLon = deg2rad($lon2 - $lon1);
+
+    $a = sin($dLat/2) * sin($dLat/2) +
+        cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+        sin($dLon/2) * sin($dLon/2);
+
+    $c = 2 * atan2(sqrt($a), sqrt(1-$a));
+    $distance = $earthRadius * $c;
+
+    return $distance;
+}
+
     public function index()
     {
         $cart =Helper::RestaurantCartItems();
@@ -48,17 +214,12 @@ class CheckoutController extends Controller
 
         // dd($cart);
         $totalTax = 0;
-        $totalShipping = 0;
         foreach ($cart as $item) {
             $product = Product::find($item['product_id']);
             if (!$product) continue; // Skip if product doesn't exist
             $restaurant = Restaurant::find($product->restaurant_id);
             if (!$restaurant) continue; // Skip if restaurant not found
-            $zone = $restaurant->zone;
-            $weight = $item['quantity'] * $product->weight; // Assume 1kg per product, customize this as needed
-            $shipping = ShippingCharge::getShippingCharges($weight, $zone);
 
-            $totalShipping += $shipping;
 
             $subtotal = $product->price * $item['quantity'];
             $taxAmount = round($subtotal * ($product->product_tax / 100), 2);
@@ -69,13 +230,13 @@ class CheckoutController extends Controller
         $banks=Bank::all();
         $addresses = DeliveryAddress::where('user_id', Auth::user()->id)->get();
 
-        return view('Restaurant.frontend.checkout.index', compact('addresses','totalTax','banks','tips', 'cart', 'subtotal', 'countries','totalShipping'));
+        return view('Restaurant.frontend.checkout.index', compact('addresses','totalTax','banks','tips', 'cart', 'subtotal', 'countries'));
     }
 
 
     public function placeOrder(Request $request)
     {
-        // dd($request->all());
+        // dd( session()->get('cart_subtotal', 0));
         // try{
         if ($request->payment_method === "Bank Transfer") {
             $validator = Validator::make($request->all(), [
@@ -93,9 +254,7 @@ class CheckoutController extends Controller
         }
 
        if($request->input('address')==="current_address"){
-            $current_lat= $request->input('current_lat');
-            $current_long= $request->input('current_lng');
-            $user_delivery_address=Auth::user();
+
         } elseif( $request->input('address_id')){
             $delivery_address = DeliveryAddress::find($request->input('address_id'));
         }
@@ -108,7 +267,7 @@ class CheckoutController extends Controller
 
         $cart = Helper::RestaurantCartItems();
         // Check if cart is empty
-         if (count($cart) === 0) {
+        if (count($cart) === 0) {
             return back()->with('error', 'Your cart is empty.');
         }
         $tipAmount = 0;
@@ -123,7 +282,9 @@ class CheckoutController extends Controller
         $subtotal = session()->get('cart_subtotal', 0);
         $discount = session()->get('discount', 0);
         $delivery_fee = $request->input('delivery_fee', 0);
-        $total = max(($subtotal - $discount), 0) + $delivery_fee + $tipAmount;
+        $totalTax= $request->input('tax', 0);
+        // dd($subtotal,$discount,$delivery_fee,$tipAmount);
+        $total = max(($subtotal - $discount), 0) + $delivery_fee + $tipAmount + $totalTax;
 
         // dd($total);
         DB::beginTransaction();
@@ -162,7 +323,6 @@ class CheckoutController extends Controller
 
         }
         $order->save();
-        // Save address details if provided
 
         foreach ($cart as $item) {
 
@@ -250,9 +410,10 @@ class CheckoutController extends Controller
         // }
     }
 
-    public function orderNowPage()
+    public function orderNowPage(Request $request)
     {
 
+        // dd($request->all());
         $countries = Country::all();
         $banks=Bank::all();
         $tips=Tip::all();
@@ -266,7 +427,7 @@ class CheckoutController extends Controller
         $totalShipping = 0;
 
         foreach ($order_now_cart as $item) {
-            $product = Product::find($item['product_id']);
+            $product = Product::find(id: $item['product_id']);
             if (!$product) continue; // Skip if product doesn't exist
             $restaurant = Restaurant::find($product->restaurant_id);
             if (!$restaurant) continue; // Skip if restaurant not found
@@ -290,13 +451,8 @@ class CheckoutController extends Controller
 
     public function PlaceOrderNow(Request $request)
     {
+
         // dd($request->all());
-                // if($request->input('address_id')==="current_address"){
-                //     dd("current_address");
-                // }else{
-                //     dd("false");
-                // }
-        // try{
         if ($request->payment_method === "Bank Transfer") {
             $validator = Validator::make($request->all(), [
                 'payment_method' => 'required|string',
@@ -315,9 +471,7 @@ class CheckoutController extends Controller
             return back()->withErrors($validator)->withInput();
         }
         if($request->input('address')==="current_address"){
-            $current_lat= $request->input('current_lat');
-            $current_long= $request->input('current_lng');
-            $user_delivery_address=Auth::user();
+
         }elseif( $request->input('address_id')){
             $delivery_address = DeliveryAddress::find($request->input('address_id'));
         }else{
@@ -328,26 +482,19 @@ class CheckoutController extends Controller
             return back()->with('error', 'Your order now cart is empty.');
         }
          $totalTax = 0;
-        $totalShipping = 0;
 
         foreach ($order_now_cart as $item) {
             $product = Product::find($item['product_id']);
             if (!$product) continue; // Skip if product doesn't exist
             $restaurant = Restaurant::find($product->restaurant_id);
             if (!$restaurant) continue; // Skip if restaurant not found
-            $zone = $restaurant->zone;
-            $weight = $item['quantity'] * $product->weight; // Assume 1kg per product, customize this as needed
-            $shipping = ShippingCharge::getShippingCharges($weight, $zone);
-
-            $totalShipping += $shipping;
 
             $subtotal = $product->price * $item['quantity'];
             $taxAmount = round($subtotal * ($product->product_tax / 100), 2);
             $totalTax += $taxAmount;
 
-
-
         }
+        // dd($totalTax);
         $tipAmount = 0;
         if ($request->tip_option) {
             if (is_numeric($request->tip_option)) {
@@ -357,9 +504,14 @@ class CheckoutController extends Controller
 
         $subtotal = session()->get('order_now_cart_subtotal', 0);
         $discount = session()->get('order_now_discount', 0);
-        $total = max(($subtotal - $discount),  0) + $totalShipping + $tipAmount + $totalTax;
-        // dd($total);
+        // dd($discount);
+        $delivery_fee = $request->input('delivery_fee', 0);
+    //    dd($delivery_fee);
 
+        $total = max(($subtotal - $discount), 0) + $delivery_fee + $tipAmount + $totalTax;
+
+
+        // dd($total);
         DB::beginTransaction();
 
 
@@ -367,7 +519,7 @@ class CheckoutController extends Controller
         $order->user_id = Auth::user()->id;
         $order->subtotal = $subtotal;
         $order->discount = $discount;
-        $order->delivery_fee = $totalShipping;
+        $order->delivery_fee = $request->delivery_fee;
         $order->total = $total;
         $order->tax = $request->input('tax', 0);
         $order->tip_amount = $tipAmount;
@@ -461,7 +613,7 @@ class CheckoutController extends Controller
                 }
             }
 
-        Mail::to(Auth::user()->email)->send(mailable: new OrderConfirmationMail($order));
+        // Mail::to(Auth::user()->email)->send(mailable: new OrderConfirmationMail($order));
         DB::commit();
         session()->forget(['order_now_cart', 'order_now_cart_subtotal', 'order_now_discount']); // Clear order now cart session after successful order
         return redirect()->route('restaurant.order.success', ['order' => $order->id])
@@ -474,14 +626,27 @@ class CheckoutController extends Controller
 
     public function orderNow(Request $request)
     {
-        // dd($request->all());
         $request->validate([
             'product_id' => 'required',
             'qty' => 'required|integer|min:1',
         ]);
 
+
         $product = Product::findOrFail($request->product_id);
 
+        $restaurant = $product->restaurant;
+
+        $userLat = $request->input('user_lat');
+        $userLng = $request->input('user_lng');
+
+        if (!$userLat || !$userLng) {
+            return back()->withErrors("Location is required to place the order.");
+        }
+
+        $distance = $this->calculateDistance($userLat, $userLng, $restaurant->latitude, $restaurant->longitude);
+        if ($distance > $restaurant->delivery_radius) {
+            return back()->withErrors("You are out of the delivery range.");
+        }
         // Clear existing cart
         session()->forget(keys: ['order_now_cart', 'order_now_cart_subtotal', 'order_now_discount']); // Clear cart session after successful order
 
@@ -506,6 +671,24 @@ class CheckoutController extends Controller
 
         return redirect()->route('restaurant.checkout.orderNowPage');
     }
+
+    private function calculateDistance($lat1, $lng1, $lat2, $lng2)
+{
+    $earthRadius = 6371; // km
+
+    $latFrom = deg2rad($lat1);
+    $lonFrom = deg2rad($lng1);
+    $latTo = deg2rad($lat2);
+    $lonTo = deg2rad($lng2);
+
+    $latDelta = $latTo - $latFrom;
+    $lonDelta = $lonTo - $lonFrom;
+
+    $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
+        cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
+
+    return $earthRadius * $angle;
+}
 
     public function applyCoupon(Request $request)
     {

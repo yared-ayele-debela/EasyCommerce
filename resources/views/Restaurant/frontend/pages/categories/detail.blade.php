@@ -17,7 +17,7 @@
             <i class="bi bi-arrow-left"></i>
         </button>
         <div class="d-flex align-items-center justify-content-center text-center shadow-sm p-2 mx-auto" style="border-radius: 100px; min-width: 200px;">
-            <img src="{{ $category->image?$category->image:asset('restaurant_frontend/default-image.png')}}" alt="Burger" style="width: 30px; height: 30px; border-radius: 50%;">
+            <img src="{{ asset('storage/' . $category->image) ?? asset('restaurant_frontend/default-image.png')}}" loading="lazy" alt="Burger" style="width: 30px; height: 30px; border-radius: 50%;">
             <h5 class="ms-2 mb-0">{{ $category->name }}</h5>
         </div>
         <div style="width: 40px;"></div>

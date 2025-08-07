@@ -13,7 +13,7 @@
         <div class="col-md-2 col-6">
             <div class="category-item">
                 <a href="{{ url('hotel/categories/'.$category->id) }}">
-                    <img src="{{ $category->image }}" class="p-2 shadow" style="border:4px solid rgb(162, 159, 159);" alt="American">
+                    <img src="{{ asset('storage/' . $category->image)?? asset('restaurant_frontend/default-image.png') }}" class="p-2 shadow" style="border:4px solid rgb(162, 159, 159);" alt="{{ $category->name }}" loading="lazy">
                     <p class="text-dark">{{ $category->name }}</p>
                 </a>
             </div>

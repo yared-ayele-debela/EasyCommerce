@@ -41,62 +41,24 @@ class BannerController extends Controller
                 $banner = new Banner();
 
                 // Image handling based on type (Slider or Fix)
-                if ($request->input('type') == "Slider") {
-                    if ($request->hasFile('image')) {
-                        // Delete old image if exists
-                        if ($banner->image) {
-                            Storage::delete('public/banner/' . $banner->image);
-                        }
-
-                        // Get file name and extension
-                        $file = $request->file('image');
-                        $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                        $extension = $file->getClientOriginalExtension();
-                        $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
-
-                        // Upload image
-                        $path = $file->storeAs('public/banner', $fileNameToStore);
-
-                        // Optionally resize based on type
-                        // $image = Image::make(public_path('storage/banner/' . $fileNameToStore));
-                        // if ($request->input('type') == 'Slider') {
-                        //     $image->resize(1200, 400)->save();
-                        // } elseif ($request->input('type') == 'Fix') {
-                        //     $image->resize(1110, 192)->save();
-                        // }
-
-                        // Save full URL to DB
-                        $banner->image = asset('storage/banner/' . $fileNameToStore);
+                if (in_array($request->input('type'), ['Slider', 'Fix']) && $request->hasFile('image')) {
+                    // Delete old image if exists
+                    if ($banner->image) {
+                        Storage::delete('public/banner/' . $banner->image);
                     }
+
+                    // Store file and get filename
+                    $file = $request->file('image');
+                    $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                    $extension = $file->getClientOriginalExtension();
+                    $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
+
+                    $file->storeAs('public/banner', $fileNameToStore);
+
+                    // Save only filename (or relative path) to DB
+                    $banner->image = $fileNameToStore;
                 }
-                if ($request->input('type') == "Fix") {
-                    if ($request->hasFile('image')) {
-                        // Delete old image if exists
-                        if ($banner->image) {
-                            Storage::delete('public/banner/' . $banner->image);
-                        }
 
-                        // Get file name and extension
-                        $file = $request->file('image');
-                        $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                        $extension = $file->getClientOriginalExtension();
-                        $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
-
-                        // Upload image
-                        $path = $file->storeAs('public/banner', $fileNameToStore);
-
-                        // Optionally resize based on type
-                        // $image = Image::make(public_path('storage/banner/' . $fileNameToStore));
-                        // if ($request->input('type') == 'Slider') {
-                        //     $image->resize(1200, 400)->save();
-                        // } elseif ($request->input('type') == 'Fix') {
-                        //     $image->resize(1110, 192)->save();
-                        // }
-
-                        // Save full URL to DB
-                        $banner->image = asset('storage/banner/' . $fileNameToStore);
-                    }
-                }
 
                 // Assign other banner properties
                 $banner->link = $request->input('link');
@@ -204,59 +166,22 @@ class BannerController extends Controller
         $banner->title = $request->input('title');
         $banner->alt = $request->input('alt');
 
-        if ($request->input('type') == "Slider") {
-            if ($request->hasFile('image')) {
-                if ($banner->image) {
-                    // Extract file name if stored as full URL
-                    $oldFileName = basename($banner->image);
-                    Storage::delete('public/banner/' . $oldFileName);
-                }
-                $file = $request->file('image');
-                $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                $extension = $file->getClientOriginalExtension();
-                $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
-
-                // Store file
-                $file->storeAs('public/banner', $fileNameToStore);
-
-                // Optional image resizing using Intervention Image
-                // $image = \Image::make(public_path('storage/banner/' . $fileNameToStore));
-                // if ($request->input('type') === 'Slider') {
-                //     $image->resize(1200, 700)->save();
-                // } elseif ($request->input('type') === 'Fix') {
-                //     $image->resize(1110, 192)->save();
-                // }
-
-                // Store full URL in DB
-                $banner->image = asset('storage/banner/' . $fileNameToStore);
+        if (in_array($request->input('type'), ['Slider', 'Fix']) && $request->hasFile('image')) {
+                    // Delete old image if exists
+            if ($banner->image) {
+                Storage::delete('public/banner/' . $banner->image);
             }
-        }
-        if ($request->input('type') == "Fix") {
-            if ($request->hasFile('image')) {
-                if ($banner->image) {
-                    // Extract file name if stored as full URL
-                    $oldFileName = basename($banner->image);
-                    Storage::delete('public/banner/' . $oldFileName);
-                }
-                $file = $request->file('image');
-                $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                $extension = $file->getClientOriginalExtension();
-                $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                // Store file
-                $file->storeAs('public/banner', $fileNameToStore);
+            // Store file and get filename
+            $file = $request->file('image');
+            $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
 
-                // Optional image resizing using Intervention Image
-                // $image = \Image::make(public_path('storage/banner/' . $fileNameToStore));
-                // if ($request->input('type') === 'Slider') {
-                //     $image->resize(1200, 700)->save();
-                // } elseif ($request->input('type') === 'Fix') {
-                //     $image->resize(1110, 192)->save();
-                // }
+            $file->storeAs('public/banner', $fileNameToStore);
 
-                // Store full URL in DB
-                $banner->image = asset('storage/banner/' . $fileNameToStore);
-            }
+            // Save only filename (or relative path) to DB
+            $banner->image = $fileNameToStore;
         }
 
 
@@ -346,12 +271,9 @@ class BannerController extends Controller
                 return redirect('admin/banners');
             }
 
-            if ($banner->image) {
-                // Extract file name if stored as full URL
-                $oldFileName = basename($banner->image);
-                Storage::delete('public/banner/' . $oldFileName);
+                        if ($banner->image) {
+                Storage::delete('public/banner/' . $banner->image);
             }
-
             $banner->delete();
 
                      $currentDateTime = Carbon::now();

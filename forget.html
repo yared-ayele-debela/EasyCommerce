@@ -5,6 +5,8 @@
   <title>Forgot Password - SafeCity</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 <body class="bg-light d-flex align-items-center" style="min-height: 100vh;">
 
@@ -17,21 +19,83 @@
             <p class="text-muted text-center mb-4">
               Enter your email and we’ll send you a link to reset your password.
             </p>
-            <form>
-              <div class="mb-3">
-                <label class="form-label">Email Address</label>
-                <input type="email" class="form-control" placeholder="you@example.com" required>
-              </div>
-              <button type="submit" class="btn btn-primary w-100">Send Reset Link</button>
-              <div class="mt-3 text-center">
-                <a href="login.html">Back to Login</a>
-              </div>
-            </form>
+            <!-- Hidden Room ID -->
+<input type="hidden" id="room_id" name="room_id" value="{{ $room->id }}">
+
+<!-- Check-in Date -->
+<div class="mb-3">
+    <label for="check_in_date">Check-in Date</label>
+    <input type="text" id="check_in_date" name="check_in_date" class="form-control" required>
+</div>
+
+<!-- Check-out Date -->
+<div class="mb-3">
+    <label for="check_out_date">Check-out Date</label>
+    <input type="text" id="check_out_date" name="check_out_date" class="form-control" required>
+</div>
+
+<!-- Total Nights -->
+<div class="mb-3">
+    <label for="total_night">Total Night</label>
+    <input type="number" id="total_night" name="total_night" class="form-control" readonly>
+</div>
+
           </div>
         </div>
       </div>
     </div>
   </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const roomId = document.getElementById('room_id').value;
+        const checkInInput = document.getElementById('check_in_date');
+        const checkOutInput = document.getElementById('check_out_date');
+        const totalNightInput = document.getElementById('total_night');
+
+        let reservedDates = [];
+        let checkInPicker;
+        let checkOutPicker;
+
+        // Fetch reserved dates
+        if (roomId) {
+            fetch(`/admin/rooms/${roomId}/reserved-dates`)
+                .then(res => res.json())
+                .then(disabled => {
+                    reservedDates = disabled;
+
+                    // Init check-in date picker
+                    checkInPicker = flatpickr(checkInInput, {
+                        dateFormat: "Y-m-d",
+                        disable: reservedDates,
+                        onChange: function (selectedDates, selectedDate) {
+                            if (!selectedDate) return;
+                            // Destroy previous check-out picker if exists
+                            if (checkOutPicker) checkOutPicker.destroy();
+
+                            // Init check-out date picker
+                            checkOutPicker = flatpickr(checkOutInput, {
+                                dateFormat: "Y-m-d",
+                                disable: reservedDates,
+                                minDate: selectedDate,
+                                onChange: function (outDates, outDate) {
+                                    if (selectedDate && outDate) {
+                                        const start = new Date(selectedDate);
+                                        const end = new Date(outDate);
+                                        const diffTime = end - start;
+                                        const nights = diffTime / (1000 * 60 * 60 * 24);
+                                        totalNightInput.value = nights;
+                                    }
+                                }
+                            });
+
+                            checkOutInput.disabled = false;
+                        }
+                    });
+                })
+                .catch(err => console.error('Failed to load reserved dates', err));
+        }
+    });
+</script>
 
 </body>
 </html>

@@ -12,6 +12,7 @@ use App\Models\Category;
 use App\Models\CmsPage;
 use App\Models\Country;
 use App\Models\DeliveryAddress;
+use App\Models\DeliverySetting;
 use App\Models\Discount;
 use App\Models\EcommerceOrderPaymentInfo;
 use App\Models\Order;
@@ -39,6 +40,101 @@ use RealRashid\SweetAlert\Facades\Alert;
 
 class CheckoutController extends Controller
 {
+
+     public function calculateShipping(Request $request)
+{
+    $addressId = $request->address_id;
+    if ($addressId === 'current_address') {
+        if (!$request->has('current_lat') || !$request->has('current_lng')) {
+            return response()->json(['success' => false, 'message' => 'Missing current location']);
+        }
+        $address = (object)[
+            'latitude' => $request->current_lat,
+            'longitude' => $request->current_lng
+        ];
+    } else {
+        $address = DeliveryAddress::find($addressId);
+        if (!$address) {
+            return response()->json(['success' => false, 'message' => 'Invalid address']);
+        }
+    }
+    $cart =  Cart::getCartItems();
+
+    // dd($cart);
+    $vendorShipping = [];
+    $subtotal = 0;
+
+    foreach ($cart as $item) {
+        $product = Product::find($item['product_id']);
+        if (!$product || !$product->vendor) continue;
+
+        $vendorId = $product->vendor->id;
+        // dd($vendorId);
+
+        $vendorLat = $product->vendor->latitude;
+        $vendorLng = $product->vendor->longitude;
+        // dd($vendorLat,$vendorLng);
+
+        $customerLat = $address->latitude;
+        $customerLng = $address->longitude;
+
+        $distance = $this->calculateDistances($vendorLat, $vendorLng, $customerLat, $customerLng);
+        $weight = $product->weight ?? 1 * $item['quantity'];
+        $zone = $product->vendor->zone;
+
+        // Get shipping charge per vendor
+        $baseShipping = ShippingCharge::getShippingCharges($weight, zone: $zone); // ← Modify this method to accept vendor
+
+        $delivery_settings=DeliverySetting::first();
+        $distanceFeePerKm = $delivery_settings->fee_per_km; // ETB per KM
+        $distanceShipping = $distance * $distanceFeePerKm;
+
+        $shipping = $baseShipping + $distanceShipping;
+
+        // Grouping shipping per vendor
+        if (!isset($vendorShipping[$vendorId])) {
+            $vendorShipping[$vendorId] = [
+                'shipping' => 0,
+                'products' => [],
+            ];
+        }
+
+        $vendorShipping[$vendorId]['shipping'] += $shipping;
+        $vendorShipping[$vendorId]['products'][] = $product->id;
+
+        $price=Product::getDiscountProductPrice(product_id: $item['product_id']);
+        // dd($price['final_price']);
+        $subtotal += $price['final_price'];
+    }
+    // Sum final shipping from all vendors
+    $finalShipping = collect(value: $vendorShipping)->sum('shipping');
+
+    $totalAmount = $subtotal + $finalShipping;
+
+    // dd($finalShipping, $totalAmount, $vendorShipping);
+    return response()->json([
+        'success' => true,
+        'shipping_fee' => number_format($finalShipping, 2),
+        'total_amount' => number_format($totalAmount, 2),
+        'vendor_details' => $vendorShipping // Optional: useful for debugging
+    ]);
+}
+
+private function calculateDistances($lat1, $lon1, $lat2, $lon2)
+{
+    $earthRadius = 6371; // Radius in KM
+    $dLat = deg2rad($lat2 - $lat1);
+    $dLon = deg2rad($lon2 - $lon1);
+
+    $a = sin($dLat/2) * sin($dLat/2) +
+        cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+        sin($dLon/2) * sin($dLon/2);
+
+    $c = 2 * atan2(sqrt($a), sqrt(1-$a));
+    $distance = $earthRadius * $c;
+
+    return $distance;
+}
     public function showOrderSummary(Request $request)
 {
     $getCartItems = Cart::getCartItems();
@@ -154,7 +250,7 @@ class CheckoutController extends Controller
                 'redirect_url' => url('my-cart')
             ]);
         }
-        $totalShipping = 0;
+        $totalShipping = $request->delivery_fee;
         $total_price = 0;
         $totalTax = 0;
         foreach ($getCartItems as $item) {
@@ -201,11 +297,7 @@ class CheckoutController extends Controller
 
             $product=Product::where('id',$item['product_id'])->first();
             // dd($product);
-            $vendor_city=Vendor::where('id',$product->vendor_id)->first();
-            $city=$vendor_city->zone;
 
-            $shipping = ShippingCharge::getShippingCharges($totalWeight, $city);
-            $totalShipping += $shipping;
 
         }
 
@@ -448,11 +540,11 @@ class CheckoutController extends Controller
             }
          }
 
-        $pdf = Pdf::loadView('Ecommerce.order.receipt', ['order' => $order]);
-        $pdfPath = storage_path('app/public/receipts/order_' . $order->order_code . '.pdf');
-        $pdf->save($pdfPath); // Save to storage
+        // $pdf = Pdf::loadView('Ecommerce.order.receipt', ['order' => $order]);
+        // $pdfPath = storage_path('app/public/receipts/order_' . $order->order_code . '.pdf');
+        // $pdf->save($pdfPath); // Save to storage
 
-        Mail::to($order->email)->queue(new OrderPlaced($order, $pdfPath));
+        // Mail::to($order->email)->queue(new OrderPlaced($order, $pdfPath));
         return response()->json([
             'status' => 'success',
             'message' => 'Order placed successfully!',
@@ -460,40 +552,5 @@ class CheckoutController extends Controller
         ]);
 
     }
-
-    // app/Http/Controllers/CheckoutController.php
-    public function calculateShipping(Request $request)
-    {
-        $request->validate(['address_id' => 'required|exists:delivery_address,id']);
-        $address=DeliveryAddress::where('id',$request->address_id)->first();
-        $getCartItems = Cart::getCartItems();
-
-        $totalShipping = 0;
-
-        foreach ($getCartItems as $item) {
-            $totalWeight = 0;
-
-            $getDiscountAttributePrice = Product::getDiscountAttributePrice($item['product_id'], $item['size']);
-            $product=Product::where('id',$item['product_id'])->first();
-            // dd($product);
-            $vendor_city=Vendor::where('id',$product->vendor_id)->first();
-            $city=$vendor_city->city;
-
-            // dd($vendor_city);
-            $product_quantity = $item['quantity'];
-            $product_weight = $item['product']['product_weight'];
-            $totalWeight += $product_weight;
-
-
-            // dd($product_weight);
-            $shipping = ShippingCharge::getShippingCharges($totalWeight, $city);
-            // dd($shipping);
-            $totalShipping += $shipping;
-        }
-
-        return response()->json(['fee' => $totalShipping]);
-    }
-
-
 
 }

@@ -47,7 +47,7 @@
                  </div>
                 <div class="col-md-4 pt-3">
                 <div class="row">
-                    <img src="{{ $product->product_image }}" style="width:180px; margin-left:15px;  box-shadow:1px 1px 2px gray; height:200px" class=" rounded" alt="">
+                    <img src="{{ asset('storage/' . $product->product_image) }}" style="width:180px; margin-left:15px;  box-shadow:1px 1px 2px gray; height:200px" class=" rounded" alt="">
                 </div>
                 </div>
                 <div class="col-md-4 pt-3">
@@ -83,7 +83,7 @@
                       @foreach ($product['images'] as $k => $image)
                        <tr>
                           <td>{{ $image['id'] }}</td>
-                          <td> <img src="{{ $image['image'] }}" style="width: 50px; box-shadow:1px 1px 2px 2px rgb(90, 89, 89); border-radius:0.05rem; height:50px" alt=""> </td>
+                          <td> <img src="{{ asset('storage/' . $image->image) }}" style="width: 50px; box-shadow:1px 1px 2px 2px rgb(90, 89, 89); border-radius:0.05rem; height:50px" alt=""> </td>
                           <td>
                              @if($image['status']==1)
                                    <a href="{{ url('admin/products/inactive_prodcutImage/'.$image['id']) }}"><span style="border-radius: 0.2rem;padding-left:3px;padding-right:3px;background-color:rgb(62, 162, 51); color:white">Active</span></a>

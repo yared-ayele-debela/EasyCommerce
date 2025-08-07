@@ -89,7 +89,7 @@
                             <td>{{ $hotel->location }}</td>
                             <td>
                                 @if($hotel->banner_image)
-                                <img src="{{ $hotel->banner_image }}" width="40">
+                                <img src="{{ asset('storage/' . $hotel->banner_image) }}" width="40">
                                 @endif
                             </td>
                             <td>
@@ -115,7 +115,7 @@
                                                     @foreach($hotel->photos as $photo)
                                                     <div class="col-md-3">
                                                         <div class="card mb-3">
-                                                            <img src="{{$photo->photo_url }}" class=" img-fluid" alt="Photo">
+                                                            <img src="{{ asset('storage/' . $photo->photo_url) }}" class=" img-fluid" alt="Photo">
                                                             <div class="card-body p-2">
                                                                 <form action="{{ route('hotel_photos.destroy', $photo->id) }}" method="POST">
                                                                     @csrf

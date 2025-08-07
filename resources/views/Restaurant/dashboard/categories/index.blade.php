@@ -42,7 +42,7 @@ $user = Auth::guard('admin')->user();
                     <tr>
                         <td>{{ $category->name }}</td>
                         <td>{{ $category->description }}</td>
-                        <td><img src="{{ $category->image }}" width="50"></td>
+                        <td><img src="{{ asset('storage/' . $category->image) }}" loading="lazy" width="50"></td>
                         <td>{{ $category->discount }} {{ $category->discount_type == 'percentage' ? '%' : 'ETB' }}</td>
                         <td>
                             <div class="btn btn-sm {{ $category->is_active ? 'btn-success' : 'btn-danger' }}">
@@ -91,7 +91,7 @@ $user = Auth::guard('admin')->user();
               <span class="text-danger">height: 103 px width: 103 px</span>
                                             <input type="file" name="image" class="form-control">
                                             @if($category->image)
-                                            <img src="{{ $category->image }}" width="50">
+                                            <img src="{{ asset('storage/' . $category->image) }}" width="50">
                                             @endif
                                         </div>
 

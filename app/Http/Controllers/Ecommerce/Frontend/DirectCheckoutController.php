@@ -12,6 +12,7 @@ use App\Models\Category;
 use App\Models\CmsPage;
 use App\Models\Country;
 use App\Models\DeliveryAddress;
+use App\Models\DeliverySetting;
 use App\Models\Discount;
 use App\Models\EcommerceOrderPaymentInfo;
 use App\Models\Order;
@@ -40,8 +41,85 @@ use RealRashid\SweetAlert\Facades\Alert;
 class DirectCheckoutController extends Controller
 {
     //
+    public function calculateShipping(Request $request)
+    {
+
+        $addressId = $request->address_id;
+
+        $productId = $request->product_id;
+        $qty = (int)$request->quantity;
+
+        $address = DeliveryAddress::find($addressId);
+        $product = Product::find($productId);
+
+        if (!$product) {
+        return response()->json(['success' => false, 'message' => 'Invalid product']);
+    }
+
+        if ($addressId === 'current_address') {
+        if (!$request->has('current_lat') || !$request->has('current_lng')) {
+            return response()->json(['success' => false, 'message' => 'Missing current location']);
+        }
+
+        $address = (object)[
+            'latitude' => $request->current_lat,
+            'longitude' => $request->current_lng
+        ];
+    } else {
+        $address = DeliveryAddress::find($addressId);
+        if (!$address) {
+            return response()->json(['success' => false, 'message' => 'Invalid address']);
+        }
+    }
+
+
+
+        // Calculate total weight
+        $weight = $product->product_weight * $qty;
+
+        // Get vendor zone
+        $zone = $product->vendor->zone ?? 'default';
+
+        // Base shipping from database
+        $baseShipping = ShippingCharge::getShippingCharges($weight, $zone);
+
+        // Optional: Distance-based shipping
+        $distanceShipping = 0;
+        $delivery_settings=DeliverySetting::first();
+        if ($product->vendor->latitude && $product->vendor->longitude && $address->latitude && $address->longitude) {
+            $distance = $this->calculateDistance(
+                $product->vendor->latitude,
+                $product->vendor->longitude,
+                $address->latitude,
+                $address->longitude
+            );
+            $distanceShipping = $distance * $delivery_settings->fee_per_km; // 10 ETB per KM
+        }
+
+        $finalShipping = $baseShipping + $distanceShipping;
+
+        return response()->json([
+            'success' => true,
+            'shipping_fee' => round($finalShipping, 2)
+        ]);
+    }
+
+    // Haversine formula
+    private function calculateDistance($lat1, $lon1, $lat2, $lon2)
+    {
+        $earthRadius = 6371;
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLon = deg2rad($lon2 - $lon1);
+
+        $a = sin($dLat / 2) * sin($dLat / 2) +
+            cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+            sin($dLon / 2) * sin($dLon / 2);
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+        return $earthRadius * $c; // distance in KM
+    }
     public function directCheckout(Request $request)
     {
+
         $product = Product::findOrFail($request->product_id);
         $final_price=$request->final_price;
         $unit_price=$request->unit_price;
@@ -54,7 +132,6 @@ class DirectCheckoutController extends Controller
 
         $totalPrice = $final_price;
         $totalTax = 0;
-        $totalShipping = 0;
 
         $taxPercent = $product->product_tax;
         $totalTax += round($final_price * $taxPercent / 100, 2);
@@ -62,8 +139,7 @@ class DirectCheckoutController extends Controller
         $weight = $product->product_weight;
         $zone = $product->vendor->zone;
         $shipping = ShippingCharge::getShippingCharges($weight, $zone);
-        $totalShipping += $shipping;
-        $totalPrice += $totalShipping;
+
 
         $tips=Tip::all();
 
@@ -84,7 +160,6 @@ class DirectCheckoutController extends Controller
             'total' => $final_price,
             'totalPrice' =>$totalPrice,
             'totalTax' =>$totalTax,
-            'totalShipping'=>$totalShipping,
             'tips' =>$tips,
             'banks' =>$banks,
             'countries'=>$countries,
@@ -135,7 +210,7 @@ class DirectCheckoutController extends Controller
         DB::beginTransaction();
 
         $grand_total = $data['final_price'] + $data['shipping'] + $tipAmount+ $data['tax'] - Session::get('couponAmount');
-        // dd($grand_total);
+
         Session::put('grand_total', $grand_total);
 
         $user_code = str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
@@ -307,11 +382,11 @@ class DirectCheckoutController extends Controller
             }
          }
 
-        $pdf = Pdf::loadView('Ecommerce.order.receipt', ['order' => $order]);
-        $pdfPath = storage_path('app/public/receipts/order_' . $order->order_code . '.pdf');
-        $pdf->save($pdfPath); // Save to storage
+        // $pdf = Pdf::loadView('Ecommerce.order.receipt', ['order' => $order]);
+        // $pdfPath = storage_path('app/public/receipts/order_' . $order->order_code . '.pdf');
+        // $pdf->save($pdfPath); // Save to storage
 
-        Mail::to($order->email)->queue(new OrderPlaced($order, $pdfPath));
+        // Mail::to($order->email)->queue(new OrderPlaced($order, $pdfPath));
         return response()->json([
             'status' => 'success',
             'message' => 'Order placed successfully!',

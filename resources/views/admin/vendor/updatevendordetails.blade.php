@@ -103,7 +103,7 @@
                     <small class=" text-danger">{{ $message }}</small>
                     @enderror
                     @if(!empty(Auth::guard('admin')->user()->image))
-                    <img src="{{ Auth::guard('admin')->user()->image }}" style="width: 40px; height:40px;" class="" alt="">
+                    <img src="{{ asset('storage/' . Auth::guard('admin')->user()->image) }}" style="width: 40px; height:40px;" class="" alt="">
                     @endif
                 </div>
                 </div>

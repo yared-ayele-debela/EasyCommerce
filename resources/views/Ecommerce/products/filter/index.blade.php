@@ -39,7 +39,7 @@
     </div>
     <div class="row">
         <div class="col-md-3">
-            @include('ecommerce.products.filter.filters')
+            @include('Ecommerce.products.filter.filters')
         </div>
         <!-- Product Display -->
          <div class="col-md-9">
@@ -47,12 +47,12 @@
                 <div class="loader mx-auto position-relative"></div>
             </div>
             <div id="productContainer">
-                @include('ecommerce.products.filter.product-list', ['products' => \App\Models\Product::paginate(20)])
+                @include('Ecommerce.products.filter.product-list', ['products' => \App\Models\Product::paginate(20)])
             </div>
         </div>
     </div>
 </div>
-@include('ecommerce.products.filter.script')
+@include('Ecommerce.products.filter.script')
 
 {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>

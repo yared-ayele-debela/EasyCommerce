@@ -214,6 +214,46 @@ $cartCount = $sessionCount + $helperCount;
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
 
 <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const locationAllowed = localStorage.getItem('locationAllowed');
+    const userLat = localStorage.getItem('user_lat');
+    const userLng = localStorage.getItem('user_lng');
+
+    // Show modal if no location permission or data
+    if (!locationAllowed || !userLat || !userLng) {
+        const modal = new bootstrap.Modal(document.getElementById('locationModal'));
+        modal.show();
+
+        document.getElementById('allowLocationBtn').addEventListener('click', function () {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+
+                    localStorage.setItem('user_lat', lat);
+                    localStorage.setItem('user_lng', lng);
+                    localStorage.setItem('locationAllowed', 'true');
+
+                    sendLocationToServer(lat, lng);
+                    processProducts(lat, lng);
+
+                    modal.hide();
+                    showAlert('success', 'Location access granted!');
+                }, function () {
+                    document.getElementById('locationError').classList.remove('d-none');
+                });
+            }
+        });
+    } else {
+        // Already has location, process products
+        processProducts(parseFloat(userLat), parseFloat(userLng));
+    }
+
+    // Start live location tracking
+    startRealTimeLocationTracking();
+});
+
+// Function to calculate distance using Haversine formula
 function haversineDistance(lat1, lon1, lat2, lon2) {
     const toRad = deg => deg * Math.PI / 180;
     const R = 6371;
@@ -225,6 +265,7 @@ function haversineDistance(lat1, lon1, lat2, lon2) {
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+// Show/hide products based on user distance
 function processProducts(lat, lng) {
     document.querySelectorAll('.product-card').forEach(card => {
         const restLat = parseFloat(card.dataset.restaurantLat);
@@ -237,38 +278,58 @@ function processProducts(lat, lng) {
         const disabledBtn = card.querySelector('.cart-disabled');
 
         if (distance <= radius) {
-            addToCartBtn.classList.remove('d-none');
+            addToCartBtn?.classList.remove('d-none');
+            disabledBtn?.classList.add('d-none');
         } else {
-            disabledBtn.classList.remove('d-none');
+            disabledBtn?.classList.remove('d-none');
+            addToCartBtn?.classList.add('d-none');
         }
     });
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-    const storedLat = localStorage.getItem('user_lat');
-    const storedLng = localStorage.getItem('user_lng');
+// Send user location to server
+function sendLocationToServer(lat, lng) {
+    fetch('/set-user-location', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ lat, lng })
+    })
+    .then(response => response.json())
+    .then(data => console.log('Server location updated'))
+    .catch(error => console.error('Location update failed:', error));
+}
 
-    if (storedLat && storedLng) {
-        processProducts(parseFloat(storedLat), parseFloat(storedLng));
-    } else {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
+// Real-time tracking with throttling every 5 seconds
+let lastUpdateTime = 0;
+function startRealTimeLocationTracking() {
+    if (navigator.geolocation) {
+        navigator.geolocation.watchPosition(function (position) {
+            const now = Date.now();
+            if (now - lastUpdateTime >= 5000) { // Throttle every 5 sec
+                lastUpdateTime = now;
+
                 const lat = position.coords.latitude;
                 const lng = position.coords.longitude;
-
+                // console.log(`Updated at: ${new Date(now).toLocaleTimeString()} | Lat: ${lat}, Lng: ${lng}`);
                 localStorage.setItem('user_lat', lat);
                 localStorage.setItem('user_lng', lng);
-
+                sendLocationToServer(lat, lng);
                 processProducts(lat, lng);
-            }, function (error) {
-                console.warn('Geolocation denied:', error);
-                document.querySelectorAll('.product-card .cart-disabled').forEach(btn => {
-                    btn.classList.remove('d-none');
-                });
-            });
-        }
+            }
+        }, function (error) {
+            // console.error('Real-time tracking failed:', error);
+        }, {
+            enableHighAccuracy: true,
+            maximumAge: 0,
+            timeout: 5000
+        });
+    } else {
+        // console.warn("Geolocation is not supported by this browser.");
     }
-});
+}
 </script>
 <script>
     let currentScreen = 1;
@@ -336,48 +397,8 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
 </script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        if (!localStorage.getItem('locationAllowed') || !localStorage.getItem('user_lat')|| !localStorage.getItem('user_lng')) {
-            const modal = new bootstrap.Modal(document.getElementById('locationModal'));
 
-            modal.show();
-            document.getElementById('allowLocationBtn').addEventListener('click', function() {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(function(position) {
-                        const userLat = position.coords.latitude;
-                        const userLng = position.coords.longitude;
-
-                        localStorage.setItem('user_lat', userLat);
-                        localStorage.setItem('user_lng', userLng);
-                        localStorage.setItem('locationAllowed', 'true');
-
-                        fetch(`/set-user-location`, {
-                                method: 'POST'
-                                , headers: {
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                                    ,'Content-Type': 'application/json'
-                                }
-                                , body: JSON.stringify({
-                                    lat: userLat
-                                    , lng: userLng
-                                })
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                localStorage.setItem('locationAllowed', 'true');
-                                modal.hide();
-                                showAlert('success', 'Location saved')
-                            });
-                    }, function() {
-                        document.getElementById('locationError').style.display = 'block';
-                    });
-                } else {}
-            });
-        }
-    });
-</script>
-
+{{-- bank selection --}}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const select = document.getElementById('bank-select');
@@ -405,44 +426,87 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 </script>
-
+{{-- restaurant loading --}}
 <script>
-    let pages = 1;
-    let loadings = false;
+let pages = 1;
+let loadings = false;
 
-    function loadMoreRestaurants() {
-        if (loadings) return;
+function haversine(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Radius of Earth in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in km
+}
 
-        loadings = true;
-        $('#restaurant_loading').show();
-        pages++;
+function updateRestaurantDistances() {
+    const userLat = parseFloat(localStorage.getItem('user_lat')) || 9.03;
+    const userLng = parseFloat(localStorage.getItem('user_lng')) || 38.74;
 
-        $.ajax({
-            url: "{{ route('fetch.restaurants') }}?page=" + pages
-            , type: "GET"
-            , success: function(data) {
-                if (data.trim().length === 0) {
-                    $(window).off('scroll');
-                    $('#restaurant_loading').html('<p class="text-muted">No more restaurants.</p>');
-                    return;
-                }
-                $('#auto-restaurant-container').append(data);
-                $('#restaurant_loading').hide();
-                loadings = false;
-            }
-            , error: function() {
-                $('#restaurant_loading').html('<p class="text-danger">Something went wrong.</p>');
-            }
-        });
-    }
+    document.querySelectorAll('.restaurant-card').forEach(card => {
+        const lat = parseFloat(card.dataset.lat);
+        const lng = parseFloat(card.dataset.lng);
+        const radius = parseFloat(card.dataset.radius);
 
-    $(window).on('scroll', function() {
-        if ($(window).scrollTop() + $(window).height() >= $(document).height() - 200) {
-            loadMoreRestaurants();
+        const distance = haversine(userLat, userLng, lat, lng);
+        const time = Math.ceil((distance / 40) * 60); // 40 km/h
+
+        card.querySelector('.distance-badge').innerHTML =
+            `<i class="bi bi-geo-alt-fill text-danger me-1"></i>${distance.toFixed(1)} km`;
+
+        card.querySelector('.time-badge').innerHTML =
+            `<i class="bi bi-clock-fill text-primary me-1"></i>${time} min`;
+
+        if (distance > radius) {
+            card.querySelector('.out-of-range')?.classList.remove('d-none');
         }
     });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    updateRestaurantDistances();
+});
+
+function loadMoreRestaurants() {
+    if (loadings) return;
+
+    loadings = true;
+    $('#restaurant_loading').show();
+    pages++;
+
+    $.ajax({
+        url: "{{ route('fetch.restaurants') }}?page=" + pages,
+        type: "GET",
+        success: function(data) {
+            if (data.trim().length === 0) {
+                $(window).off('scroll');
+                $('#restaurant_loading').html('<p class="text-muted">No more restaurants.</p>');
+                return;
+            }
+
+            $('#auto-restaurant-container').append(data);
+            $('#restaurant_loading').hide();
+            loadings = false;
+
+                updateRestaurantDistances();
+        },
+        error: function() {
+            $('#restaurant_loading').html('<p class="text-danger">Something went wrong.</p>');
+        }
+    });
+}
+
+$(window).on('scroll', function () {
+    if ($(window).scrollTop() + $(window).height() >= $(document).height() - 200) {
+        loadMoreRestaurants();
+    }
+});
 
 </script>
+
 <script>
     let page = 1;
     let loading = false;
@@ -1004,7 +1068,9 @@ navText: [
                             , "Content-Type": "application/json"
                         }
                         , body: JSON.stringify({
-                            product_id: productId
+                            product_id: productId,
+                            user_lat: localStorage.getItem('user_lat'),
+                            user_lng: localStorage.getItem('user_lng')
                             , size: null
                             , price: productPrice
                             , quantity: 1

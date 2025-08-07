@@ -41,7 +41,7 @@
                                         <div class="d-flex align-items-center">
                                             @if($reservation->room->image)
                                             <a href="{{ url('hotel/room/'.$reservation->room->id.'/detail') }}">
-                                            <img src="{{$reservation->room->image }}" class="img-thumbnail me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                            <img src="{{ asset('storage/' . $reservation->room->image) }}" class="img-thumbnail me-3" style="width: 50px; height: 50px; object-fit: cover;">
                                             </a>
                                             @endif
                                             <div>

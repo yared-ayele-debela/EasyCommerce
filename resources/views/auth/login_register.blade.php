@@ -116,7 +116,7 @@
                         </label>
                         <button type="submit" class="btn bg-primary w-100 text-white mb-2">Login</button>
                         <a href="{{ url('delivery-boy/login') }}" type="submit" class="btn btn-outline-secondary w-100">Login as Driver</a>
-
+                        <a href="{{ url('admin/login') }}" target="_blank" type="submit" class="btn btn-outline-secondary w-100 mt-2">Login as Vendor</a>
                         <a href="{{ route('google.login') }}" class="btn border border-1 w-100 text-dark mt-2"><img src="{{ asset('restaurant_frontend/Logo-google-icon-PNG.png') }}" width="25"></img> Sign in with Google</a>
                         <div class="py-2">
                             <a href="{{ url('auth/forgot-password') }}" class="text-dark">Forget Password</a>

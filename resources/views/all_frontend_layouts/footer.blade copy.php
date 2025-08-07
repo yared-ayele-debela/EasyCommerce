@@ -56,6 +56,7 @@ $cartCount = $sessionCount + $helperCount;
                     <li class="mb-2"><a href="{{ url('/') }}" class="text-white ">Home</a></li>
                     <li class="mb-2"><a href="{{ url('faq') }}" class="text-white ">FAQ</a></li>
                     <li class="mb-2"><a href="{{ url('contact') }}" class="text-white ">Contact</a></li>
+                    <li class="mb-2"><a href="{{ url('delete-account') }}" class="text-white ">Delete Your Account</a></li>
                 </ul>
             </div>
 
@@ -69,10 +70,10 @@ $cartCount = $sessionCount + $helperCount;
                     <div class="col-8 col-md-8">
                         <div class="d-grid gap-2 col-8 mx-auto">
                             <a href="https://myeasyhub.com/apk/myeasyhub.apk" class="btn btn-primary" target="_blank">
-                            <img src="{{ asset('restaurant_frontend/assets/img/playstore.png') }}" alt="Google Play" class="img-fluid" style="width: 100px;">
+                                <img src="{{ asset('restaurant_frontend/assets/img/playstore.png') }}" alt="Google Play" class="img-fluid" style="width: 100px;">
                             </a>
                             <a href="https://myeasyhub.com/apk/myeasyhub.apk" class="btn btn-primary" target="_blank">
-                            <img src="{{ asset('restaurant_frontend/assets/img/appstore.png') }}" alt="App Store" class="img-fluid" style="width: 100px;">
+                                <img src="{{ asset('restaurant_frontend/assets/img/appstore.png') }}" alt="App Store" class="img-fluid" style="width: 100px;">
                             </a>
                         </div>
                     </div>
@@ -113,19 +114,19 @@ $cartCount = $sessionCount + $helperCount;
     </div>
 </footer>
 <!-- Location Request Modal -->
-<div class="modal fade" id="locationModal" tabindex="-1" aria-labelledby="locationModalLabel" aria-hidden="true"  data-bs-backdrop="static" data-bs-keyboard="false">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content shadow">
-      <div class="modal-header">
-        <h5 class="modal-title" id="locationModalLabel">Enable Your Location</h5>
-      </div>
-      <div class="modal-body text-center">
-        <p>To give you a better experience, we need your location.</p>
-        <div id="locationError" class="text-danger mb-2" style="display: none;">Failed to access location. Please allow access.</div>
-        <button id="allowLocationBtn" class="btn btn-primary">Allow Location</button>
-      </div>
+<div class="modal fade" id="locationModal" tabindex="-1" aria-labelledby="locationModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow">
+            <div class="modal-header">
+                <h5 class="modal-title" id="locationModalLabel">Enable Your Location</h5>
+            </div>
+            <div class="modal-body text-center">
+                <p>To give you a better experience, we need your location.</p>
+                <div id="locationError" class="text-danger mb-2" style="display: none;">Failed to access location. Please allow access.</div>
+                <button id="allowLocationBtn" class="btn btn-primary">Allow Location</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 <!-- Bottom Navigation Bar -->
 <nav class="bottom-nav d-md-none fixed-bottom bg-white shadow-sm">
@@ -167,9 +168,9 @@ $cartCount = $sessionCount + $helperCount;
                 <i class="bi bi-person-circle fs-5 text-primary"></i>
                 @endif
                 <span id="notification-badge2" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
-                0
-                <span class="visually-hidden">unread messages</span>
-                <div class="small text-dark">Profile</div>
+                    0
+                    <span class="visually-hidden">unread messages</span>
+                    <div class="small text-dark">Profile</div>
             </a>
             <ul class="dropdown-menu dropdown-menu-end shadow">
                 <li>
@@ -178,13 +179,16 @@ $cartCount = $sessionCount + $helperCount;
                         <span id="notification-badge3" class="badge bg-danger rounded-pill" style="display: none;">0<span>
                     </a>
                 </li>
-                <li><a class="dropdown-item" href="{{ url('user/account/update') }}"><i class="bi bi-gear text-primary"></i> My Profile</a></li>
+                <li><a class="dropdown-item" href="{{ url('user/account/update') }}"><i class="bi bi-gear text-primary"></i> Manage My Account</a></li>
                 <li><a class="dropdown-item" href="{{ url('my-orders') }}"><i class="bi bi-bag text-primary"></i> My Orders</a></li>
                 <li><a class="dropdown-item" href="{{ url('my-delivery-addresses') }}"><i class="bi bi-geo-alt text-primary"></i> My Addresses</a></li>
+                <li><a class="dropdown-item" href="{{ url('page/terms_and_conditions') }}"><i class="bi bi-gear text-primary"></i> Terms and Conditions</a></li>
+                <li><a class="dropdown-item" href="{{ url('page/privacy-policy') }}"><i class="bi bi-gear text-primary"></i> Privacy Policy</a></li>
                 <li>
                     <hr class="dropdown-divider">
                 </li>
                 <li><a class="dropdown-item text-danger" href="{{ url('user/logout') }}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                <li><a class="dropdown-item text-danger" href="{{ url('delete-account') }}"><i class="bi bi-trash"></i>Delete Your Account</a></li>
             </ul>
         </div>
         @else
@@ -197,6 +201,7 @@ $cartCount = $sessionCount + $helperCount;
                 <li><a class="dropdown-item" href="{{ route('auth.login') }}">Login As Customer</a></li>
                 <li><a class="dropdown-item" href="{{ route('vendor-register') }}"> Become A Vendor</a></li>
                 <li><a class="dropdown-item" href="{{ url('register/delivery-man') }}"> Become A Delivery Man</a></li>
+                <li><a class="dropdown-item" href="{{ url('delete-account') }}"> Delete Your Account</a></li>
             </ul>
         </div>
         @endif
@@ -207,92 +212,202 @@ $cartCount = $sessionCount + $helperCount;
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{ asset('restaurant_frontend/assets/js/index.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+
 <script>
-    const screens = ['splash1', 'splash2', 'splash3','splash4'];
-    let current = 0;
+function haversineDistance(lat1, lon1, lat2, lon2) {
+    const toRad = deg => deg * Math.PI / 180;
+    const R = 6371;
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a = Math.sin(dLat / 2) ** 2 +
+              Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+              Math.sin(dLon / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
 
-    function updateScreens() {
-      screens.forEach((id, index) => {
-        document.getElementById(id).classList.toggle('active', index === current);
-      });
-    }
+function processProducts(lat, lng) {
+    document.querySelectorAll('.product-card').forEach(card => {
+        const restLat = parseFloat(card.dataset.restaurantLat);
+        const restLng = parseFloat(card.dataset.restaurantLng);
+        const radius = parseFloat(card.dataset.deliveryRadius);
 
-    function nextScreen() {
-      if (current < screens.length - 1) {
-        current++;
-        updateScreens();
-      }
-    }
+        const distance = haversineDistance(lat, lng, restLat, restLng);
 
-    function prevScreen() {
-      if (current > 0) {
-        current--;
-        updateScreens();
-      }
-    }
+        const addToCartBtn = card.querySelector('.add-to-cart');
+        const disabledBtn = card.querySelector('.cart-disabled');
 
-    function skipAll() {
-      screens.forEach(id => {
-        document.getElementById(id).style.display = 'none';
-      });
-      document.getElementById('main').style.display = 'block';
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-      const isMobile = window.innerWidth < 768;
-      const hasVisited = localStorage.getItem("hasVisited");
-      if (isMobile && !hasVisited) {
-        document.getElementById(screens[current]).classList.add('active');
-      } else {
-        skipAll();
-      }
-      localStorage.setItem("hasVisited", "true");
-
+        if (distance <= radius) {
+            addToCartBtn.classList.remove('d-none');
+        } else {
+            disabledBtn.classList.remove('d-none');
+        }
     });
-  </script>
+}
 
-<script>
- document.addEventListener('DOMContentLoaded', function () {
-    if (!localStorage.getItem('locationAllowed') && !localStorage.getItem('user_lat') && !localStorage.getItem('user_lng')) {
-        const modal = new bootstrap.Modal(document.getElementById('locationModal'));
+function startTrackingLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.watchPosition(function (position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
 
-        modal.show();
-        document.getElementById('allowLocationBtn').addEventListener('click', function () {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function (position) {
-                    const userLat = position.coords.latitude;
-                    const userLng = position.coords.longitude;
-                    fetch(`/set-user-location`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ lat: userLat, lng: userLng })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        localStorage.setItem('locationAllowed', 'true');
-                        modal.hide();
-                        showAlert('success','Location saved')
-                    });
-                }, function () {
-                    document.getElementById('locationError').style.display = 'block';
-                });
-            } else {
-            }
+            localStorage.setItem('user_lat', lat);
+            localStorage.setItem('user_lng', lng);
+
+            processProducts(lat, lng);
+        }, function (error) {
+            console.error("Error watching location:", error);
+        }, {
+            enableHighAccuracy: true,
+            maximumAge: 0,
+            timeout: 5000
         });
+    } else {
+        console.warn("Geolocation is not supported by this browser.");
+    }
+}
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    const storedLat = localStorage.getItem('user_lat');
+    const storedLng = localStorage.getItem('user_lng');
+
+    if (storedLat && storedLng) {
+        processProducts(parseFloat(storedLat), parseFloat(storedLng));
+    } else {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+
+                localStorage.setItem('user_lat', lat);
+                localStorage.setItem('user_lng', lng);
+
+                processProducts(lat, lng);
+            }, function (error) {
+                console.warn('Geolocation denied:', error);
+                document.querySelectorAll('.product-card .cart-disabled').forEach(btn => {
+                    btn.classList.remove('d-none');
+                });
+            });
+        }
     }
 });
 </script>
-
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    let currentScreen = 1;
+    const totalScreens = 5;
+
+    function updateScreen() {
+        for (let i = 1; i <= totalScreens; i++) {
+            document.getElementById(`screen-${i}`).classList.add('d-none');
+            document.getElementById(`dot-${i}`).classList.remove('active');
+        }
+        document.getElementById(`screen-${currentScreen}`).classList.remove('d-none');
+        document.getElementById(`dot-${currentScreen}`).classList.add('active');
+
+        document.getElementById('prevBtn').disabled = currentScreen === 1;
+        document.getElementById('nextBtn').innerText = currentScreen === totalScreens ? 'Finish' : 'Next';
+    }
+
+    function isMobileDevice() {
+        return window.innerWidth <= 768;
+    }
+
+    function startOnboarding() {
+        updateScreen();
+        document.querySelector('.onboard-container').style.display = 'flex';
+        document.getElementById('mainContent').classList.add('d-none');
+    }
+
+    function showMainContent() {
+        document.querySelector('.onboard-container').style.display = 'none';
+        document.getElementById('mainContent').classList.remove('d-none');
+        localStorage.setItem('hasVisited', 'true');
+    }
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+        if (currentScreen < totalScreens) {
+            currentScreen++;
+            updateScreen();
+        } else {
+            showMainContent();
+        }
+    });
+
+    document.getElementById('prevBtn').addEventListener('click', () => {
+        if (currentScreen > 1) {
+            currentScreen--;
+            updateScreen();
+        }
+    });
+
+    document.getElementById('skipBtn').addEventListener('click', showMainContent);
+    window.onload = () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const hasVisitedParam = urlParams.get('hasVisited');
+
+        if (hasVisitedParam === 'true') {
+            localStorage.setItem('hasVisited', 'true');
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        const hasVisited = localStorage.getItem('hasVisited');
+        if (hasVisited || !isMobileDevice()) {
+            showMainContent();
+        } else {
+            startOnboarding();
+        }
+    };
+
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!localStorage.getItem('locationAllowed') || !localStorage.getItem('user_lat')|| !localStorage.getItem('user_lng')) {
+            const modal = new bootstrap.Modal(document.getElementById('locationModal'));
+
+            modal.show();
+            document.getElementById('allowLocationBtn').addEventListener('click', function() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        const userLat = position.coords.latitude;
+                        const userLng = position.coords.longitude;
+
+                        localStorage.setItem('user_lat', userLat);
+                        localStorage.setItem('user_lng', userLng);
+                        localStorage.setItem('locationAllowed', 'true');
+
+                        fetch(`/set-user-location`, {
+                                method: 'POST'
+                                , headers: {
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                                    ,'Content-Type': 'application/json'
+                                }
+                                , body: JSON.stringify({
+                                    lat: userLat
+                                    , lng: userLng
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                localStorage.setItem('locationAllowed', 'true');
+                                modal.hide();
+                                showAlert('success', 'Location saved')
+                            });
+                    }, function() {
+                        document.getElementById('locationError').style.display = 'block';
+                    });
+                } else {}
+            });
+        }
+    });
+</script>
+{{-- bank selection --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
         const select = document.getElementById('bank-select');
         const infoDiv = document.getElementById('account-info');
         const accountNumberEl = document.getElementById('account-number');
 
-        select.addEventListener('change', function () {
+        select.addEventListener('change', function() {
             const selectedOption = select.options[select.selectedIndex];
             const accountNumber = selectedOption.getAttribute('data-account');
 
@@ -308,11 +423,12 @@ $cartCount = $sessionCount + $helperCount;
     function copyAccountNumber() {
         const number = document.getElementById('account-number').textContent;
         navigator.clipboard.writeText(number).then(() => {
-            showAlert('success','Account Number copied!');
+            showAlert('success', 'Account Number copied!');
         });
     }
-</script>
 
+</script>
+{{-- restaurant loading --}}
 <script>
     let pages = 1;
     let loadings = false;
@@ -488,26 +604,28 @@ $cartCount = $sessionCount + $helperCount;
             });
         });
     });
+
 </script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const categoryItems = document.querySelectorAll('#categoryList > li');
-        categoryItems.forEach(function (item) {
-          item.addEventListener('click', function (e) {
-            e.stopPropagation();
+        categoryItems.forEach(function(item) {
+            item.addEventListener('click', function(e) {
+                e.stopPropagation();
 
-            categoryItems.forEach(function (el) {
-              if (el !== item) {
-                el.classList.remove('active');
-              }
+                categoryItems.forEach(function(el) {
+                    if (el !== item) {
+                        el.classList.remove('active');
+                    }
+                });
+
+                // Toggle current item
+                item.classList.toggle('active');
             });
-
-            // Toggle current item
-            item.classList.toggle('active');
-          });
         });
 
     });
+
 </script>
 <script>
     const toggleIcon = document.querySelector("#categoryToggle i");
@@ -518,6 +636,7 @@ $cartCount = $sessionCount + $helperCount;
         toggleIcon.classList.toggle("bi-toggle-on");
         toggleIcon.classList.toggle("bi-toggle-off");
     });
+
 </script>
 
 <script>
@@ -532,6 +651,7 @@ $cartCount = $sessionCount + $helperCount;
             , position: 'top-end'
         });
     }
+
 </script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -582,15 +702,24 @@ $cartCount = $sessionCount + $helperCount;
     $('.products').owlCarousel({
         loop: true
         , margin: 30
-        , nav: false
-        , dots: true
+        , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
+
+        , dots: false
         , autoplay: true
         , autoplayHoverPause: false // Stops autoplay when hovered
         , responsiveClass: true
         , responsive: {
             0: {
                 items: 3
-                , nav: false
+                , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
             }
             , 1024: {
                 items: 6
@@ -600,15 +729,23 @@ $cartCount = $sessionCount + $helperCount;
     $('.ecommerce_products').owlCarousel({
         loop: true
         , margin: 30
-        , nav: false
-        , dots: true
+        , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
+        , dots: false
         , autoplay: true
         , autoplayHoverPause: true // Stops autoplay when hovered
         , responsiveClass: true
         , responsive: {
             0: {
                 items: 2
-                , nav: false
+                , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
             }
             , 1024: {
                 items: 5
@@ -618,15 +755,23 @@ $cartCount = $sessionCount + $helperCount;
     $('.vendors').owlCarousel({
         loop: true
         , margin: 30
-        , nav: false
-        , dots: true
+        , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
+        , dots: false
         , autoplay: true
         , autoplayHoverPause: true // Stops autoplay when hovered
         , responsiveClass: true
         , responsive: {
             0: {
                 items: 1
-                , nav: false
+                , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
             }
             , 1024: {
                 items: 4
@@ -636,15 +781,23 @@ $cartCount = $sessionCount + $helperCount;
     $('.ecommerce_sliders').owlCarousel({
         loop: true
         , margin: 30
-        , nav: false
-        , dots: true
+        , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
+        , dots: false
         , autoplay: true
         , autoplayHoverPause: true // Stops autoplay when hovered
         , responsiveClass: true
         , responsive: {
             0: {
                 items: 1
-                , nav: false
+                , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
             }
             , 1024: {
                 items: 1
@@ -654,15 +807,23 @@ $cartCount = $sessionCount + $helperCount;
     $('.ecommerce_categories').owlCarousel({
         loop: true
         , margin: 30
-        , nav: false
-        , dots: true
+        , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
+        , dots: false
         , autoplay: true
         , autoplayHoverPause: true // Stops autoplay when hovered
         , responsiveClass: true
         , responsive: {
             0: {
                 items: 3
-                , nav: false
+                , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
             }
             , 1024: {
                 items: 6
@@ -672,15 +833,23 @@ $cartCount = $sessionCount + $helperCount;
     $('.hotel').owlCarousel({
         loop: true
         , margin: 30
-        , nav: false
-        , dots: true
+        , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
+        , dots: false
         , autoplay: true
         , autoplayHoverPause: true // Stops autoplay when hovered
         , responsiveClass: true
         , responsive: {
             0: {
                 items: 1
-                , nav: false
+                , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
             }
             , 1024: {
                 items: 4
@@ -690,15 +859,23 @@ $cartCount = $sessionCount + $helperCount;
     $('.imgs').owlCarousel({
         loop: true
         , margin: 30
-        , nav: false
-        , dots: true
+        , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
+        , dots: false
         , autoplay: true
         , autoplayHoverPause: true // Stops autoplay when hovered
         , responsiveClass: true
         , responsive: {
             0: {
                 items: 1
-                , nav: false
+                , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
             }
             , 1024: {
                 items: 1
@@ -708,15 +885,23 @@ $cartCount = $sessionCount + $helperCount;
     $('.categories').owlCarousel({
         loop: true
         , margin: 30
-        , nav: false
-        , dots: true
+        , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
+        , dots: false
         , autoplay: true
         , autoplayHoverPause: true // Stops autoplay when hovered
         , responsiveClass: true
         , responsive: {
             0: {
                 items: 3
-                , nav: false
+                , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
             }
             , 1024: {
                 items: 8
@@ -726,15 +911,23 @@ $cartCount = $sessionCount + $helperCount;
     $('.sliders').owlCarousel({
         loop: true
         , margin: 30
-        , nav: false
-        , dots: true
+        , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
+        , dots: false
         , autoplay: true
         , autoplayHoverPause: true // Stops autoplay when hovered
         , responsiveClass: true
         , responsive: {
             0: {
                 items: 1
-                , nav: false
+                , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
             }
             , 1024: {
                 items: 3
@@ -744,8 +937,12 @@ $cartCount = $sessionCount + $helperCount;
     $('.pro').owlCarousel({
         loop: true
         , margin: 30
-        , nav: false
-        , dots: true
+        , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
+        , dots: false
         , autoplay: true
         , autoplayHoverPause: true // Stops autoplay when hovered
 
@@ -753,7 +950,11 @@ $cartCount = $sessionCount + $helperCount;
         , responsive: {
             0: {
                 items: 1
-                , nav: false
+                , nav: true,
+navText: [
+      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+    ]
             }
             , 1024: {
                 items: 1
@@ -784,7 +985,7 @@ $cartCount = $sessionCount + $helperCount;
 
 </script>
 <script>
-      document.getElementById('ratingForm').addEventListener('submit', function(event) {
+    document.getElementById('ratingForm').addEventListener('submit', function(event) {
         event.preventDefault();
 
         let formData = new FormData(this);
@@ -809,42 +1010,44 @@ $cartCount = $sessionCount + $helperCount;
                 showAlert('info', "An error occurred. Please try again later.");
             });
     });
+
 </script>
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    document.addEventListener("DOMContentLoaded", function() {
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', function() {
+                let productId = this.getAttribute('data-product');
+                let productPrice = this.getAttribute('data-product-price');
 
-    document.querySelectorAll('.add-to-cart').forEach(button => {
-        button.addEventListener('click', function () {
-            let productId = this.getAttribute('data-product');
-            let productPrice = this.getAttribute('data-product-price');
-
-            fetch("{{ route('restaurant.cart.add') }}", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": token,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    product_id: productId,
-                    size: null,
-                    price: productPrice,
-                    quantity: 1
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                showAlert(data.status, data.message);
-                updateCartCount();
-            })
-            .catch(error => {
-                showAlert('info','Failed to add to cart');
+                fetch("{{ route('restaurant.cart.add') }}", {
+                        method: "POST"
+                        , headers: {
+                            "X-CSRF-TOKEN": token
+                            , "Content-Type": "application/json"
+                        }
+                        , body: JSON.stringify({
+                            product_id: productId
+                            , size: null
+                            , price: productPrice
+                            , quantity: 1
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        showAlert(data.status, data.message);
+                        updateCartCount();
+                    })
+                    .catch(error => {
+                        showAlert('info', 'Failed to add to cart');
+                    });
             });
         });
     });
-});
+
 </script>
 
 
 </body>
 </html>
+

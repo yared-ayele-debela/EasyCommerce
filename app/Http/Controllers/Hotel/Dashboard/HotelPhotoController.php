@@ -25,37 +25,39 @@ class HotelPhotoController extends Controller
             'photo_url' => 'required|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        if ($request->hasFile('photo_url')) {
-            $path = $request->file('photo_url')->store('hotel_photos', 'public');
+      if ($request->hasFile('photo_url')) {
+    $path = $request->file('photo_url')->store('hotel_photos', 'public');
 
-            $fullUrl = asset('storage/' . $path); // generate full URL
-
-            HotelPhoto::create([
-                'hotel_id' => $request->hotel_id,
-                'photo_url' => $fullUrl, // store full URL
-            ]);
-        }
+    HotelPhoto::create([
+        'hotel_id' => $request->hotel_id,
+        'photo_url' => $path, // store relative path only
+    ]);
+}
 
           $currentDateTime = Carbon::now();
         $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
         ActivityLogger::log('Add Hotel Photos', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");
 
-        
+
 
         return redirect()->back()->with('success', 'Photo uploaded successfully!');
     }
 
     public function destroy($id)
     {
-        $photo = HotelPhoto::findOrFail($id);
-        // Extract the relative path from the full URL
-        $relativePath = str_replace(asset('storage') . '/', '', $photo->photo_url);
+       $photo = HotelPhoto::findOrFail($id);
 
-        if (Storage::disk('public')->exists($relativePath)) {
-            Storage::disk('public')->delete($relativePath);
+        if (!empty($photo->photo_url)) {
+            // Extract relative path from full URL
+            $relativePath = str_replace(asset('storage') . '/', '', $photo->photo_url);
+
+            if (Storage::disk('public')->exists($relativePath)) {
+                Storage::disk('public')->delete($relativePath);
+            }
         }
 
         $photo->delete();
+
 
     $currentDateTime = Carbon::now();
         $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'

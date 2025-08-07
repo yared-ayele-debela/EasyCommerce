@@ -36,7 +36,7 @@ $user = Auth::guard('admin')->user();
                             <tr>
                                 <td>{{ $blog->id }}</td>
                                 <td>
-                                    <img src="{{ $blog['image'] }}" style="width: 80px; height:40px; padding-top:3px;" alt="">
+                                    <img src="{{ asset('storage/' . $blog->image) }}" style="width: 80px; height:40px; padding-top:3px;" alt="">
                                 </td>
                                 <td>{{ $blog->title }}</td>
                                 <td>

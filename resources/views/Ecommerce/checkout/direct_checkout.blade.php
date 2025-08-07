@@ -3,10 +3,15 @@
 @section('content')
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
-    #map { height: 400px; width: 100%; margin-bottom: 20px; }
+    #map {
+        height: 400px;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
 </style>
 @php
-    $user= Auth::user();
+$user= Auth::user();
 @endphp
 <div class="container mb-5 mb-md-0">
     <div class="header">
@@ -50,39 +55,39 @@
                         </div>
                     </div>
                     <div class="row" id="addressContainer">
-                          <input type="hidden" id="current_lat" name="current_lat">
-                         <input type="hidden" id="current_lng" name="current_lng">
+                        <input type="hidden" id="current_lat" name="current_lat">
+                        <input type="hidden" id="current_lng" name="current_lng">
+                        <span id="location_status" style="font-size: 14px; color: gray;"></span>
+
                         <div class="col-md-12 mb-2">
                             <div class="card shadow-sm p-3 delivery-location">
                                 <div class="form-check">
-                                    <input class="form-check-input address-radio" type="radio" id="current_address" name="address"
-                                        value="current_address">
+                                    <input class="form-check-input address-radio" type="radio" id="current_address" name="address" value="current_address">
                                     <label class="form-check-label w-100" for="address">
                                         <strong>My Current location</strong></strong> <br>
                                         <small>
-                                        {{ $user->address }}, {{ $user->city }}, {{ $user->country??'' }} <br>
-                                        <small>Mobile: {{ $user->mobile }}</small>
+                                            {{ $user->address }}, {{ $user->city }}, {{ $user->country??'' }} <br>
+                                            <small>Mobile: {{ $user->mobile }}</small>
                                         </small>
                                     </label>
                                 </div>
                             </div>
                         </div>
                         @forelse ($address as $ads)
-                             <div class="col-md-12 mb-2">
-                                <div class="card shadow-sm p-3 delivery-location">
-                                    <div class="form-check">
-                                        <input class="form-check-input address-radio" type="radio" name="address"
-                                            value="{{ $ads->id }}" id="address-{{ $ads->id }}">
-                                        <label class="form-check-label w-100" for="address-{{ $ads->id }}">
-                                            <strong>{{ $ads->name }}</strong></strong> <br>
-                                            <small>
+                        <div class="col-md-12 mb-2">
+                            <div class="card shadow-sm p-3 delivery-location">
+                                <div class="form-check">
+                                    <input class="form-check-input address-radio" type="radio" name="address" value="{{ $ads->id }}" id="address-{{ $ads->id }}">
+                                    <label class="form-check-label w-100" for="address-{{ $ads->id }}">
+                                        <strong>{{ $ads->name }}</strong></strong> <br>
+                                        <small>
                                             {{ $ads->address }}, {{ $ads->city }}, {{ $ads->sub_city??'-' }}, {{ $ads->street??'' }} <br>
                                             <small>Mobile: {{ $ads->mobile }}</small>
-                                            </small>
-                                        </label>
-                                    </div>
+                                        </small>
+                                    </label>
                                 </div>
                             </div>
+                        </div>
                         @empty
                         <p class="text-muted">Add delivery address</p>
                         @endforelse
@@ -94,7 +99,7 @@
                     @enderror
                 </div>
                 @php
-                 $total_price = 0;
+                $total_price = 0;
                 @endphp
 
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -103,7 +108,7 @@
                     </button>
                 </div>
                 <div id="itemsSection" class="mt-3 d-none">
-                    <h4 class="text-dark">Items details</h4>
+                    <h4 class="text-dark">Items Detail</h4>
                     <div class="row my-3">
                         @foreach($cartItems as $item)
                         <div class="col-md-4">
@@ -120,7 +125,7 @@
                                 <div class=" d-flex align-items-center">
                                     <a href="{{ url('product/' . $item['product']['id']) }}" class="me-3">
                                         @if($item['product']['product_image'])
-                                        <img src="{{ $item['product']['product_image']}}" alt="{{ $item['product']['product_name'] }}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
+                                        <img src="{{ asset('storage/'.$item['product']['product_image']) }}" alt="{{ $item['product']['product_name'] }}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
                                         @else
                                         <img src="{{ asset('restaurant_frontend/default-image.png') }}" alt="{{ $item['product']['product_name'] }}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
                                         @endif
@@ -146,12 +151,11 @@
                 <div class="summary-card mt-3">
                     <div class="d-flex justify-content-between mb-2">
                         <span><strong>Subtotal</strong></span>
-                        <span><strong>{{ number_format($total, 2) }}
- ETB</strong></span>
+                       <strong><span id="cart_total" data-amount="{{ $total }}">{{ number_format($total, 2) }} ETB</span></strong>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span><strong>Shipping</strong></span>
-                        <strong><span id="shippingFeeDisplay">{{ $totalShipping }} ETB</span></strong>
+                        <strong><span id="shipping_fee_display" data-amount="0">0 ETB</span></strong>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span><strong>Coupon Discount</strong></span>
@@ -160,7 +164,7 @@
                                 @if(Session::has('couponAmount'))
                                 <span class="couponAmount">{{ Session::get('couponAmount') }}</span>
                                 @else
-                                 0
+                                0
                                 @endif
                             </strong>
                         </span>
@@ -171,28 +175,28 @@
                     </div>
                     <div class="line"></div>
                     @php
-                    $discount = Session::has( 'couponAmount',0);
-                    $grand_total = $total_price + $totalShipping+ $totalTax - Session::get('couponAmount');
+                    $discount = Session::has('couponAmount',0);
+                    $grand_total = $total_price + $totalTax - Session::get('couponAmount');
                     @endphp
                     <div class="d-flex justify-content-between">
                         <span><strong>Total</strong></span>
-                        <span class="total"><strong>{{ $grand_total }} ETB</strong></span>
+                       <strong><span id="grand_total_display">{{ number_format($total, 2) }} ETB</span></strong>
                     </div>
                     <div class="delivery-location mt-3 p-3">
                         <h6 class="fw-bold text-dark mb-2">Tip For Driver</h6>
-                            <input type="hidden" name="tip_option" id="selected_tip" value="0"> <!-- Default selected -->
-                            <div class="tip-options" id="tipOptions">
-                                <div class="tip-option shadow-sm selected" data-tip="0">No</div>
-                                @foreach($tips as $tip)
-                                    <div class="tip-option shadow-sm" data-tip="{{ $tip->amount }}">
-                                        {{ $tip->amount }} Birr
-                                    </div>
-                                @endforeach
-                                <div class="tip-option shadow-sm" data-tip="custom">Custom</div>
+                        <input type="hidden" name="tip_option" id="selected_tip" value="0"> <!-- Default selected -->
+                        <div class="tip-options" id="tipOptions">
+                            <div class="tip-option shadow-sm selected" data-tip="0">No</div>
+                            @foreach($tips as $tip)
+                            <div class="tip-option shadow-sm" data-tip="{{ $tip->amount }}">
+                                {{ $tip->amount }} Birr
                             </div>
-                            <div id="custom-tip-container">
-                                <input type="number" name="custom_tip_amount" class="form-control w-100 shadow-sm" id="custom_tip_amount" placeholder="0" min="1">
-                            </div>
+                            @endforeach
+                            <div class="tip-option shadow-sm" data-tip="custom">Custom</div>
+                        </div>
+                        <div id="custom-tip-container">
+                            <input type="number" name="custom_tip_amount" class="form-control w-100 shadow-sm" id="custom_tip_amount" placeholder="0" min="1">
+                        </div>
                         <h6 class="fw-bold text-dark mb-2">Payment Method</h6>
                         <div class="payment-methods">
                             <label type="button" class="payment-method bg-white shadow-sm rounded-3 p-3 text-center" data-bs-toggle="modal" data-bs-target="#modalId">
@@ -239,10 +243,10 @@
                                         <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
-                                     <div id="account-info" class="my-2 alert alert-light" style="display: none;">
+                                    <div id="account-info" class="my-2 alert alert-light" style="display: none;">
                                         <div class="d-flex justify-content-between">
-                                        <span>Account Number: <strong id="account-number"></strong></span>
-                                        <button type="button" class="btn btn-sm btn-outline-primary ms-2" onclick="copyAccountNumber()"><i class="bi bi-copy"></i></button>
+                                            <span>Account Number: <strong id="account-number"></strong></span>
+                                            <button type="button" class="btn btn-sm btn-outline-primary ms-2" onclick="copyAccountNumber()"><i class="bi bi-copy"></i></button>
                                         </div>
                                     </div>
                                     <div class="mb-2">
@@ -268,11 +272,11 @@
                             </div>
                         </div>
                     </div>
-                    <input type="hidden" name="product_id" value="{{ $cartItems[0]['product']->id }}">
-                    <input type="hidden" name="quantity" value="{{ $cartItems[0]['quantity'] }}">
+                    <input type="hidden" name="product_id" id="product_id" value="{{ $cartItems[0]['product']->id }}">
+                    <input type="hidden" name="quantity" id="quantity" value="{{ $cartItems[0]['quantity'] }}">
                     <input type="hidden" name="size" value="{{ $cartItems[0]['size'] }}">
                     <input type="hidden" name="final_price" value="{{ $cartItems[0]['total'] }}">
-                    <input type="hidden" name="shipping" value="{{ $totalShipping }}">
+                    <input type="hidden" name="shipping" id="shipping_fee_input" value="">
                     <input type="hidden" name="tax" value="{{ $totalTax }}">
                     <button type="submit" class="checkout-btn border-0 bg-primary w-100 mt-3 text-white py-2">Place Order</button>
                     <div id="orderResponse"></div>
@@ -281,100 +285,236 @@
         </div>
     </form>
 </div>
+
 @php
-    $safeTotal = is_numeric($total_price) ? $total_price : 0;
-    $safeDiscount = is_numeric($discount) ? $discount : 0;
-    $safeDelivery = is_numeric($totalShipping) ? $totalShipping : 0;
-    $safeTax = is_numeric($totalTax) ? $totalTax : 0;
+$safeDiscount = is_numeric($discount) ? $discount : 0;
+$safeTax = is_numeric($totalTax) ? $totalTax : 0;
 @endphp
 
 @include('all_frontend_layouts.partials.delivery_address_modal')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-document.getElementById("current_address").addEventListener("click", function () {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function (position) {
-            document.getElementById("current_lat").value = position.coords.latitude;
-            document.getElementById("current_lng").value = position.coords.longitude;
-        }, function (error) {
-            alert("Location access denied or unavailable.");
-            document.getElementById("current_address").checked = false;
+  $(document).ready(function () {
+    $('#placeOrderForm').on('submit', function (e) {
+      e.preventDefault();
+
+        const form = this;
+        let selected = document.querySelector("input[name='payment_method']:checked");
+
+        const error = document.getElementById('paymentErrors');
+        const addressError = document.getElementById('address-error');
+        const selectedAddress = document.querySelector("input[name='address']:checked");
+
+        if (!selectedAddress) {
+            showAlert('error', 'Please select delivery address');
+            addressError.style.display = 'block';
+            return;
+        } else {
+            addressError.style.display = 'none';
+        }
+
+        if (!selected) {
+            showAlert('error', 'Please select Payment Method');
+            error.style.display = 'block';
+            return;
+        } else {
+            error.style.display = 'none';
+        }
+        const formData = new FormData(form);
+
+        $.ajax({
+            url: "{{ route('checkout.submit.direct') }}"
+            , method: "POST"
+            , data: formData
+            , processData: false, // Don't process the files
+            contentType: false, // Let the browser set it
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+            , beforeSend: function() {
+                $('#orderResponse').text('Processing your order...');
+            }
+            , success: function(response) {
+                const {
+                    status
+                    , data
+                    , message
+                    , redirect_url
+                }=response;
+                if (status === 'error') {
+                    showAlert('error', data?.message || message || 'An error occurred.');
+                    if (redirect_url) window.location.href = redirect_url;
+                    return;
+                }
+                if (status === 'success') {
+                    showAlert('success', data?.message || message || 'Success!');
+                    if (redirect_url) window.location.href = redirect_url;
+                    return;
+                }
+
+                showAlert('info', message || 'Unexpected response received.');
+            }
+            , error: function(xhr) {
+                showAlert('error', 'Something went wrong during order placement.');
+            }
         });
-    } else {
-        alert("Geolocation is not supported by this browser.");
-        document.getElementById("current_address").checked = false;
-    }
-});
+    });
+  });
 </script>
 <script>
     const myModal = new bootstrap.Modal(
         document.getElementById("modalId")
         , options
     , );
+
 </script>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const tipOptions = document.querySelectorAll('.tip-option');
-        const selectedTipInput = document.getElementById('selected_tip');
-        const customInputContainer = document.getElementById('custom-tip-container');
-        const customInputField = customInputContainer.querySelector('input[name="custom_tip_amount"]');
 
-        const subtotal = parseFloat(@json($safeTotal));
-        const discount = parseFloat(@json($safeDiscount));
-        const deliveryFee = parseFloat(@json($safeDelivery));
-        const tax = parseFloat(@json($safeTax));
-        const totalDisplay = document.querySelector('.total');
+    const discount = parseFloat(@json($safeDiscount));
+    const tax = parseFloat(@json($safeTax));
+    const shippingInput = document.getElementById('shipping_fee_input');
 
-        function updateTotal(tipAmount = 0) {
-            const total = Math.max((subtotal - discount), 0) + deliveryFee + tax + parseFloat(tipAmount || 0);
-            totalDisplay.innerHTML = `<strong>${total.toFixed(2)} ETB</strong>`;
+    $(document).on('change', '.address-radio', function() {
+        const addressId = this.value;
+
+        const data = {
+            address_id: addressId
+            , _token: '{{ csrf_token() }}'
+        };
+
+        if (addressId === 'current_address') {
+            const lat = localStorage.getItem('user_lat');
+            const lng = localStorage.getItem('user_lng');
+
+            if (!lat || !lng) {
+                alert("Current location not detected yet.");
+                return;
+            }
+
+            data.current_lat = lat;
+            data.current_lng = lng;
         }
 
-        tipOptions.forEach(option => {
-            option.addEventListener('click', function () {
-                tipOptions.forEach(opt => opt.classList.remove('selected'));
-                this.classList.add('selected');
-                const tipValue = this.dataset.tip;
-                if (tipValue === 'custom') {
-                    customInputField.addEventListener('input', function () {
-                        if (document.querySelector('.tip-option.selected')?.dataset.tip === 'custom') {
-                                selectedTipInput.value = this.value;
-                                updateTotal(this.value);
-                            }
-                    });
-                    customInputContainer.style.display = 'block';
-                    customInputField.focus();
-                } else {
-                    selectedTipInput.value = tipValue;
-                    customInputContainer.style.display = 'none';
-                    updateTotal(tipValue);
+        // Optional: Get product and quantity for shipping calc
+        data.product_id = document.getElementById('product_id').value;
+        data.quantity = document.getElementById('quantity').value;
+
+        fetch("{{ route('ecommerce.order.now.calculate.shipping') }}", {
+                method: "POST"
+                , headers: {
+                    "Content-Type": "application/json"
+                    , "X-CSRF-TOKEN": data._token
                 }
+                , body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(response => {
+                if (response.success) {
+                    const shippingFee = parseFloat(response.shipping_fee);
+
+                    const shippingDisplay = document.getElementById('shipping_fee_display');
+                    if (shippingDisplay) {
+                        shippingDisplay.innerText = response.shipping_fee + " ETB";
+                        shippingDisplay.dataset.amount = response.shipping_fee; // ✅ This is the correct way
+                    }
+                    shippingInput.value = shippingFee;
+                    const total = parseFloat(document.getElementById('cart_total').dataset.amount);
+                    const grandTotal = Math.max(total - discount) + tax + parseFloat(response.shipping_fee);
+                    document.getElementById('grand_total_display').innerText = grandTotal.toFixed(2) + " ETB";
+                } else {
+                    alert(response.message);
+                }
+            });
+    });
+
+ document.getElementById("current_address")?.addEventListener("click", function () {
+        const status = document.getElementById("location_status");
+        document.getElementById("current_lat").value = localStorage.getItem('user_lat');
+        document.getElementById("current_lng").value = localStorage.getItem('user_lng');
+        status.innerText = "Location detected.";
+
+    });
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    document.querySelectorAll('.payment-method').forEach(method => {
+            method.addEventListener('click', function () {
+                document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
+                this.classList.add('selected');
+                this.querySelector('input').checked = true;
+                document.getElementById("payment-error").classList.add("d-none");
             });
         });
 
-        customInputField.addEventListener('input', function () {
-            if (document.querySelector('.tip-option.selected')?.dataset.tip === 'custom') {
-                selectedTipInput.value = this.value;
-                // updateTotal(this.value);
+    const tipOptions = document.querySelectorAll('.tip-option');
+    const selectedTipInput = document.getElementById('selected_tip');
+    const customInputContainer = document.getElementById('custom-tip-container');
+    const customInputField = customInputContainer.querySelector('input[name="custom_tip_amount"]');
+
+    const subtotal = parseFloat(document.getElementById('cart_total').dataset.amount); // use from DOM for accuracy
+    const discount = parseFloat(@json($safeDiscount));
+    const deliveryFee =  parseFloat(document.getElementById('shipping_fee_input').value);
+    const tax = parseFloat(@json($safeTax));
+    const totalDisplay = document.getElementById('grand_total_display');
+
+    function updateTotal(tipAmount = 0) {
+    const deliveryFee = parseFloat(document.getElementById('shipping_fee_input').value || 0);
+    const tax = parseFloat(@json($safeTax));
+    const totalDisplay = document.getElementById('grand_total_display');
+    const total = Math.max((subtotal - discount), 0) + deliveryFee + tax + parseFloat(tipAmount || 0);
+    totalDisplay.innerHTML = `${total.toFixed(2)} ETB`;
+}
+
+
+    tipOptions.forEach(option => {
+        option.addEventListener('click', function () {
+            // Remove 'selected' from all
+            tipOptions.forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+            const tipValue = this.dataset.tip;
+
+            if (tipValue === 'custom') {
+                customInputContainer.style.display = 'block';
+                customInputField.focus();
+                const customTip = parseFloat(customInputField.value) || 0;
+                selectedTipInput.value = customTip;
+                updateTotal(customTip);
+            } else {
+                customInputContainer.style.display = 'none';
+                selectedTipInput.value = tipValue;
+                updateTotal(tipValue);
             }
         });
-        // Init total with default selected tip
-        const initialTip = document.querySelector('.tip-option.selected')?.dataset.tip || 0;
-        updateTotal(initialTip);
     });
-</script>
-<script>
- // JavaScript to handle payment method selection
- document.querySelectorAll('.payment-method').forEach(method => {
-    method.addEventListener('click', function() {
-        document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
-        this.classList.add('selected');
-        this.querySelector('input').checked = true; // Set the radio input as checked
-        document.getElementById("payment-error").classList.add("d-none"); // Hide error on selection
 
-        });
+    customInputField.addEventListener('input', function () {
+        if (document.querySelector('.tip-option.selected')?.dataset.tip === 'custom') {
+            const tip = parseFloat(this.value) || 0;
+            selectedTipInput.value = tip;
+            updateTotal(tip);
+        }
     });
+
+    // Initialize total with selected tip (if any)
+    const initialSelected = document.querySelector('.tip-option.selected');
+    if (initialSelected) {
+        const initialTip = initialSelected.dataset.tip;
+        if (initialTip === 'custom') {
+            const tip = parseFloat(customInputField.value) || 0;
+            updateTotal(tip);
+        } else {
+            updateTotal(initialTip);
+        }
+    } else {
+        updateTotal(0);
+    }
+});
+</script>
+
+<script>
+
 
     // JavaScript to handle tip selection
     document.querySelectorAll('.tip-option').forEach((tip) => {
@@ -384,63 +524,8 @@ document.getElementById("current_address").addEventListener("click", function ()
         });
     });
 
-     $('#placeOrderForm').on('submit', function(e) {
-      e.preventDefault();
-    const form = this;
-    let selected = document.querySelector("input[name='payment_method']:checked");
 
-    const error = document.getElementById('paymentErrors');
-    const addressError = document.getElementById('address-error');
-    const selectedAddress = document.querySelector("input[name='address']:checked");
 
-    if (!selectedAddress) {
-        showAlert('error','Please select delivery address');
-        addressError.style.display = 'block';
-        return;
-    } else {
-        addressError.style.display = 'none';
-    }
-
-    if (!selected) {
-        showAlert('error','Please select Payment Method');
-        error.style.display = 'block';
-        return;
-    } else {
-        error.style.display = 'none';
-    }
-    const formData = new FormData(form);
-
-    $.ajax({
-        url: "{{ route('checkout.submit.direct') }}",
-        method: "POST",
-        data: formData,
-        processData: false, // Don't process the files
-        contentType: false, // Let the browser set it
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        beforeSend: function() {
-            $('#orderResponse').text('Processing your order...');
-        },
-        success: function(response) {
-            const { status, data, message, redirect_url } = response;
-            if (status === 'error') {
-                showAlert('error', data?.message || message || 'An error occurred.');
-                if (redirect_url) window.location.href = redirect_url;
-                return;
-            }
-            if (status === 'success') {
-                showAlert('success', data?.message || message || 'Success!');
-                if (redirect_url) window.location.href = redirect_url;
-                return;
-            }
-            showAlert('info', message || 'Unexpected response received.');
-        },
-        error: function(xhr) {
-            showAlert('error', 'Something went wrong during order placement.');
-        }
-    });
-});
 </script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -454,41 +539,6 @@ document.getElementById("current_address").addEventListener("click", function ()
 </script>
 <script>
     $(document).ready(function() {
-        // $('#loadAddresses').click(function() {
-        //     $.ajax({
-        //         url: "{{ url('/addresses') }}"
-        //         , method: "GET"
-        //         , success: function(response) {
-        //             let cards = "";
-        //             if (response.length > 0) {
-        //                 response.forEach(function(address) {
-        //                     cards += `
-        //                         <div class="col-md-12 mb-2">
-        //                             <div class="card shadow-sm p-3 delivery-location">
-        //                                 <div class="form-check">
-        //                                     <input class="form-check-input address-radio" type="radio" name="address"
-        //                                         value="${address.id}" id="address-${address.id}">
-        //                                     <label class="form-check-label w-100" for="address-${address.id}">
-        //                                         <strong>${address.name}</strong> <br>
-        //                                         <small>
-        //                                         ${address.address}, ${address.city}, ${address.sub_city || '-'}, ${address.street || '-'} <br>
-        //                                         <small>Mobile: ${address.mobile}</small>
-        //                                         </small>
-        //                                     </label>
-        //                                 </div>
-        //                             </div>
-        //                         </div>`;
-        //                 });
-        //             } else {
-        //                 cards = `<p class="text-muted text-center">No addresses found.</p>`;
-        //             }
-        //             $('#addressContainer').html(cards);
-        //         }
-        //         , error: function() {
-        //             alert("Error fetching addresses.");
-        //         }
-        //     });
-        // });
 
         // Listen for address selection
         $(document).on("change", ".address-radio", function() {

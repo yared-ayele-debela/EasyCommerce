@@ -17,7 +17,7 @@ class WishController extends Controller
         } else {
             $wishlist = session()->get('wishlist', []);
         }
-        return view('Restaurant.frontend.wishlist.index', compact('wishlist','ecommerce_wishlist'));
+        return view('Restaurant.frontend.wishlistshlist.index', compact('wishlist','ecommerce_wishlist'));
     }
 
     // Add to Wishlist

@@ -51,7 +51,6 @@ class ReservationController extends Controller
         // Calculate the total price for the reservation
         $room = Room::find($request->room_id);
 
-
         $total_price = $room->price * $request->total_night;
         // dd($total_price);
 
@@ -130,7 +129,6 @@ class ReservationController extends Controller
 
         $phone = $reservation->user->mobile ?? null;
         if ($phone) {
-            // dd($phone);
             $message = "Hi {$reservation->user->name}, Your hotel reservation has been placed.";
             try {
                 SmsService::send($phone, $message);
@@ -138,9 +136,7 @@ class ReservationController extends Controller
                 // Optionally log error
             }
         }
-
         // Mail::to($reservation->user->email)->send(new ReservationConfirmationMail($reservation));
-
         return redirect()->route('reservations.receipt', ['id' => encrypt($reservation->id)])
             ->with('success', 'Your reservation has been made successfully!');
     }

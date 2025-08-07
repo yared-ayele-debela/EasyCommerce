@@ -40,7 +40,7 @@ $user = Auth::guard('admin')->user();
                      <tr>
                         <td>{{ $banner['id'] }}</td>
                         <td>{{ $banner['type'] }}</td>
-                        <td><img src="{{ $banner['image'] }}" style="width: 80px; height:40px; box-shadow:1px 1px 2px 1px gray" alt=""></td>
+                        <td><img src="{{ asset('storage/banner/' . $banner['image']) }}" style="width: 80px; height:40px; box-shadow:1px 1px 2px 1px gray" alt=""></td>
 
                         <td>{{ $banner['link'] }}</td>
                         <td>{{ $banner['title'] }}</td>

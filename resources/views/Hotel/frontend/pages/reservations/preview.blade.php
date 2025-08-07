@@ -15,7 +15,7 @@
                     <div class="row">
                         <div class="col-md-4">
                             @if($room->image)
-                            <img src="{{ $room->image }}" class="w-100 rounded-img" height="170" alt="{{ $room->hotel->name }}">
+                            <img src="{{ asset('storage/' . $room->image) ?? asset('restaurant_frontend/default-image.png') }}" loading="lazy" class="w-100 rounded-img" height="170" alt="{{ $room->hotel->name }}">
                             @endif
                         </div>
                         <div class="col-md-8">

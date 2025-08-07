@@ -9,14 +9,12 @@ use Illuminate\View\Component;
 class RestaurantCard extends Component
 {
     public $restaurant;
-    public $distance;
-    public $time;
 
-    public function __construct($restaurant, $distance, $time)
+
+    public function __construct($restaurant)
     {
         $this->restaurant = $restaurant;
-        $this->distance = $distance;
-        $this->time = $time;
+      
     }
     /**
      * Get the view / contents that represent the component.

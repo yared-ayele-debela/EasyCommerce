@@ -39,18 +39,16 @@ class SliderBannerController extends Controller
             'is_active'   => 'nullable|boolean'
         ]);
 
-        $imagePath = $request->file('image')->store('banners', 'public');
-
-        // Get full URL to the stored image
-        $imageUrl = asset('storage/' . $imagePath);
+        $imagePath = $request->file('image')->store('banners', 'public'); // e.g. banners/image_123.jpg
 
         HotelSlider::create([
             'title'       => $request->title,
             'description' => $request->description,
             'link'        => $request->link,
-            'image'       => $imageUrl, // Store the full URL instead of just the path
+            'image'       => $imagePath, // ✅ just the relative path
             'is_active'   => $request->is_active
         ]);
+
 
         $currentDateTime = Carbon::now();
         $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
@@ -75,15 +73,14 @@ class SliderBannerController extends Controller
         $slider = HotelSlider::findOrFail($id);
 
         if ($request->hasFile('image')) {
-            // Extract relative path and delete old image
+            // Delete old image if exists
             if ($slider->image) {
-                $oldImagePath = str_replace(asset('storage') . '/', '', $slider->image);
-                Storage::disk('public')->delete($oldImagePath);
+                Storage::disk('public')->delete($slider->image);
             }
 
-            // Store new image and get its full URL
+            // Store new image and save relative path only
             $newImagePath = $request->file('image')->store('banners', 'public');
-            $slider->image = asset('storage/' . $newImagePath);
+            $slider->image = $newImagePath;
         }
 
         // Update the rest of the fields
@@ -112,10 +109,8 @@ class SliderBannerController extends Controller
 
     // Safely extract relative path if image is stored as full URL
     if ($sliderBanner->image) {
-        $imagePath = str_replace(asset('storage') . '/', '', $sliderBanner->image);
-        Storage::disk('public')->delete($imagePath);
-    }
-
+                Storage::disk('public')->delete($sliderBanner->image);
+            }
     $sliderBanner->delete();
          $currentDateTime = Carbon::now();
           $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'

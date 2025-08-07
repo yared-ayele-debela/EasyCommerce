@@ -28,6 +28,7 @@ class FrontendController extends Controller
         ->where('vendor_type', 'ecommerce')
         ->inRandomOrder()
         ->get();
+        // dd($allvendor);
 
         $vendorRatingsCount = Rating::with('product')
             ->get()
