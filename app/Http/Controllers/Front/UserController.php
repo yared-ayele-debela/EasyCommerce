@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
+use App\Models\TempUser;
 use Illuminate\Support\Facades\Auth;
 use Mockery\Generator\StringManipulation\Pass\Pass;
 use App\Models\User;
@@ -55,39 +56,31 @@ class UserController extends Controller
         // try {
             // dd($request->all());
 
-            $data = $this->validate($request, [
+            $data = $request->validate([
                 'name' => 'required|string',
                 'phone' => 'required|string',
-                'emails' => 'nullable',
+                'emails' => 'nullable|email',
                 'password' => 'required|min:8|confirmed',
             ]);
 
-            $email = $request->input('emails');
-            // dd($email);
-            $phone = $request->input('phone');
-
-            // if (strlen($request->input('phone')) !== 10) {
-            //     return redirect()->back()->with('error', 'phone number should be exactly 10 digits');
-            // }
-            if (User::where('mobile', $phone)->exists()) {
-                return redirect()->back()->with('error', 'phone number already exists');
+            if (User::where('mobile', $request->phone)->exists()) {
+                return redirect()->back()->with('error', 'Phone number already exists');
             }
-            // if (User::where('email', $email)->exists()) {
-            //     return redirect()->back()->with('error', 'Email already exists', 'error');
-            // }
-            $user = new User;
-            $user->name = $request->input('name');
-            $user->mobile = $request->input('phone');
-            $user->email = $request->input('emails');
-            $user->password = bcrypt($request->input('password'));
-            $user->status = 0;
-            $user->save();
+
+            TempUser::where('mobile', $request->phone)->delete();
+
+            $tempUser = new TempUser();
+            $tempUser->name = $request->name;
+            $tempUser->mobile = $request->phone;
+            $tempUser->email = $request->emails;
+            $tempUser->password = bcrypt($request->password);
+            $tempUser->save();
 
             $this->sendOTP($request->phone); // Send OTP here
 
             return redirect()->route('user-verify-otp', ['phone' => $request->phone]);
 
-            
+
 
             return redirect()->back()->with('success', 'Your account has been created successfully! Please log in to continue.');
         // } catch (\Illuminate\Validation\ValidationException $e) {
@@ -182,9 +175,20 @@ class UserController extends Controller
 
         $data = json_decode($response, true);
         if ($data['acknowledge'] == 'success') {
-            $user = User::where('mobile', $phone)->first();
+            $tempUser = TempUser::where('mobile', $phone)->first();
+            if (!$tempUser) {
+                return redirect()->back()->with('error', 'No pending registration found.');
+            }
+
+            $user = new User();
+            $user->name = $tempUser->name;
+            $user->mobile = $tempUser->mobile;
+            $user->email = $tempUser->email;
+            $user->password = $tempUser->password;
             $user->status = 1;
             $user->save();
+
+            $tempUser->delete();
 
             Auth::login($user);
             return redirect()->route('my.cart.view');

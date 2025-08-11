@@ -91,7 +91,6 @@
                             </div>
                         </div>
                         <button type="submit" class="btn bg-primary w-100 text-white py-2">Create Account</button>
-                         <a href="{{ url('admin/login') }}" target="_blank" class="text-dark text-center py-2">Login as Vendor</a>
                     </form>
                 </div>
                 <div class="tab-pane fade show active" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">

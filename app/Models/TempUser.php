@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class TempUser extends Model
 {
     use HasFactory;
+
+    protected $table="temp_users";
+    protected $fillable = [
+        "name","mobile","email","password"];
 }
