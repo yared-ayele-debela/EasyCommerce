@@ -82,7 +82,7 @@
                                 <div class="mb-3">
                                     <input type="checkbox" class="check-box" id="accept">
                                     <label class="label-text no-color" for="accept">I’ve read and accept the
-                                        <a href="javascript:void();" class="text-primary">terms &amp; conditions</a>
+                                        <a href="{{ url('page/terms_and_conditions') }}" class="text-primary">terms &amp; conditions</a>
                                     </label>
                                     @error('terms')
                                     <small class=" text-danger">{{ $message }}</small>

@@ -26,6 +26,18 @@ $user = Auth::guard('admin')->user();
                 Add Product
             </button>
             @endadminCan
+            @if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
+
         </div>
         <div class="card-body">
            <div class="table-responsiv">
@@ -210,7 +222,7 @@ $user = Auth::guard('admin')->user();
                                                 <small class="text-danger">{{ $message }}</small>
                                                 @enderror
                                             </div>
-                                            <div class="col-md-6">
+                                            <div class="col-md-4">
                                                 <div class="mb-3">
                                                     <label for="discount_type" class="form-label">Discount Type</label>
                                                     <select class="form-control" id="discount_type" name="discount_type">
@@ -219,10 +231,16 @@ $user = Auth::guard('admin')->user();
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div class="col-md-6">
+                                            <div class="col-md-4">
                                                 <div class="mb-3">
                                                     <label for="discount" class="form-label">Discount</label>
                                                     <input type="number" min="0"  step="0.01"  class="form-control" id="discount" value="{{ $product->discount }}" name="discount">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label for="weight" class="form-label">Weight in (KG)</label>
+                                                    <input type="number" min="0"  step="0.01"  class="form-control" id="weight" value="{{ $product->weight }}" name="weight">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -406,7 +424,7 @@ $user = Auth::guard('admin')->user();
                             <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="discount_type" class="form-label">Discount Type</label>
                                 <select class="form-control" id="discount_type" name="discount_type">
@@ -415,10 +433,16 @@ $user = Auth::guard('admin')->user();
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="discount" class="form-label">Discount</label>
                                 <input type="number" min="0"  step="0.01"  class="form-control" id="discount" name="discount">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="weight" class="form-label">Weight in (KG)</label>
+                                <input type="number" min="0"  step="0.01"  class="form-control" id="weight" value="" name="weight">
                             </div>
                         </div>
                         <div class="col-md-6">

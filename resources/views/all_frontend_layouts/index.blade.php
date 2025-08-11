@@ -18,19 +18,7 @@ use Illuminate\Support\Facades\Storage;
     <div class="owl-carousel owl-theme sliders mt-4">
         @foreach ($banners as $banner)
         <div class="item mb-2 position-relative">
-            @php
-            $imagePath = $banner->image
-            ? ltrim(parse_url($banner->image, PHP_URL_PATH), '/')
-            : null;
-            // Remove 'storage/' prefix to match storage/app/public
-            $relativePath = $imagePath ? str_replace('storage/', '', $imagePath) : null;
-            @endphp
-
-            @if($relativePath && Storage::disk('public')->exists($relativePath))
-            <img src="{{ asset('storage/' . $banner->image) }}" loading="lazy" alt="{{ $banner->link }}" style="border-radius:8px;" class="img-fluid">
-            @else
-            <img src="{{ asset('no_banner.png') }}" class="img-fluid" style="border-radius:8px;" alt="{{ $banner->link }}">
-            @endif
+            <img src="{{ asset('storage/' . $banner->image)??asset('no_banner.png') }}" alt="{{ $banner->link }}" style="border-radius:8px;" class="img-fluid" loading="lazy" >
             <div class="overlay-text position-absolute text-white p-3">
                 <h3>{{ $banner->title }}</h3>
                 <p>{{ $banner->description }}</p>

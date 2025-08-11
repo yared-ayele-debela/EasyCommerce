@@ -63,6 +63,7 @@ class UserController extends Controller
             ]);
 
             $email = $request->input('emails');
+            // dd($email);
             $phone = $request->input('phone');
 
             // if (strlen($request->input('phone')) !== 10) {
@@ -71,9 +72,9 @@ class UserController extends Controller
             if (User::where('mobile', $phone)->exists()) {
                 return redirect()->back()->with('error', 'phone number already exists');
             }
-            if (User::where('email', $email)->exists()) {
-                return redirect()->back()->with('error', 'Email already exists', 'error');
-            }
+            // if (User::where('email', $email)->exists()) {
+            //     return redirect()->back()->with('error', 'Email already exists', 'error');
+            // }
             $user = new User;
             $user->name = $request->input('name');
             $user->mobile = $request->input('phone');
@@ -86,18 +87,7 @@ class UserController extends Controller
 
             return redirect()->route('user-verify-otp', ['phone' => $request->phone]);
 
-            // $email_template = EmailTemplate::first();
-            //Acitve the user only when user confirm his email account
-            // $email = $data['emails'];
-            // $messageData = [
-            //     'email_template' => $email_template,
-            //     'name' => $data['name'],
-            //     'email' => $data['emails'],
-            //     'code' => base64_encode($data['emails'])
-            // ];
-            // Mail::send('emails.confirmation', $messageData, function ($message) use ($email) {
-            //     $message->to($email)->subject('Confirm');
-            // });
+            
 
             return redirect()->back()->with('success', 'Your account has been created successfully! Please log in to continue.');
         // } catch (\Illuminate\Validation\ValidationException $e) {

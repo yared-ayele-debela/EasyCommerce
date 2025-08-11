@@ -94,7 +94,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="city" class="form-label">City</label>
+                                        <label for="city" class="form-label">City (Optional)</label>
                                         <select id="city" class="form-select" name="city">
                                             <option value="">Select City</option>
                                         </select>
@@ -102,7 +102,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="sub_city" class="form-label">Sub City</label>
+                                        <label for="sub_city" class="form-label">Sub City (Optional)</label>
                                         <select id="sub_city" class="form-select" name="sub_city">
                                             <option value="">Select Sub City</option>
                                         </select>
@@ -111,7 +111,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="street" class="form-label">Street</label>
+                                        <label for="street" class="form-label">Street (Optional)</label>
                                         <select id="street" class="form-select" name="street">
                                             <option value="">Select Street</option>
                                         </select>
@@ -120,7 +120,7 @@
 
                                 <div class="col-6">
                                     <div class="mb-3">
-                                        <label class="form-label">Pincode</label>
+                                        <label class="form-label">Pincode (Optional)</label>
                                         <input type="text" class="form-control w-100" name="pincode">
                                     </div>
                                 </div>
