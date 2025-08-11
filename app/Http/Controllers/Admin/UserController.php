@@ -26,7 +26,7 @@ class UserController extends Controller
                 return view('admin.errors.unauthorized');
             }
             $appsettings = AppSetting::all()->toArray();
-            $users = User::get()->toArray();
+            $users = User::latest()->paginate(15);
             return view('admin.users.allusers', compact('appsettings', 'users'));
         } catch (\Exception $e) {
             Alert::toast('something is wrong!!', 'error');
@@ -93,7 +93,7 @@ class UserController extends Controller
             $user->country = $request->input('country');
             $user->pincode = $request->input('pincode');
             $user->save();
-            
+
              $currentDateTime = Carbon::now();
         $formattedDateTime = $currentDateTime->toDateTimeString(); // 'Y-m-d H:i:s'
         ActivityLogger::log( 'Add User', Auth::guard('admin')->user()->name . " at {$formattedDateTime}");

@@ -96,7 +96,7 @@ class DirectCheckoutController extends Controller
             $distanceShipping = $distance * $delivery_settings->fee_per_km; // 10 ETB per KM
         }
 
-        $finalShipping = $baseShipping + $distanceShipping;
+        $finalShipping = $baseShipping + $distanceShipping + $delivery_settings->base_amount;
 
         return response()->json([
             'success' => true,

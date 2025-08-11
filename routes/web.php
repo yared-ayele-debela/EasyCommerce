@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\AdminRolesController;
 use App\Http\Controllers\Admin\AdminWithdrawRequestController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Restaurant\Dashboard\DeliverySettingsController;
 use App\Models\Restaurant\RestaurantRating;
 
 use App\Http\Controllers\Admin\BrandController;
@@ -598,6 +599,15 @@ Route::group(['middleware' => ['admin']], function () {
 
         //Routing for products tables
         Route::get('products', [ProductController::class, 'product'])->name('products');
+
+         Route::post('/product/{id}/update-status', [ProductController::class, 'updateStatus'])->name('product.updateStatus');
+
+        Route::post('/product/{id}/toggle-seasonal', [ProductController::class, 'toggleSeasonal'])->name('product.toggleSeasonal');
+
+        Route::post('/product/{id}/toggle-featured', [ProductController::class, 'toggleFeatured'])->name('product.toggleFeatured');
+
+        Route::delete('/product/{id}', [ProductController::class, 'destroy'])->name('product.destroy');
+
         Route::get('products/add-product', [ProductController::class, 'create'])->name('addproduct');
 
         Route::get('active/product/{product_id}', [ProductController::class, 'active'])->name('active_products');
@@ -774,7 +784,11 @@ Route::group(['middleware' => ['admin']], function () {
         Route::get('newslettersubscribers/delete/{id}', [NewletterSubscriberController::class, 'delete'])->name('delete_newslettersubscribers');
 
         Route::get('/delivery-settings', [DeliverySettingController::class, 'index'])->name('delivery-settings.index');
-Route::put('/delivery-settings', [DeliverySettingController::class, 'update'])->name('delivery-settings.update');
+        Route::put('/delivery-settings', [DeliverySettingController::class, 'update'])->name('delivery-settings.update');
+
+        Route::get('/restaurant-delivery-settings', [DeliverySettingsController::class, 'index'])->name('restaurant.delivery-settings.index');
+        Route::put('/restaurant.delivery-settings', [DeliverySettingsController::class, 'update'])->name('restaurant.delivery-settings.update');
+
 
         Route::get('send-email-to-all', [NewletterSubscriberController::class, 'create'])->name('send-email-to-all');
         Route::post('send-email-to-all-users', [NewletterSubscriberController::class, 'send'])->name('send-email-to-all-users');

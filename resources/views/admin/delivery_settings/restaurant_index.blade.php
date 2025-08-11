@@ -7,7 +7,7 @@ $user = Auth::guard('admin')->user();
     <nav>
         <ol class="breadcrumb p-3 ">
             <li class="breadcrumb-item font-weight-bold"><a href="{{ url('admin/dashboard') }}">Home</a></li>
-            <li class="breadcrumb-item"> Delivery Settings</li>
+            <li class="breadcrumb-item"> Restaurant Delivery Settings</li>
         </ol>
     </nav>
 </div>
@@ -21,7 +21,7 @@ $user = Auth::guard('admin')->user();
     @endif
     </div>
     <div class="card-body">
-    <form method="POST" action="{{ route('delivery-settings.update') }}">
+    <form method="POST" action="{{ route('restaurant.delivery-settings.update') }}">
         @csrf
         @method('PUT')
         <div class="my-3">

@@ -50,37 +50,37 @@ $userrole = Auth::guard('admin')->user();
                             @foreach ($users as $k => $user)
 
                             <tr>
-                                <td>{{ $user['id']}}</td>
-                                <td>{{ $user['name'] }}</td>
-                                <td>{{ $user['address'] }}</td>
-                                <td>{{ $user['mobile'] }}
+                                <td>{{ $user->id}}</td>
+                                <td>{{ $user->name }}</td>
+                                <td>{{ $user->address }}</td>
+                                <td>{{ $user->mobile }}
                                 </td>
-                                <td>{{ $user['email'] }}</td>
+                                <td>{{ $user->email }}</td>
                                 <td>
                                     @if ($userrole && $userrole->hasPermissionByRole('edit_user'))
 
-                                    @if($user['status']==1)
-                                    <a href="{{ url('admin/users/inactive/'.$user['id']) }}"><span style="border-radius: 0.2rem;padding-left:3px;padding-right:3px" class="btn btn-outline-success btn-sm">Active</span></a>
-                                    @elseif ($user['status']==0)
-                                    <a href="{{ url('admin/users/active/'.$user['id']) }}"><span style="border-radius: 0.2rem;padding-left:3px;padding-right:3px" class="btn btn-outline-danger btn-sm">Inactive</span></a>
+                                    @if($user->status==1)
+                                    <a href="{{ url('admin/users/inactive/'.$user->id) }}"><span style="border-radius: 0.2rem;padding-left:3px;padding-right:3px" class="btn btn-outline-success btn-sm">Active</span></a>
+                                    @elseif ($user->status==0)
+                                    <a href="{{ url('admin/users/active/'.$user->id) }}"><span style="border-radius: 0.2rem;padding-left:3px;padding-right:3px" class="btn btn-outline-danger btn-sm">Inactive</span></a>
                                     @endif
                                     @endif
                                 </td>
                                 <td>
                                     @if ($userrole && $userrole->hasPermissionByRole('edit_user'))
-                                    <a href="{{ url('admin/edit_user/'.$user['id']) }}" style="background-color:rgb(239, 239, 239) " class=" btn  btn-sm"><i class="ri-ball-pen-fill"></i></a>
+                                    <a href="{{ url('admin/edit_user/'.$user->id) }}" style="background-color:rgb(239, 239, 239) " class=" btn  btn-sm"><i class="ri-ball-pen-fill"></i></a>
                                     @endif
                                     @if ($userrole && $userrole->hasPermissionByRole('edit_user'))
                                     <!-- Button trigger modal -->
-                                    <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modelId{{ $user['id']}}">
+                                    <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modelId{{ $user->id}}">
                                         Update Password
                                     </button>
 
                                     <!-- Modal -->
-                                    <div class="modal fade" id="modelId{{ $user['id'] }}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+                                    <div class="modal fade" id="modelId{{ $user->id }}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
-                                                <form action="{{ route('admin.users.updatePassword', $user['id']) }}" method="POST">
+                                                <form action="{{ route('admin.users.updatePassword', $user->id) }}" method="POST">
                                                     @csrf
                                                     @method('PUT')
                                                     <div class="modal-header">
@@ -111,7 +111,7 @@ $userrole = Auth::guard('admin')->user();
                                     </div>
                                     @endif
                                     @if ($userrole && $userrole->hasPermissionByRole('delete_user'))
-                                    <a href="{{ url('admin/users/'.$user['id'].'/delete') }}" style="background-color:rgb(239, 239, 239) " onclick="return confirm('Are you sure,you want to delete this users ?? ') " class="btn  btn-sm"><i class=" ri-delete-bin-6-fill"></i></a>
+                                    <a href="{{ url('admin/users/'.$user->id.'/delete') }}" style="background-color:rgb(239, 239, 239) " onclick="return confirm('Are you sure,you want to delete this users ?? ') " class="btn  btn-sm"><i class=" ri-delete-bin-6-fill"></i></a>
                                     @endif
                                 </td>
                             </tr>
@@ -120,7 +120,7 @@ $userrole = Auth::guard('admin')->user();
                         </tbody>
                     </table>
                     <div class=" pagination-sm">
-                        {{-- {{ $categories->links() }} --}}
+                        {{ $users->links() }}
                     </div>
 
                 </div>

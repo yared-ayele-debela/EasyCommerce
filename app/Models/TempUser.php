@@ -5,11 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DeliverySetting extends Model
+class TempUser extends Model
 {
     use HasFactory;
-    protected $table="delivery_settings_ecommerce";
-
-    protected $fillable = ['fee_per_km','base_amount'];
-
 }

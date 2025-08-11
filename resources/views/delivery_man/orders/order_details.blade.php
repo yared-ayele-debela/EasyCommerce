@@ -162,19 +162,30 @@ $user = Auth::guard('deliverymen')->user();
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
                         <h1 class=" card-title">Customer Details</h1>
-                        @php
+
+
+                         @php
                             $latitude = $orderDetails['latitude'];
                             $longitude = $orderDetails['longitude'];
-                            $mapUrl = "https://www.google.com/maps?q={$latitude},{$longitude}";
+
+                            // Validate coordinates
+                            if (!is_numeric($latitude) || !is_numeric($longitude) || abs($latitude) > 90 || abs($longitude) > 180) {
+                                $googleMapsUrl = '#';
+                                $buttonText = 'Invalid Location';
+                                $buttonDisabled = 'disabled';
+                            } else {
+                                // Use decimal degrees in the query parameter
+                                $googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=" . urlencode("{$latitude},{$longitude}");
+                                $buttonText = 'View Customer Location on Map';
+                                $buttonDisabled = '';
+                            }
                         @endphp
 
-                        <a href="{{ $mapUrl }}" target="_blank" class="btn btn-success">
-                            Get Customer Location
+                        <!-- Button to redirect to Google Maps -->
+                        <a href="{{ $googleMapsUrl }}" target="_blank" class="btn btn-primary {{ $buttonDisabled }}">
+                            {{ $buttonText }}
                         </a>
 
-                        {{-- <a href="{{url('delivery-boy/ecommerce/get-customer-location/'.$orderDetails['id'])}}" class="btn btn-primary">
-                            Get Customer Location
-                        </a> --}}
                     </div>
                 </div>
                 <div class="card-body pt-3">
@@ -379,7 +390,7 @@ $user = Auth::guard('deliverymen')->user();
                                     <td>
                                         @php $getProductImage=Product::getProductImage($product['product_id']) @endphp
                                         <a target="_blank" href="{{ url('product/'.$product['product_id']) }}">
-                                            <img src="{{ Product::getProductImage($product['product_id']) }}" style="width:30px; height:30px;" alt="">
+                                            <img src="{{ asset('storage/'.Product::getProductImage($product['product_id'])) }}" style="width:30px; height:30px;" alt="">
                                         </a>
 
                                     </td>
@@ -499,15 +510,29 @@ $user = Auth::guard('deliverymen')->user();
                                                             <div class="col-md-6">
                                                                 <p><strong>Mobile :</strong> {{ $vendor->mobile }}</p>
                                                                 <p><strong>Email :</strong> {{ $vendor->email }}</p>
-                                                                 @php
-                                                                    $latitude = $vendor->latitude;
-                                                                    $longitude = $vendor->longitude;
-                                                                    $mapUrls = "https://www.google.com/maps?q={$latitude},{$longitude}";
-                                                                @endphp
 
-                                                                <a href="{{ $mapUrls }}" target="_blank" class="btn btn-success">
-                                                                    Get Shop Location
-                                                                </a>
+                                                                @php
+
+                                                               $latitude = $vendor->latitude;
+                                                                $longitude = $vendor->longitude;
+
+                                                                // Validate coordinates
+                                                                if (!is_numeric($latitude) || !is_numeric($longitude) || abs($latitude) > 90 || abs($longitude) > 180) {
+                                                                    $googleMapsUrl = '#';
+                                                                    $buttonText = 'Invalid Location';
+                                                                    $buttonDisabled = 'disabled';
+                                                                } else {
+                                                                    // Use decimal degrees in the query parameter
+                                                                    $googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=" . urlencode("{$latitude},{$longitude}");
+                                                                    $buttonText = 'View Shop Location on Map';
+                                                                    $buttonDisabled = '';
+                                                                }
+                                                            @endphp
+
+                                                            <!-- Button to redirect to Google Maps -->
+                                                            <a href="{{ $googleMapsUrl }}" target="_blank" class="btn btn-primary {{ $buttonDisabled }}">
+                                                                {{ $buttonText }}
+                                                            </a>
 
                                                             </div>
                                                         </div>

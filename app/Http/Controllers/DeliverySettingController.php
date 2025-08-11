@@ -17,12 +17,18 @@ class DeliverySettingController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'fee_per_km' => 'required|numeric|min:0'
+            'fee_per_km' => 'required|numeric|min:0',
+            'base_amount' => 'required|numeric|min:1',
         ]);
 
         $setting = DeliverySetting::first();
-        $setting->update(['fee_per_km' => $request->fee_per_km]);
 
-        return redirect()->back()->with('success', 'Delivery fee updated successfully!');
+        $setting->update([
+            'fee_per_km' => $request->fee_per_km,
+            'base_amount' => $request->base_amount,
+        ]);
+
+
+        return redirect()->back()->with('success', 'Ecommerce Delivery fee updated successfully!');
     }
 }

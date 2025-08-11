@@ -33,13 +33,16 @@ class ProductController extends Controller
 {
     public function product()
     {
-        try {
+        // try {
 
-            return view('admin.products.allproducts')->withComponent(ProductDisplay::class);
-        } catch (\Exception $e) {
-            Alert::toast('something is wrong!!', 'error');
-            return redirect()->back();
-        }
+            $products=Product::latest()->paginate(10);
+            $months=Month::all();
+
+            return view('admin.products.allproducts',compact('products','months'));
+        // } catch (\Exception $e) {
+        //     Alert::toast('something is wrong!!', 'error');
+        //     return redirect()->back();
+        // }
     }
 
 
@@ -643,4 +646,59 @@ class ProductController extends Controller
        return redirect()->back();
 
    }
+
+
+
+   public function updateStatus(Request $request, $id)
+    {
+        $product = Product::findOrFail($id);
+        $product->status = $product->status == 1 ? 0 : 1;
+        $product->status_comment = $request->status_comment;
+        $product->save();
+
+        return redirect()->back()->with('message', 'Product status updated successfully!');
+    }
+
+    // Toggle is_seasonal flag
+    public function toggleSeasonal($id)
+    {
+        $product = Product::findOrFail($id);
+        $product->is_seasonal = !$product->is_seasonal;
+        $product->save();
+
+        Alert::toast('Is seasonal updated', 'success');
+
+        return redirect()->back();
+    }
+
+    // Toggle is_featured flag (with permission check)
+    public function toggleFeatured($id)
+    {
+        $user = Auth::guard('admin')->user();
+        if (!$user || !$user->hasPermissionByRole('edit_product')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $product = Product::findOrFail($id);
+        $product->is_featured = $product->is_featured === "Yes" ? "No" : "Yes";
+        $product->save();
+
+        Alert::toast('Product featured status updated', 'success');
+
+        return redirect()->back();
+    }
+
+    // Delete product and its image
+    public function destroy($id)
+    {
+        $product = Product::findOrFail($id);
+
+        if ($product->product_image) {
+            Storage::disk('public')->delete($product->product_image);
+        }
+
+        $product->delete();
+
+        return redirect()->back()->with('message', 'Product Deleted Successfully');
+    }
 }

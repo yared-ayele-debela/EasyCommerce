@@ -8,6 +8,8 @@ use App\Mail\Restaurant\OrderConfirmationMail;
 use App\Models\Bank;
 use App\Models\Country;
 use App\Models\DeliveryAddress;
+use App\Models\Restaurant\DeilverySettingRestaurant;
+
 use App\Models\DeliverySetting;
 use App\Models\Restaurant\Coupon;
 use App\Models\Restaurant\Order;
@@ -75,11 +77,11 @@ class CheckoutController extends Controller
         // Get shipping charge per vendor
         $baseShipping = ShippingCharge::getShippingCharges($weight, zone: $zone); // ← Modify this method to accept vendor
 
-        $delivery_settings=DeliverySetting::first();
+        $delivery_settings=DeilverySettingRestaurant::first();
         $distanceFeePerKm = $delivery_settings->fee_per_km; // ETB per KM
         $distanceShipping = $distance * $distanceFeePerKm;
 
-        $shipping = $baseShipping + $distanceShipping;
+        $shipping = $baseShipping + $distanceShipping + $delivery_settings->base_amount;
 
         // Grouping shipping per vendor
         if (!isset($vendorShipping[$vendorId])) {
@@ -149,11 +151,12 @@ class CheckoutController extends Controller
         // Get shipping charge per vendor
         $baseShipping = ShippingCharge::getShippingCharges($weight, zone: $zone); // ← Modify this method to accept vendor
 
-        $delivery_settings=DeliverySetting::first();
+        $delivery_settings=DeilverySettingRestaurant::first();
         $distanceFeePerKm = $delivery_settings->fee_per_km; // ETB per KM
         $distanceShipping = $distance * $distanceFeePerKm;
 
-        $shipping = $baseShipping + $distanceShipping;
+        // dd($delivery_settings->base_amount);
+        $shipping = $baseShipping + $distanceShipping + $delivery_settings->base_amount;
 
         // Grouping shipping per vendor
         if (!isset($vendorShipping[$vendorId])) {
