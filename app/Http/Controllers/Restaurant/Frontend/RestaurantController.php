@@ -17,13 +17,13 @@ class RestaurantController extends Controller
     //
     public function index()
     {
-        $auto_restaurants=Restaurant::where('is_open',1)->latest()->paginate(10);
+        $auto_restaurants = Restaurant::where('is_open', 1)->latest()->paginate(10);
         $cities = Restaurant::select('city')->distinct()->pluck('city');
         $states = Restaurant::select('state')->distinct()->pluck('state');
         $delivery_zones = Restaurant::select('zone')->distinct()->pluck('zone');
         $delivery_fees = Restaurant::select('start_from')->distinct()->pluck('start_from');
         // dd($auto_restaurants);
-        return view('Restaurant.frontend.pages.restaurants.index',compact( 'auto_restaurants','cities', 'states', 'delivery_zones', 'delivery_fees'));
+        return view('Restaurant.frontend.pages.restaurants.index', compact('auto_restaurants', 'cities', 'states', 'delivery_zones', 'delivery_fees'));
     }
     public function filterProducts(Request $request)
     {
@@ -44,7 +44,7 @@ class RestaurantController extends Controller
             $query->where('city', 'like', '%' . $request->city . '%');
         }
         if ($request->filled(key: 'name')) {
-            $query->where( 'name', 'like', '%' . $request->name . '%');
+            $query->where('name', 'like', '%' . $request->name . '%');
         }
 
         if ($request->filled('state')) {
@@ -56,7 +56,7 @@ class RestaurantController extends Controller
         }
 
         if ($request->filled('delivery_fee')) {
-            $query->where( 'start_from', '>=', $request->delivery_fee);
+            $query->where('start_from', '>=', $request->delivery_fee);
         }
 
         $auto_restaurants = $query->latest()->paginate(10);
@@ -68,7 +68,7 @@ class RestaurantController extends Controller
 
     public function fetchRestaurant(Request $request)
     {
-        $auto_restaurants=Restaurant::where('is_open',1)->latest()->paginate(4);
+        $auto_restaurants = Restaurant::where('is_open', 1)->latest()->paginate(4);
 
         if ($request->ajax()) {
             return view('all_frontend_layouts.partials.restaurant-cards', compact('auto_restaurants'))->render();
@@ -79,16 +79,16 @@ class RestaurantController extends Controller
 
     public function detail($id)
     {
-        $restaurant = Restaurant::with(['admin', 'images','ratings'])->findOrFail($id);
+        $restaurant = Restaurant::with(['admin', 'images', 'ratings'])->findOrFail($id);
         $categories = Category::whereHas('products', function ($query) use ($id) {
             $query->where('restaurant_id', $id);
         })->get();
 
         $products = Product::where('restaurant_id', $id)
-        ->when(request('category_id'), function ($query) {
-            return $query->where('category_id', request('category_id'));
-        })
-        ->get();
+            ->when(request('category_id'), function ($query) {
+                return $query->where('category_id', request('category_id'));
+            })
+            ->get();
 
 
         // // Get unique menus for this restaurant's products
@@ -98,14 +98,15 @@ class RestaurantController extends Controller
         //     $query->where('restaurant_id', $id);
         // }])->get();
 
-        return view('Restaurant.frontend.pages.restaurants.detail',compact('restaurant','categories', 'products'));
+        return view('Restaurant.frontend.pages.restaurants.detail', compact('restaurant', 'categories', 'products'));
     }
 
-    public function getNearbyRestaurants(Request $request,LocationService $locationService)
+    public function getNearbyRestaurants(Request $request, LocationService $locationService)
     {
         // dd($request->all());
         $latitude = $request->latitude;
         $longitude = $request->longitude;
+    $radius = $request->radius ?? 30; // default radius 30 km if not provided
 
         if (!$latitude || !$longitude) {
             return response()->json(['error' => 'Location is required'], 400);
@@ -116,18 +117,16 @@ class RestaurantController extends Controller
         id, name, cover, description, address, rating, start_from, latitude, longitude,delivery_radius,
         (6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) AS distance
             ", [$latitude, $longitude, $latitude])
-            ->having('distance', '<=', 30) // Restaurants within 10 km
+            ->having('distance', '<=', $radius)
             ->orderBy('distance', 'asc')
             ->get();
 
         $carSpeed = 40; // km/h
 
-
-
-$restaurants->transform(function ($restaurant) use ($carSpeed, $locationService, $latitude, $longitude) {
+        $restaurants->transform(function ($restaurant) use ($carSpeed, $locationService, $latitude, $longitude) {
             $restaurant->distance = round($restaurant->distance, 1); // in km
             $restaurant->time = ceil(($restaurant->distance / $carSpeed) * 60); // in minutes
-            $restaurant->diff_distance =$locationService->getDistance($latitude, $longitude, $restaurant->latitude, $restaurant->longitude);
+            $restaurant->diff_distance = $locationService->getDistance($latitude, $longitude, $restaurant->latitude, $restaurant->longitude);
 
             return $restaurant;
         });

@@ -75,7 +75,7 @@ class HotelController extends Controller
 {
     $latitude = $request->lat;
     $longitude = $request->lng;
-    $radius = 30; // km
+    $radius = $request->radius ?? 100; // km
 
     $hotels = Hotel::select('*', DB::raw("
         (6371 * acos(
@@ -89,8 +89,9 @@ class HotelController extends Controller
     ->having('distance', '<=', $radius)
     ->orderBy('distance')
     ->where('is_active', true)
-    ->take(8)
+    // ->take(8)
     ->get();
+
     $check_all=false;
 
     // Render partial blade view and return as HTML

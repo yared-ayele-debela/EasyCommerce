@@ -211,8 +211,15 @@ use Illuminate\Support\Facades\Storage;
     </div>
     @endif
 
-    <div class="d-flex justify-content-between align-items-center">
-<h4 class="mt-5 mb-3">Nearby Restaurants</h4>
+
+
+    <div class="d-flex justify-content-between align-items-center mt-5 mb-3">
+     <h4 class="">Nearby Restaurants</h4>
+      <div class="d-flex align-items-center gap-2">
+        <label for="radiusInput">Search Radius (km):</label>
+        <input type="number" id="radiusInput" name="radius" value="100" min="1" max="100" step="1" />
+        <button id="searchRadiusBtn" class="btn btn-primary btn-sm">Search</button>
+    </div>
     </div>
     <div class="row" id="restaurant-container">
         <!-- Placeholder Cards -->
@@ -280,8 +287,8 @@ use Illuminate\Support\Facades\Storage;
 <script>
     let lastFetchTime = 0;
 
-function fetchNearbyRestaurants(lat, lng) {
-    fetch(`/restaurants/nearby?latitude=${lat}&longitude=${lng}`)
+function fetchNearbyRestaurants(lat, lng, radius = 100) {
+    fetch(`/restaurants/nearby?latitude=${lat}&longitude=${lng}&radius=${radius}`)
         .then(response => response.json())
         .then(data => {
             if (data.success && data.restaurants) {
@@ -299,7 +306,7 @@ function startNearbyRestaurantTracking() {
         navigator.geolocation.watchPosition(
             position => {
                 const now = Date.now();
-                if (now - lastFetchTime >= 5000) { // every 5 seconds
+                if (now - lastFetchTime >= 10000) {
                     lastFetchTime = now;
 
                     const latitude = position.coords.latitude;
@@ -308,7 +315,13 @@ function startNearbyRestaurantTracking() {
                     localStorage.setItem('user_lat', latitude);
                     localStorage.setItem('user_lng', longitude);
 
-                    fetchNearbyRestaurants(latitude, longitude);
+                    const radiusInput = document.getElementById('radiusInput');
+                    const radius = radiusInput ? parseInt(radiusInput.value) || 100 : 100;
+
+                    localStorage.setItem('user_lat', latitude);
+                    localStorage.setItem('user_lng', longitude);
+
+                    fetchNearbyRestaurants(latitude, longitude, radius);
                 }
             },
             error => {
@@ -324,6 +337,19 @@ function startNearbyRestaurantTracking() {
         console.warn('Geolocation is not supported by this browser.');
     }
 }
+
+document.getElementById('searchRadiusBtn').addEventListener('click', () => {
+    const lat = localStorage.getItem('user_lat');
+    const lng = localStorage.getItem('user_lng');
+    const radiusInput = document.getElementById('radiusInput');
+    const radius = radiusInput ? parseInt(radiusInput.value) || 100 : 100;
+
+    if (lat && lng) {
+        fetchNearbyRestaurants(lat, lng, radius);
+    } else {
+        alert('Please allow location access first.');
+    }
+});
 
 // Call this function when your page loads
 document.addEventListener('DOMContentLoaded', () => {

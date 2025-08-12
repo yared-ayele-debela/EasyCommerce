@@ -1,5 +1,5 @@
 @if($hotels->count())
-<div class="d-flex justify-content-between align-items-center">
+{{-- <div class="d-flex justify-content-between align-items-center">
     <h4 class="mt-2 mb-2"><img width="30" src="{{ asset('restaurant_frontend/location.gif') }}" alt=""> Nearby Hotels</h4>
     <h5 class="mt-2 mb-2">
         <form action="{{ url('nearby-hotels') }}" method="GET">
@@ -9,9 +9,9 @@
             </button>
         </form>
     </h5>
-</div>
+</div> --}}
 <div class="row">
-    <div class="owl-carousel owl-theme hotel mt-4">
+    <div class="owl-carousel owl-theme hotel mt-0">
     @foreach ($hotels as $hotel)
     <div class="item my-2">
         <div class="offer-card h-100">
