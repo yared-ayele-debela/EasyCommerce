@@ -69,6 +69,7 @@ class Kernel extends HttpKernel
         'sales' => \App\Http\Middleware\RedirectIfNotSalesUser::class,
         'check.admin' => \App\Http\Middleware\CheckAdminType::class,
         'admin.permission' => \App\Http\Middleware\AdminPermission::class,
+        'check.profile' => \App\Http\Middleware\CheckUserProfile::class,
 
     ];
 }

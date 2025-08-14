@@ -123,7 +123,7 @@ $cartCount = $sessionCount + $helperCount;
             <div class="modal-body text-center">
                 <p>To give you a better experience, we need your location.</p>
                 <div id="locationError" class="text-danger mb-2" style="display: none;">Failed to access location. Please allow access.</div>
-                <button id="allowLocationBtn" class="btn btn-primary">Allow Location</button>
+                <button id="allowLocationBtn" class="btn btn-primary location_btn">Allow Location</button>
             </div>
         </div>
     </div>
@@ -225,25 +225,36 @@ document.addEventListener('DOMContentLoaded', function () {
         modal.show();
 
         document.getElementById('allowLocationBtn').addEventListener('click', function () {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function (position) {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
+    let btn = this;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Getting location...';
 
-                    localStorage.setItem('user_lat', lat);
-                    localStorage.setItem('user_lng', lng);
-                    localStorage.setItem('locationAllowed', 'true');
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
 
-                    sendLocationToServer(lat, lng);
-                    processProducts(lat, lng);
+            localStorage.setItem('user_lat', lat);
+            localStorage.setItem('user_lng', lng);
+            localStorage.setItem('locationAllowed', 'true');
 
-                    modal.hide();
-                    showAlert('success', 'Location access granted!');
-                }, function () {
-                    document.getElementById('locationError').classList.remove('d-none');
-                });
-            }
+            sendLocationToServer(lat, lng);
+            processProducts(lat, lng);
+
+            modal.hide();
+            showAlert('success', 'Location access granted!');
+        }, function () {
+            document.getElementById('locationError').style.display = 'block';
+            btn.disabled = false;
+            btn.innerHTML = 'Allow Location';
+        }, {
+            enableHighAccuracy: false,
+            timeout: 10000,
+            maximumAge: 60000
         });
+    }
+});
+
     } else {
         // Already has location, process products
         processProducts(parseFloat(userLat), parseFloat(userLng));
@@ -313,21 +324,18 @@ function startRealTimeLocationTracking() {
 
                 const lat = position.coords.latitude;
                 const lng = position.coords.longitude;
-                // console.log(`Updated at: ${new Date(now).toLocaleTimeString()} | Lat: ${lat}, Lng: ${lng}`);
                 localStorage.setItem('user_lat', lat);
                 localStorage.setItem('user_lng', lng);
                 sendLocationToServer(lat, lng);
                 processProducts(lat, lng);
             }
         }, function (error) {
-            // console.error('Real-time tracking failed:', error);
         }, {
             enableHighAccuracy: true,
             maximumAge: 0,
             timeout: 5000
         });
     } else {
-        // console.warn("Geolocation is not supported by this browser.");
     }
 }
 </script>
@@ -398,7 +406,6 @@ function startRealTimeLocationTracking() {
 
 </script>
 
-{{-- bank selection --}}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const select = document.getElementById('bank-select');
@@ -740,6 +747,25 @@ $(window).on('scroll', function () {
 </script>
 
 <script>
+    $(window).on('load', function() {
+
+          $('.sliders').owlCarousel({
+        loop: true,
+        margin: 30,
+        nav: true,
+        navText: [
+          '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
+          '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
+        ],
+        dots: false,
+        autoplay: true,
+        autoplayHoverPause: true,
+        responsiveClass: true,
+        responsive: {
+            0: { items: 1 },
+            1024: { items: 3 }
+        }
+    });
     $('.products').owlCarousel({
         loop: true
         , margin: 30
@@ -949,32 +975,7 @@ navText: [
             }
         }
     });
-    $('.sliders').owlCarousel({
-        loop: true
-        , margin: 30
-        , nav: true,
-navText: [
-      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
-      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
-    ]
-        , dots: false
-        , autoplay: true
-        , autoplayHoverPause: true // Stops autoplay when hovered
-        , responsiveClass: true
-        , responsive: {
-            0: {
-                items: 1
-                , nav: true,
-navText: [
-      '<button class="custom-prevs"><i class="bi bi-arrow-left"></i></button>',
-      '<button class="custom-nexts"><i class="bi bi-arrow-right"></i></button>'
-    ]
-            }
-            , 1024: {
-                items: 3
-            }
-        }
-    });
+
     $('.pro').owlCarousel({
         loop: true
         , margin: 30
@@ -1002,8 +1003,10 @@ navText: [
             }
         }
     });
+  });
 
 </script>
+
 <script>
     $(document).ready(function() {
         let currentIndex = 0;

@@ -33,7 +33,7 @@
             <div class="item mb-2 h-100">
                 <div class="offer-card position-relative shadow-sm rounded-4 overflow-hidden h-100">
                     @php
-                    $hasStock = $product->attributes->sum('stock') > 0;
+                    $hasStock = $product->quantity > 0;
                     @endphp
                     @if(!$hasStock)
                         <span class="bg-secondary position-absolute badge bg-danger top-0 end-0 p-2 m-2" style="z-index: 1100;">Out of Stock</span>
@@ -44,12 +44,12 @@
                     @endphp
                     @if($hasDiscount)
                     <span class="badge bg-primary position-absolute top-0 start-0 p-2 m-2" style="z-index: 1100;">
-                        -{{ round(100 - ($getDiscountPrice / $product['product_price']) * 100) }}%
+                       {{ round(100 - ($getDiscountPrice / $product['product_price']) * 100) }}%
                     </span>
                     @endif
                     <a href="{{ url('ecommerce/product/'.encrypt($product['id'])) }}">
                         @if($product['product_image'])
-                        <img src="{{ $product['product_image'] }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
+                        <img src="{{ asset('storage/'.$product['product_image']) }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
                         @else
                         <img src="{{ asset('restaurant_frontend/default-image.png') }}" class="card-img-top p-3" alt="{{ $product['product_name'] }}">
                         @endif

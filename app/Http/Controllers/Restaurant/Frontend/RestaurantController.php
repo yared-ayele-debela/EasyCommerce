@@ -11,17 +11,33 @@ use App\Models\Restaurant\RestaurantMenu;
 use App\Services\LocationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class RestaurantController extends Controller
 {
     //
     public function index()
     {
-        $auto_restaurants = Restaurant::where('is_open', 1)->latest()->paginate(10);
-        $cities = Restaurant::select('city')->distinct()->pluck('city');
-        $states = Restaurant::select('state')->distinct()->pluck('state');
-        $delivery_zones = Restaurant::select('zone')->distinct()->pluck('zone');
-        $delivery_fees = Restaurant::select('start_from')->distinct()->pluck('start_from');
+         $auto_restaurants = Cache::remember('restaurants_page_1', now()->addMinutes(10), function () {
+        return Restaurant::where('is_open', 1)->latest()->paginate(10);
+        });
+
+        $cities = Cache::remember('restaurants_cities', now()->addHours(1), function () {
+            return Restaurant::select('city')->distinct()->pluck('city');
+        });
+
+        $states = Cache::remember('restaurants_states', now()->addHours(1), function () {
+            return Restaurant::select('state')->distinct()->pluck('state');
+        });
+
+        $delivery_zones = Cache::remember('restaurants_zones', now()->addHours(1), function () {
+            return Restaurant::select('zone')->distinct()->pluck('zone');
+        });
+
+        $delivery_fees = Cache::remember('restaurants_fees', now()->addHours(1), function () {
+            return Restaurant::select('start_from')->distinct()->pluck('start_from');
+        });
+
         // dd($auto_restaurants);
         return view('Restaurant.frontend.pages.restaurants.index', compact('auto_restaurants', 'cities', 'states', 'delivery_zones', 'delivery_fees'));
     }
@@ -38,38 +54,30 @@ class RestaurantController extends Controller
 
     public function filter(Request $request)
     {
+         $cacheKey = 'restaurants_filter_' . md5(json_encode($request->all()));
+
+    $auto_restaurants = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($request) {
         $query = Restaurant::where('is_open', 1);
 
-        if ($request->filled('city')) {
-            $query->where('city', 'like', '%' . $request->city . '%');
-        }
-        if ($request->filled(key: 'name')) {
-            $query->where('name', 'like', '%' . $request->name . '%');
-        }
+        if ($request->filled('city')) $query->where('city', 'like', '%' . $request->city . '%');
+        if ($request->filled('name')) $query->where('name', 'like', '%' . $request->name . '%');
+        if ($request->filled('state')) $query->where('state', 'like', '%' . $request->state . '%');
+        if ($request->filled('delivery_zone')) $query->where('zone', 'like', '%' . $request->delivery_zone . '%');
+        if ($request->filled('delivery_fee')) $query->where('start_from', '>=', $request->delivery_fee);
 
-        if ($request->filled('state')) {
-            $query->where('state', 'like', '%' . $request->state . '%');
-        }
+        return $query->latest()->paginate(10);
+    });
 
-        if ($request->filled('delivery_zone')) {
-            $query->where('zone', 'like', '%' . $request->delivery_zone . '%');
-        }
-
-        if ($request->filled('delivery_fee')) {
-            $query->where('start_from', '>=', $request->delivery_fee);
-        }
-
-        $auto_restaurants = $query->latest()->paginate(10);
-
-        $html = view('all_frontend_layouts.partials.restaurant-cards', compact(var_name: 'auto_restaurants'))->render();
+    $html = view('all_frontend_layouts.partials.restaurant-cards', compact('auto_restaurants'))->render();
 
         return response()->json(['html' => $html]);
     }
 
     public function fetchRestaurant(Request $request)
     {
-        $auto_restaurants = Restaurant::where('is_open', 1)->latest()->paginate(4);
-
+ $auto_restaurants = Cache::remember('restaurants_ajax_page_1', now()->addMinutes(10), function () {
+        return Restaurant::where('is_open', 1)->latest()->paginate(4);
+    });
         if ($request->ajax()) {
             return view('all_frontend_layouts.partials.restaurant-cards', compact('auto_restaurants'))->render();
         }
@@ -79,24 +87,29 @@ class RestaurantController extends Controller
 
     public function detail($id)
     {
-        $restaurant = Restaurant::with(['admin', 'images', 'ratings'])->findOrFail($id);
-        $categories = Category::whereHas('products', function ($query) use ($id) {
+         $cacheTime = now()->addMinutes(60); // cache for 10 minutes
+
+    // Cache restaurant details
+    $restaurant = Cache::remember("restaurant_detail_{$id}", $cacheTime, function () use ($id) {
+        return Restaurant::with(['admin', 'images', 'ratings'])->findOrFail($id);
+    });
+
+    // Cache categories that have products for this restaurant
+    $categories = Cache::remember("restaurant_categories_{$id}", $cacheTime, function () use ($id) {
+        return Category::whereHas('products', function ($query) use ($id) {
             $query->where('restaurant_id', $id);
         })->get();
+    });
 
-        $products = Product::where('restaurant_id', $id)
-            ->when(request('category_id'), function ($query) {
-                return $query->where('category_id', request('category_id'));
+    // Cache products for this restaurant, optionally filtered by category
+    $categoryId = request('category_id');
+    $products = Cache::remember("restaurant_products_{$id}_category_{$categoryId}", $cacheTime, function () use ($id, $categoryId) {
+        return Product::where('restaurant_id', $id)
+            ->when($categoryId, function ($query) use ($categoryId) {
+                $query->where('category_id', $categoryId);
             })
             ->get();
-
-
-        // // Get unique menus for this restaurant's products
-        // $menus = RestaurantMenu::whereHas('products', function ($query) use ($id) {
-        //     $query->where('restaurant_id', $id);
-        // })->with(['products' => function ($query) use ($id) {
-        //     $query->where('restaurant_id', $id);
-        // }])->get();
+    });
 
         return view('Restaurant.frontend.pages.restaurants.detail', compact('restaurant', 'categories', 'products'));
     }
@@ -106,7 +119,7 @@ class RestaurantController extends Controller
         // dd($request->all());
         $latitude = $request->latitude;
         $longitude = $request->longitude;
-    $radius = $request->radius ?? 30; // default radius 30 km if not provided
+        $radius = $request->radius ?? 30; // default radius 30 km if not provided
 
         if (!$latitude || !$longitude) {
             return response()->json(['error' => 'Location is required'], 400);

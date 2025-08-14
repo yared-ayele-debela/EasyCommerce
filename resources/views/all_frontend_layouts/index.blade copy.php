@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Storage;
     <div class="owl-carousel owl-theme sliders mt-4">
         @foreach ($banners as $banner)
         <div class="item mb-2 position-relative">
-            <img src="{{ asset('storage/' . $banner->image)??asset('no_banner.png') }}" alt="{{ $banner->link }}" style="border-radius:8px;" class="img-fluid" >
+            <img src="{{ asset('storage/' . $banner->image)??asset('no_banner.png') }}" alt="{{ $banner->link }}" style="border-radius:8px;" class="img-fluid" loading="lazy" >
             <div class="overlay-text position-absolute text-white p-3">
                 <h3>{{ $banner->title }}</h3>
                 <p>{{ $banner->description }}</p>

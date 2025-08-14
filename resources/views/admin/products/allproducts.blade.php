@@ -71,8 +71,8 @@ $user = Auth::guard('admin')->user();
                                 <img class=" rounded-sm border-0" src="{{ asset('/storage/products/no-image.png') }}" style="width: 50px; box-shadow:1px 1px 2px 2px rgb(218, 215, 215); border-radius:3px; border:none; height:50px" alt="">
                                 @endif
                             </td>
-                            <td>{{ $product['category']['name']}}</td>
-                            <td>{{ $product['group']['name']}}</td>
+                            <td>{{ $product['category']['name']??''}}</td>
+                            <td>{{ $product['group']['name']??''}}</td>
                             <td>
                                 <form method="POST" action="{{ route('product.toggleFeatured', $product->id) }}">
                                 @csrf

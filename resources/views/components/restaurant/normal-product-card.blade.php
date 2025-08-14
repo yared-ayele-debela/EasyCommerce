@@ -17,12 +17,8 @@ $locationService = new LocationService();
      data-product-id="{{ $product->id }}">
     <div class="offer-card p-2 h-100">
         <a href="{{ url('restaurant/product-detail/' . encrypt($product->id)) }}" class="text-decoration-none text-dark d-block">
-             {{-- @if($badge)
-            <span class="{{ $bgColor }}" style="text-shadow:5px 5px 15px; color:green;">
-                {{ $badge }}
-            </span>
-            @endif --}}
-            <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid mb-2 restaurant-product-image" alt="{{ $product->name }}" loading="lazy">
+
+            <img src="{{ asset('storage/' . $product->image) ?? asset('restaurant_frontend/default-image.png') }}" class="img-fluid mb-2 restaurant-product-image" alt="{{ $product->name }}" loading="lazy">
             <h6 class="text-dark">{{ $product->name }}</h6>
             <p class="mb-0">
                 @if($product->getFinalPrice() < $product->price)

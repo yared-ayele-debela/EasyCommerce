@@ -21,7 +21,7 @@ $user = Auth::guard('admin')->user();
         @endif
     </div>
      <div class="card-body">
-        
+
         <!-- Table -->
         <table class="table mt-3">
             <thead>
@@ -36,12 +36,12 @@ $user = Auth::guard('admin')->user();
                 @foreach ($streets as $street)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
-                        <td>{{ $street->subCity->name }}</td>
+                        <td>{{  $street->subCity?$street->subCity->name:'' }}</td>
                         <td>{{ $street->name }}</td>
                         <td>
                             <!-- Edit Button -->
                             <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editStreetModal{{ $street->id }}">Edit</button>
-                            
+
                             <!-- Delete Form -->
                             <form action="{{ route('streets.destroy', $street->id) }}" method="POST" style="display:inline;">
                                 @csrf
@@ -50,7 +50,7 @@ $user = Auth::guard('admin')->user();
                             </form>
                         </td>
                     </tr>
-    
+
                     <!-- Edit Modal -->
                     <div class="modal fade" id="editStreetModal{{ $street->id }}" tabindex="-1">
                         <div class="modal-dialog">
@@ -80,7 +80,7 @@ $user = Auth::guard('admin')->user();
                             </div>
                         </div>
                     </div>
-    
+
                 @endforeach
             </tbody>
         </table>

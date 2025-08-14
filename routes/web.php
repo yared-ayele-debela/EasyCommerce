@@ -280,7 +280,7 @@ Route::prefix('admin')->group(function () {
     Route::get('forgot-password', [AdminResetController::class, 'ForgetPassword'])->name('admin.forgot.password');
     Route::post('forgot-password', [AdminResetController::class, 'ForgetPasswordStore'])->name('admin.forgot.password.store');
     Route::get('reset-password/{token}', [AdminResetController::class, 'ResetPassword'])->name('admin.reset.password');
-    Route::post( 'reset-password', [AdminResetController::class, 'ResetPasswordStore'])->name('admin.reset.password.store');
+    Route::post('reset-password', [AdminResetController::class, 'ResetPasswordStore'])->name('admin.reset.password.store');
 });
 
 // Auth::routes();
@@ -296,12 +296,12 @@ Route::prefix('admin')->group(function () {
         Route::get('updateadmindetails', [AdminController::class, 'updateadmindetails'])->name('updateadmindetails');
         Route::put('update_admin_details', [AdminController::class, 'update_admin_details'])->name('update_admin_details');
 
-});
+    });
 
-Route::group(['middleware' => ['admin']], function () {
-Route::get('adminlogout', [AdminController::class, 'logout'])->name('adminlogout');
-});
-Route::group(['middleware' => ['admin']], function () {
+    Route::group(['middleware' => ['admin']], function () {
+        Route::get('adminlogout', [AdminController::class, 'logout'])->name('adminlogout');
+    });
+    Route::group(['middleware' => ['admin']], function () {
 
         Route::post('sales-report', [DashboardController::class, 'filterOrders'])->name('sales-report');
 
@@ -549,8 +549,8 @@ Route::group(['middleware' => ['admin']], function () {
         Route::put('/delivery_boy/{id}', [DeliverymanController::class, 'update'])->name('delivery_boy.update');
         Route::delete('/delivery_boy/{id}', [DeliverymanController::class, 'destroy'])->name('delivery_boy.destroy');
 
-        Route::get('delivery_boy/is_active/{id}',[DeliveryManController::class,'is_active'])->name('delivery_boy_is_active');
-        Route::get('view-withdraw-detail/{id}',[DeliveryManController::class,'detail'])->name('view-withdraw-detail');
+        Route::get('delivery_boy/is_active/{id}', [DeliveryManController::class, 'is_active'])->name('delivery_boy_is_active');
+        Route::get('view-withdraw-detail/{id}', [DeliveryManController::class, 'detail'])->name('view-withdraw-detail');
 
         //for role and permission
         Route::resource('roles', RolesController::class);
@@ -600,7 +600,7 @@ Route::group(['middleware' => ['admin']], function () {
         //Routing for products tables
         Route::get('products', [ProductController::class, 'product'])->name('products');
 
-         Route::post('/product/{id}/update-status', [ProductController::class, 'updateStatus'])->name('product.updateStatus');
+        Route::post('/product/{id}/update-status', [ProductController::class, 'updateStatus'])->name('product.updateStatus');
 
         Route::post('/product/{id}/toggle-seasonal', [ProductController::class, 'toggleSeasonal'])->name('product.toggleSeasonal');
 
@@ -816,9 +816,9 @@ Route::group(['middleware' => ['admin']], function () {
         Route::get('faq/inactive/{id}', [FaqController::class, 'inactive'])->name('inactive_faq');
         Route::get('faq/active/{id}', [FaqController::class, 'active'])->name('active_faq');
 
-        Route::get('vendor-notification',[VendorNotificationController::class,'index'])->name('vendor-notification');
+        Route::get('vendor-notification', [VendorNotificationController::class, 'index'])->name('vendor-notification');
         Route::patch('vendor/notifications/{id}/read', [VendorNotificationController::class, 'markAsRead'])
-    ->name('vendor.notifications.markAsRead');
+            ->name('vendor.notifications.markAsRead');
 
         Route::get('cms-pages', [CmsController::class, 'cmspages']);
         Route::get('cms/active/{cms_id}', [CmsController::class, 'active'])->name('active_cms');
@@ -918,9 +918,9 @@ Route::group(['middleware' => ['admin']], function () {
         Route::get('tax-settings', [TaxController::class, 'index'])->name('tax-settings.index');
         Route::get('withdraw-settings', [WithdrawSettingController::class, 'index'])->name('withdraw-settings.index');
 
-        Route::get('out-of-products',[OutOfStockProductController::class,'index'])->name('out-of-products');
+        Route::get('out-of-products', [OutOfStockProductController::class, 'index'])->name('out-of-products');
 
-        Route::resource('tips',TipSettingsController::class)->except(['create', 'edit', 'show']);
+        Route::resource('tips', TipSettingsController::class)->except(['create', 'edit', 'show']);
 
         Route::resource('banks', BankController::class)->except(['create', 'edit', 'show']);
 
@@ -929,23 +929,23 @@ Route::group(['middleware' => ['admin']], function () {
         Route::post('/withdrawals/{id}/reject', [DeliveryManWithdrawController::class, 'reject'])->name('admin.withdrawals.reject');
 
 
-    Route::get('/account-deletion-requests', [AdminAccountController::class, 'adminList'])->name('admin.account.requests');
-    Route::post( '/delete-user/{id}', [AdminAccountController::class, 'deleteUser'])->name('admin.account.delete');
-    Route::post('/reject-request/{id}', [AdminAccountController::class, 'rejectRequest'])->name('admin.account.reject');
+        Route::get('/account-deletion-requests', [AdminAccountController::class, 'adminList'])->name('admin.account.requests');
+        Route::post('/delete-user/{id}', [AdminAccountController::class, 'deleteUser'])->name('admin.account.delete');
+        Route::post('/reject-request/{id}', [AdminAccountController::class, 'rejectRequest'])->name('admin.account.reject');
 
     });
-        Route::group(['middleware' => 'admin'], function () {
+    Route::group(['middleware' => 'admin'], function () {
 
-        Route::get('vendor/withdraw-requests',[VendorVendorWithdrawRequestController::class,'index']);
+        Route::get('vendor/withdraw-requests', [VendorVendorWithdrawRequestController::class, 'index']);
 
-        Route::post('withdraw.update/{id}',[VendorVendorWithdrawRequestController::class,'updateWithdrawStatus'])->name('admin.withdraw.update');
+        Route::post('withdraw.update/{id}', [VendorVendorWithdrawRequestController::class, 'updateWithdrawStatus'])->name('admin.withdraw.update');
         Route::put('update_vendor_details', [AdminController::class, 'update_vendor_details'])->name('update_vendor_details')->middleware('admin');
         Route::put('update_vendor_businessdetails', [AdminController::class, 'update_vendor_businessdetails'])->name('update_vendor_businessdetails')->middleware('admin');
         Route::put('update_vendor_bank_details', [AdminController::class, 'update_vendor_bank_details'])->name('update_vendor_bank_details')->middleware('admin');
 
 
-        Route::get('vendor/wallet',[VendorBalanceController::class,'index']);
-        Route::post('vendor-withdraw-request',[VendorBalanceController::class,'requestWithdraw'])->name('vendor-withdraw-request');
+        Route::get('vendor/wallet', [VendorBalanceController::class, 'index']);
+        Route::post('vendor-withdraw-request', [VendorBalanceController::class, 'requestWithdraw'])->name('vendor-withdraw-request');
     });
 });
 
@@ -1007,21 +1007,12 @@ Route::group(['middleware' => 'deliverymen'], function () {
         Route::post('delivery-boy/update-stock-product-transfer-status', [StockTransferProductController::class, 'update_status'])->name('updata_stock_transfer_status');
     });
 
-    Route::get('delivery-boy/pickup-order/{orderId}/{restaurantId}',[DeliveryOrderController::class,'pickupView']);
-    Route::get('delivery-boy/get-customer-location/{orderId}',[DeliveryOrderController::class,'getCustomerLocation']);
-    Route::get('delivery-boy/ecommerce/get-customer-location/{orderId}',action: [GetLocationController::class,'getCustomerLocation']);
-    Route::get('delivery-boy/ecommerce/pickup-order/{orderId}/{vendorId}',[GetLocationController::class,'pickupView']);
+    Route::get('delivery-boy/pickup-order/{orderId}/{restaurantId}', [DeliveryOrderController::class, 'pickupView']);
+    Route::get('delivery-boy/get-customer-location/{orderId}', [DeliveryOrderController::class, 'getCustomerLocation']);
+    Route::get('delivery-boy/ecommerce/get-customer-location/{orderId}', action: [GetLocationController::class, 'getCustomerLocation']);
+    Route::get('delivery-boy/ecommerce/pickup-order/{orderId}/{vendorId}', [GetLocationController::class, 'pickupView']);
 });
 
-Route::get('page/{url}', [FrontCmsController::class, 'pages'])->name('pages');
-Route::post('store-custom-orders', [CustomOrderController::class, 'store_fast_order'])->name('store_custom_order');
-
-// /Route::match(['GET', 'POST'], '/add-rating', [RatingController::class, 'addRating'])->name('add_rating');
-Route::post('newslettersubscriber', [NewletterSubscriberController::class, 'store'])->name('newslettersubscriber');
-//User Logout
-Route::get('user/logout', [UserController::class, 'userLogout']);
-//Confirm User Account
-Route::get('faq', [FaqController::class, 'index'])->name('faq');
 
 // for sales man
 
@@ -1044,6 +1035,8 @@ Route::prefix('sales')->name('sales.')->group(function () {
     });
 });
 
+
+Route::get('user/logout', [UserController::class, 'userLogout']);
 
 // Restaurant Routes
 Route::prefix('admin/restaurant')->group(function () {
@@ -1091,22 +1084,17 @@ Route::prefix('admin/restaurant')->group(function () {
         Route::patch('/orders/{order}/mark-old', [DashboardOrderController::class, 'markAsOld'])->name('restaurant.orders.markAsOld');
         Route::get('old/orders', [DashboardOrderController::class, 'old'])->name('restaurant.old.orders');
 
-        Route::get('/nearby-deliverymen/{order_id}',[DashboardNearbyDeliveryMenMapController::class,'index']);
+        Route::get('/nearby-deliverymen/{order_id}', [DashboardNearbyDeliveryMenMapController::class, 'index']);
         Route::get('/api/orders/{order}/nearby-deliverymen', action: [DashboardNearbyDeliveryMenMapController::class, 'getNearbyDeliveryMen']);
 
         Route::get('update-vendor-details', action: [RestaurantAdminController::class, 'updatevendordetails'])->name(name: 'restaurant.updatevendordetails');
         Route::get('update-vendor-bank-details', action: [RestaurantAdminController::class, 'updatevendorbankdetails'])->name(name: 'restaurant.updatevendorbankdetails');
 
-        Route::get('vendor/wallet',action: [DashboardVendorBalanceController::class,'index']);
+        Route::get('vendor/wallet', action: [DashboardVendorBalanceController::class, 'index']);
 
-     });
+    });
 });
 
-Route::post('/send-message', function () {
-    broadcast(new MessageSent(request('message')))->toOthers();
-    return response()->json(['status' => 'Message broadcasted!']);
-});
-// Hotel Reservations
 Route::group(['middleware' => ['admin']], function () {
     Route::resource('admin/hotels', HotelController::class);
     Route::get('admin/hotel/{id}/toggleAdvertise', [HotelController::class, 'toggleAdvertise']);
@@ -1114,10 +1102,10 @@ Route::group(['middleware' => ['admin']], function () {
     Route::prefix('admin/hotel')->middleware(['admin'])->group(function () {
         Route::get('dashboard', [DashboardDashboardController::class, 'index'])
             ->name('hotel.dashboard');
-            Route::post('/dashboard/filter', [DashboardDashboardController::class, 'filterStats'])->name('dashboard.filter');
+        Route::post('/dashboard/filter', [DashboardDashboardController::class, 'filterStats'])->name('dashboard.filter');
 
-            // routes/web.php
-Route::resource('room-types', controller: RoomTypeController::class);
+        // routes/web.php
+        Route::resource('room-types', controller: RoomTypeController::class);
 
         Route::resource('amenities', AmenityController::class);
         Route::resource('hotel-categories', HotelCategoryController::class);
@@ -1129,7 +1117,7 @@ Route::resource('room-types', controller: RoomTypeController::class);
         Route::put('/reservations/{id}/payment_status', [ReservationsController::class, 'updatePaymentStatus'])->name('reservations.updatePaymentStatus');
         Route::delete('/reservations/{id}', [ReservationsController::class, 'destroy'])->name('reservations.destroy');
 
-         Route::patch('/reservations/{order}/mark-old', [ReservationsController::class, 'markAsOld'])->name(name: 'reservations.markAsOld');
+        Route::patch('/reservations/{order}/mark-old', [ReservationsController::class, 'markAsOld'])->name(name: 'reservations.markAsOld');
         Route::get('old/reservations', [ReservationsController::class, 'old'])->name('old.reservations');
 
         Route::resource('rooms', RoomController::class);
@@ -1143,13 +1131,34 @@ Route::resource('room-types', controller: RoomTypeController::class);
         Route::put('/coupons/{coupon}', [DashboardCouponController::class, 'update'])->name('hotel.coupon.update');
         Route::delete('/coupons/{coupon}', [DashboardCouponController::class, 'destroy'])->name('hotel.coupon.destroy');
 
-        Route::get('vendor/wallet',action: [HotelDashboardVendorBalanceController::class,'index']);
+        Route::get('vendor/wallet', action: [HotelDashboardVendorBalanceController::class, 'index']);
 
-    Route::get('update-vendor-details', action: [HotelAdminController::class, 'updatevendordetails'])->name('hotel.updatevendordetails');
-    Route::get('update-vendor-bank-details', action: [HotelAdminController::class, 'updatevendorbankdetails'])->name('hotel.updatevendorbankdetails');
+        Route::get('update-vendor-details', action: [HotelAdminController::class, 'updatevendordetails'])->name('hotel.updatevendordetails');
+        Route::get('update-vendor-bank-details', action: [HotelAdminController::class, 'updatevendorbankdetails'])->name('hotel.updatevendorbankdetails');
 
     });
 });
+
+
+
+// to check profile detail
+
+Route::get('page/{url}', [FrontCmsController::class, 'pages'])->name('pages');
+Route::post('store-custom-orders', [CustomOrderController::class, 'store_fast_order'])->name('store_custom_order');
+
+// /Route::match(['GET', 'POST'], '/add-rating', [RatingController::class, 'addRating'])->name('add_rating');
+Route::post('newslettersubscriber', [NewletterSubscriberController::class, 'store'])->name('newslettersubscriber');
+//User Logout
+//Confirm User Account
+Route::get('faq', [FaqController::class, 'index'])->name('faq');
+
+
+Route::post('/send-message', function () {
+    broadcast(new MessageSent(request('message')))->toOthers();
+    return response()->json(['status' => 'Message broadcasted!']);
+});
+// Hotel Reservations
+
 
 Route::get('/', [FrontendController::class, 'index'])->name('restaurant.index.page');
 
@@ -1160,7 +1169,8 @@ Route::prefix('auth')->middleware('guest')->group(function () {
     Route::post('register', [UserController::class, 'userRegister'])->name('auth.register');
     Route::match(['get', 'post'], 'forgot-password', [UserController::class, 'forgotPassword']);
     Route::get('google', [GoogleAuthController::class, 'redirectToGoogle'])->name('google.login');
-    Route::get('google/callback', [GoogleAuthController::class, 'handleGoogleCallback'])->middleware('web');;
+    Route::get('google/callback', [GoogleAuthController::class, 'handleGoogleCallback'])->middleware('web');
+    ;
 
     Route::get('/verify-otp', [UserController::class, 'showOTPVerification'])->name('verify-otp');
     Route::post('/verify-otp', [UserController::class, 'verifyOTP'])->name('user-verify-otp');
@@ -1169,20 +1179,20 @@ Route::prefix('auth')->middleware('guest')->group(function () {
 
 // User Account Routes (Requires Authentication)
 Route::middleware('auth')->group(function () {
-        Route::post('/apply-coupon', [FrontProductController::class, 'applyCoupon']);
+    Route::post('/apply-coupon', [FrontProductController::class, 'applyCoupon']);
 
     Route::put('account', [UserController::class, 'userAccount'])->name('account.update');
     Route::post('/products/{product}/request-stock', [ProductRequestController::class, 'store'])->name('product.request-stock');
     Route::delete('/user/delete', [UserController::class, 'destroy'])->name('user.destroy');
 
-        Route::get('thanks', [FrontProductController::class, 'thanks'])->name('thanks');
+    Route::get('thanks', [FrontProductController::class, 'thanks'])->name('thanks');
 
 });
- Route::post('/forgot-password/send-otp', [ForgetPasswordController::class, 'sendOTPForReset'])->name('forgot.sendotp');
-    Route::get('/verify-otp', [ForgetPasswordController::class, 'showOTPVerifyForm'])->name('forgot.verify.form');
-    Route::post('/verify-otp', [ForgetPasswordController::class, 'verifyResetOTP'])->name('forgot.verify');
-    Route::get('/reset-password', [ForgetPasswordController::class, 'showResetPasswordForm'])->name('reset.password.form');
-    Route::post('/reset-password', [ForgetPasswordController::class, 'resetPassword'])->name('reset.password');
+Route::post('/forgot-password/send-otp', [ForgetPasswordController::class, 'sendOTPForReset'])->name('forgot.sendotp');
+Route::get('/verify-otp', [ForgetPasswordController::class, 'showOTPVerifyForm'])->name('forgot.verify.form');
+Route::post('/verify-otp', [ForgetPasswordController::class, 'verifyResetOTP'])->name('forgot.verify');
+Route::get('/reset-password', [ForgetPasswordController::class, 'showResetPasswordForm'])->name('reset.password.form');
+Route::post('/reset-password', [ForgetPasswordController::class, 'resetPassword'])->name('reset.password');
 
 // Pages
 Route::get('restaurants', [FrontendRestaurantController::class, 'index'])->name('restaurants');
@@ -1221,7 +1231,8 @@ Route::prefix('/restaurant')->group(function () {
     Route::get('/live-search', [FrontendProductController::class, 'liveSearch']);
 
     Route::post('/cart/add', [CartController::class, 'addToCart'])->name('restaurant.cart.add');
-    Route::post('/cart/update/{key}/{action}', [CartController::class, 'updateCart'])->name('restaurant.cart.update');;
+    Route::post('/cart/update/{key}/{action}', [CartController::class, 'updateCart'])->name('restaurant.cart.update');
+    ;
     Route::get('/cart/count', [CartController::class, 'getCartCount'])->name('restaurant.cart.count');
     Route::post('/apply-coupon', [CartController::class, 'applyCoupon'])->name('restaurant.apply.coupon');
     Route::post('/apply-coupon-order-now', [CartController::class, 'applyCouponOrderNow'])->name('restaurant.apply.coupon.order.now');
@@ -1237,17 +1248,18 @@ Route::prefix('/restaurant')->group(function () {
             return response()->json(['count' => Auth::check() ? \App\Models\Restaurant\Wishlist::where('user_id', Auth::id())->count() : 0]);
         })->name('wishlist.count');
 
-        Route::get('check-out', action: [CheckoutController::class, 'index'])->name('restaurant.checkout');
-        Route::get('checkout/order-now',[CheckoutController::class, 'orderNowPage'])->name('restaurant.checkout.orderNowPage');
-        Route::post('/checkout/order-now', [CheckoutController::class, 'orderNow'])->name('restaurant.checkout.orderNow');
-        Route::post('order-now/checkout/applyCoupon', [CheckoutController::class, 'applyCoupon'])->name('restaurant.checkout.orderNow.applyCoupon');
+        Route::get('check-out', action: [CheckoutController::class, 'index'])->name('restaurant.checkout')->middleware('check.profile');
+        Route::get('checkout/order-now', [CheckoutController::class, 'orderNowPage'])->name('restaurant.checkout.orderNowPage')->middleware('check.profile');
+        Route::post('/checkout/order-now', [CheckoutController::class, 'orderNow'])->name('restaurant.checkout.orderNow')->middleware('check.profile');
+        Route::post('order-now/checkout/applyCoupon', [CheckoutController::class, 'applyCoupon'])->name('restaurant.checkout.orderNow.applyCoupon')->middleware('check.profile');
 
         Route::post('/calculate-shipping-fee', [CheckoutController::class, 'calculateShipping'])->name('calculate.shipping.fee');
         Route::post('/order-now-calculate-shipping-fee', [CheckoutController::class, 'orderNowcalculateShipping'])->name('order.now.calculate.shipping.fee');
 
 
-        Route::post('/checkout/place-order', [CheckoutController::class, 'placeOrder'])->name('restaurant.checkout.placeOrder');
-        Route::post('/checkout/place-order-now', [CheckoutController::class, 'placeOrderNow'])->name('restaurant.checkout.placeOrderNow');        Route::get('/order/success/{order}', [FrontendOrderController::class, 'success'])->name('restaurant.order.success');
+        Route::post('/checkout/place-order', [CheckoutController::class, 'placeOrder'])->name('restaurant.checkout.placeOrder')->middleware('check.profile');
+        Route::post('/checkout/place-order-now', [CheckoutController::class, 'placeOrderNow'])->name('restaurant.checkout.placeOrderNow')->middleware('check.profile');
+        Route::get('/order/success/{order}', [FrontendOrderController::class, 'success'])->name('restaurant.order.success');
         Route::post('/order-receipt', [FrontendOrderController::class, 'receipt']);
 
 
@@ -1258,8 +1270,8 @@ Route::prefix('/restaurant')->group(function () {
     Route::post('/rate-restaurant-product', [FrontendRatingController::class, 'product_rating_store'])->name('restaurant.product.rate');
 });
 
-Route::get('all-restaurant-products',[FrontendProductController::class,'fetchProducts'])->name('fetch.products');
-Route::get('all-restaurants',[FrontendRestaurantController::class,'fetchRestaurant'])->name('fetch.restaurants');
+Route::get('all-restaurant-products', [FrontendProductController::class, 'fetchProducts'])->name('fetch.products');
+Route::get('all-restaurants', [FrontendRestaurantController::class, 'fetchRestaurant'])->name('fetch.restaurants');
 Route::middleware('auth')->group(function () {
     Route::get('/count-ecommerce-wishlist', function () {
         return response()->json(['count' => Auth::check() ? \App\Models\Wishlist::where('user_id', Auth::id())->count() : 0]);
@@ -1321,9 +1333,9 @@ Route::prefix('/hotel')->group(function () {
     Route::post('/check-availability', [BookingController::class, 'checkAvailability'])->name('check.availability');
 
     Route::middleware('auth')->group(function () {
-        Route::post('/reservation/preview', [ReservationController::class, 'preview'])->name('reservation.preview');
-        Route::post('/apply-coupon', [ReservationController::class, 'apply'])->name('hotel.coupons.apply');
-        Route::post('/reserve', [ReservationController::class, 'store'])->name('reservation.store');
+        Route::post('/reservation/preview', [ReservationController::class, 'preview'])->name('reservation.preview')->middleware('check.profile');
+        Route::post('/apply-coupon', [ReservationController::class, 'apply'])->name('hotel.coupons.apply')->middleware('check.profile');
+        Route::post('/reserve', [ReservationController::class, 'store'])->name('reservation.store')->middleware('check.profile');
         Route::get('/reservation/confirmation', [ReservationController::class, 'confirmation'])->name('reservation.confirmation');
         // Route::get('my-reservation',[ReservationController::class, 'my_reservation'])->name('my.reservation');
         Route::post('/rate-hotel-room', [FrontendRoomController::class, 'room_rating_store'])->name('hotel.room.rate');
@@ -1338,18 +1350,15 @@ Route::get('nearby-hotels', [FrontendHotelController::class, 'nearby'])->name('n
 Route::get('/hotels/filter', [FrontendHotelController::class, 'filter'])->name('hotels.filter');
 Route::get('/get-nearby-hotels', [FrontendHotelController::class, 'getNearbyHotels']);
 
-
-
 // ecommerce
 Route::prefix('/ecommerce')->group(function () {
-
     Route::get('/', [EcommerceFrontendFrontendController::class, 'index'])->name('ecommerce.index');
     Route::get('/categories', action: [FrontendCategoriesController::class, 'index'])->name('ecommerce.categories.index');
     Route::get('/category/{id}', [FrontendCategoriesController::class, 'show'])->name('ecommerce.category.show');
     Route::get('/products/latest', [ProductsController::class, 'latest'])->name('ecommerce.products.latest');
     Route::get('/products/featured', [ProductsController::class, 'featured'])->name('ecommerce.products.featured');
     Route::get('/flash-sales/products', [ProductsController::class, 'flash'])->name('ecommerce.products.flash.sales');
-    Route::get('/product/{id}',[ProductsController::class, 'detail'])->name('ecommerce.product.detail');
+    Route::get('/product/{id}', [ProductsController::class, 'detail'])->name('ecommerce.product.detail');
     Route::get('/products/discounted', action: [ProductsController::class, 'discounted'])->name('ecommerce.products.discounted');
     Route::get('/all-products', [ProductsController::class, 'all'])->name('ecommerce.products.all');
     Route::get('/ecommerce/products/load', [ProductsController::class, 'fetchMore'])->name('ecommerce.products.load');
@@ -1359,30 +1368,24 @@ Route::prefix('/ecommerce')->group(function () {
         Route::match(['GET', 'POST'], '/orders/{id}/cancel', [EcommerceFrontendOrderController::class, 'ordercancel']);
         Route::match(['GET', 'POST'], '/orders/{id}/return', [EcommerceFrontendOrderController::class, 'orderreturn']);
         Route::get('/orders/{id?}', [EcommerceFrontendOrderController::class, 'orders'])->name('ecommerce.order.detail');
-        Route::get('/track-order/{id}',[EcommerceFrontendOrderController::class, 'track']);
+        Route::get('/track-order/{id}', [EcommerceFrontendOrderController::class, 'track']);
     });
-
     Route::middleware('auth')->group(function () {
 
-    Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
-
-    Route::get('/checkout', [FrontendCheckoutController::class, 'showOrderSummary'])->name('ecommerce.checkout.summary');
-    Route::post('/checkout', [FrontendCheckoutController::class, 'placeOrder'])->name('ecommerce.checkout.placeOrder');
-
-    Route::post(uri: '/checkout/direct', action: [DirectCheckoutController::class, 'directCheckout'])->name('direct.checkout');
-    Route::post('/checkout/direct/submit', action: [DirectCheckoutController::class, 'placeOrder'])->name('checkout.submit.direct');
-    Route::post( '/ecommerce-calculate-shipping', [DirectCheckoutController::class, 'calculateShipping'])->name('ecommerce.order.now.calculate.shipping');
-
-    Route::post('/rate-ecommerce-product', [EcommerceFrontendRatingController::class, 'product_rating_store'])->name('ecommerce.product.rate');
+        Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+        Route::get('/checkout', [FrontendCheckoutController::class, 'showOrderSummary'])->name('ecommerce.checkout.summary')->middleware('check.profile');
+        Route::post('/checkout', [FrontendCheckoutController::class, 'placeOrder'])->name('ecommerce.checkout.placeOrder')->middleware('check.profile');;
+        Route::post(uri: '/checkout/direct', action: [DirectCheckoutController::class, 'directCheckout'])->name('direct.checkout')->middleware('check.profile');;
+        Route::post('/checkout/direct/submit', action: [DirectCheckoutController::class, 'placeOrder'])->name('checkout.submit.direct')->middleware('check.profile');;
+        Route::post('/ecommerce-calculate-shipping', [DirectCheckoutController::class, 'calculateShipping'])->name('ecommerce.order.now.calculate.shipping');
+        Route::post('/rate-ecommerce-product', [EcommerceFrontendRatingController::class, 'product_rating_store'])->name('ecommerce.product.rate');
 
         // routes/web.php
-    Route::post('/calculate-shipping', [FrontendCheckoutController::class, 'calculateShipping'])->name('ecommerce.checkout.shipping.calculation');
-
+        Route::post('/calculate-shipping', [FrontendCheckoutController::class, 'calculateShipping'])->name('ecommerce.checkout.shipping.calculation');
 
     });
-      Route::get('/products/filter', action: [FilterProductController::class, 'filter'])->name('products.filter');
+    Route::get('/products/filter', action: [FilterProductController::class, 'filter'])->name('products.filter');
     Route::get('/products/search', [FilterProductController::class, 'search'])->name('ecommerce.products.search');
-
 
 });
 
@@ -1412,12 +1415,12 @@ Route::get('track-custom-order', [CustomController::class, 'index'])->name('trac
 Route::match(['GET', 'POST'], 'check-custom-order', [CustomController::class, 'checkcustomorder'])->name('check_custom_order');
 Route::get('/custom-orders/{id}', [CustomController::class, 'showOrderDetails'])->name('create_custom_order');
 
-Route::get('register/vendor',[VendorRegistrationController::class,'index'])->name('vendor-register');
+Route::get('register/vendor', [VendorRegistrationController::class, 'index'])->name('vendor-register');
 Route::post('/vendor/register', [VendorRegistrationController::class, 'RegisterVendor'])->name('vendor_register');
 Route::get('/vendor/confirm/{code}', [VendorRegistrationController::class, 'confirmVendor'])->name('confirm_vendor');
 
 
-Route::get('map',[MapController::class,'index'])->name('map');
+Route::get('map', [MapController::class, 'index'])->name('map');
 Route::get('/api/reverse-geocode', [MapController::class, 'reverse']);
 Route::get('/api/forward-geocode', [MapController::class, 'forward']);
 
@@ -1451,7 +1454,7 @@ Route::get('/register/delivery-man', [RegisterDeliveryManController::class, 'cre
 Route::post('/register_delivery_man', action: [RegisterDeliveryManController::class, 'store'])->name('delivery_man.register');
 
 
-Route::get('notifications/delete/{id}',[NotificationController::class,'delete'])->name('delete-notification')->middleware('auth');
+Route::get('notifications/delete/{id}', [NotificationController::class, 'delete'])->name('delete-notification')->middleware('auth');
 
 
 Route::get('/live-location', function () {
@@ -1463,9 +1466,7 @@ Route::get('/live-location', function () {
 });
 
 Route::get('/delete-account', [AccountController::class, 'showDeletePage'])->name('delete.account.page');
-
 Route::post('/otp/send', [AccountController::class, 'sendOtp'])->name('delete.account.otp.send');
 Route::post('/otp/verify', [AccountController::class, 'verifyOtp'])->name('delete.account.otp.verify');
 Route::post('/account/delete', [AccountController::class, 'deleteAccount'])->name('delete.account.delete');
-
 Route::post('/delete-account-request', [AccountController::class, 'handleDeleteRequest'])->name('delete.account.request');

@@ -30,7 +30,7 @@
 }
 
 </style>
-<div class="container my-4">
+<div class="container-fluid p-4 my-4">
     <div class="header">
         <button class="btn btn-link text-dark" onclick="history.back()">
             <i class="bi bi-arrow-left"></i>

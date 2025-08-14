@@ -19,12 +19,40 @@ use Illuminate\Support\Facades\Storage;
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- In your Blade file -->
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <style>
+
+        .location_btn{
+    transform: scale(0.98);
+}
+
+
+        #loading-spinner {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255,255,255,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+.spinner {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #54bf1a;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+}
         .tooltip-wrapper {
   position: relative;
   display: inline-block;
@@ -313,6 +341,9 @@ use Illuminate\Support\Facades\Storage;
 </head>
 
 <body>
+    <div id="loading-spinner">
+  <div class="spinner"></div>
+</div>
 <div class="onboard-container" style="display: none;">
     <button class="btn btn-link text-muted skip-btn" id="skipBtn">Skip</button>
     <!-- Screens -->
@@ -551,6 +582,11 @@ use Illuminate\Support\Facades\Storage;
             </div>
         </header>
         @include('all_frontend_layouts.custom_order.index')
+        <script>
+  window.addEventListener('load', function() {
+    document.getElementById('loading-spinner').style.display = 'none';
+  });
+</script>
         @if(Auth::check())
      <script>
         function checkNotifications() {
@@ -584,7 +620,7 @@ use Illuminate\Support\Facades\Storage;
 
         // Check immediately and then every 10 seconds
         checkNotifications();
-        setInterval(checkNotifications, 5000);
+        setInterval(checkNotifications, 50000);
     </script>
     @endif
         <script type="text/javascript">

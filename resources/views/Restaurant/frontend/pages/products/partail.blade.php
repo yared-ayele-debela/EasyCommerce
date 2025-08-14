@@ -1,5 +1,5 @@
     @forelse ($products as $product)
-        <div class="col-md-3 col-6 my-2">
+        <div class="col-md-2 col-6 my-2">
             <x-restaurant.product-card :product="$product" />
         </div>
     @empty

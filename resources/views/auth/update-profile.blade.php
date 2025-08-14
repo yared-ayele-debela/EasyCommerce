@@ -12,6 +12,7 @@
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-8 col-12">
+      
             @if (session('warning'))
                 <div class="alert alert-warning">
                     {{ session('warning') }}

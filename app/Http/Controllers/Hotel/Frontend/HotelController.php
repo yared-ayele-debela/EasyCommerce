@@ -12,59 +12,76 @@ use App\Models\Room;
 use App\Models\State;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class HotelController extends Controller
 {
-    //
-    public function index($id){
-        try{
-            $hotel=Hotel::with('rooms')->findOrFail($id);
-            // dd($hotel);
-            $rooms=$hotel->rooms()->latest()->paginate(10);
+    protected $cacheTime = 60; // cache duration in minutes
 
-            return view('Hotel.frontend.pages.hotel.detail',compact('hotel','rooms'));
-        }catch(Exception $e){
+    //
+    public function index($id)
+    {
+        try {
+            $hotel = Cache::tags(['hotels'])->remember("hotel_with_rooms_{$id}", $this->cacheTime, function () use ($id) {
+            return Hotel::with('rooms')->findOrFail($id);
+        });
+
+
+        $rooms = $hotel->rooms()->latest()->paginate(10);
+            return view('Hotel.frontend.pages.hotel.detail', compact('hotel', 'rooms'));
+        } catch (Exception $e) {
             return redirect()->back();
         }
     }
-    public function gallery($id){
-        try{
-        $hotel=Hotel::findOrFail($id);
-        return view('Hotel.frontend.pages.hotel.gallery',compact('hotel'));
-    }catch(Exception $e){
-        return redirect()->back();
+    public function gallery($id)
+    {
+        try {
+            $hotel = Cache::tags(['hotels'])->remember("hotel_gallery_{$id}", $this->cacheTime, function () use ($id) {
+            return Hotel::findOrFail($id);
+        });
+            return view('Hotel.frontend.pages.hotel.gallery', compact('hotel'));
+        } catch (Exception $e) {
+            return redirect()->back();
+        }
     }
-    }
 
-    public function select_date($id){
+    public function select_date($id)
+    {
 
-        $id=decrypt($id);
-        $room=Room::with('images','amenities','hotel')->findOrFail($id);
-        $av_rating=HotelReview::where('room_id',$room->id)->avg('rating');
+        $id = decrypt($id);
+        $room = Cache::tags(['rooms'])->remember("room_details_{$id}", $this->cacheTime, function () use ($id) {
+        return Room::with('images', 'amenities', 'hotel')->findOrFail($id);
+    });
 
+    $av_rating = Cache::remember("room_avg_rating_{$id}", $this->cacheTime, function () use ($id) {
+        return HotelReview::where('room_id', $id)->avg('rating');
+    });
         // dd($room);
-        return view('Hotel.frontend.pages.room.select_date',compact('room','av_rating'));
+        return view('Hotel.frontend.pages.room.select_date', compact('room', 'av_rating'));
     }
 
-    public function discounted(){
+    public function discounted()
+    {
 
-        $hotels=Hotel::with('photos')->where('discount','>','0')->latest()->paginate(10);
-        $name="Discounted Hotels";
+        $hotels = Cache::tags(['hotels'])->remember('discounted_hotels_paginated_page_' . request('page', 1), $this->cacheTime, function () {
+                return Hotel::with('photos')->where('discount', '>', '0')->latest()->paginate(10);
+            });
+        $name = "Discounted Hotels";
         // dd($hotels);
 
-        return view('Hotel.frontend.pages.hotel.index',compact('hotels','name'));
+        return view('Hotel.frontend.pages.hotel.index', compact('hotels', 'name'));
     }
-    public function latest(){
+    public function latest()
+    {
 
-        $cities=City::all();
-        $countries=Country::all();
-        // dd($countries);
-        $states=State::all();
-        $categories=HotelCategory::all();
-        // dd($hotels);
+       $cities = Cache::remember('cities_all', $this->cacheTime, fn() => City::all());
+    $countries = Cache::remember('countries_all', $this->cacheTime, fn() => Country::all());
+    $states = Cache::remember('states_all', $this->cacheTime, fn() => State::all());
+    $categories = Cache::remember('hotel_categories_all', $this->cacheTime, fn() => HotelCategory::all());
 
-        return view('Hotel.frontend.pages.hotel.search',compact('cities','countries','states','categories'));
+
+        return view('Hotel.frontend.pages.hotel.search', compact('cities', 'countries', 'states', 'categories'));
     }
 
     public function nearby()
@@ -72,12 +89,12 @@ class HotelController extends Controller
         return view('Hotel.frontend.pages.hotel.nearby');
     }
     public function getNearbyHotels(Request $request)
-{
-    $latitude = $request->lat;
-    $longitude = $request->lng;
-    $radius = $request->radius ?? 100; // km
+    {
+        $latitude = $request->lat;
+        $longitude = $request->lng;
+        $radius = $request->radius ?? 100; // km
 
-    $hotels = Hotel::select('*', DB::raw("
+        $hotels = Hotel::select('*', DB::raw("
         (6371 * acos(
             cos(radians($latitude)) *
             cos(radians(latitude)) *
@@ -86,19 +103,19 @@ class HotelController extends Controller
             sin(radians(latitude))
         )) AS distance
     "))
-    ->having('distance', '<=', $radius)
-    ->orderBy('distance')
-    ->where('is_active', true)
-    // ->take(8)
-    ->get();
+            ->having('distance', '<=', $radius)
+            ->orderBy('distance')
+            ->where('is_active', true)
+            // ->take(8)
+            ->get();
 
-    $check_all=false;
+        $check_all = false;
 
-    // Render partial blade view and return as HTML
-    $html = view('Hotel.frontend.pages.hotel.partials.nearby-hotels', compact('hotels','check_all'))->render();
+        // Render partial blade view and return as HTML
+        $html = view('Hotel.frontend.pages.hotel.partials.nearby-hotels', compact('hotels', 'check_all'))->render();
 
-    return response()->json(['html' => $html]);
- }
+        return response()->json(['html' => $html]);
+    }
 
 
     public function filter(Request $request)

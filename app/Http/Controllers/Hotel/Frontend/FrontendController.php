@@ -10,44 +10,48 @@ use App\Models\HotelSlider;
 use App\Models\Room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Cache;
 class FrontendController extends Controller
 {
     //
     public function index()
     {
 
-        $banners = HotelSlider::where('is_active', 1)->latest()->get();
-        $categories = HotelCategory::latest()->get();
-        // dd($categories);
-        $rooms = Room::where('is_available', 1)->latest()
-            ->get();
-        $discounted_hotels=Hotel::where('discount','>','0')->latest()->get();
-        $hotels= Hotel::where('is_active',1)->latest()->get();
+        $cacheTime = 60 * 60; // 60 minutes
 
-        $latitude = 9.03;
-        $longitude = 38.74;
-        $radius = 20;
+        $banners = Cache::remember('hotel_slider_active', $cacheTime, function () {
+            return HotelSlider::where('is_active', 1)->latest()->get();
+        });
 
-        $nearbyHotels = Hotel::select('*', DB::raw("
-            (6371 * acos(
-                cos(radians($latitude)) *
-                cos(radians(latitude)) *
-                cos(radians(longitude) - radians($longitude)) +
-                sin(radians($latitude)) *
-                sin(radians(latitude))
-            )) AS distance
-        "))
-        ->having('distance', '<=', $radius)
-        ->orderBy('distance')
-        ->where('is_active', true)
-        ->take(10)
-        ->get();
+        $categories = Cache::remember('hotel_categories_latest', $cacheTime, function () {
+            return HotelCategory::latest()->get();
+        });
 
-        $after_discount_hotels=Advertisement::where('position','after_discount_hotels')->where('is_approved',1)->first();
-        $after_latest_rooms=Advertisement::where('position','after_latest_rooms')->where('is_approved',1)->first();
-        $after_latest_hotels=Advertisement::where('position','after_latest_hotels')->where('is_approved',1)->first();
+        $rooms = Cache::tags(['rooms'])->remember('available_rooms_latest', $cacheTime, function () {
+            return Room::where('is_available', 1)->latest()->get();
+        });
 
-        return view('all_frontend_layouts.hotel_index', compact('banners', 'categories',  'hotels','rooms','discounted_hotels','nearbyHotels','after_discount_hotels','after_latest_rooms','after_latest_hotels'));
+        $discounted_hotels = Cache::tags(['hotels'])->remember('discounted_hotels_latest', $cacheTime, function () {
+            return Hotel::where('discount', '>', 0)->latest()->get();
+        });
+
+        $hotels = Cache::tags(['hotels'])->remember('active_hotels_latest', $cacheTime, function () {
+            return Hotel::where('is_active', 1)->latest()->get();
+        });
+
+
+        $after_discount_hotels = Cache::remember('advert_after_discount_hotels', $cacheTime, function () {
+            return Advertisement::where('position', 'after_discount_hotels')->where('is_approved', 1)->first();
+        });
+
+        $after_latest_rooms = Cache::remember('advert_after_latest_rooms', $cacheTime, function () {
+            return Advertisement::where('position', 'after_latest_rooms')->where('is_approved', 1)->first();
+        });
+
+        $after_latest_hotels = Cache::remember('advert_after_latest_hotels', $cacheTime, function () {
+            return Advertisement::where('position', 'after_latest_hotels')->where('is_approved', 1)->first();
+        });
+
+        return view('all_frontend_layouts.hotel_index', compact('banners', 'categories', 'hotels', 'rooms', 'discounted_hotels',  'after_discount_hotels', 'after_latest_rooms', 'after_latest_hotels'));
     }
 }

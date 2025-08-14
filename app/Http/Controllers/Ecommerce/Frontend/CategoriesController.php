@@ -9,13 +9,19 @@ use App\Models\Category;
 use App\Models\CmsPage;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class CategoriesController extends Controller
 {
     //
     public function index() {
-        $categories = Category::where('parent_id', 0)->where('status', 1)->latest()->get();
+       $categories = Cache::remember('top_level_categories_active', now()->addMinutes(60), function () {
+        return Category::where('parent_id', 0)
+            ->where('status', 1)
+            ->latest()
+            ->get();
+    });
 
         return view('Ecommerce.categories.index', compact('categories'));
     }
@@ -39,7 +45,7 @@ class CategoriesController extends Controller
             }
             $cms_pages = CmsPage::get()->toArray();
             $appsettings = AppSetting::all()->toArray();
-            
+
             $products=Product::where('brand_id',$id)->simplePaginate(20);
 
         return view('Ecommerce.brands.index',compact('products','brand','cms_pages','appsettings'));

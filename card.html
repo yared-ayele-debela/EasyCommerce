@@ -1,410 +1,481 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SafeCity - Crime Reporting and Tracking System</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  <style>
-    body {
-      scroll-behavior: smooth;
-    }
-    .hero {
-      background: url('https://scontent.fadd3-1.fna.fbcdn.net/v/t39.30808-6/485157512_1064540085720172_160269598318649153_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=833d8c&_nc_ohc=by3FZ0Cz0fUQ7kNvwE0m447&_nc_oc=AdlpLsU9aYHT_IRa-3Zbunds6ohgQVIvVKk5V4RmK2JKbd8H-JVeQuAt6JIZn2oOw_s&_nc_zt=23&_nc_ht=scontent.fadd3-1.fna&_nc_gid=nxHrLempSpmZ3w_QYAgOOQ&oh=00_AfOcD4I6k-uG9ivPy9TTNGnEt54l6WSgbfpFCfFV10ed0g&oe=68559F95') no-repeat center center/cover;
-      color: white;
-      height: 100vh;
-      position: relative;
-    }
-    .hero-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-    }
-    .hero-content {
-      position: relative;
-      z-index: 2;
-    }
-    .feature-icon {
-      font-size: 2rem;
-      color: #030d46;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce with Banner Slider</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    
-    .text-primary{
-        color: #030d46 !important;
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-    }
-    .bg-primary{
-        background-color: #030d46 !important;
-    }
-    .navbar-primary {
-      background-color: #030d46 !important;
-    }
-.btn-outline-primary {
-    --bs-btn-color: #030d46 !important;
-    --bs-btn-border-color: #030d46 !important;
-    --bs-btn-hover-color: #fff;
-    --bs-btn-hover-bg: #030d46 !important;
-    --bs-btn-hover-border-color: #030d46 !important;
-    --bs-btn-focus-shadow-rgb: 13,110,253;
-    --bs-btn-active-color: #fff;
-    --bs-btn-active-bg: #030d46 !important;
-    --bs-btn-active-border-color: #030d46 !important;
-    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-    --bs-btn-disabled-color: #030d46 !important;
-    --bs-btn-disabled-bg: transparent;
-    --bs-btn-disabled-border-color: #030d46 !important;
-    --bs-gradient: none
-}
+        .ecom-carousel {
+            position: relative;
+            width: 100%;
+            max-width: 1800px;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            margin-bottom: 40px;
+        }
 
-.btn-primary {
-    --bs-btn-color: #fff;
-    --bs-btn-bg: #030d46 !important;
-    --bs-btn-border-color: #030d46 !important;
-    --bs-btn-hover-color: #fff;
-    --bs-btn-hover-bg: #030d46 !important;
-    --bs-btn-hover-border-color: #030d46 !important;
-    --bs-btn-focus-shadow-rgb: 49,132,253;
-    --bs-btn-active-color: #fff;
-    --bs-btn-active-bg: #030d46 !important;
-    --bs-btn-active-border-color: #0a53be;
-    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-    --bs-btn-disabled-color: #fff;
-    --bs-btn-disabled-bg: #030d46 !important;
-    --bs-btn-disabled-border-color: #030d46 !important
-}
-  </style>
+        .ecom-banner-carousel {
+            margin-top: 20px;
+        }
+
+        .ecom-custom-banners, .ecom-custom-categories, .ecom-custom-products {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .ecom-banner, .ecom-category, .ecom-product {
+            flex: 0 0 calc(100% / 3); /* 3 items for banners */
+            min-width: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .ecom-category {
+            flex: 0 0 calc(100% / 4); /* 4 items for categories */
+        }
+
+        .ecom-product {
+            flex: 0 0 calc(100% / 5); /* 5 items for products on desktop */
+        }
+
+        .ecom-banner:hover, .ecom-category:hover, .ecom-product:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .ecom-banner img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #eee;
+        }
+
+        .ecom-category img, .ecom-product img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #eee;
+        }
+
+        .ecom-banner span, .ecom-category span, .ecom-product span {
+            font-size: 1.2em;
+            color: #333;
+            text-align: center;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .ecom-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            border: none;
+            padding: 12px;
+            cursor: pointer;
+            font-size: 1.3em;
+            transition: background-color 0.3s ease;
+            z-index: 10;
+            border-radius: 5px;
+        }
+
+        .ecom-nav-btn:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .ecom-prev {
+            left: 5px;
+        }
+
+        .ecom-next {
+            right: 5px;
+        }
+
+        .ecom-nav-btn.ecom-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: #333;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        @media (max-width: 992px) {
+            .ecom-banner, .ecom-category, .ecom-product {
+                flex: 0 0 calc(100% / 3);
+            }
+            .ecom-banner img {
+                height: 220px;
+            }
+            .ecom-category img, .ecom-product img {
+                height: 150px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .ecom-banner {
+                flex: 0 0 calc(100% / 2);
+            }
+            .ecom-category {
+                flex: 0 0 calc(100% / 2);
+            }
+            .ecom-product {
+                flex: 0 0 calc(100% / 2); /* 2 items for products on small screens */
+            }
+            .ecom-banner img {
+                height: 180px;
+            }
+            .ecom-category img, .ecom-product img {
+                height: 130px;
+            }
+            .ecom-banner span, .ecom-category span, .ecom-product span {
+                font-size: 1.1em;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .ecom-banner{
+                flex: 0 0 100%;
+                min-width: 150px;
+            }
+            .ecom-category {
+                flex: 0 0 calc(100% / 2);
+                                min-width: 150px;
+
+            }
+            .ecom-product {
+                flex: 0 0 calc(100% / 2); /* 2 items for products on small screens */
+                                min-width: 150px;
+
+            }
+            .ecom-banner img {
+                height: 150px;
+            }
+            .ecom-category img, .ecom-product img {
+                height: 100px;
+            }
+            .ecom-nav-btn {
+                padding: 8px;
+                font-size: 1em;
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-primary bg-dark fixed-top shadow">
-    <div class="container">
-      <a class="navbar-brand fw-bold text-white" href="#">
-        <img src="https://gola.adamacity.gov.et/public/uploads/images/logo.jpg" style="border-radius: 20px;" width="40" alt="">
-        SafeCity</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto text-white">
-          <li class="nav-item"><a class="nav-link text-white" href="#features">Features</a></li>
-          <li class="nav-item"><a class="nav-link text-white" href="#how">How It Works</a></li>
-          <li class="nav-item"><a class="nav-link text-white" href="#contact">Contact</a></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Hero Section -->
-  <header id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
-  <div class="carousel-inner">
-
-    <!-- Slide 1 -->
-    <div class="carousel-item active">
-      <div class="hero d-flex align-items-center text-center text-white" style="background: url('https://portal.adamacity.gov.et/gallery_images/1737739854.jpg') center/cover no-repeat; height: 80vh;">
-        <div class="container">
-          <h1 class="display-4 fw-bold">Empowering Communities to Stay Safe</h1>
-          <p class="lead">Report crimes, track incidents, and make your city safer.</p>
-          <a href="#contact" class="btn btn-primary btn-lg mt-3">Get Started</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Slide 2 -->
-    <div class="carousel-item">
-      <div class="hero d-flex align-items-center text-center text-white" style="background: url('https://portal.adamacity.gov.et/gallery_images/1737739854.jpg') center/cover no-repeat; height: 80vh;">
-        <div class="container">
-          <h1 class="display-4 fw-bold">Real-Time Crime Tracking</h1>
-          <p class="lead">Visualize reports and identify hotspots across the city.</p>
-          <a href="#features" class="btn btn-outline-light btn-lg mt-3">Learn More</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Slide 3 -->
-    <div class="carousel-item">
-      <div class="hero d-flex align-items-center text-center text-white" style="background: url('https://portal.adamacity.gov.et/gallery_images/1721139717.jpg') center/cover no-repeat; height: 80vh;">
-        <div class="container">
-          <h1 class="display-4 fw-bold">Connect With Local Authorities</h1>
-          <p class="lead">Seamless reporting and communication with your local police.</p>
-          <a href="#officers" class="btn btn-warning btn-lg mt-3 text-dark">Meet the Team</a>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- Controls -->
-  <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Previous</span>
-  </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Next</span>
-  </button>
-</header>
-
-
-  <!-- Features Section -->
-  <section id="features" class="py-5">
-    <div class="container text-center">
-      <h2 class="fw-bold mb-4">Key Features</h2>
-      <div class="row g-4">
-        <div class="col-md-4">
-          <i class="fas fa-shield-alt feature-icon"></i>
-          <h5 class="mt-3">Secure Reporting</h5>
-          <p>Confidentially report crimes using secure channels.</p>
-        </div>
-        <div class="col-md-4">
-          <i class="fas fa-map-marked-alt feature-icon"></i>
-          <h5 class="mt-3">Real-time Tracking</h5>
-          <p>Visualize reported crimes on an interactive city map.</p>
-        </div>
-        <div class="col-md-4">
-          <i class="fas fa-chart-line feature-icon"></i>
-          <h5 class="mt-3">Crime Analytics</h5>
-          <p>Access insights and trends to promote public safety.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  
-  <section id="departments" class="py-5 bg-light">
-  <div class="container">
-    <h2 class="fw-bold text-center mb-5">Police Departments</h2>
-    <div class="row g-4">
-      <!-- Department Card -->
-      <div class="col-md-3">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-body text-center">
-            <i class="fas fa-building-shield fa-2x text-primary mb-3"></i>
-            <h5 class="card-title">Central Police Station</h5>
-            <p class="card-text text-muted">123 Main Street, Addis Ababa</p>
-            <p class="card-text"><strong>Contact:</strong> +251 11 123 4567</p>
-            <a href="#" class="btn btn-outline-primary btn-sm mt-2">View Details</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Add more cards as needed -->
-      <div class="col-md-3">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-body text-center">
-            <i class="fas fa-building-shield fa-2x text-primary mb-3"></i>
-            <h5 class="card-title">Bole Sub-City Police</h5>
-            <p class="card-text text-muted">45 Bole Road, Addis Ababa</p>
-            <p class="card-text"><strong>Contact:</strong> +251 11 654 7890</p>
-            <a href="#" class="btn btn-outline-primary btn-sm mt-2">View Details</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-3">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-body text-center">
-            <i class="fas fa-building-shield fa-2x text-primary mb-3"></i>
-            <h5 class="card-title">Kirkos Division</h5>
-            <p class="card-text text-muted">Kirkos District, Addis Ababa</p>
-            <p class="card-text"><strong>Contact:</strong> +251 11 789 4321</p>
-            <a href="#" class="btn btn-outline-primary btn-sm mt-2">View Details</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-body text-center">
-            <i class="fas fa-building-shield fa-2x text-primary mb-3"></i>
-            <h5 class="card-title">Kirkos Division</h5>
-            <p class="card-text text-muted">Kirkos District, Addis Ababa</p>
-            <p class="card-text"><strong>Contact:</strong> +251 11 789 4321</p>
-            <a href="#" class="btn btn-outline-primary btn-sm mt-2">View Details</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="officers" class="py-5">
-  <div class="container">
-    <h2 class="text-center fw-bold mb-5">Our Police Officers</h2>
-    <div class="row g-4 justify-content-center">
-      
-      <!-- Officer Card -->
-      <div class="col-md-3 col-sm-6 ">
-        <div class="card border-0 shadow text-center h-100">
-          <img src="https://www.africaintelligence.com/utils/imageresize?x=800&web=1&file64=V29ya2Zsb3dcQUlBXzE1NDU3LkpQRw==" class="card-img-top rounded-circle mx-auto mt-4" style="width: 150px; height: 150px; object-fit: cover;" alt="Officer Photo">
-          <div class="card-body">
-            <h5 class="card-title mb-1">Inspector Dawit Alemu</h5>
-            <p class="text-muted mb-2">Head of Central Police</p>
-            <p class="small">Specialist in community safety and emergency response.</p>
-            <div>
-              <a href="#" class="text-primary me-2"><i class="fab fa-facebook-f"></i></a>
-              <a href="#" class="text-info me-2"><i class="fab fa-twitter"></i></a>
-              <a href="#" class="text-danger"><i class="fas fa-envelope"></i></a>
+    <h2>Promotions</h2>
+    <div class="ecom-carousel ecom-banner-carousel" tabindex="0">
+        <button class="ecom-nav-btn ecom-prev ecom-banner-prev" aria-label="Previous Banner">&lt;</button>
+        <div class="ecom-custom-banners">
+            <div class="ecom-banner">
+                <img src="https://images.unsplash.com/photo-1508739773434-c26b3d09e206" alt="Sale Banner">
+                <span>Big Sale</span>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Officer Card 2 -->
-      <div class="col-md-3 col-sm-6">
-        <div class="card border-0 shadow text-center h-100">
-          <img src="https://www.africaintelligence.com/utils/imageresize?x=800&web=1&file64=V29ya2Zsb3dcQUlBXzE1NDU3LkpQRw==" class="card-img-top rounded-circle mx-auto mt-4" style="width: 150px; height: 150px; object-fit: cover;" alt="Officer Photo">
-          <div class="card-body">
-            <h5 class="card-title mb-1">Sergeant Hana Tesfaye</h5>
-            <p class="text-muted mb-2">Patrol Officer, Bole Division</p>
-            <p class="small">Dedicated to ensuring safety and rapid incident response.</p>
-            <div>
-              <a href="#" class="text-primary me-2"><i class="fab fa-linkedin-in"></i></a>
-              <a href="#" class="text-success me-2"><i class="fas fa-phone-alt"></i></a>
-              <a href="#" class="text-danger"><i class="fas fa-envelope"></i></a>
+            <div class="ecom-banner">
+                <img src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e" alt="New Arrivals">
+                <span>New Arrivals</span>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Officer Card 3 -->
-      <div class="col-md-3 col-sm-6">
-        <div class="card border-0 shadow text-center h-100">
-          <img src="https://www.africaintelligence.com/utils/imageresize?x=800&web=1&file64=V29ya2Zsb3dcQUlBXzE1NDU3LkpQRw==" class="card-img-top rounded-circle mx-auto mt-4" style="width: 150px; height: 150px; object-fit: cover;" alt="Officer Photo">
-          <div class="card-body">
-            <h5 class="card-title mb-1">Officer Samuel Getachew</h5>
-            <p class="text-muted mb-2">Investigation Unit, Kirkos</p>
-            <p class="small">Focused on criminal investigations and justice delivery.</p>
-            <div>
-              <a href="#" class="text-dark me-2"><i class="fab fa-github"></i></a>
-              <a href="#" class="text-primary me-2"><i class="fab fa-facebook-f"></i></a>
-              <a href="#" class="text-danger"><i class="fas fa-envelope"></i></a>
+            <div class="ecom-banner">
+                <img src="https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d" alt="Exclusive Offer">
+                <span>Exclusive Offer</span>
             </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 col-sm-6">
-        <div class="card border-0 shadow text-center h-100">
-          <img src="https://www.africaintelligence.com/utils/imageresize?x=800&web=1&file64=V29ya2Zsb3dcQUlBXzE1NDU3LkpQRw==" class="card-img-top rounded-circle mx-auto mt-4" style="width: 150px; height: 150px; object-fit: cover;" alt="Officer Photo">
-          <div class="card-body">
-            <h5 class="card-title mb-1">Officer Samuel Getachew</h5>
-            <p class="text-muted mb-2">Investigation Unit, Kirkos</p>
-            <p class="small">Focused on criminal investigations and justice delivery.</p>
-            <div>
-              <a href="#" class="text-dark me-2"><i class="fab fa-github"></i></a>
-              <a href="#" class="text-primary me-2"><i class="fab fa-facebook-f"></i></a>
-              <a href="#" class="text-danger"><i class="fas fa-envelope"></i></a>
+            <div class="ecom-banner">
+                <img src="https://images.unsplash.com/photo-1516321310768-79d0a81ff268" alt="Seasonal Deals">
+                <span>Seasonal Deals</span>
             </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-  <!-- How It Works -->
-  <section id="how" class="bg-light py-5">
-    <div class="container">
-      <h2 class="text-center fw-bold mb-4">How It Works</h2>
-      <div class="row align-items-center">
-        <div class="col-md-6">
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">1. Create an account or sign in anonymously</li>
-            <li class="list-group-item">2. Submit a report with details and location</li>
-            <li class="list-group-item">3. Track your report and view updates</li>
-            <li class="list-group-item">4. See crime hotspots and safety zones</li>
-          </ul>
-        </div>
-        <div class="col-md-6 text-center">
-          <img src="https://source.unsplash.com/500x400/?city,map" class="img-fluid rounded shadow" alt="Crime Map">
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Contact Section -->
-  <section id="contact" class="py-5">
-    <div class="container text-center">
-      <h2 class="fw-bold mb-4">Stay Informed. Stay Safe.</h2>
-      <p class="mb-4">Ready to contribute to a safer community? Contact us or sign up to get started.</p>
-      <a href="#" class="btn btn-outline-primary btn-lg">Join SafeCity</a>
-    </div>
-  </section>
-
-  <section id="contact" class="py-5 bg-light">
-  <div class="container">
-    <h2 class="text-center fw-bold mb-4">Contact Us</h2>
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-<form>
-          <div class="mb-3">
-            <label for="name" class="form-label">Your Name</label>
-            <input type="text" id="name" class="form-control" placeholder="Enter your name" required>
-          </div>
-          <div class="mb-3">
-            <label for="email" class="form-label">Your Email</label>
-            <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
-          </div>
-          <div class="mb-3">
-            <label for="subject" class="form-label">Subject</label>
-            <input type="text" id="subject" class="form-control" placeholder="Enter a subject" required>
-          </div>
-          <div class="mb-3">
-            <label for="message" class="form-label">Message</label>
-            <textarea id="message" class="form-control" rows="5" placeholder="Your message..." required></textarea>
-          </div>
-          <div class="d-grid">
-            <button type="submit" class="btn btn-primary btn-lg">Send Message</button>
-          </div>
-        </form>
-        </div>
-      <div class="col-lg-6">
-        <div class="card">
-            <div class="card-body">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d60006.66206478795!2d39.26443765!3d8.5339447!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x164b1f65036ecb0f%3A0x6babded8f5e67ef6!2sAdama!5e1!3m2!1sen!2set!4v1750064911301!5m2!1sen!2set" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            <div class="ecom-banner">
+                <img src="https://images.unsplash.com/photo-1556740738-6b4d43b29c1f" alt="Flash Sale">
+                <span>Flash Sale</span>
             </div>
         </div>
-      </div>
+        <button class="ecom-nav-btn ecom-next ecom-banner-next" aria-label="Next Banner">&gt;</button>
     </div>
-  </div>
-</section>
 
-  <!-- Footer -->
-  <footer class="bg-primary text-white pt-5 pb-4">
-  <div class="container text-md-left">
-    <div class="row text-md-left">
-      <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mb-4">
-        <h5 class="text-uppercase fw-bold">SafeCity</h5>
-        <hr class="mb-4 mt-0 d-inline-block mx-auto" style="width: 60px; background-color: #0d6efd; height: 2px"/>
-        <p>Empowering communities to report and track crime in real-time, making cities safer for everyone.</p>
-      </div>
-
-      <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
-        <h6 class="text-uppercase fw-bold">Quick Links</h6>
-        <p><a href="#features" class="text-white text-decoration-none">Features</a></p>
-        <p><a href="#how" class="text-white text-decoration-none">How It Works</a></p>
-        <p><a href="#departments" class="text-white text-decoration-none">Departments</a></p>
-        <p><a href="#contact" class="text-white text-decoration-none">Contact</a></p>
-      </div>
-
-      <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
-        <h6 class="text-uppercase fw-bold">Contact</h6>
-        <p><i class="fas fa-home me-2"></i> Addis Ababa, Ethiopia</p>
-        <p><i class="fas fa-envelope me-2"></i> info@safecity.org</p>
-        <p><i class="fas fa-phone me-2"></i> +251 11 123 4567</p>
-      </div>
+    <h2>Shop by Category</h2>
+    <div class="ecom-carousel ecom-category-carousel" tabindex="0">
+        <button class="ecom-nav-btn ecom-prev ecom-category-prev" aria-label="Previous Category">&lt;</button>
+        <div class="ecom-custom-categories">
+            <div class="ecom-category">
+                <img src="https://images.unsplash.com/photo-1550989460-0adf9ea622e0" alt="Electronics">
+                <span>Electronics</span>
+            </div>
+            <div class="ecom-category">
+                <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d" alt="Fashion">
+                <span>Fashion</span>
+            </div>
+            <div class="ecom-category">
+                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c" alt="Home & Furniture">
+                <span>Home & Furniture</span>
+            </div>
+            <div class="ecom-category">
+                <img src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38" alt="Beauty">
+                <span>Beauty</span>
+            </div>
+            <div class="ecom-category">
+                <img src="https://images.unsplash.com/photo-1598532163257-ae3c6b2524b6" alt="Sports & Outdoors">
+                <span>Sports & Outdoors</span>
+            </div>
+            <div class="ecom-category">
+                <img src="https://images.unsplash.com/photo-1550399105-c4db5fb85c18" alt="Books">
+                <span>Books</span>
+            </div>
+            <div class="ecom-category">
+                <img src="https://images.unsplash.com/photo-1589999912619-c89d3e77ad4b" alt="Toys & Games">
+                <span>Toys & Games</span>
+            </div>
+            <div class="ecom-category">
+                <img src="https://images.unsplash.com/photo-1605733513597-a8f834bd6466" alt="Automotive">
+                <span>Automotive</span>
+            </div>
+        </div>
+        <button class="ecom-nav-btn ecom-next ecom-category-next" aria-label="Next Category">&gt;</button>
     </div>
-  </div>
 
-  <div class="text-center mt-4">
-    <small>&copy; 2025 SafeCity. All Rights Reserved.</small>
-  </div>
-</footer>
+    <h2>Featured Products</h2>
+    <div class="ecom-carousel ecom-featured-products" tabindex="0">
+        <button class="ecom-nav-btn ecom-prev ecom-featured-prev" aria-label="Previous Product">&lt;</button>
+        <div class="ecom-custom-products">
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1567581935881-c9a7b3a3a6a9" alt="Smartphone">
+                <span>Smartphone</span>
+            </div>
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1603575441919-5d2375421de2" alt="Laptop">
+                <span>Laptop</span>
+            </div>
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c" alt="Sofa">
+                <span>Sofa</span>
+            </div>
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1586281380349-7e9f7b2e3b87" alt="Headphones">
+                <span>Headphones</span>
+            </div>
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1595475207225-428b62bda831" alt="Running Shoes">
+                <span>Running Shoes</span>
+            </div>
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30" alt="Smartwatch">
+                <span>Smartwatch</span>
+            </div>
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f" alt="Sunglasses">
+                <span>Sunglasses</span>
+            </div>
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1600188769097-4db1c9a6d0c8" alt="Backpack">
+                <span>Backpack</span>
+            </div>
+        </div>
+        <button class="ecom-nav-btn ecom-next ecom-featured-next" aria-label="Next Product">&gt;</button>
+    </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <h2>Discounted Products</h2>
+    <div class="ecom-carousel ecom-discounted-products" tabindex="0">
+        <button class="ecom-nav-btn ecom-prev ecom-discounted-prev" aria-label="Previous Product">&lt;</button>
+        <div class="ecom-custom-products">
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1586495777744-4413ab4008d7" alt="Wireless Earbuds">
+                <span>Wireless Earbuds</span>
+            </div>
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e" alt="Gaming Mouse">
+                <span>Gaming Mouse</span>
+            </div>
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1611186871348-7ca9b6fc8d7d" alt="Sneakers">
+                <span>Sneakers</span>
+            </div>
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1605405748313-a416a1b84491" alt="Desk Lamp">
+                <span>Desk Lamp</span>
+            </div>
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90" alt="Headset">
+                <span>Headset</span>
+            </div>
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1600585152915-d208bec867a1" alt="Coffee Maker">
+                <span>Coffee Maker</span>
+            </div>
+        </div>
+        <button class="ecom-nav-btn ecom-next ecom-discounted-next" aria-label="Next Product">&gt;</button>
+    </div>
+
+    <h2>All Products</h2>
+    <div class="ecom-carousel ecom-all-products" tabindex="0">
+        <button class="ecom-nav-btn ecom-prev ecom-all-prev" aria-label="Previous Product">&lt;</button>
+        <div class="ecom-custom-products">
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c" alt="Armchair">
+                <span>Armchair</span>
+            </div>
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1585155770447-2f66e2a397b5" alt="Tablet">
+                <span>Tablet</span>
+            </div>
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1593642634367-dce0d8b33f9a" alt="Smart TV">
+                <span>Smart TV</span>
+            </div>
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c" alt="Dining Table">
+                <span>Dining Table</span>
+            </div>
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa" alt="Casual Shoes">
+                <span>Casual Shoes</span>
+            </div>
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5" alt="Camera">
+                <span>Camera</span>
+            </div>
+        </div>
+        <button class="ecom-nav-btn ecom-next ecom-all-next" aria-label="Next Product">&gt;</button>
+    </div>
+
+    <h2>Free Shipping Products</h2>
+    <div class="ecom-carousel ecom-free-shipping-products" tabindex="0">
+        <button class="ecom-nav-btn ecom-prev ecom-free-shipping-prev" aria-label="Previous Product">&lt;</button>
+        <div class="ecom-custom-products">
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1587049633312-d4c7d9f35047" alt="Bluetooth Speaker">
+                <span>Bluetooth Speaker</span>
+            </div>
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c" alt="Bookshelf">
+                <span>Bookshelf</span>
+            </div>
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1592078615290-033ee584e267" alt="Bedside Lamp">
+                <span>Bedside Lamp</span>
+            </div>
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1598966739654-5e9a252d8c32" alt="Fitness Tracker">
+                <span>Fitness Tracker</span>
+            </div>
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c" alt="Throw Pillow">
+                <span>Throw Pillow</span>
+            </div>
+            <div class="ecom-product">
+                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c" alt="Wall Art">
+                <span>Wall Art</span>
+            </div>
+        </div>
+        <button class="ecom-nav-btn ecom-next ecom-free-shipping-next" aria-label="Next Product">&gt;</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Generic carousel setup function
+            function setupCarousel(carouselSelector, prevBtnSelector, nextBtnSelector, itemsSelector, desktopItems, mobileItems) {
+                const carousel = document.querySelector(carouselSelector);
+                const items = document.querySelector(itemsSelector);
+                const prevBtn = document.querySelector(prevBtnSelector);
+                const nextBtn = document.querySelector(nextBtnSelector);
+
+                let itemWidth = 0;
+                let currentIndex = 0;
+                let totalItems = items.children.length;
+                let visibleItems = 0;
+
+                function updateCarousel() {
+                    const carouselWidth = carousel.offsetWidth;
+                    const isMobile = window.innerWidth <= 768;
+                    visibleItems = isMobile && mobileItems ? mobileItems : (desktopItems || Math.floor(carouselWidth / items.children[0].offsetWidth));
+                    itemWidth = carouselWidth / visibleItems;
+                    slideTo(currentIndex);
+                }
+
+                function updateButtons() {
+                    prevBtn.classList.toggle('ecom-disabled', currentIndex === 0);
+                    nextBtn.classList.toggle('ecom-disabled', currentIndex >= totalItems - visibleItems);
+                }
+
+                function slideTo(index) {
+                    if (index < 0 || index > totalItems - visibleItems) return;
+                    currentIndex = index;
+                    items.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
+                    updateButtons();
+                }
+
+                prevBtn.addEventListener('click', () => {
+                    if (currentIndex > 0) {
+                        slideTo(currentIndex - 1);
+                    }
+                });
+
+                nextBtn.addEventListener('click', () => {
+                    if (currentIndex < totalItems - visibleItems) {
+                        slideTo(currentIndex + 1);
+                    }
+                });
+
+                window.addEventListener('resize', () => {
+                    updateCarousel();
+                });
+
+                carousel.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowLeft') prevBtn.click();
+                    if (e.key === 'ArrowRight') nextBtn.click();
+                });
+
+                let touchStartX = 0;
+                carousel.addEventListener('touchstart', (e) => {
+                    touchStartX = e.touches[0].clientX;
+                });
+
+                carousel.addEventListener('touchend', (e) => {
+                    const touchEndX = e.changedTouches[0].clientX;
+                    const swipeDistance = touchStartX - touchEndX;
+                    if (Math.abs(swipeDistance) > 50) {
+                        if (swipeDistance > 0) nextBtn.click();
+                        else if (swipeDistance < 0) prevBtn.click();
+                    }
+                });
+
+                updateCarousel();
+                updateButtons();
+            }
+
+            // Initialize carousels
+            setupCarousel('.ecom-banner-carousel', '.ecom-banner-prev', '.ecom-banner-next', '.ecom-banner-carousel .ecom-custom-banners', 3, 2);
+            setupCarousel('.ecom-category-carousel', '.ecom-category-prev', '.ecom-category-next', '.ecom-category-carousel .ecom-custom-categories', 4, 2);
+            setupCarousel('.ecom-featured-products', '.ecom-featured-prev', '.ecom-featured-next', '.ecom-featured-products .ecom-custom-products', 5, 2);
+            setupCarousel('.ecom-discounted-products', '.ecom-discounted-prev', '.ecom-discounted-next', '.ecom-discounted-products .ecom-custom-products', 5, 2);
+            setupCarousel('.ecom-all-products', '.ecom-all-prev', '.ecom-all-next', '.ecom-all-products .ecom-custom-products', 5, 2);
+            setupCarousel('.ecom-free-shipping-products', '.ecom-free-shipping-prev', '.ecom-free-shipping-next', '.ecom-free-shipping-products .ecom-custom-products', 5, 2);
+        });
+    </script>
 </body>
 </html>

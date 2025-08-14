@@ -18,10 +18,13 @@ use App\Services\LocationService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class ProductController extends Controller
 {
     //
+        protected $cacheTime = 60 * 60; // 1 hour
+
 
     public function liveSearch(Request $request)
     {
@@ -154,12 +157,30 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
-        $products = Product::where('is_active', 1)->latest()->get();
-        $categories = Category::all();
-        $restaurants = Restaurant::all();
-        $subcategories = Subcategory::all();
-        $cities = ModelsCity::all();
-        $menus = RestaurantMenu::all();
+         $products = Cache::tags(['restaurant_products'])->remember('restaurant_latest_products', $this->cacheTime, function () {
+            return Product::where('is_active', 1)->latest()->get();
+        });
+
+        $categories = Cache::tags(['restaurant_products'])->remember('restaurant_categories_all', $this->cacheTime, function () {
+            return Category::all();
+        });
+
+        $restaurants = Cache::tags(['restaurant_products'])->remember('restaurant_all', $this->cacheTime, function () {
+            return Restaurant::all();
+        });
+
+        $subcategories = Cache::tags(['restaurant_products'])->remember('restaurant_subcategories_all', $this->cacheTime, function () {
+            return Subcategory::all();
+        });
+
+        $cities = Cache::tags(['restaurant_products'])->remember('restaurant_cities_all', $this->cacheTime, function () {
+            return ModelsCity::all();
+        });
+
+        $menus = Cache::tags(['restaurant_products'])->remember('restaurant_menus_all', $this->cacheTime, function () {
+            return RestaurantMenu::all();
+        });
+
         return view('Restaurant.frontend.pages.products.index', compact('products', 'categories', 'restaurants', 'cities', 'subcategories', 'menus'));
     }
 
@@ -207,7 +228,10 @@ class ProductController extends Controller
     public function detail($id, LocationService $locationService)
     {
         $id = decrypt($id);
-        $product = Product::with(relations: ['images', 'sizes', 'ratings', 'restaurant'])->findOrFail($id);
+ $product = Cache::tags(['restaurant_products'])->remember("restaurant_product_detail_{$id}", $this->cacheTime, function () use ($id) {
+            return Product::with(['images', 'sizes', 'ratings', 'restaurant'])->findOrFail($id);
+        });
+
         $userLat = session(key: 'user_lat');
         $userLng = session('user_lng');
 
@@ -216,7 +240,11 @@ class ProductController extends Controller
 
         $distance = $locationService->getDistance($userLat, $userLng, $restLat, $restLng);
 
-        $related_products = Product::where('category_id', $product->category_id)->where('id', '!=', $product->id)->get();
+ $related_products = Cache::tags(['restaurant_products'])->remember("restaurant_related_products_{$id}", $this->cacheTime, function () use ($product) {
+            return Product::where('category_id', $product->category_id)
+                ->where('id', '!=', $product->id)
+                ->get();
+        });
 
         $hasOrdered = false;
         if (Auth::check()) {

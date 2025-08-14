@@ -9,6 +9,7 @@ use App\Models\Reservation;
 use App\Models\Room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class RoomController extends Controller
 {
@@ -16,16 +17,23 @@ class RoomController extends Controller
     public function index($id){
 
 
-        $room=Room::with('images','amenities','hotel','rating')->findOrFail($id);
-        $av_rating=HotelReview::where('room_id',$room->id)->avg('rating');
-        // dd($av_rating);
-        $is_reserved = false;
-        if(Auth::check()){
-        $user= Reservation::where('room_id',$id)->where('user_id',auth()->user()->id)->first();
-        if($user){
+       $cacheTime = 60 * 60; // 1 hour
+
+    $room = Cache::tags(['rooms'])->remember("room_with_details_{$id}", $cacheTime, function () use ($id) {
+        return Room::with( 'images', 'amenities', 'hotel', 'rating')->findOrFail($id);
+    });
+
+    $av_rating = HotelReview::where('room_id', $room->id)->avg('rating');
+
+    $is_reserved = false;
+    if (auth()->check()) {
+        $user = Reservation::where('room_id', $id)
+            ->where('user_id', auth()->id())
+            ->first();
+        if ($user) {
             $is_reserved = true;
         }
-       }
+    }
         // dd($room);
         return view('Hotel.frontend.pages.room.detail',compact('room','is_reserved','av_rating'));
     }
