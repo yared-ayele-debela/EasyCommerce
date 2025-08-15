@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Livewire\Product\AddProduct;
 use App\Models\AdminsRole;
 use App\Models\AppSetting;
+use App\Models\Roles;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Group;
 
@@ -34,8 +35,28 @@ class ProductController extends Controller
     public function product()
     {
         // try {
+            $user = Auth::guard('admin')->user();
+            $adminType=Auth::guard('admin')->user()->type;
+            // dd(''.$adminType.'');
 
-            $products=Product::latest()->paginate(10);
+        $role=Roles::where('name',$adminType)->first();
+        $group = $role->group ?? null;
+        // dd($group);
+        $vendor_id = $user->vendor_id;
+
+        if ($group === "ecommerce") {
+            $vendorStatus = $user->status;
+            if ($vendorStatus == 0) {
+                Alert::toast('Your Vendor Account is not approved yet. Please make sure to fill your valid personal, business, and bank details', 'Inactive Vendor Account!', 'success');
+                return redirect('admin/updatevendordetails');
+            }
+        }
+
+          if ($group !== "general") {
+            $products=Product::where('vendor_id',$vendor_id)->paginate(10);
+          } else {
+            $products = Product::latest()->paginate(10);
+          }
             $months=Month::all();
 
             return view('admin.products.allproducts',compact('products','months'));
