@@ -81,7 +81,13 @@ class CheckoutController extends Controller
         $distanceFeePerKm = $delivery_settings->fee_per_km; // ETB per KM
         $distanceShipping = $distance * $distanceFeePerKm;
 
-        $shipping = $baseShipping + $distanceShipping + $delivery_settings->base_amount;
+        if ($distance > 1) {
+            // If distance is more than 1 km, include baseShipping and distanceShipping
+            $shipping = $baseShipping + $distanceShipping + $delivery_settings->base_amount;
+        } else {
+            // If distance is 1 km or less, only store the base amount
+            $shipping = $delivery_settings->base_amount;
+        }
 
         // Grouping shipping per vendor
         if (!isset($vendorShipping[$vendorId])) {
@@ -156,7 +162,13 @@ class CheckoutController extends Controller
         $distanceShipping = $distance * $distanceFeePerKm;
 
         // dd($delivery_settings->base_amount);
-        $shipping = $baseShipping + $distanceShipping + $delivery_settings->base_amount;
+        if ($distance > 1) {
+            // If distance is more than 1 km, include baseShipping and distanceShipping
+            $shipping = $baseShipping + $distanceShipping + $delivery_settings->base_amount;
+        } else {
+            // If distance is 1 km or less, only store the base amount
+            $shipping = $delivery_settings->base_amount;
+        }
 
         // Grouping shipping per vendor
         if (!isset($vendorShipping[$vendorId])) {

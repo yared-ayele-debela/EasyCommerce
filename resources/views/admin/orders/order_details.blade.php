@@ -124,7 +124,7 @@ $user = Auth::guard('admin')->user();
                             <button type="submit" class="btn btn-primary">Update Payment Status</button>
                         </div>
                     </form>
-                    
+
                     <hr>
                     @if ($user && $user->hasPermissionByRole('assing_delivery_boy_to_order'))
                     <h1 class="card-title mb-3">Assign Delivery Boy</h1>
@@ -178,7 +178,7 @@ $user = Auth::guard('admin')->user();
                     </form>
                     <br>
 
-                    
+
                     @foreach ( $orderLog as $key=>$log)
                     {{-- <?php echo "<pre>";  print_r($log['orders_products'][$key]['product_code']); die;?> --}}
                     <strong>{{ $log['order_status'] }}</strong>
@@ -309,7 +309,26 @@ $user = Auth::guard('admin')->user();
                                 <label for="">{{ $orderDetails['mobile'] }}</label>
                             </div>
                             @endif
+                            <hr>
+                            @php
+                            $latitude = $orderDetails['latitude'];
+                            $longitude = $orderDetails['longitude'];
 
+                            // Validate coordinates
+                            if (!is_numeric($latitude) || !is_numeric($longitude) || abs($latitude) > 90 || abs($longitude) > 180) {
+                                $googleMapsUrl = '#';
+                                $buttonText = 'Invalid Location';
+                                $buttonDisabled = 'disabled';
+                            } else {
+                                // Use decimal degrees in the query parameter
+                                $googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=" . urlencode("{$latitude},{$longitude}");
+                                $buttonText = 'View Customer Location on Map';
+                                $buttonDisabled = '';
+                            }
+                        @endphp
+                        <a href="{{ $googleMapsUrl }}" target="_blank" class="btn btn-primary {{ $buttonDisabled }}">
+                            {{ $buttonText }}
+                        </a>
                         </div>
                     </div>
 

@@ -82,14 +82,19 @@ class CheckoutController extends Controller
         $weight = $product->weight ?? 1 * $item['quantity'];
         $zone = $product->vendor->zone;
 
-        // Get shipping charge per vendor
         $baseShipping = ShippingCharge::getShippingCharges($weight, zone: $zone); // ← Modify this method to accept vendor
 
         $delivery_settings=DeliverySetting::first();
         $distanceFeePerKm = $delivery_settings->fee_per_km; // ETB per KM
         $distanceShipping = $distance * $distanceFeePerKm;
 
-        $shipping = $baseShipping + $distanceShipping + $delivery_settings->base_amount;
+         if ($distance > 1) {
+            // If distance is more than 1 km, include baseShipping and distanceShipping
+            $shipping = $baseShipping + $distanceShipping + $delivery_settings->base_amount;
+        } else {
+            // If distance is 1 km or less, only store the base amount
+            $shipping = $delivery_settings->base_amount;
+        }
 
         // Grouping shipping per vendor
         if (!isset($vendorShipping[$vendorId])) {

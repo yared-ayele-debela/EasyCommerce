@@ -60,6 +60,28 @@ $user = Auth::guard('admin')->user();
                     <p><strong>State:</strong> {{ $order->state }}</p>
                     <p><strong>Country:</strong> {{ $order->country }}</p>
                     <p><strong>Pincode:</strong> {{ $order->pincode }}</p>
+                    <hr>
+                     @php
+                    $latitude = $order->latitude; // 9.0649487
+                    $longitude = $order->longitude; // 38.7450259
+
+                    // Validate coordinates
+                    if (!is_numeric($latitude) || !is_numeric($longitude) || abs($latitude) > 90 || abs($longitude) > 180) {
+                        $googleMapsUrl = '#';
+                        $buttonText = 'Invalid Location';
+                        $buttonDisabled = 'disabled';
+                    } else {
+                        // Use decimal degrees in the query parameter
+                        $googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=" . urlencode("{$latitude},{$longitude}");
+                        $buttonText = 'View Customer Location on Map';
+                        $buttonDisabled = '';
+                    }
+                @endphp
+
+                <!-- Button to redirect to Google Maps -->
+                <a href="{{ $googleMapsUrl }}" target="_blank" class="btn btn-primary {{ $buttonDisabled }}">
+                    {{ $buttonText }}
+                </a>
                 </div>
             </div>
         </div>
@@ -186,6 +208,29 @@ $user = Auth::guard('admin')->user();
                                     <p class="mt-2 mb-0"><strong>Pickup Code:</strong> {{ $firstCode }}</p>
                                     @endif
                                 </div>
+                                <hr>
+                                 @php
+                                                                                   $latitude = $item->product->restaurant->latitude;
+                                        $longitude = $item->product->restaurant->longitude;
+
+                                                                                    // Validate coordinates
+                                                                                    if (!is_numeric($latitude) || !is_numeric($longitude) || abs($latitude) > 90 || abs($longitude) > 180) {
+                                                                                        $googleMapsUrl = '#';
+                                                                                        $buttonText = 'Invalid Location';
+                                                                                        $buttonDisabled = 'disabled';
+                                                                                    } else {
+                                                                                        // Use decimal degrees in the query parameter
+                                                                                        $googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=" . urlencode("{$latitude},{$longitude}");
+                                                                                        $buttonText = 'View Restaurant Location on Map';
+                                                                                        $buttonDisabled = '';
+                                                                                    }
+                                                                                @endphp
+
+                                                                                <!-- Button to redirect to Google Maps -->
+                                                                                <a href="{{ $googleMapsUrl }}" target="_blank" class="btn btn-primary {{ $buttonDisabled }}">
+                                                                                    {{ $buttonText }}
+                                                                                </a>
+
                             </div>
                         </div>
                     </div>
