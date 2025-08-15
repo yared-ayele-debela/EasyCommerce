@@ -22,7 +22,7 @@ class DeliveryBoyRolesController extends Controller
 
         $appsettings=AppSetting::all()->toArray();
 
-        $users = DeliveryMan::paginate(4);
+        $users = DeliveryMan::latest()->paginate(10);
         return view('admin.role_and_permissions.delivery_boy.index', compact('users','appsettings'));
         } catch (\Exception $e) {
             // Log or handle the exception as needed

@@ -53,6 +53,7 @@ $user_ = Auth::guard('admin')->user();
                         </tbody>
                     </table>
                 </div>
+                {{ $users->links() }}
             </div>
         </div>
     </div>
