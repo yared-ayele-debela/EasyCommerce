@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Restaurant\Dashboard\CallCenterOrderController;
 use App\Http\Controllers\Restaurant\Dashboard\DeliverySettingsController;
+use App\Http\Controllers\Sample\SampleIndexController;
 use App\Models\Restaurant\RestaurantRating;
 
 use App\Http\Controllers\Admin\BrandController;
@@ -1519,3 +1520,10 @@ Route::post('/otp/send', [AccountController::class, 'sendOtp'])->name('delete.ac
 Route::post('/otp/verify', [AccountController::class, 'verifyOtp'])->name('delete.account.otp.verify');
 Route::post('/account/delete', [AccountController::class, 'deleteAccount'])->name('delete.account.delete');
 Route::post('/delete-account-request', [AccountController::class, 'handleDeleteRequest'])->name('delete.account.request');
+
+
+
+
+// sample route for testing
+
+Route::get('sample.restaurant', [SampleIndexController::class,'index'])->name('sample.index');
