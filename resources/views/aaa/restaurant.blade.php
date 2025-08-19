@@ -31,8 +31,8 @@
             max-width: 1800px;
             overflow: hidden;
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            background-color: #f2fcf1;
+            /* box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            background-color: #f2fcf1; */
             margin-bottom: 20px;
         }
 
