@@ -1,6 +1,5 @@
 @props(['restaurant'])
-
-<div class="col-lg-6 col-md-6 mb-2 restaurant-card"
+<div class="col-lg-6 col-md-6 mb-2 restaurant-card "
      data-lat="{{ $restaurant->latitude }}"
      data-lng="{{ $restaurant->longitude }}"
      data-radius="{{ $restaurant->delivery_radius }}">
