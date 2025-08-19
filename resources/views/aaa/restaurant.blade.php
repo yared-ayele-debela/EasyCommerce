@@ -218,7 +218,7 @@
         @media (max-width: 576px) {
             .ecom-category img {
                 height: 130px;
-                width: 110px;
+                width: 100px;
                 border-radius: 50%;
                 object-fit: cover;
                 margin-bottom: 12px;
