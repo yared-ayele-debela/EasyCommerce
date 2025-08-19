@@ -81,27 +81,30 @@ class DirectCheckoutController extends Controller
         $zone = $product->vendor->zone ?? 'default';
 
         // Base shipping from database
-        $baseShipping = ShippingCharge::getShippingCharges($weight, $zone);
+       $baseShipping = ShippingCharge::getShippingCharges($weight, $zone);
 
-        // Optional: Distance-based shipping
-        $distanceShipping = 0;
-        $delivery_settings=DeliverySetting::first();
-        if ($product->vendor->latitude && $product->vendor->longitude && $address->latitude && $address->longitude) {
-            $distance = $this->calculateDistance(
-                $product->vendor->latitude,
-                $product->vendor->longitude,
-                $address->latitude,
-                $address->longitude
-            );
-            $distanceShipping = $distance * $delivery_settings->fee_per_km; // 10 ETB per KM
-        }
-          if ($distance > 1) {
-            // If distance is more than 1 km, include baseShipping and distanceShipping
-            $finalShipping = $baseShipping + $distanceShipping + $delivery_settings->base_amount;
-        } else {
-            // If distance is 1 km or less, only store the base amount
-            $finalShipping = $delivery_settings->base_amount;
-        }
+// Optional: Distance-based shipping
+$distanceShipping = 0;
+$delivery_settings = DeliverySetting::first();
+if ($product->vendor->latitude && $product->vendor->longitude && $address->latitude && $address->longitude) {
+    $distance = $this->calculateDistance(
+        $product->vendor->latitude,
+        $product->vendor->longitude,
+        $address->latitude,
+        $address->longitude
+    );
+    if ($distance > 1) {
+        $distanceShipping = ($distance - 1) * $delivery_settings->fee_per_km; // charge after first km
+    }
+}
+
+if ($distance > 1) {
+    $finalShipping = $baseShipping + $distanceShipping + $delivery_settings->base_amount;
+} else {
+    // If distance is 1 km or less, only store the base amount
+    $finalShipping = $delivery_settings->base_amount;
+}
+
         return response()->json([
             'success' => true,
             'shipping_fee' => round($finalShipping, 2)

@@ -338,6 +338,8 @@ class AdminController extends Controller
                 'address' => $data['vendor_address'],
                 'country' => $data['vendor_country'],
                 'pincode' => $data['vendor_pincode'],
+                'latitude' => $data['latitude'],
+                'longitude' => $data['longitude'],
                 'zone' =>  $data['zone'],
             ]);
             ActivityLogger::log('Update detail', "user updated their detail information");

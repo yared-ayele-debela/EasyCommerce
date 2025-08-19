@@ -12,7 +12,7 @@
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-8 col-12">
-      
+
             @if (session('warning'))
                 <div class="alert alert-warning">
                     {{ session('warning') }}
@@ -39,7 +39,7 @@
                                 <div class="alert alert-info">{{ session('info') }}</div>
                             @endif
 
-                            <div class="col-12 mb-3">
+                            {{-- <div class="col-12 mb-3">
                                 @if(Auth::user()->profile_photo_path)
                                     <img src="{{ auth()->user()->profile_photo_path }}" alt="Profile Image" class="profile-image border border-2 offer-card">
                                   @endif
@@ -54,17 +54,17 @@
                                     <img id="previewImage" src="" alt="Profile Image" class="profile-image d-none">
                                   </div>
 
-                            </div>
+                            </div> --}}
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="name" class="form-label">Full Name</label>
-                                    <input type="text" name="name" class="form-control" value="{{ Auth::user()->name }}" required placeholder="Full Name">
+                                    <input type="text" name="name" class="form-control" value="{{ Auth::user()->name }}" placeholder="Full Name">
                                     @error('name')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            {{-- <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="email" class="form-label">Email</label>
                                     <input type="email" name="email" id="email" class="form-control" value="{{ Auth::user()->email }}" disabled placeholder="Email">
@@ -72,11 +72,11 @@
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
-                            </div>
-                            <div class="col-md-6">
+                            </div> --}}
+                            {{-- <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="country" class="form-label">Country</label>
-                                    <select name="country" class="form-select" required>
+                                    <select name="country" class="form-select">
                                         <option selected disabled>Select Country</option>
                                         @foreach ($countries as $country)
                                             <option value="{{ $country['country_name'] }}" @if($country['country_name'] == Auth::user()->country) selected @endif>{{ $country['country_name'] }}</option>
@@ -86,20 +86,20 @@
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
-                            </div>
+                            </div> --}}
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="mobile" class="form-label">Phone</label>
-                                    <input type="text" name="mobile" class="form-control" value="{{ Auth::user()->mobile }}" required placeholder="Phone">
+                                    <input type="text" name="mobile" class="form-control" value="{{ Auth::user()->mobile }}" placeholder="Phone">
                                     @error('mobile')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            {{-- <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="address" class="form-label">Address</label>
-                                    <input type="text" name="address" class="form-control" value="{{ Auth::user()->address }}" required placeholder="Address">
+                                    <input type="text" name="address" class="form-control" value="{{ Auth::user()->address }}" placeholder="Address">
                                     @error('address')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
@@ -108,7 +108,7 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="state" class="form-label">State</label>
-                                    <select name="state" class="form-select" required>
+                                    <select name="state" class="form-select" >
                                         <option disabled selected>Select State</option>
                                         @foreach ($states as $state)
                                             <option value="{{ $state->name }}" @if($state->name == Auth::user()->state) selected @endif>{{ $state->name }}</option>
@@ -122,7 +122,7 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="city" class="form-label">City</label>
-                                    <select name="city" class="form-select" required>
+                                    <select name="city" class="form-select">
                                         <option disabled selected>Select City</option>
                                         @foreach ($cities as $city)
                                             <option value="{{ $city->name }}" @if($city->name == Auth::user()->city) selected @endif>{{ $city->name }}</option>
@@ -136,13 +136,13 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="pincode" class="form-label">Pincode</label>
-                                    <input type="text" name="pincode" class="form-control" value="{{ Auth::user()->pincode }}" required placeholder="Pincode">
+                                    <input type="text" name="pincode" class="form-control" value="{{ Auth::user()->pincode }}" placeholder="Pincode">
                                     @error('pincode')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
 
-                            </div>
+                            </div> --}}
 
                         </div>
                         <div class="d-grid">
@@ -171,7 +171,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="oldpassword" class="form-label">Current Password</label>
-                            <input type="password" name="oldpassword" id="oldpassword" class="form-control" required placeholder="Old password">
+                            <input type="password" name="oldpassword" id="oldpassword" class="form-control"  placeholder="Old password">
                             @error('oldpassword')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
@@ -179,7 +179,7 @@
 
                         <div class="mb-3">
                             <label for="new_password" class="form-label">New Password</label>
-                            <input type="password" name="new_password" id="new_password" class="form-control" required placeholder="New password">
+                            <input type="password" name="new_password" id="new_password" class="form-control" placeholder="New password">
                             @error('new_password')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror

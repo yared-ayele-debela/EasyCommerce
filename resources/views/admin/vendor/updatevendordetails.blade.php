@@ -1,6 +1,34 @@
 @extends('admindashboard.maindashboard')
 @section('dashboard')
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+    #map-search-results {
+        display: block;
+        max-height: 250px;
+        overflow-y: auto;
+        z-index: 1000;
+        position: absolute;
+        width: 100%;
+    }
+
+    #loading-spinner {
+        display: none;
+        text-align: center;
+        padding: 10px;
+    }
+
+    #loading-spinner .spinner-border {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+
+</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    #map { height: 400px; width: 100%; margin-bottom: 20px; }
+</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+{{-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> --}}
 <section class="section col-md-12">
      <nav class="breadcrumb bg-white shadow-sm py-3 px-4 rounded d-flex justify-content-between align-items-center">
         <button class="btn btn-outline-primary btn-sm d-flex align-items-center" onclick="history.back()">
@@ -26,7 +54,9 @@
                 @method('PUT')
 
                 <div class="row">
-                    <div class="col-md-4 pt-3">
+                    <div class="col-md-6">
+                        <div class="row">
+<div class="col-md-4 pt-3">
                     <label for="vendor_email" class="form-label">Email</label>
                     <input type="text" class="form-control " readonly value="{{  $vendorDetails['email'] }}" name="vendor_email" required>
                     @error('vendor_email')
@@ -106,7 +136,54 @@
                     <img src="{{ asset('storage/' . Auth::guard('admin')->user()->image) }}" style="width: 40px; height:40px;" class="" alt="">
                     @endif
                 </div>
+                 <div class="col-md-6 mb-2">
+                                <label for="latitude" class="form-label">Latitude:</label>
+                                <input type="text" id="latitude" class="form-control" name="latitude" value="{{ $vendorDetails['latitude']??'' }}" readonly>
+                                </div>
+
+                                <div class="col-md-6 mb-2">
+                                    <label for="longitude" class="form-label">Longitude:</label>
+                                   <input type="text" id="longitude" class="form-control" name="longitude" value="{{ $vendorDetails['longitude']??'' }}" readonly>
+                                </div>
+                        </div>
+                        @if(empty($vendorDetails['latitude'] && $vendorDetails['longitude']))
+                        <div class="col-md-12 pt-3">
+                            <div class="alert alert-warning" role="alert">
+                                <strong>Note:</strong> Please select your location on the map below to update latitude and longitude.
+                            </div>
+                            <p class="text-muted">Click on the map to select your location. The latitude and longitude will be automatically filled in the fields above.</p>
+                        </div>
+                        @endif
+                    </div>
+
+                    <div class="col-md-6">
+                         <div class="form-group mb-2">
+                            <label for="search-address" class=" form-label">Search Address</label>
+                            <input type="text" id="search-address" class="form-control" placeholder="e.g. Kezira">
+                            <div id="loading-spinner">
+                                <div class="spinner-border text-primary" role="status"></div>
+                            </div>
+                            <div id="map-search-results" class="list-group mt-1 bg-white shadow-sm rounded"></div>
+                        </div>
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-outline-primary mb-3" id="getLocationBtn"> <i class="bi bi-map-fill"></i> Get My Current Location</button>
+                        </div>
+                        <div class="mb-3">
+                            <div id="locationMessage" style="margin-top: 10px; font-weight: bold;"></div>
+                            <div id="map"></div>
+                        </div>
+                          <input type="hidden" name="delivery_lat" id="delivery-lat">
+                        <input type="hidden" name="delivery_lng" id="delivery-lng">
+                        <input type="hidden" name="delivery_address" id="delivery-address">
+
+                        <div class="form-group mt-3">
+                            <label class="form-label">Selected Address:</label>
+                            <p id="selected-address-text" class="fw-semibold text-success"></p>
+                        </div>
+                    </div>
                 </div>
+                <hr>
+
                 <div class="form-group pt-3">
                     <input type="submit" class=" btn lightblue btn-primary pt-2 pb-2 shadow" value="Update Vendor Details">
                 </div>
@@ -115,59 +192,131 @@
     </div>
 </section>
 <script>
-    // Form validation function
-    function validateForm() {
-        const name = document.getElementById("name");
-        const adddress = document.getElementById("address");
-        const city = document.getElementById("city");
-        const state = document.getElementById("state");
-        const pincode = document.getElementById("pincode");
-        const mobile = document.getElementById("mobile");
+    document.addEventListener('DOMContentLoaded', () => {
 
-        if (!/^[A-Za-z\s]+$/.test(name.value)) {
-            alert("Invalid name! Only characters are allowed.");
-            name.focus();
-            event.preventDefault();
-            return false;
-        }
-        if (!/^[A-Za-z\s]+$/.test(city.value)) {
-            alert("Invalid city! Only characters are allowed.");
-            city.focus();
-            event.preventDefault();
-            return false;
-        }
-        if (!/^[A-Za-z\s]+$/.test(state.value)) {
-            alert("Invalid state! Only characters are allowed.");
-            state.focus();
-            event.preventDefault();
-            return false;
-        }
-        // Validation for mobile (accept only 10 digits)
-        if (!/^[0-9]{10}$/.test(mobile.value)) {
-            alert("Invalid mobile number! Please enter a 10-digit mobile number.");
-            mobile.focus();
-            event.preventDefault();
-            return false;
-        }
-        if (!/^[0-9]/.test(pincode.value)) {
-            alert("Invalid pincode number! Please enter a digit number.");
-            pincode.focus();
-            event.preventDefault();
-            return false;
+        let map = L.map('map').setView([9.6040976, 41.8207994], 13);
+        let marker;
+
+        // Set tile layer
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        const highlightIcon = L.icon({
+            iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+            shadowSize: [41, 41]
+        });
+
+        // Reverse geocoding on map click
+        map.on('click', async function(e) {
+            const lat = e.latlng.lat;
+            const lon = e.latlng.lng;
+
+            try {
+                const res = await fetch(`/api/reverse-geocode?lat=${lat}&lon=${lon}`);
+                const data = await res.json();
+
+                if (data.data && data.data.length > 0) {
+                    const location = data.data[0];
+                    const address = location.name + ", " + location.City;
+                    setLocationOnMap(lat, lon, address);
+                }
+            } catch (err) {
+                console.error('Reverse geocode error:', err);
+            }
+        });
+
+        // Forward geocoding via search
+        document.getElementById('search-address').addEventListener('keyup', async function () {
+    const searchText = this.value.trim();
+    if (searchText.length < 3) return;
+
+    const container = document.getElementById('map-search-results');
+    const spinner = document.getElementById('loading-spinner');
+
+    container.innerHTML = '';
+    spinner.style.display = 'block';
+
+    try {
+        const bounds = '41.766,9.550,41.920,9.640'; // minLng,minLat,maxLng,maxLat
+        const apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55bmFtZSI6IkVhc3kgZS1jb21tZXJjZSBob3RlbCBib29raW5nIGFuZCBkZWxpdmVyeSIsImRlc2NyaXB0aW9uIjoiMGU4ZDhhZDMtZmJhYy00OTJkLWE4OWYtZGFiZjQxNTFlNDc2IiwiaWQiOiI3OWY1ODRlYy0yZDA3LTRjNWQtYTI2Ny00MjBhNzVlMDY2NzMiLCJ1c2VybmFtZSI6ImJlZmk3NzU2In0.JgSoBiAoa4Te6ccg-jSJSifq26PZV4FnGbkhQKiTnuo'; // if you have one, insert it here
+
+        const res = await fetch(`https://mapapi.gebeta.app/api/v1/route/geocoding?name=${encodeURIComponent(searchText)}&apiKey=${apiKey}&bounds=${bounds}`);
+        const results = await res.json();
+
+        spinner.style.display = 'none';
+
+        if (results.data && results.data.length > 0) {
+            results.data.forEach(loc => {
+                const item = document.createElement('a');
+                item.href = "javascript:void(0)";
+                item.classList.add('list-group-item', 'list-group-item-action');
+                item.textContent = loc.name + (loc.City ? `, ${loc.City}` : '');
+
+                item.addEventListener('click', () => {
+                    const lat = loc.latitude;
+                    const lng = loc.longitude;
+                    const address = loc.name + (loc.City ? `, ${loc.City}` : '');
+
+                    setLocationOnMap(lat, lng, address);
+                    container.innerHTML = '';
+                    document.getElementById('search-address').value = address;
+                });
+                container.appendChild(item);
+            });
+        } else {
+            container.innerHTML = '<div class="list-group-item text-muted">No results found</div>';
         }
 
-
-
-        return true; // Form will be submitted if everything is valid
+    } catch (err) {
+        console.error('Forward geocode error:', err);
+        container.innerHTML = '<div class="list-group-item text-danger">Error fetching results</div>';
+    } finally {
+        spinner.style.display = 'none';
     }
+});
 
-    // Event listener for form submission
-    document.getElementById("loginForm").addEventListener("submit", function(event) {
-        if (!validateForm()) {
-            event.preventDefault(); // Prevent form submission if validation fails
+
+        function setLocationOnMap(lat, lng, address) {
+            map.setView([lat, lng], 15);
+            if (marker) map.removeLayer(marker);
+            marker = L.marker([lat, lng], {
+                icon: highlightIcon
+            }).addTo(map)
+                .bindPopup(`<strong>${address}</strong>`)
+                .openPopup();
+            document.getElementById('selected-address-text').innerText = address;
+            document.getElementById('delivery-address').value = address;
+            document.getElementById('delivery-lat').value = lat;
+            document.getElementById('delivery-lng').value = lng;
+            document.getElementById('latitude').value = lat;
+            document.getElementById('longitude').value = lng;
+            document.getElementById('address').value=address;
+        }
+
+        document.addEventListener('shown.bs.modal', function (event) {
+            if (event.target.id === 'addressModal') {
+                setTimeout(() => {
+                    map.invalidateSize();
+                }, 300); // Delay ensures modal animation completes
+            }
+        });
+    });
+</script>
+
+<script>
+    document.getElementById('getLocationBtn').addEventListener('click', function () {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                document.getElementById('latitude').value = position.coords.latitude;
+                document.getElementById('longitude').value = position.coords.longitude;
+            }, function (error) {
+            });
+        } else {
         }
     });
-
 </script>
 @endsection
 

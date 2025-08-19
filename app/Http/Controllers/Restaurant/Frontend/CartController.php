@@ -19,51 +19,71 @@ class CartController extends Controller
 {
     //
     public function addToCart(Request $request)
-    {
+{
+    $product = Product::findOrFail($request->product_id);
+    $restaurant = $product->restaurant;
 
-        // dd($request->all());
-        // $cart = session()->get('cart', []);
+    $userLat = $request->input('user_lat');
+    $userLng = $request->input('user_lng');
 
-         $product = Product::findOrFail($request->product_id);
-         $restaurant = $product->restaurant;
+    if (!$userLat || !$userLng) {
+        return response()->json(['success' => false, 'message' => 'Location not provided'], 400);
+    }
 
-        //  dd($restaurant);
-          $userLat = $request->input('user_lat');
-          $userLng = $request->input('user_lng');
-        //   dd($userLat, $userLng);
+    $distance = $this->calculateDistance($userLat, $userLng, $restaurant->latitude, $restaurant->longitude);
 
-            if (!$userLat || !$userLng) {
-                return response()->json(['success' => false, 'message' => 'Location not provided'], 400);
-            }
+    if ($distance > $restaurant->delivery_radius) {
+        return response()->json(['success' => false, 'message' => 'You are out of the delivery area'], 403);
+    }
 
-            $distance = $this->calculateDistance($userLat, $userLng, $restaurant->latitude, $restaurant->longitude);
+    $cartItem = [
+        'product_id' => $request->product_id,
+        'size'       => $request->size ? $request->size : '',
+        'price'      => $request->price,
+        'quantity'   => $request->quantity
+    ];
 
-            if ($distance > $restaurant->delivery_radius) {
-                return response()->json(['success' => false, 'message' => 'You are out of the delivery area'], 403);
-            }
+    if (Auth::check()) {
+        // Check if product already exists in DB cart
+        $existing = RestaurantCartItem::where('user_id', Auth::id())
+            ->where('product_id', $cartItem['product_id'])
+            ->where('size', $cartItem['size'])
+            ->first();
 
-        $cartItem=[
-            'product_id' => $request->product_id,
-            'size' => $request->size? $request->size : '',
-            'price' => $request->price,
-            'quantity' => $request->quantity
-        ];
-         if (Auth::check()) {
-            // User is logged in, store in DB
+        if ($existing) {
+            // Update quantity instead of creating new row
+            $existing->quantity += $cartItem['quantity'];
+            $existing->save();
+        } else {
             RestaurantCartItem::create([
                 'user_id' => Auth::id(),
                 ...$cartItem
             ]);
-        } else {
-            // Guest user, store in session
-            $cart = session()->get('cart', []);
-            $cart[] = $cartItem;
-            session()->put('cart', $cart);
         }
-        // session()->put('cart', $cart);
 
-        return response()->json(['status' => 'success', 'message' => 'Product added to cart!']);
+    } else {
+        // Guest user, store in session
+        $cart = session()->get('cart', []);
+        $found = false;
+
+        foreach ($cart as &$item) {
+            if ($item['product_id'] == $cartItem['product_id'] && $item['size'] == $cartItem['size']) {
+                $item['quantity'] += $cartItem['quantity'];
+                $found = true;
+                break;
+            }
+        }
+
+        if (!$found) {
+            $cart[] = $cartItem;
+        }
+
+        session()->put('cart', $cart);
     }
+
+    return response()->json(['status' => 'success', 'message' => 'Product added to cart!']);
+}
+
 
     private function calculateDistance($lat1, $lng1, $lat2, $lng2)
 {

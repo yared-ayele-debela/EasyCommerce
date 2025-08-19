@@ -45,7 +45,7 @@
                                       @endphp
 
                                       @if($product->image && Storage::disk('public')->exists($imagePath))
-                                          <img src="{{ $product->image }}" class="img-fluid mb-2" width="50" alt="{{ $product->name }}">
+                                          <img src="{{ asset('storage/'.$product->image) }}" class="img-fluid mb-2" width="50" alt="{{ $product->name }}">
                                       @else
                                           <img src="{{ asset('restaurant_frontend/default-image.png') }}" width="50">
                                       @endif

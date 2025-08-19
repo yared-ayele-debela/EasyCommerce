@@ -64,13 +64,13 @@
                                 <div class="col-6">
                                     <div class="mb-3">
                                         <label class="form-label">Full Name</label>
-                                        <input type="text" class="form-control" name="name" required>
+                                        <input type="text" class="form-control" name="name" >
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="mb-3">
                                         <label class="form-label">Address</label>
-                                        <input type="text" class="form-control" name="address" id="address" required>
+                                        <input type="text" class="form-control" name="address" id="address">
                                     </div>
                                 </div>
                                 <div class="col-md-6">

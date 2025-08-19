@@ -20,8 +20,8 @@ class UserDeliveryAddressController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
+        $request->validate(rules: [
+            'name' => 'nullable|string|max:255',
             'address' => 'required|string|max:255',
             'city' => 'nullable|string|max:255',
             'country' => 'nullable|string|max:255',
@@ -32,7 +32,7 @@ class UserDeliveryAddressController extends Controller
 
         DeliveryAddress::create([
             'user_id' => Auth::user()->id,
-            'name' => $request->name,
+            'name' => $request->name??'',
             'address' => $request->address,
             'city' => $request->city??'',
             'sub_city' => $request->sub_city??'',

@@ -64,7 +64,11 @@
                                                         <tr>
                                                             <td>{{ $loop->iteration }}</td>
                                                             <td>
-                                                                <strong>Order #{{ $order->id }}</strong><br>
+                                                                <strong>Order #{{ $order->id }}
+                                                                    @if(!$order->user && $order->is_call_center)
+                                                                    <p class="btn shadow-none btn-success"> <i class="bi bi-phone-vibrate-fill"></i> Call center order</p>
+                                                                    @endif
+                                                                    </strong><br>
                                                                 {{ $order->payment_method }} | <span class="text-muted">{{ $order->total }} ETB</span>
                                                             </td>
                                                             <td>
@@ -82,6 +86,7 @@
                                                                                 </button>
                                                                             </div>
                                                                             <div class="modal-body">
+                                                                                @if($order->user && !$order->is_call_center)
                                                                                 <p><strong>Name:</strong> {{ $order->user->name }}</p>
                                                                                 <p><strong>Phone Number:</strong> {{ $order->user->mobile }}</p>
                                                                                 <p><strong>Email:</strong> {{ $order->user->email }}</p>
@@ -92,6 +97,10 @@
                                                                                 <p><strong>State:</strong> {{ $order->state ?? '' }}</p>
                                                                                 <p><strong>Country:</strong> {{ $order->country ?? '' }}</p>
                                                                                 <p><strong>Pincode:</strong> {{ $order->pincode ?? '' }}</p>
+                                                                                @else
+                                                                                <p class="btn shadow-none btn-success"> <i class="bi bi-phone-vibrate-fill"></i> Call center order</p>
+                                                                                <p>Customer Information : {{ $order->mobile }} | Address : {{ $order->address }} </p>
+                                                                                @endif
                                                                                 @php
                                                                                     $latitude = $order->latitude; // 9.0649487
                                                                                     $longitude = $order->longitude; // 38.7450259
@@ -150,7 +159,7 @@
                                                                                         <div class="card h-100 shadow-sm border border-1">
                                                                                             <div class="card-body">
                                                                                                 <div class="d-flex align-items-center mb-2">
-                                                                                                    <img src="{{ $item->product->image }}" class="rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                                                                                    <img src="{{ asset('storage/'.$item->product->image) }}" class="rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
                                                                                                     <div>
                                                                                                         <h5 class="card-title mb-0">{{ $item->product->name }}</h5>
                                                                                                         <small class="text-muted">{{ $item->quantity }} x {{ number_format($item->product->price, 2) }} ETB</small>
@@ -162,8 +171,8 @@
                                                                                                 <p class="mb-1 text-muted">{{ $item->product->restaurant->email }} | {{ $item->product->restaurant->phone }}</p>
                                                                                                 <p class="mb-1">Address: {{ $item->product->restaurant->address }}</p>
                                                                                                 <div class="d-flex gap-2 mt-2">
-                                                                                                    <img src="{{ $item->product->restaurant->logo }}" class="rounded" style="width: 40px; height: 40px; object-fit: cover;">
-                                                                                                    <img src="{{ $item->product->restaurant->cover }}" class="rounded" style="width: 60px; height: 40px; object-fit: cover;">
+                                                                                                    <img src="{{ asset('storage/'.$item->product->restaurant->logo) }}" class="rounded" style="width: 40px; height: 40px; object-fit: cover;">
+                                                                                                    <img src="{{ asset('storage/'.$item->product->restaurant->cover) }}" class="rounded" style="width: 60px; height: 40px; object-fit: cover;">
                                                                                                 </div>
                                                                                                 <hr>
                                                                                                 @php

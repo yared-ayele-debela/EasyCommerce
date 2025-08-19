@@ -196,6 +196,9 @@
             </div>
         </div>
     </div>
+
+</div>
+<div class="container-fluid">
     <div class="row g-1">
         <div class="col-12">
             <h4 class="text-dark">Related Products</h4>

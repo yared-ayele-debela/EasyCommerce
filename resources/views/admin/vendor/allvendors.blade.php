@@ -47,9 +47,32 @@ $user = Auth::guard('admin')->user();
                         <td class="d-flex">
                            @if ($user && $user->hasPermissionByRole('view_vendor_detail'))
                             <a href="{{ url('admin/vendors/details/'.$all['id']) }}" class=" btn btn-light btn-sm"> <i class=" bi bi-eye-fill"></i> </a>
-                           @endif                           @if ($user && $user->hasPermissionByRole('delete_vendor'))
-                           <a href="{{ url('admin/vendor/delete/'.$all['id']) }}" style="background-color:rgb(239, 239, 239)" class="btn  btn-sm" ><i class="ri-login-box-line"></i></a>
                            @endif
+                            @if ($user && $user->hasPermissionByRole('delete_vendor'))
+                            <!-- Button to trigger the modal -->
+                            <button type="button" class="btn btn-sm btn-danger"  data-bs-toggle="modal" data-bs-target="#deleteVendorModal-{{ $all['id'] }}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+
+                            <!-- Bootstrap Modal -->
+                            <div class="modal fade" id="deleteVendorModal-{{ $all['id'] }}" tabindex="-1" aria-labelledby="deleteVendorModalLabel-{{ $all['id'] }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteVendorModalLabel-{{ $all['id'] }}">Confirm Delete</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to delete this vendor? This action cannot be undone.
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <a href="{{ url('admin/vendor/delete/'.$all['id']) }}" class="btn btn-danger">Delete</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
                            &nbsp;
                            @if ($user && $user->hasPermissionByRole('login with vendor'))
                            <form action="{{ route('admin.login-as-vendor', $all['id']) }}" method="POST">
@@ -64,7 +87,7 @@ $user = Auth::guard('admin')->user();
                   </tbody>
                </table>
                <div class=" pagination-sm">
-                  {{-- {{ $categories->links() }} --}}
+                  {{ $vendor->links() }}
                </div>
 
             </div>

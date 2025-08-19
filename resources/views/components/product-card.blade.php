@@ -1,6 +1,6 @@
 @props(['product'])
 
-<div class="item mb-2 h-100">
+<div class="item mb-2 0">
     <div class="offer-card position-relative shadow-sm rounded-4  overflow-hidden h-100">
         @php
             $hasStock = $product->quantity > 0;

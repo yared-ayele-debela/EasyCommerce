@@ -19,10 +19,10 @@ class CheckUserProfile
        $user = Auth::user();
 
         // Check if user exists and profile fields are missing
-        if ($user && (empty($user->address) || empty($user->mobile))) {
+        if ($user && empty($user->mobile)) {
             return redirect()
                 ->route('user.account.update.form') // Change this to your profile edit route name
-                ->with('error', 'Please complete your profile by adding your address and mobile number.');
+                ->with('error', 'Please complete your profile by adding mobile number.');
         }
 
         return $next($request);

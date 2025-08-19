@@ -469,13 +469,13 @@ class UserController extends Controller
     {
         // Validate the incoming request
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'country' => 'required|string',
+            'name' => 'nullable|string|max:255',
+            'country' => 'nullable|string',
             'mobile' => 'required|numeric',
-            'address' => 'required|string',
-            'state' => 'required|string',
-            'city' => 'required|string',
-            'pincode' => 'required|string',
+            'address' => 'nullable|string',
+            'state' => 'nullable|string',
+            'city' => 'nullable|string',
+            'pincode' => 'nullable|string',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
 
         ]);

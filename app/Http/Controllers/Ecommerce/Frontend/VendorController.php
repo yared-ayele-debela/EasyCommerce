@@ -12,28 +12,48 @@ class VendorController extends Controller
 {
     //
     public function index() {
-
-        // dd(Cache::get("allvendor_ecommerce_active"));
-        $cacheTime = now()->addMinutes(60); // adjust as needed
-
-    $allvendors = Cache::remember('allvendor_ecommerce_active', $cacheTime, function () {
+    $cacheTime = now()->addMinutes(60);
+    $allvendors = Cache::remember('allvendor_ecommerce_active_' . request('page', 1), $cacheTime, function () {
         return Vendor::with(['vendorbusinessdetails', 'adminvendor'])
             ->withCount('products')
             ->where('status', 1)
             ->where('vendor_type', 'ecommerce')
             ->inRandomOrder()
-            ->paginate(12);
+            ->paginate(4);
     });
 
-    $vendorRatingsCount = Cache::remember('vendor_ratings_count', $cacheTime, function () {
+    $vendorRatingsCount = Cache::remember('vendor_ratings_count_' . request('page', 1), $cacheTime, function () {
         return Rating::with('product')
             ->get()
             ->groupBy(fn($rating) => $rating->product->vendor_id ?? null)
             ->map(fn($ratings) => $ratings->count());
     });
 
-        return view('Ecommerce.vendor.index', compact('allvendors','vendorRatingsCount'));
+    return view('Ecommerce.vendor.index', compact('allvendors','vendorRatingsCount'));
+}
 
+// AJAX endpoint for load more
+public function paginateAjax(Request $request)
+{
+    $cacheTime = now()->addMinutes(60);
+    $vendors = Cache::remember('allvendor_ecommerce_active_' . $request->page, $cacheTime, function () use ($request) {
+        return Vendor::with(['vendorbusinessdetails', 'adminvendor'])
+            ->withCount('products')
+            ->where('status', 1)
+            ->where('vendor_type', 'ecommerce')
+            ->inRandomOrder()
+            ->paginate(4, ['*'], 'page', $request->page);
+    });
+
+    $data = [];
+    foreach ($vendors as $vendor) {
+        $cardHtml = view('components.vendor-card', ['vendor' => $vendor])->render();
+        $data[] = $cardHtml;
     }
+    return response()->json([
+        'data' => $data,
+        'has_more' => $vendors->hasMorePages(),
+    ]);
+}
 
 }

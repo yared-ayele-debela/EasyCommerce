@@ -75,19 +75,21 @@ class CheckoutController extends Controller
         $zone = $product->restaurant->zone;
 
         // Get shipping charge per vendor
-        $baseShipping = ShippingCharge::getShippingCharges($weight, zone: $zone); // ← Modify this method to accept vendor
+        $baseShipping = ShippingCharge::getShippingCharges($weight,  $zone); // ← also pass vendor if needed
 
-        $delivery_settings=DeilverySettingRestaurant::first();
-        $distanceFeePerKm = $delivery_settings->fee_per_km; // ETB per KM
-        $distanceShipping = $distance * $distanceFeePerKm;
+        $delivery_settings = DeilverySettingRestaurant::first();
+        $distanceFeePerKm = $delivery_settings->fee_per_km;
 
         if ($distance > 1) {
-            // If distance is more than 1 km, include baseShipping and distanceShipping
-            $shipping = $baseShipping + $distanceShipping + $delivery_settings->base_amount;
+            // Base shipping + base amount + per-km fee (starting after the 1st km)
+            $shipping = $baseShipping
+                    + $delivery_settings->base_amount
+                    + ($distance - 1) * $distanceFeePerKm;
         } else {
-            // If distance is 1 km or less, only store the base amount
-            $shipping = $delivery_settings->base_amount;
+            // If distance is 1 km or less, just base shipping + base amount
+            $shipping =  $delivery_settings->base_amount;
         }
+
 
         // Grouping shipping per vendor
         if (!isset($vendorShipping[$vendorId])) {
@@ -110,8 +112,8 @@ class CheckoutController extends Controller
     // dd($finalShipping, $totalAmount, $vendorShipping);
     return response()->json([
         'success' => true,
-        'shipping_fee' => number_format($finalShipping, 2),
-        'total_amount' => number_format($totalAmount, 2),
+        'shipping_fee' => $finalShipping,
+        'total_amount' => $totalAmount,
         'vendor_details' => $vendorShipping // Optional: useful for debugging
     ]);
 }
@@ -155,18 +157,18 @@ class CheckoutController extends Controller
         $zone = $product->restaurant->zone;
 
         // Get shipping charge per vendor
-        $baseShipping = ShippingCharge::getShippingCharges($weight, zone: $zone); // ← Modify this method to accept vendor
+        $baseShipping = ShippingCharge::getShippingCharges($weight,  $zone); // ← also pass vendor if needed
 
-        $delivery_settings=DeilverySettingRestaurant::first();
+        $delivery_settings = DeilverySettingRestaurant::first();
         $distanceFeePerKm = $delivery_settings->fee_per_km; // ETB per KM
-        $distanceShipping = $distance * $distanceFeePerKm;
 
-        // dd($delivery_settings->base_amount);
         if ($distance > 1) {
-            // If distance is more than 1 km, include baseShipping and distanceShipping
-            $shipping = $baseShipping + $distanceShipping + $delivery_settings->base_amount;
+            // Base shipping + base amount + per-km fee (starting after the 1st km)
+            $shipping = $baseShipping
+                    + $delivery_settings->base_amount
+                    + ($distance - 1) * $distanceFeePerKm;
         } else {
-            // If distance is 1 km or less, only store the base amount
+            // If distance is 1 km or less, just base shipping + base amount
             $shipping = $delivery_settings->base_amount;
         }
 
@@ -256,7 +258,6 @@ private function calculateDistances($lat1, $lon1, $lat2, $lon2)
         if ($request->payment_method === "Bank Transfer") {
             $validator = Validator::make($request->all(), [
                 'payment_method' => 'required|string',
-                // 'address_id' => 'required|exists:delivery_address,id',
                 'bank_name' => 'nullable|string|max:255',
                 'transaction_number' => 'nullable|string|max:255',
                 'receipt' => 'nullable|file|mimes:jpeg,png,pdf|max:2048',
@@ -324,7 +325,8 @@ private function calculateDistances($lat1, $lon1, $lat2, $lon2)
             $order->latitude = $request->input('current_lat', null);
             $order->longitude = $request->input('current_lng', null);
         }elseif($request->input('address_id')){
-         $order->delivery_address_id = $delivery_address->id;
+
+            $order->delivery_address_id = $delivery_address->id;
 
         $order->address = $delivery_address->address ?? '';
         $order->city = $delivery_address->city ?? '';

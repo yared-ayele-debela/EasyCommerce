@@ -18,8 +18,8 @@ class RestaurantController extends Controller
     //
     public function index()
     {
-         $auto_restaurants = Cache::remember('restaurants_page_1', now()->addMinutes(10), function () {
-        return Restaurant::where('is_open', 1)->latest()->paginate(10);
+        $auto_restaurants = Cache::remember('restaurants_page_1', now()->addMinutes(10), function () {
+            return Restaurant::where('is_open', 1)->latest()->paginate(10);
         });
 
         $cities = Cache::remember('restaurants_cities', now()->addHours(1), function () {
@@ -54,62 +54,71 @@ class RestaurantController extends Controller
 
     public function filter(Request $request)
     {
-         $cacheKey = 'restaurants_filter_' . md5(json_encode($request->all()));
+        $cacheKey = 'restaurants_filter_' . md5(json_encode($request->all()));
 
-    $auto_restaurants = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($request) {
-        $query = Restaurant::where('is_open', 1);
+        $auto_restaurants = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($request) {
+            $query = Restaurant::where('is_open', 1);
 
-        if ($request->filled('city')) $query->where('city', 'like', '%' . $request->city . '%');
-        if ($request->filled('name')) $query->where('name', 'like', '%' . $request->name . '%');
-        if ($request->filled('state')) $query->where('state', 'like', '%' . $request->state . '%');
-        if ($request->filled('delivery_zone')) $query->where('zone', 'like', '%' . $request->delivery_zone . '%');
-        if ($request->filled('delivery_fee')) $query->where('start_from', '>=', $request->delivery_fee);
+            if ($request->filled('city'))
+                $query->where('city', 'like', '%' . $request->city . '%');
+            if ($request->filled('name'))
+                $query->where('name', 'like', '%' . $request->name . '%');
+            if ($request->filled('state'))
+                $query->where('state', 'like', '%' . $request->state . '%');
+            if ($request->filled('delivery_zone'))
+                $query->where('zone', 'like', '%' . $request->delivery_zone . '%');
+            if ($request->filled('delivery_fee'))
+                $query->where('start_from', '>=', $request->delivery_fee);
 
-        return $query->latest()->paginate(10);
-    });
+            return $query->latest()->paginate(10);
+        });
 
-    $html = view('all_frontend_layouts.partials.restaurant-cards', compact('auto_restaurants'))->render();
+        $html = view('all_frontend_layouts.partials.restaurant-cards', compact('auto_restaurants'))->render();
 
         return response()->json(['html' => $html]);
     }
 
     public function fetchRestaurant(Request $request)
-    {
- $auto_restaurants = Cache::remember('restaurants_ajax_page_1', now()->addMinutes(10), function () {
-        return Restaurant::where('is_open', 1)->latest()->paginate(4);
-    });
-        if ($request->ajax()) {
-            return view('all_frontend_layouts.partials.restaurant-cards', compact('auto_restaurants'))->render();
-        }
+{
+    $perPage = 4;
 
-        return view('all_frontend_layouts.index', compact('auto_restaurants'));
+    // Don’t cache pagination, just the query results if needed
+    $query = Restaurant::where('is_open', 1)->latest();
+
+    $auto_restaurants = $query->paginate($perPage);
+
+    if ($request->ajax()) {
+        return view('all_frontend_layouts.partials.restaurant-cards', compact('auto_restaurants'))->render();
     }
+
+    return view('all_frontend_layouts.index', compact('auto_restaurants'));
+}
 
     public function detail($id)
     {
-         $cacheTime = now()->addMinutes(60); // cache for 10 minutes
+        $cacheTime = now()->addMinutes(60); // cache for 10 minutes
 
-    // Cache restaurant details
-    $restaurant = Cache::remember("restaurant_detail_{$id}", $cacheTime, function () use ($id) {
-        return Restaurant::with(['admin', 'images', 'ratings'])->findOrFail($id);
-    });
+        // Cache restaurant details
+        $restaurant = Cache::remember("restaurant_detail_{$id}", $cacheTime, function () use ($id) {
+            return Restaurant::with(['admin', 'images', 'ratings'])->findOrFail($id);
+        });
 
-    // Cache categories that have products for this restaurant
-    $categories = Cache::remember("restaurant_categories_{$id}", $cacheTime, function () use ($id) {
-        return Category::whereHas('products', function ($query) use ($id) {
-            $query->where('restaurant_id', $id);
-        })->get();
-    });
+        // Cache categories that have products for this restaurant
+        $categories = Cache::remember("restaurant_categories_{$id}", $cacheTime, function () use ($id) {
+            return Category::whereHas('products', function ($query) use ($id) {
+                $query->where('restaurant_id', $id);
+            })->get();
+        });
 
-    // Cache products for this restaurant, optionally filtered by category
-    $categoryId = request('category_id');
-    $products = Cache::remember("restaurant_products_{$id}_category_{$categoryId}", $cacheTime, function () use ($id, $categoryId) {
-        return Product::where('restaurant_id', $id)
-            ->when($categoryId, function ($query) use ($categoryId) {
-                $query->where('category_id', $categoryId);
-            })
-            ->get();
-    });
+        // Cache products for this restaurant, optionally filtered by category
+        $categoryId = request('category_id');
+        $products = Cache::remember("restaurant_products_{$id}_category_{$categoryId}", $cacheTime, function () use ($id, $categoryId) {
+            return Product::where('restaurant_id', $id)
+                ->when($categoryId, function ($query) use ($categoryId) {
+                    $query->where('category_id', $categoryId);
+                })
+                ->get();
+        });
 
         return view('Restaurant.frontend.pages.restaurants.detail', compact('restaurant', 'categories', 'products'));
     }

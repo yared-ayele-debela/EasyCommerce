@@ -103,16 +103,6 @@ use App\Models\Roles;
             </li>
             @endadminCan
 
-            {{-- @if ($user && $user->hasPermissionByRole('view_coupon')) --}}
-            {{-- <li class=" {{ request()->is('admin/restaurant/cities')?'nav-item active':'' }}">
-                <a class="nav-link  {{request()->is('admin/restaurant/cities')}}" data-bs-target="#city-nav" data-bs-toggle="collapse" href="javascripit:void(0);" aria-expanded="false"> <i class="bi bi-map-fill"></i><span>City Managements</span><i class="bi bi-chevron-down  ms-auto"></i> </a>
-                <ul id="city-nav" class="nav-content collapse {{ request()->is('admin/restaurant/cities')?'show':'' }} " data-bs-parent="" style=""> --}}
-                    {{-- @if ($user && $user->hasPermissionByRole('view_coupon')) --}}
-                    {{-- <li> <a href="{{ route('cities.index') }}" class=" {{ request()->is('admin/restaurant/cities')?' nav-link active':'' }}"> <i class="bi bi-circle"></i><span>List of Cities</span> </a></li> --}}
-                    {{-- @endif --}}
-                {{-- </ul>
-            </li> --}}
-            {{-- @endif --}}
 
 
             @adminCan('view_restaurant_product')
@@ -141,6 +131,15 @@ use App\Models\Roles;
                 <a class="nav-link  {{request()->is('admin/restaurant/order*')}}" data-bs-target="#order_produts-nav" data-bs-toggle="collapse" href="javascripit:void(0);" aria-expanded="false"> <i class="bi bi-box"></i><span>Orders Managements</span><i class="bi bi-chevron-down ms-auto"></i> </a>
                 <ul id="order_produts-nav" class="nav-content collapse {{ request()->is('admin/restaurant/order*')?'show':'' }} " data-bs-parent="" style="">
                     <li> <a href="{{ route('restaurant.orders.index') }}" class=" {{ request()->is('admin/restaurant/order*')?' nav-link active':'' }}"> <i class="bi bi-circle"></i><span>List of Orders</span> </a></li>
+                </ul>
+              </li>
+            @endadminCan
+
+              @adminCan('manage_call_center')
+              <li class=" {{ request()->is('admin/restaurant/call-center/new-orde*')?'nav-item active':'' }}">
+                <a class="nav-link  {{request()->is('admin/restaurant/call-center/new-orde*')}}" data-bs-target="#call_center-nav" data-bs-toggle="collapse" href="javascripit:void(0);" aria-expanded="false"> <i class="bi bi-phone-vibrate-fill"></i><span>Call Center</span><i class="bi bi-chevron-down ms-auto"></i> </a>
+                <ul id="call_center-nav" class="nav-content collapse {{ request()->is('admin/restaurant/call-center/new-orde*')?'show':'' }} " data-bs-parent="" style="">
+                    <li> <a href="{{ url('admin/restaurant/call-center/new-order') }}" class=" {{ request()->is('admin/restaurant/call-center/new-orde*')?' nav-link active':'' }}"> <i class="bi bi-circle"></i><span>Create Order</span> </a></li>
                 </ul>
               </li>
             @endadminCan

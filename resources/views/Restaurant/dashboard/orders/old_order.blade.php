@@ -44,7 +44,14 @@ $user = Auth::guard('admin')->user();
                 @foreach ($oldOrders as $order)
                     <tr>
                         <td>{{ $order->id }}</td>
-                        <td>{{ $order->user->name }}</td>
+                        <td>{{  $order->user? $order->user->name : '' }}
+                         @if(!$order->user && $order->is_call_center)
+                            <p class="btn btn-success">
+                                <i class="bi bi-phone-vibrate-fill"></i>
+                                Call center order
+                            </p>
+                         @endif
+                        </td>
                         <td>{{ $order->subtotal }} ETB</td>
                         <td>{{ $order->discount }} ETB</td>
                         <td>{{ $order->delivery_fee }} ETB</td>

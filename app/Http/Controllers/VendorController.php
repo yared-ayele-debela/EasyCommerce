@@ -150,8 +150,8 @@ class VendorController extends Controller
     {
         try {
             $appsettings = AppSetting::all()->toArray();
-            $vendor = Vendor::where('id','<>','1')->get();
-            dd($vendor);
+            $vendor = Vendor::where('id','<>','1')->latest()->paginate(3);
+            // dd($vendor);
 
             return view('admin.vendor.allvendors', compact('vendor', 'appsettings'));
         } catch (\Exception $e) {

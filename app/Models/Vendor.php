@@ -24,6 +24,8 @@ class Vendor extends Model
             'email',
             'commission',
             'status',
+            'latitude',
+            'longitude',
             'created_at',
             'updated_at',
       ];

@@ -33,7 +33,7 @@
                             @endphp
                             <tr>
                                 <td>
-                                    <a href="{{ url('product/'.$item['product_id']) }}" class="d-flex align-items-center text-decoration-none">
+                                    <a href="{{ url('ecommerce/product/' . encrypt($item['product_id'])) }}" class="d-flex align-items-center text-decoration-none">
                                         <img src="{{ asset('storage/'.$item['product']['product_image'] ) }}" alt="Product" class="me-2 img-fluid" style="width: 50px; height: 50px;">
                                         <span class="text-dark">{{ $item['product']['product_name'] }}</span>
                                     </a>

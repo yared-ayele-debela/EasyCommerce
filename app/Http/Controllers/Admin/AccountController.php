@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AccountDeletionRequest;
 use App\Models\User;
+use Auth;
 use Illuminate\Http\Request;
 
 class AccountController extends Controller
@@ -13,6 +14,12 @@ class AccountController extends Controller
 
     public function adminList()
     {
+        $user = Auth::guard('admin')->user();
+
+if (!$user || !$user->hasPermissionByRole('manage deleted account')) {
+    return view('admin.errors.unauthorized');
+}
+
         $requests = AccountDeletionRequest::where('is_reviewed', false)->get();
         $request_history= AccountDeletionRequest::where('is_reviewed', true)->get();
         return view('admin.account_delete_request.index', compact('requests', 'request_history'));

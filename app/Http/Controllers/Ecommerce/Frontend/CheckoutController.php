@@ -82,19 +82,21 @@ class CheckoutController extends Controller
         $weight = $product->weight ?? 1 * $item['quantity'];
         $zone = $product->vendor->zone;
 
-        $baseShipping = ShippingCharge::getShippingCharges($weight, zone: $zone); // ← Modify this method to accept vendor
-
         $delivery_settings=DeliverySetting::first();
-        $distanceFeePerKm = $delivery_settings->fee_per_km; // ETB per KM
-        $distanceShipping = $distance * $distanceFeePerKm;
+        $baseShipping = ShippingCharge::getShippingCharges($weight, zone: $zone); // ← also pass vendor if needed
 
-         if ($distance > 1) {
-            // If distance is more than 1 km, include baseShipping and distanceShipping
-            $shipping = $baseShipping + $distanceShipping + $delivery_settings->base_amount;
+        $distanceFeePerKm = $delivery_settings->fee_per_km; // ETB per KM
+
+        if ($distance > 1) {
+            // Base shipping + base amount + per-km fee (starting after the 1st km)
+            $shipping = $baseShipping
+                    + $delivery_settings->base_amount
+                    + ($distance - 1) * $distanceFeePerKm;
         } else {
-            // If distance is 1 km or less, only store the base amount
+            // If distance is 1 km or less, just base shipping + base amount
             $shipping = $delivery_settings->base_amount;
         }
+
 
         // Grouping shipping per vendor
         if (!isset($vendorShipping[$vendorId])) {
@@ -112,15 +114,15 @@ class CheckoutController extends Controller
         $subtotal += $price['final_price'];
     }
     // Sum final shipping from all vendors
-    $finalShipping = collect(value: $vendorShipping)->sum('shipping');
+    $finalShipping = collect( $vendorShipping)->sum('shipping');
 
     $totalAmount = $subtotal + $finalShipping;
 
     // dd($finalShipping, $totalAmount, $vendorShipping);
     return response()->json([
         'success' => true,
-        'shipping_fee' => number_format($finalShipping, 2),
-        'total_amount' => number_format($totalAmount, 2),
+        'shipping_fee' => $finalShipping,
+        'total_amount' => $totalAmount,
         'vendor_details' => $vendorShipping // Optional: useful for debugging
     ]);
 }

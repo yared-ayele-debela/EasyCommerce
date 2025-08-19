@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\AdminRolesController;
 use App\Http\Controllers\Admin\AdminWithdrawRequestController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Restaurant\Dashboard\CallCenterOrderController;
 use App\Http\Controllers\Restaurant\Dashboard\DeliverySettingsController;
 use App\Models\Restaurant\RestaurantRating;
 
@@ -1092,6 +1093,15 @@ Route::prefix('admin/restaurant')->group(function () {
 
         Route::get('vendor/wallet', action: [DashboardVendorBalanceController::class, 'index']);
 
+
+Route::prefix('call-center')->group(function () {
+    Route::get('/new-order', [CallCenterOrderController::class, 'create'])->name('callcenter.order.create');
+    Route::post('/calculate-shipping', [CallCenterOrderController::class, 'calculateShipping'])->name('callcenter.order.calculateShipping');
+Route::post('/store', [CallCenterOrderController::class, 'store'])
+    ->name('callcenter.order.store');        Route::get('/restaurant/{id}/products', [CallCenterOrderController::class, 'getProducts'])->name('callcenter.products');
+
+});
+
     });
 });
 
@@ -1161,6 +1171,20 @@ Route::post('/send-message', function () {
 
 
 Route::get('/', [FrontendController::class, 'index'])->name('restaurant.index.page');
+Route::get('/api/banners', [FrontendController::class, 'getBanners']);
+Route::get('/api/categories', [FrontendController::class, 'getCategories']);
+Route::get('/api/categories/rendered', [FrontendController::class, 'getRenderedCategories']);
+Route::get('/api/products/special-offer', [FrontendController::class, 'getSpecialOfferProducts']);
+Route::get('/api/products/special-offer/rendered', [FrontendController::class, 'getRenderedSpecialOfferProducts']);
+Route::get('/api/products/most-popular', [FrontendController::class, 'getMostPopularProducts']);
+Route::get('/api/products/most-popular/rendered', [FrontendController::class, 'getRenderedMostPopularProducts']);
+Route::get('/api/products/best-seller', [FrontendController::class, 'getBestSellerProducts']);
+Route::get('/api/products/best-seller/rendered', [FrontendController::class, 'getRenderedBestSellerProducts']);
+Route::get('/api/products/latest', [FrontendController::class, 'getLatestProducts']);
+Route::get('/api/products/latest/rendered', [FrontendController::class, 'getRenderedLatestProducts']);
+Route::get('/api/products', [FrontendController::class, 'index']);
+Route::get('/api/restaurants', [FrontendController::class, 'getRestaurants']);
+Route::get('/api/advertisements', [FrontendController::class, 'getAdvertisements']);
 
 // Authentication Routes
 Route::prefix('auth')->middleware('guest')->group(function () {
@@ -1316,6 +1340,19 @@ Route::get('/streets/{subCityId}', [UserDeliveryAddressController::class, 'getSt
 
 // hotel reservation
 
+
+Route::get('/api/hotel/banners', [FrontendFrontendController::class, 'getBanners']);
+Route::get('/api/hotel/categories', [FrontendFrontendController::class, 'getCategories']);
+Route::get('/api/hotel/categories/rendered', [FrontendFrontendController::class, 'getRenderedCategories']);
+Route::get('/api/hotel/discounted-hotels', [FrontendFrontendController::class, 'getDiscountedHotels']);
+Route::get('/api/hotel/discounted-hotels/rendered', [FrontendFrontendController::class, 'getRenderedDiscountedHotels']);
+Route::get('/api/hotel/nearby-hotels', [FrontendFrontendController::class, 'getNearbyHotels']);
+Route::get('/api/hotel/latest-hotels', [FrontendFrontendController::class, 'getLatestHotels']);
+Route::get('/api/hotel/latest-hotels/rendered', [FrontendFrontendController::class, 'getRenderedLatestHotels']);
+Route::get('/api/hotel/latest-rooms', [FrontendFrontendController::class, 'getLatestRooms']);
+Route::get('/api/hotel/latest-rooms/rendered', [FrontendFrontendController::class, 'getRenderedLatestRooms']);
+Route::get('/api/hotel/advertisements', [FrontendFrontendController::class, 'getAdvertisements']);
+
 Route::prefix('/hotel')->group(function () {
     Route::get('/', [FrontendFrontendController::class, 'index'])->name('hotel-reservation.index');
     Route::get('categories', [HotelFrontendCategoryController::class, 'index'])->name('hotel.categories');
@@ -1350,6 +1387,17 @@ Route::get('nearby-hotels', [FrontendHotelController::class, 'nearby'])->name('n
 Route::get('/hotels/filter', [FrontendHotelController::class, 'filter'])->name('hotels.filter');
 Route::get('/get-nearby-hotels', [FrontendHotelController::class, 'getNearbyHotels']);
 
+
+// web.php
+Route::get('/ajax/brands', [EcommerceFrontendFrontendController::class, 'ajaxBrands'])->name('ajax.brands');
+Route::get('/ajax/vendors', [EcommerceFrontendFrontendController::class, 'ajaxVendors'])->name('ajax.vendors');
+
+Route::get('/ajax/categories', [EcommerceFrontendFrontendController::class, 'ajaxCategories'])->name('ajax.categories');
+Route::get('/ajax/products/featured', [EcommerceFrontendFrontendController::class, 'ajaxFeatured'])->name('ajax.products.featured');
+Route::get('/ajax/products/latest', [EcommerceFrontendFrontendController::class, 'ajaxLatest'])->name('ajax.products.latest');
+Route::get('/ajax/products/discounted', [EcommerceFrontendFrontendController::class, 'ajaxDiscounted'])->name('ajax.products.discounted');
+
+
 // ecommerce
 Route::prefix('/ecommerce')->group(function () {
     Route::get('/', [EcommerceFrontendFrontendController::class, 'index'])->name('ecommerce.index');
@@ -1364,6 +1412,7 @@ Route::prefix('/ecommerce')->group(function () {
     Route::get('/ecommerce/products/load', [ProductsController::class, 'fetchMore'])->name('ecommerce.products.load');
     Route::get('brand/{id}', [FrontendCategoriesController::class, 'bybrands'])->name('product_by_brands');
     Route::get('/vendors', [FrontendVendorController::class, 'index'])->name('ecommerce.vendors.index');
+    Route::get('/vendors/paginate', [FrontendVendorController::class, 'paginateAjax'])->name('ecommerce.vendors.paginate');
     Route::middleware('auth')->group(function () {
         Route::match(['GET', 'POST'], '/orders/{id}/cancel', [EcommerceFrontendOrderController::class, 'ordercancel']);
         Route::match(['GET', 'POST'], '/orders/{id}/return', [EcommerceFrontendOrderController::class, 'orderreturn']);
