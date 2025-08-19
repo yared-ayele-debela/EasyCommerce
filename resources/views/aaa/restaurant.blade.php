@@ -429,14 +429,15 @@
         </div>
     @endif
 
-    <div class="d-flex justify-content-between align-items-center">
-        <h4 class="mt-5 mb-2">All Restaurants</h4>
-        <a href="{{ url('restaurants') }}" class="btn btn-outline-primary btn-sm">
+
+     <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0">All Restaurants</h4>
+       <a href="{{ url('restaurants') }}" class="btn btn-outline-primary btn-sm">
             <i class="bi bi-funnel"></i> Filter Restaurants
         </a>
     </div>
 
-    <div id="auto-restaurant-container" class="row g-4">
+    <div id="auto-restaurant-container" class="row ecom-carousel py-3">
         @include('all_frontend_layouts.partials.restaurant-cards')
     </div>
 
@@ -459,6 +460,46 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
     <script src="{{ asset('restaurant_frontend/assets/js/index.js') }}"></script>
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+let pages = 1;
+let loadings = false;
+function loadMoreRestaurants() {
+    if (loadings) return;
+    loadings = true;
+    $('#restaurant_loading').show();
+    pages++;
+
+    $.ajax({
+        url: "{{ route('fetch.restaurants') }}?page=" + pages,
+        type: "GET",
+        success: function(data) {
+            if (data.trim().length === 0) {
+                $(window).off('scroll');
+                $('#restaurant_loading').html('<p class="text-muted">No more restaurants.</p>');
+                return;
+            }
+
+            $('#auto-restaurant-container').append(data);
+            $('#restaurant_loading').hide();
+            loadings = false;
+
+                updateRestaurantDistances();
+        },
+        error: function() {
+            $('#restaurant_loading').html('<p class="text-danger">Something went wrong.</p>');
+        }
+    });
+}
+
+$(window).on('scroll', function () {
+    if ($(window).scrollTop() + $(window).height() >= $(document).height() - 200) {
+        loadMoreRestaurants();
+    }
+});
+
+</script>
 </body>
 
 </html>

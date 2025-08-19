@@ -1,8 +1,5 @@
  document.addEventListener('DOMContentLoaded', () => {
 
-
-
-
             function setupCarousel(carouselSelector, prevBtnSelector, nextBtnSelector, itemsSelector, desktopItems, mobileItems) {
                 const carousel = document.querySelector(carouselSelector);
                 const items = document.querySelector(itemsSelector);
@@ -108,48 +105,7 @@
             })
             .catch(err => console.error(err));
     }
-});
-let loadings = false;
-let pages = 1;
 
-function loadMoreRestaurants() {
-    if (loadings) return;
-
-    loadings = true;
-    $('#restaurant_loading').show();
-    pages++; // next page
-
-    $.ajax({
-        url: "/fetch-restaurants?page=" + pages,
-        type: "GET",
-        success: function(data) {
-            if (data.trim().length === 0) {
-                $('#restaurant_loading').html('<p class="text-muted">No more restaurants.</p>');
-                $('#load-more-restaurants').remove();
-                return;
-            }
-
-            $('#auto-restaurant-container').append(data);
-            $('#restaurant_loading').hide();
-            loadings = false;
-
-            updateRestaurantDistances();
-        },
-        error: function() {
-            $('#restaurant_loading').html('<p class="text-danger">Something went wrong.</p>');
-        }
-    });
-}
-
-$(document).ready(function() {
-    $('#load-more-restaurants').on('click', function() {
-        loadMoreRestaurants();
-    });
-
-    $(window).on('scroll', function () {
-        if ($(window).scrollTop() + $(window).height() >= $(document).height() - 200) {
-            loadMoreRestaurants();
-        }
-    });
+    
 });
 
