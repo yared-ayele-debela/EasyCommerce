@@ -231,7 +231,7 @@
             }
 
             .ecom-category {
-                flex: 0 0 calc(100% / 2);
+                flex: 0 0 calc(100% / 3);
                 min-width: 150px;
 
             }
