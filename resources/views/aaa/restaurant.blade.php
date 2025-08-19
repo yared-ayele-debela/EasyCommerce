@@ -116,7 +116,8 @@
             transform: translateY(-50%);
             background-color: rgba(244, 245, 243, 0.7);
             color: #0d690a;
-            border: none;
+
+            border: 1px solid #dffade;
             padding: 12px;
             cursor: pointer;
             font-size: 1.3em;
@@ -381,13 +382,13 @@
     {{-- Banner Slider --}}
     .<div class="container-fluid">
          <div class="ecom-carousel ecom-banner-carousel" tabindex="0">
-        <button class="ecom-nav-btn ecom-prev ecom-banner-prev" aria-label="Previous Banner">&lt;</button>
+        <button class="ecom-nav-btn ecom-prev ecom-banner-prev" aria-label="Previous Banner"><i class="bi bi-arrow-left-short "></i></button>
         <div class="ecom-custom-banners">
             @foreach($banners as $banner)
                 @include('components.sample.banner-card', ['banner' => $banner])
             @endforeach
         </div>
-        <button class="ecom-nav-btn ecom-next ecom-banner-next" aria-label="Next Banner">&gt;</button>
+        <button class="ecom-nav-btn ecom-next ecom-banner-next" aria-label="Next Banner"><i class="bi bi-arrow-right-short "></i></button>
     </div>
 
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -395,13 +396,13 @@
         <a href="#" class="btn btn-sm btn-success">All</a>
     </div>
     <div class="ecom-carousel ecom-category-carousel" tabindex="0">
-        <button class="ecom-nav-btn ecom-prev ecom-category-prev" aria-label="Previous Category">&lt;</button>
+        <button class="ecom-nav-btn ecom-prev ecom-category-prev" aria-label="Previous Category"><i class="bi bi-arrow-left-short "></i> </button>
         <div class="ecom-custom-categories">
             @foreach($categories as $category)
                 @include('components.sample.category-card', ['category' => $category])
             @endforeach
         </div>
-        <button class="ecom-nav-btn ecom-next ecom-category-next" aria-label="Next Category">&gt;</button>
+        <button class="ecom-nav-btn ecom-next ecom-category-next" aria-label="Next Category"><i class="bi bi-arrow-right-short "></i></button>
     </div>
     @if($after_special_offer_product_list)
         <div class="row justify-content-center my-3">
@@ -422,7 +423,7 @@
         <a href="#" class="btn btn-sm btn-success">All</a>
     </div>
     <div class="ecom-carousel ecom-featured-products" tabindex="0">
-        <button class="ecom-nav-btn ecom-prev ecom-featured-prev" aria-label="Previous Product">&lt;</button>
+        <button class="ecom-nav-btn ecom-prev ecom-featured-prev" aria-label="Previous Product"><i class="bi bi-arrow-left-short "></i></button>
         <div class="ecom-custom-products">
             @foreach($most_popular_products as $product)
                 <div class="ecom-product">
@@ -430,7 +431,7 @@
                 </div>
             @endforeach
         </div>
-        <button class="ecom-nav-btn ecom-next ecom-featured-next" aria-label="Next Product">&gt;</button>
+        <button class="ecom-nav-btn ecom-next ecom-featured-next" aria-label="Next Product"><i class="bi bi-arrow-right-short "></i></button>
     </div>
 
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -438,7 +439,7 @@
         <a href="#" class="btn btn-sm btn-success">All</a>
     </div>
     <div class="ecom-carousel ecom-latest-products" tabindex="0">
-        <button class="ecom-nav-btn ecom-prev ecom-latest-prev" aria-label="Previous Product">&lt;</button>
+        <button class="ecom-nav-btn ecom-prev ecom-latest-prev" aria-label="Previous Product"><i class="bi bi-arrow-left-short "></i></button>
         <div class="ecom-custom-products">
             @foreach($latest_products as $product)
                 <div class="ecom-product">
@@ -446,7 +447,7 @@
                 </div>
             @endforeach
         </div>
-        <button class="ecom-nav-btn ecom-next ecom-latest-next" aria-label="Next Product">&gt;</button>
+        <button class="ecom-nav-btn ecom-next ecom-latest-next" aria-label="Next Product"><i class="bi bi-arrow-right-short "></i></button>
     </div>
 
     @if($after_best_seller_product_list)
@@ -467,7 +468,7 @@
         <a href="#" class="btn btn-sm btn-success">All</a>
     </div>
     <div class="ecom-carousel ecom-discounted-products" tabindex="0">
-        <button class="ecom-nav-btn ecom-prev ecom-discounted-prev" aria-label="Previous Product">&lt;</button>
+        <button class="ecom-nav-btn ecom-prev ecom-discounted-prev" aria-label="Previous Product"><i class="bi bi-arrow-left-short "></i></button>
         <div class="ecom-custom-products">
             @foreach($products as $product)
                 <div class="ecom-product">
@@ -475,7 +476,7 @@
                 </div>
             @endforeach
         </div>
-        <button class="ecom-nav-btn ecom-next ecom-discounted-next" aria-label="Next Product">&gt;</button>
+        <button class="ecom-nav-btn ecom-next ecom-discounted-next" aria-label="Next Product"><i class="bi bi-arrow-right-short "></i></button>
     </div>
 
     <div class="d-flex justify-content-between align-items-center mb-3">
