@@ -44,10 +44,10 @@ class SampleIndexController extends Controller
 
     $auto_restaurants = Restaurant::where('is_open', 1)->latest()->paginate(4);
 
-    $auto_scroll_products = Product::where('is_active', 1)->latest()->paginate(12);
+    $auto_scroll_products = Product::where('is_active', 1)->latest()->paginate(6);
 
     if ($request->ajax()) {
-        return view('all_frontend_layouts.partials.product-cards', compact('auto_scroll_products'))->render();
+        return view('aaa.partials.product-cards', compact('auto_scroll_products'))->render();
     }
 
     $after_special_offer_product_list = Advertisement::where('position', 'after_special_offer_product_list')

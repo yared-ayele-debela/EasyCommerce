@@ -1,10 +1,11 @@
-@props(['product'])
+@foreach($auto_scroll_products as $product)
 @php
     $off = $product->price - $product->getFinalPrice();
     $restLat = $product->restaurant->latitude;
     $restLng = $product->restaurant->longitude;
     $radius = $product->restaurant->delivery_radius;
 @endphp
+                <div class="ecom-product">
 
 <div class="product-card"
      data-restaurant-lat="{{ $restLat }}"
@@ -48,3 +49,5 @@
         </button>
     </div>
 </div>
+                </div>
+@endforeach

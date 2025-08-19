@@ -58,7 +58,7 @@
         }
 
         .ecom-category {
-            flex: 0 0 calc(100% / 8);
+            flex: 0 0 calc(100% / 9);
             /* 4 items for categories */
         }
 
@@ -90,10 +90,10 @@
         .ecom-banner span,
         .ecom-category span,
         .ecom-product span {
-            font-size: 1.2em;
-            color: #333;
+            font-size: 1.1em;
+            /* color: #333; */
             text-align: center;
-            font-weight: 600;
+            /* font-weight: 600; */
             text-transform: capitalize;
         }
 
@@ -260,15 +260,15 @@
 
         .old-price {
             font-size: 0.9em;
-            color: #999;
+            color: #646363;
             text-decoration: line-through;
             margin-right: 10px;
         }
 
         .new-price {
-            font-size: 1.1em;
-            color: #e44d26;
-            font-weight: 600;
+            font-size: 1.3em;
+            color: #4dc415;
+            font-weight: 800;
         }
 
         .action-buttons {
@@ -409,9 +409,56 @@
         </div>
         <button class="ecom-nav-btn ecom-next ecom-discounted-next" aria-label="Next Product">&gt;</button>
     </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0">All Products</h4>
+        <a href="#" class="btn btn-sm btn-success">All</a>
+    </div>
+    <div id="product-list" class="row ecom-carousel">
+        @include('aaa.partials.product-cards', ['auto_scroll_products' => $auto_scroll_products])
+    </div>
+
+    @if($auto_scroll_products->hasMorePages())
+        <div class="text-center my-3">
+            <button id="load-more-btn" data-next-page="{{ $auto_scroll_products->nextPageUrl() }}" class="btn btn-primary">
+                Load More
+            </button>
+        </div>
+    @endif
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+        <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    if (!loadMoreBtn) return;
+
+    loadMoreBtn.addEventListener('click', function () {
+        const nextPage = this.getAttribute('data-next-page');
+        if (!nextPage) return;
+
+        fetch(nextPage, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(response => response.text())
+            .then(html => {
+                // Append new products
+                document.getElementById('product-list').insertAdjacentHTML('beforeend', html);
+
+                // Update next page URL
+                const urlParams = new URL(nextPage);
+                const newNextPage = urlParams.searchParams.get('page');
+                if (newNextPage) {
+                    const nextPageUrl = nextPage.replace(/page=\d+/, 'page=' + (parseInt(newNextPage) + 1));
+                    this.setAttribute('data-next-page', nextPageUrl);
+                } else {
+                    this.remove(); // No more pages
+                }
+            })
+            .catch(err => console.error(err));
+    });
+});
+</script>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
@@ -487,7 +534,7 @@
 
             // Initialize carousels
             setupCarousel('.ecom-banner-carousel', '.ecom-banner-prev', '.ecom-banner-next', '.ecom-banner-carousel .ecom-custom-banners', 3, 1);
-            setupCarousel('.ecom-category-carousel', '.ecom-category-prev', '.ecom-category-next', '.ecom-category-carousel .ecom-custom-categories', 8, 2);
+            setupCarousel('.ecom-category-carousel', '.ecom-category-prev', '.ecom-category-next', '.ecom-category-carousel .ecom-custom-categories', 9, 2);
             setupCarousel('.ecom-featured-products', '.ecom-featured-prev', '.ecom-featured-next', '.ecom-featured-products .ecom-custom-products', 8, 2);
             setupCarousel('.ecom-latest-products', '.ecom-latest-prev', '.ecom-latest-next', '.ecom-latest-products .ecom-custom-products', 8, 2);
 
