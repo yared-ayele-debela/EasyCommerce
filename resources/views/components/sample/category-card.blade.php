@@ -6,3 +6,4 @@
     @endif
     <span>{{ $category->name }}</span>
 </div>
+

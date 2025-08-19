@@ -265,11 +265,11 @@
 
 
   .resturant_card{
-    box-shadow: 0 4px 10px rgb(204, 252, 204);
     border-radius: 8px;
+    border: 1px solid #b2f7b2;
+    box-shadow: 0 2px 10px rgb(204, 252, 204) !important;
     overflow: hidden;
     transition: box-shadow 0.3s;
-    border: none;
 }
 
   .resturant_card:hover {

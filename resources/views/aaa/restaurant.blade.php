@@ -51,7 +51,6 @@
         .ecom-category,
         .ecom-product {
             flex: 0 0 calc(100% / 3);
-            /* 3 items for banners */
             min-width: 200px;
             display: flex;
             flex-direction: column;
@@ -80,7 +79,7 @@
             border: 1px solid #eee;
         }
 
-        .ecom-category img,
+
         .ecom-product img {
             width: 100%;
             height: 180px;
@@ -89,6 +88,16 @@
             margin-bottom: 12px;
             border: 1px solid #eee;
         }
+
+        .ecom-category img{
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #eee;
+        }
+
+
 
         .ecom-banner span,
         .ecom-category span,
@@ -227,7 +236,8 @@
             max-width: 300px;
             background-color: #fff;
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid #b2f7b2;
+    box-shadow: 0 2px 10px rgb(204, 252, 204) !important;
             overflow: hidden;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -364,6 +374,17 @@
         </div>
         <button class="ecom-nav-btn ecom-next ecom-category-next" aria-label="Next Category">&gt;</button>
     </div>
+    @if($after_special_offer_product_list)
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-12">
+            <div class="card border-0 rounded-3 shadow-sm overflow-hidden">
+                <a href="{{ $after_special_offer_product_list->adv_links??'' }}" target="_blank">
+                    <img src="{{ asset('storage/' . $after_special_offer_product_list->image) }}" alt="{{ $after_special_offer_product_list->title??'' }}" class="img-fluid w-100 d-block" style="max-height: 250px; ">
+                </a>
+            </div>
+        </div>
+    </div>
+    @endif
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="mb-0">Featured Products</h4>
@@ -397,6 +418,17 @@
         <button class="ecom-nav-btn ecom-next ecom-latest-next" aria-label="Next Product">&gt;</button>
     </div>
 
+     @if($after_best_seller_product_list)
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-12">
+            <div class="card border-0 rounded-3 shadow-sm overflow-hidden">
+                <a href="{{ $after_best_seller_product_list->adv_links??'' }}" target="_blank">
+                    <img src="{{ asset('storage/' . $after_best_seller_product_list->image) }}" alt="{{ $after_best_seller_product_list->title??'' }}" class="img-fluid w-100 d-block" style="max-height: 250px; ">
+                </a>
+            </div>
+        </div>
+    </div>
+    @endif
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="mb-0">Discounted Products</h4>
         <a href="#" class="btn btn-sm btn-success">All</a>
@@ -456,6 +488,17 @@
         </div>
     </div>
 
+     @if($after_all_restaurants)
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-12">
+            <div class="card border-0 rounded-3 shadow-sm overflow-hidden">
+                <a href="{{ $after_all_restaurants->adv_links??'' }}" target="_blank">
+                    <img src="{{ asset('storage/' . $after_all_restaurants->image) }}" alt="{{ $after_all_restaurants->title??'' }}" class="img-fluid w-100 d-block" style="max-height: 250px; ">
+                </a>
+            </div>
+        </div>
+    </div>
+    @endif
     <div class="d-flex justify-content-between align-items-center mt-5 mb-3">
      <h4 class="">Nearby Restaurants</h4>
       <div class="d-flex align-items-center gap-2">
