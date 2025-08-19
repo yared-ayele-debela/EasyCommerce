@@ -529,8 +529,8 @@
     <div class="d-flex justify-content-between align-items-center my-4">
      <h4 class="d-none d-sm-block">Nearby Restaurants</h4>
       <div class="d-flex align-items-center gap-3">
-            <input type="number" id="radiusInput" class="form-control w-50" placeholder="Radius (km)" value="100" min="1">
-            <button id="seeNearbyBtn" class="btn btn-primary rounded-pill px-4">
+            <input type="number" id="radiusInput" class="form-control w-50 w-sm-100" placeholder="Radius (km)" value="100" min="1">
+            <button id="seeNearbyBtn" class="btn btn-primary rounded-pill px-sm-3 px-2">
             <i class="bi bi-geo-alt-fill me-1"></i> See Nearby
         </button>
       </div>
