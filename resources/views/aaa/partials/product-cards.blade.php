@@ -11,7 +11,7 @@
             {{-- Product Image --}}
             <a href="{{ url('restaurant/product-detail/' . encrypt($product->id)) }}" class="text-decoration-none">
                 <img src="{{ asset('storage/' . $product->image) ?? asset('images/default-product.jpg') }}"
-                    alt="{{ $product->name }}" class="product-image">
+                    alt="{{ $product->name }}" class="product-image" loading="lazy">
             </a>
 
             {{-- Product Info --}}
