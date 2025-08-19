@@ -10,7 +10,7 @@
         integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-        <link rel="stylesheet" href="{{ asset('restaurant_frontend/assets/css/index.css') }}">
+    <link rel="stylesheet" href="{{ asset('restaurant_frontend/assets/css/index.css') }}">
     <title>E-commerce with Banner Slider</title>
     <style>
         * {
@@ -23,7 +23,6 @@
             font-family: 'Segoe UI', Arial, sans-serif;
             background-color: #ffffff !important;
             min-height: 100vh;
-            padding: 20px;
         }
 
         .ecom-carousel {
@@ -90,10 +89,10 @@
             border: 1px solid #eee;
         }
 
-        .ecom-category img{
-              height: 130px;
-                width: 130px;
-                border-radius: 50%;
+        .ecom-category img {
+            height: 130px;
+            width: 130px;
+            border-radius: 50%;
             object-fit: cover;
             margin-bottom: 12px;
             border: 1px solid #eee;
@@ -158,14 +157,15 @@
                 flex: 0 0 calc(100% / 3);
             }
 
-               .ecom-category img{
-              height: 130px;
+            .ecom-category img {
+                height: 130px;
                 width: 110px;
                 border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 12px;
-            border: 1px solid #eee;
-        }
+                object-fit: cover;
+                margin-bottom: 12px;
+                border: 1px solid #eee;
+            }
+
             .ecom-banner img {
                 height: 220px;
             }
@@ -181,14 +181,15 @@
                 flex: 0 0 calc(100% / 2);
             }
 
-               .ecom-category img{
-              height: 130px;
+            .ecom-category img {
+                height: 130px;
                 width: 110px;
                 border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 12px;
-            border: 1px solid #eee;
-        }
+                object-fit: cover;
+                margin-bottom: 12px;
+                border: 1px solid #eee;
+            }
+
             .ecom-category {
                 flex: 0 0 calc(100% / 2);
             }
@@ -215,14 +216,15 @@
         }
 
         @media (max-width: 576px) {
-             .ecom-category img{
-              height: 130px;
+            .ecom-category img {
+                height: 130px;
                 width: 110px;
                 border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 12px;
-            border: 1px solid #eee;
-        }
+                object-fit: cover;
+                margin-bottom: 12px;
+                border: 1px solid #eee;
+            }
+
             .ecom-banner {
                 flex: 0 0 100%;
                 min-width: 150px;
@@ -263,7 +265,7 @@
             background-color: #fff;
             border-radius: 10px;
             border: 1px solid #b2f7b2;
-    box-shadow: 0 2px 10px rgb(204, 252, 204) !important;
+            box-shadow: 0 2px 10px rgb(204, 252, 204) !important;
             overflow: hidden;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -377,7 +379,8 @@
 
 <body>
     {{-- Banner Slider --}}
-    <div class="ecom-carousel ecom-banner-carousel" tabindex="0">
+    .<div class="container-fluid">
+         <div class="ecom-carousel ecom-banner-carousel" tabindex="0">
         <button class="ecom-nav-btn ecom-prev ecom-banner-prev" aria-label="Previous Banner">&lt;</button>
         <div class="ecom-custom-banners">
             @foreach($banners as $banner)
@@ -401,15 +404,17 @@
         <button class="ecom-nav-btn ecom-next ecom-category-next" aria-label="Next Category">&gt;</button>
     </div>
     @if($after_special_offer_product_list)
-    <div class="row justify-content-center my-3">
-        <div class="col-12 col-md-12">
-            <div class="card border-0 rounded-3 shadow-sm overflow-hidden">
-                <a href="{{ $after_special_offer_product_list->adv_links??'' }}" target="_blank">
-                    <img src="{{ asset('storage/' . $after_special_offer_product_list->image) }}" alt="{{ $after_special_offer_product_list->title??'' }}" class="img-fluid w-100 d-block" style="max-height: 250px; ">
-                </a>
+        <div class="row justify-content-center my-3">
+            <div class="col-12 col-md-12">
+                <div class="card border-0 rounded-3 shadow-sm overflow-hidden">
+                    <a href="{{ $after_special_offer_product_list->adv_links ?? '' }}" target="_blank">
+                        <img src="{{ asset('storage/' . $after_special_offer_product_list->image) }}"
+                            alt="{{ $after_special_offer_product_list->title ?? '' }}" class="img-fluid w-100 d-block"
+                            style="max-height: 250px; ">
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
     @endif
 
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -444,16 +449,18 @@
         <button class="ecom-nav-btn ecom-next ecom-latest-next" aria-label="Next Product">&gt;</button>
     </div>
 
-     @if($after_best_seller_product_list)
-    <div class="row justify-content-center my-3">
-        <div class="col-12 col-md-12">
-            <div class="card border-0 rounded-3 shadow-sm overflow-hidden">
-                <a href="{{ $after_best_seller_product_list->adv_links??'' }}" target="_blank">
-                    <img src="{{ asset('storage/' . $after_best_seller_product_list->image) }}" alt="{{ $after_best_seller_product_list->title??'' }}" class="img-fluid w-100 d-block" style="max-height: 250px; ">
-                </a>
+    @if($after_best_seller_product_list)
+        <div class="row justify-content-center my-3">
+            <div class="col-12 col-md-12">
+                <div class="card border-0 rounded-3 shadow-sm overflow-hidden">
+                    <a href="{{ $after_best_seller_product_list->adv_links ?? '' }}" target="_blank">
+                        <img src="{{ asset('storage/' . $after_best_seller_product_list->image) }}"
+                            alt="{{ $after_best_seller_product_list->title ?? '' }}" class="img-fluid w-100 d-block"
+                            style="max-height: 250px; ">
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
     @endif
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="mb-0">Discounted Products</h4>
@@ -475,7 +482,7 @@
         <h4 class="mb-0">All Products</h4>
         <a href="#" class="btn btn-sm btn-success">All</a>
     </div>
-    <div id="product-list" class="row ecom-carousel">
+    <div id="product-list" class="row ">
         @include('aaa.partials.product-cards', ['auto_scroll_products' => $auto_scroll_products])
     </div>
 
@@ -488,9 +495,9 @@
     @endif
 
 
-     <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="mb-0">All Restaurants</h4>
-       <a href="{{ url('restaurants') }}" class="btn btn-outline-primary btn-sm">
+        <a href="{{ url('restaurants') }}" class="btn btn-outline-primary btn-sm">
             <i class="bi bi-funnel"></i> Filter Restaurants
         </a>
     </div>
@@ -500,13 +507,13 @@
     </div>
 
     <div class="row d-flex justify-content-center align-items-center">
-    <div class="col-md-6 text-center">
-        <button onclick="loadMoreRestaurants()" class="btn btn-primary my-3 text-center">
-            <i class="bi bi-arrow-counterclockwise"></i> Load More
-        </button>
-        <div id="restaurant_loading" class="my-2 text-muted" style="display: none;">Loading...</div>
+        <div class="col-md-6 text-center">
+            <button onclick="loadMoreRestaurants()" class="btn btn-primary my-3 text-center">
+                <i class="bi bi-arrow-counterclockwise"></i> Load More
+            </button>
+            <div id="restaurant_loading" class="my-2 text-muted" style="display: none;">Loading...</div>
+        </div>
     </div>
-</div>
 
     <div class="text-center my-1" id="restaurant_loading" style="display: none;">
         <div class="spinner-border text-primary" role="status">
@@ -514,84 +521,88 @@
         </div>
     </div>
 
-     @if($after_all_restaurants)
-    <div class="row justify-content-center my-2">
-        <div class="col-12 col-md-12">
-            <div class="card border-0 rounded-3 shadow-sm overflow-hidden">
-                <a href="{{ $after_all_restaurants->adv_links??'' }}" target="_blank">
-                    <img src="{{ asset('storage/' . $after_all_restaurants->image) }}" alt="{{ $after_all_restaurants->title??'' }}" class="img-fluid w-100 d-block" style="max-height: 250px; ">
-                </a>
+    @if($after_all_restaurants)
+        <div class="row justify-content-center my-2">
+            <div class="col-12 col-md-12">
+                <div class="card border-0 rounded-3 shadow-sm overflow-hidden">
+                    <a href="{{ $after_all_restaurants->adv_links ?? '' }}" target="_blank">
+                        <img src="{{ asset('storage/' . $after_all_restaurants->image) }}"
+                            alt="{{ $after_all_restaurants->title ?? '' }}" class="img-fluid w-100 d-block"
+                            style="max-height: 250px; ">
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
     @endif
 
     <div class="d-flex justify-content-between align-items-center my-4">
-     <h4 class="d-none d-sm-block">Nearby Restaurants</h4>
-      <div class="d-flex align-items-center gap-3">
-            <input type="number" id="radiusInput" class="form-control w-50 w-sm-100" placeholder="Radius (km)" value="100" min="1">
-            <button id="seeNearbyBtn" class="btn btn-primary rounded-pill px-sm-3 px-2">
-            <i class="bi bi-geo-alt-fill me-1"></i> See Nearby
-        </button>
-      </div>
+        <h4 class="d-none d-sm-block">Nearby Restaurants</h4>
+        <div class="d-flex align-items-center gap-3">
+            <input type="number" id="radiusInput" class="form-control w-50 w-sm-100" placeholder="Radius (km)"
+                value="100" min="1">
+            <button id="seeNearbyBtn" class="btn btn-primary rounded-pill px-sm-3 px-3">
+                <i class="bi bi-geo-alt-fill me-1"></i> See Nearby
+            </button>
+        </div>
     </div>
     <div class="row" id="restaurant-container">
 
     </div>
 
-        @include('all_frontend_layouts.partial_index')
+    @include('all_frontend_layouts.partial_index')
 
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
     <script src="{{ asset('restaurant_frontend/assets/js/index.js') }}"></script>
-            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<script>
-    const storageUrl = "{{ asset('storage') }}";
+    <script>
+        const storageUrl = "{{ asset('storage') }}";
 
-    // Fetch restaurants API call
-    function fetchNearbyRestaurants(lat, lng, radius = 100) {
-        fetch(`/restaurants/nearby?latitude=${lat}&longitude=${lng}&radius=${radius}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success && data.restaurants) {
-                    renderRestaurants(data.restaurants);
-                } else {
-                    document.getElementById('restaurant-container').innerHTML = `
+        // Fetch restaurants API call
+        function fetchNearbyRestaurants(lat, lng, radius = 100) {
+            fetch(`/restaurants/nearby?latitude=${lat}&longitude=${lng}&radius=${radius}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.restaurants) {
+                        renderRestaurants(data.restaurants);
+                    } else {
+                        document.getElementById('restaurant-container').innerHTML = `
                         <p class="text-center text-muted">No restaurants found nearby.</p>
                     `;
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching restaurants:', error);
-                document.getElementById('restaurant-container').innerHTML = `
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching restaurants:', error);
+                    document.getElementById('restaurant-container').innerHTML = `
                     <p class="text-center text-danger">Something went wrong. Please try again.</p>
                 `;
-            });
-    }
+                });
+        }
 
-    // Render restaurants
-    function renderRestaurants(restaurants) {
-        const container = document.getElementById('restaurant-container');
-        container.innerHTML = '';
+        // Render restaurants
+        function renderRestaurants(restaurants) {
+            const container = document.getElementById('restaurant-container');
+            container.innerHTML = '';
 
-        restaurants.forEach(restaurant => {
-            const bannerSrc = restaurant.cover
-                ? `${storageUrl}/${restaurant.cover}`
-                : '{{ asset('restaurant_frontend/default-image.png') }}';
+            restaurants.forEach(restaurant => {
+                const bannerSrc = restaurant.cover
+                    ? `${storageUrl}/${restaurant.cover}`
+                    : '{{ asset('restaurant_frontend/default-image.png') }}';
 
-            const isOutOfRange = parseFloat(restaurant.diff_distance) > parseFloat(restaurant.delivery_radius);
+                const isOutOfRange = parseFloat(restaurant.diff_distance) > parseFloat(restaurant.delivery_radius);
 
-            const outOfRangeHTML = isOutOfRange
-                ? `<div class="position-absolute top-0 end-0 m-2">
+                const outOfRangeHTML = isOutOfRange
+                    ? `<div class="position-absolute top-0 end-0 m-2">
                         <span class="badge bg-danger px-3 py-2">
                             <i class="bi bi-exclamation-triangle-fill me-1"></i> Out of Range
                         </span>
                    </div>`
-                : '';
+                    : '';
 
-            container.innerHTML += `
+                container.innerHTML += `
                 <div class="col-lg-6 col-md-6">
                     <div class="offer-card border rounded-3 shadow-sm overflow-hidden mb-4 position-relative">
                         ${outOfRangeHTML}
@@ -648,73 +659,73 @@
                     </div>
                 </div>
             `;
-        });
-    }
-
-    // Button Click → Get location & fetch restaurants
-    document.getElementById('seeNearbyBtn').addEventListener('click', () => {
-        if ('geolocation' in navigator) {
-            navigator.geolocation.getCurrentPosition(
-                position => {
-                    const latitude = position.coords.latitude;
-                    const longitude = position.coords.longitude;
-                    localStorage.setItem('user_lat', latitude);
-                    localStorage.setItem('user_lng', longitude);
-
-                    const radiusInput = document.getElementById('radiusInput');
-                    const radius = radiusInput ? parseInt(radiusInput.value) || 100 : 100;
-
-                    fetchNearbyRestaurants(latitude, longitude, radius);
-                },
-                error => {
-                    alert('Location access denied or unavailable.');
-                    console.error('Geolocation error:', error.message);
-                },
-                { enableHighAccuracy: true, timeout: 5000 }
-            );
-        } else {
-            alert('Geolocation is not supported by your browser.');
+            });
         }
-    });
-</script>
-    <script>
-let pages = 1;
-let loadings = false;
-function loadMoreRestaurants() {
-    if (loadings) return;
-    loadings = true;
-    $('#restaurant_loading').show();
-    pages++;
 
-    $.ajax({
-        url: "{{ route('fetch.restaurants') }}?page=" + pages,
-        type: "GET",
-        success: function(data) {
-            if (data.trim().length === 0) {
-                $(window).off('scroll');
-                $('#restaurant_loading').html('<p class="text-muted">No more restaurants.</p>');
-                return;
+        // Button Click → Get location & fetch restaurants
+        document.getElementById('seeNearbyBtn').addEventListener('click', () => {
+            if ('geolocation' in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        const latitude = position.coords.latitude;
+                        const longitude = position.coords.longitude;
+                        localStorage.setItem('user_lat', latitude);
+                        localStorage.setItem('user_lng', longitude);
+
+                        const radiusInput = document.getElementById('radiusInput');
+                        const radius = radiusInput ? parseInt(radiusInput.value) || 100 : 100;
+
+                        fetchNearbyRestaurants(latitude, longitude, radius);
+                    },
+                    error => {
+                        alert('Location access denied or unavailable.');
+                        console.error('Geolocation error:', error.message);
+                    },
+                    { enableHighAccuracy: true, timeout: 5000 }
+                );
+            } else {
+                alert('Geolocation is not supported by your browser.');
             }
+        });
+    </script>
+    <script>
+        let pages = 1;
+        let loadings = false;
+        function loadMoreRestaurants() {
+            if (loadings) return;
+            loadings = true;
+            $('#restaurant_loading').show();
+            pages++;
 
-            $('#auto-restaurant-container').append(data);
-            $('#restaurant_loading').hide();
-            loadings = false;
+            $.ajax({
+                url: "{{ route('fetch.restaurants') }}?page=" + pages,
+                type: "GET",
+                success: function (data) {
+                    if (data.trim().length === 0) {
+                        $(window).off('scroll');
+                        $('#restaurant_loading').html('<p class="text-muted">No more restaurants.</p>');
+                        return;
+                    }
 
-                updateRestaurantDistances();
-        },
-        error: function() {
-            $('#restaurant_loading').html('<p class="text-danger">Something went wrong.</p>');
+                    $('#auto-restaurant-container').append(data);
+                    $('#restaurant_loading').hide();
+                    loadings = false;
+
+                    updateRestaurantDistances();
+                },
+                error: function () {
+                    $('#restaurant_loading').html('<p class="text-danger">Something went wrong.</p>');
+                }
+            });
         }
-    });
-}
 
-$(window).on('scroll', function () {
-    if ($(window).scrollTop() + $(window).height() >= $(document).height() - 200) {
-        loadMoreRestaurants();
-    }
-});
+        $(window).on('scroll', function () {
+            if ($(window).scrollTop() + $(window).height() >= $(document).height() - 200) {
+                loadMoreRestaurants();
+            }
+        });
 
-</script>
+    </script>
 </body>
 
 </html>
