@@ -31,8 +31,8 @@
             max-width: 1800px;
             overflow: hidden;
             border-radius: 10px;
-            /* box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); */
-            background-color: #f6fcf5;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            background-color: #f2fcf1;
             margin-bottom: 20px;
         }
 
@@ -245,15 +245,15 @@
         }
 
         .product-info {
-            padding: 15px;
+            padding: 10px;
             text-align: center;
         }
 
         .product-name {
-            font-size: 1.2em;
+            font-size: 1em;
             font-weight: 600;
-            color: #333;
-            margin-bottom: 10px;
+            color: #696868;
+            margin-bottom: 5px;
             text-transform: capitalize;
         }
 
@@ -506,6 +506,8 @@
             </div>
         </div>
     </div>
+
+        @include('all_frontend_layouts.partial_index')
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
