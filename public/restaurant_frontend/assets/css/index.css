@@ -385,15 +385,6 @@
   border-radius: 10px;
 }
 
-.product-image {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 2;
-  max-width: 80%;
-  height: auto;
-}
 
 .card {
   border-radius: 10px;
@@ -462,9 +453,6 @@ input[type="number"] {
     width:150px;
   }
 
-  .product-image {
-    max-width: 70%;
-  }
 
   .card-header h2 {
     font-size: 1.2rem;
@@ -975,19 +963,6 @@ input[type="number"] {
 .slider-wrapper {
   display: flex;
   transition: transform 0.5s ease;
-}
-
-.product {
-  flex: 0 0 33.33%; /* Show three products at once */
-  padding: 15px;
-  text-align: center;
-}
-
-.product img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 10px;
-
 }
 
 .carousel-control-prev, .carousel-control-next {

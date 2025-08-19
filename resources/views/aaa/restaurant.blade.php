@@ -6,7 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="{{ asset('restaurant_frontend/assets/css/index.css') }}">
     <title>E-commerce with Banner Slider</title>
     <style>
         * {
@@ -101,7 +104,7 @@
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(105, 228, 67, 0.7);
             color: #fff;
             border: none;
             padding: 12px;
@@ -113,7 +116,7 @@
         }
 
         .ecom-nav-btn:hover {
-            background-color: rgba(0, 0, 0, 0.9);
+            background-color: rgba(64, 219, 43, 0.9);
         }
 
         .ecom-prev {
@@ -236,7 +239,7 @@
 
         .product-image {
             width: 100%;
-           max-height: 200px;
+            max-height: 200px;
             object-fit: cover;
             border-bottom: 1px solid #eee;
         }
@@ -337,7 +340,7 @@
 </head>
 
 <body>
-     {{-- Banner Slider --}}
+    {{-- Banner Slider --}}
     <div class="ecom-carousel ecom-banner-carousel" tabindex="0">
         <button class="ecom-nav-btn ecom-prev ecom-banner-prev" aria-label="Previous Banner">&lt;</button>
         <div class="ecom-custom-banners">
@@ -378,7 +381,7 @@
         <button class="ecom-nav-btn ecom-next ecom-featured-next" aria-label="Next Product">&gt;</button>
     </div>
 
-     <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="mb-0">Latest Products</h4>
         <a href="#" class="btn btn-sm btn-success">All</a>
     </div>
@@ -426,123 +429,36 @@
         </div>
     @endif
 
+    <div class="d-flex justify-content-between align-items-center">
+        <h4 class="mt-5 mb-2">All Restaurants</h4>
+        <a href="{{ url('restaurants') }}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-funnel"></i> Filter Restaurants
+        </a>
+    </div>
+
+    <div id="auto-restaurant-container" class="row g-4">
+        @include('all_frontend_layouts.partials.restaurant-cards')
+    </div>
+
+    <div class="row d-flex justify-content-center align-items-center">
+    <div class="col-md-6 text-center">
+        <button onclick="loadMoreRestaurants()" class="btn btn-primary my-3 text-center">
+            <i class="bi bi-arrow-counterclockwise"></i> Load More
+        </button>
+        <div id="restaurant_loading" class="my-2 text-muted" style="display: none;">Loading...</div>
+    </div>
+</div>
+
+    <div class="text-center my-1" id="restaurant_loading" style="display: none;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
-        <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const loadMoreBtn = document.getElementById('load-more-btn');
-    if (!loadMoreBtn) return;
-
-    loadMoreBtn.addEventListener('click', function () {
-        const nextPage = this.getAttribute('data-next-page');
-        if (!nextPage) return;
-
-        fetch(nextPage, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-            .then(response => response.text())
-            .then(html => {
-                // Append new products
-                document.getElementById('product-list').insertAdjacentHTML('beforeend', html);
-
-                // Update next page URL
-                const urlParams = new URL(nextPage);
-                const newNextPage = urlParams.searchParams.get('page');
-                if (newNextPage) {
-                    const nextPageUrl = nextPage.replace(/page=\d+/, 'page=' + (parseInt(newNextPage) + 1));
-                    this.setAttribute('data-next-page', nextPageUrl);
-                } else {
-                    this.remove(); // No more pages
-                }
-            })
-            .catch(err => console.error(err));
-    });
-});
-</script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-
-            function setupCarousel(carouselSelector, prevBtnSelector, nextBtnSelector, itemsSelector, desktopItems, mobileItems) {
-                const carousel = document.querySelector(carouselSelector);
-                const items = document.querySelector(itemsSelector);
-                const prevBtn = document.querySelector(prevBtnSelector);
-                const nextBtn = document.querySelector(nextBtnSelector);
-
-                let itemWidth = 0;
-                let currentIndex = 0;
-                let totalItems = items.children.length;
-                let visibleItems = 0;
-
-                function updateCarousel() {
-                    const carouselWidth = carousel.offsetWidth;
-                    const isMobile = window.innerWidth <= 768;
-                    visibleItems = isMobile && mobileItems ? mobileItems : (desktopItems || Math.floor(carouselWidth / items.children[0].offsetWidth));
-                    itemWidth = carouselWidth / visibleItems;
-                    slideTo(currentIndex);
-                }
-
-                function updateButtons() {
-                    prevBtn.classList.toggle('ecom-disabled', currentIndex === 0);
-                    nextBtn.classList.toggle('ecom-disabled', currentIndex >= totalItems - visibleItems);
-                }
-
-                function slideTo(index) {
-                    if (index < 0 || index > totalItems - visibleItems) return;
-                    currentIndex = index;
-                    items.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
-                    updateButtons();
-                }
-
-                prevBtn.addEventListener('click', () => {
-                    if (currentIndex > 0) {
-                        slideTo(currentIndex - 1);
-                    }
-                });
-
-                nextBtn.addEventListener('click', () => {
-                    if (currentIndex < totalItems - visibleItems) {
-                        slideTo(currentIndex + 1);
-                    }
-                });
-
-                window.addEventListener('resize', () => {
-                    updateCarousel();
-                });
-
-                carousel.addEventListener('keydown', (e) => {
-                    if (e.key === 'ArrowLeft') prevBtn.click();
-                    if (e.key === 'ArrowRight') nextBtn.click();
-                });
-
-                let touchStartX = 0;
-                carousel.addEventListener('touchstart', (e) => {
-                    touchStartX = e.touches[0].clientX;
-                });
-
-                carousel.addEventListener('touchend', (e) => {
-                    const touchEndX = e.changedTouches[0].clientX;
-                    const swipeDistance = touchStartX - touchEndX;
-                    if (Math.abs(swipeDistance) > 50) {
-                        if (swipeDistance > 0) nextBtn.click();
-                        else if (swipeDistance < 0) prevBtn.click();
-                    }
-                });
-
-                updateCarousel();
-                updateButtons();
-            }
-
-            // Initialize carousels
-            setupCarousel('.ecom-banner-carousel', '.ecom-banner-prev', '.ecom-banner-next', '.ecom-banner-carousel .ecom-custom-banners', 3, 1);
-            setupCarousel('.ecom-category-carousel', '.ecom-category-prev', '.ecom-category-next', '.ecom-category-carousel .ecom-custom-categories', 9, 2);
-            setupCarousel('.ecom-featured-products', '.ecom-featured-prev', '.ecom-featured-next', '.ecom-featured-products .ecom-custom-products', 8, 2);
-            setupCarousel('.ecom-latest-products', '.ecom-latest-prev', '.ecom-latest-next', '.ecom-latest-products .ecom-custom-products', 8, 2);
-
-            setupCarousel('.ecom-discounted-products', '.ecom-discounted-prev', '.ecom-discounted-next', '.ecom-discounted-products .ecom-custom-products', 8, 2);
-            setupCarousel('.ecom-all-products', '.ecom-all-prev', '.ecom-all-next', '.ecom-all-products .ecom-custom-products', 5, 2);
-            setupCarousel('.ecom-free-shipping-products', '.ecom-free-shipping-prev', '.ecom-free-shipping-next', '.ecom-free-shipping-products .ecom-custom-products', 8, 2);
-        });
-    </script>
+    <script src="{{ asset('restaurant_frontend/assets/js/index.js') }}"></script>
 </body>
 
 </html>

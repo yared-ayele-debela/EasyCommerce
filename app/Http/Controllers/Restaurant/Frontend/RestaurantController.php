@@ -91,7 +91,7 @@ class RestaurantController extends Controller
         return view('all_frontend_layouts.partials.restaurant-cards', compact('auto_restaurants'))->render();
     }
 
-    return view('all_frontend_layouts.index', compact('auto_restaurants'));
+    return view('aaa.restaurant', compact('auto_restaurants'));
 }
 
     public function detail($id)
