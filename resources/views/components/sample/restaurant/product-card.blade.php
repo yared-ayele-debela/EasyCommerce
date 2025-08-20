@@ -24,7 +24,7 @@
 
         <a href="{{ url('ecommerce/product/' . encrypt($product->id)) }}">
             <img src="{{ asset('storage/' . $product->product_image) ?? asset('restaurant_frontend/default-image.png') }}"
-                 class="card-img-top p-3 product-image" alt="{{ $product->product_name }}" >
+                 class="card-img-top p-3 product-image" alt="{{ $product->product_name }}" loading="lazy">
         </a>
 
         <div class="card-body p-3">
