@@ -381,6 +381,17 @@
 <body>
     {{-- Banner Slider --}}
     .<div class="container-fluid">
+        <div class="container py-2">
+            <div class="row d-flex justify-content-center align-items-center pt-3">
+                <div class="custom-nav-container">
+                    <nav class="nav justify-content-between custom-nav p-2">
+                        <a href="{{ url('/') }}" class="custom-switch nav-link text-white fw-bold {{ request()->is('/')?'nav-active':'' }}">Order Food</a>
+                        <a href="{{ url('/sample.hotel') }}" class="custom-switch nav-link text-dark fw-bold {{ request()->is('/sample.hotel')?'nav-active':'' }}">Reserve Hotel</a>
+                        <a href="{{ url('/ecommerce') }}" class="custom-switch nav-link text-dark fw-bold {{ request()->is('ecommerce')?' text-white nav-active':'' }}">Buy Goods</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
          <div class="ecom-carousel ecom-banner-carousel" tabindex="0">
         <button class="ecom-nav-btn ecom-prev ecom-banner-prev" aria-label="Previous Banner"><i class="bi bi-arrow-left-short "></i></button>
         <div class="ecom-custom-banners">

@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Restaurant\Dashboard\CallCenterOrderController;
 use App\Http\Controllers\Restaurant\Dashboard\DeliverySettingsController;
+use App\Http\Controllers\Sample\EcommerceController;
 use App\Http\Controllers\Sample\SampleIndexController;
 use App\Models\Restaurant\RestaurantRating;
 
@@ -1527,3 +1528,5 @@ Route::post('/delete-account-request', [AccountController::class, 'handleDeleteR
 // sample route for testing
 
 Route::get('sample.restaurant', [SampleIndexController::class,'index'])->name('sample.index');
+Route::get('sample.hotel',[SampleIndexController::class,'hotel'])->name('sample.hotel');
+Route::get('sample.ecommerce',[EcommerceController::class,'index'])->name('sample.ecommerce');

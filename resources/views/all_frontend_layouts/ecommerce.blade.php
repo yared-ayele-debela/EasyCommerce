@@ -500,7 +500,7 @@
         </div>
     </div>
 
-     @if($ad_after_featured_products)
+    @if($ad_after_featured_products)
         <div class="row justify-content-center">
             <div class="col-12 col-md-12">
             <div class="card border-0 rounded-3 shadow-sm overflow-hidden">
