@@ -667,7 +667,6 @@ $(window).on('scroll', function () {
                     }
                 });
 
-                // Toggle current item
                 item.classList.toggle('active');
             });
         });
