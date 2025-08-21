@@ -54,57 +54,6 @@
 </div>
 @include('Ecommerce.products.filter.script')
 
-{{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function() {
-        function getCheckedValues(className) {
-            return $(`.${className}:checked`).map(function() {
-                return $(this).val();
-            }).get();
-        }
-
-        function fetchProducts() {
-            const filters = {
-                group_ids: getCheckedValues('groupFilter')
-                , category_ids: getCheckedValues('categoryFilter')
-                , brand_ids: getCheckedValues('brandFilter')
-                , vendor_ids: getCheckedValues('vendorFilter')
-                , discounted: $('#discountOnly').is(':checked') ? 1 : 0
-                , min_price: $('#minPrice').val()
-                , max_price: $('#maxPrice').val()
-            };
-
-            $.ajax({
-                url: '{{ route("products.filter") }}'
-                , method: 'GET'
-                , data: filters
-                , beforeSend: function() {
-                    $('#productList').html('<div class="loader-wrapper"><span class="loader"></span></div>');
-                }
-                , success: function(response) {
-                    $('#productList').html(response.html);
-                }
-                , error: function() {
-                    $('#productList').html('<div class="text-danger">Failed to load products.</div>');
-                }
-            });
-        }
-
-
-
-        // Automatically trigger fetch on change
-        $('.groupFilter, .categoryFilter, .brandFilter, .vendorFilter, #discountOnly').on('change', fetchProducts);
-
-        $('#minPrice, #maxPrice').on('input', function() {
-            clearTimeout($.data(this, 'timer'));
-            const wait = setTimeout(fetchProducts, 500);
-            $(this).data('timer', wait);
-        });
-        // Initial load
-        fetchProducts();
-    });
-
-</script> --}}
 
 @endsection
 

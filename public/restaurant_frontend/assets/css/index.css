@@ -1374,3 +1374,10 @@ input[type="number"] {
             cursor: pointer;
         }
     }
+
+      @media (min-width: 768px) {  /* md breakpoint */
+  .col-md-1-5 {
+    flex: 0 0 auto;
+    width: 12.5%;
+  }
+}

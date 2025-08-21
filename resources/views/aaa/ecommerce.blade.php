@@ -404,12 +404,7 @@
                 padding: 6px;
             }
         }
-        @media (min-width: 768px) {  /* md breakpoint */
-  .col-md-1-5 {
-    flex: 0 0 auto;
-    width: 12.5%;
-  }
-}
+      
     </style>
 </head>
 
