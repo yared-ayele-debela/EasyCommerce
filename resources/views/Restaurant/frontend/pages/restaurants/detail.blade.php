@@ -49,12 +49,22 @@
                 </div>
             </div>
         </div>
-        <div class="d-flex justify-content-start mt-3">
-            <img src="{{ asset('storage/' . $restaurant->cover) ?? asset('restaurant_frontend/default-image.png') }}" width="100" class="thumbnail mx-2 p-2 border rounded" alt="{{ $restaurant->name }}" style="cursor: pointer;">
-            @foreach($restaurant->images as $key => $image)
-            <img src="{{ asset('storage/' . $image->image_path) ?? asset('restaurant_frontend/default-image.png') }}" width="100" class="thumbnail mx-2 p-2 border rounded" alt="{{ $restaurant->name }}" style="cursor: pointer;">
-            @endforeach
-        </div>
+        <div class="d-flex flex-wrap justify-content-start mt-3">
+    {{-- Cover image --}}
+    <img src="{{ $restaurant->cover ? asset('storage/' . $restaurant->cover) : asset('restaurant_frontend/default-image.png') }}"
+         class="thumbnail m-2 p-2 border rounded"
+         alt="{{ $restaurant->name }}"
+         style="cursor: pointer; width: 100px; height: auto;">
+
+    {{-- Extra images --}}
+    @foreach($restaurant->images as $image)
+        <img src="{{ $image->image_path ? asset('storage/' . $image->image_path) : asset('restaurant_frontend/default-image.png') }}"
+             class="thumbnail m-2 p-2 border rounded"
+             alt="{{ $restaurant->name }}"
+             style="cursor: pointer; width: 100px; height: auto;">
+    @endforeach
+</div>
+
         <h4>{{ $restaurant->name }}</h4>
         <div class="row pb-4 d-flex justify-content-between align-items-center">
             <div class="col-md-3 col-12 col-sm-6">
@@ -114,36 +124,35 @@
         </div>
     </div>
 
+    <div class="container py-4">
+    @forelse($categories as $category)
+        <div class="mb-5=3">
+            {{-- Category Name --}}
+            <h4 class="fw-bold text-dark mb-3">{{ $category->name }}</h4>
 
-    <div class="row d-flex justify-content-center align-items-center py-4">
-        <div class="col-md-8">
-            <nav class="nav justify-content-center resturant-detail-nav text-white py-2">
-                <a href="#" class="nav-link text-dark fw-bold category-filter {{ request('category_id') ? 'text-dark' : 'nav-active' }}" data-id="">
-                    All
-                </a>
-                @forelse($categories as $category)
-                <a href="#" class="nav-link fw-bold category-filter text-dark {{ request('category_id') == $category->id ? 'nav-active text-white' : 'text-white' }}" data-id="{{ $category->id }}">
-                    {{ $category->name }}
-                </a>
+            {{-- Products under this category --}}
+            <div class="row g-3">
+                @forelse($category->products as $product)
+                    <div class="col-md-2 col-6 mb-2 h-100">
+                        {{-- Include the product card component --}}
+                      @include('components.sample.product-card', ['product' => $product])
+                    </div>
                 @empty
+                    <div class="col-md-12 text-center">
+                        <small class="text-muted">No products in this category.</small>
+                    </div>
                 @endforelse
-            </nav>
+            </div>
         </div>
-    </div>
-    <div class="row g-3 py-4" id="product-list">
-        @forelse ($products as $product)
-        <div class="col-md-2">
-             <x-restaurant.normal-product-card :product="$product" bgColor="btn-info" />
+    @empty
+        <div class="text-center">
+            <img src="{{ asset('no-product-found.png') }}" alt="No Product Found" class="img-fluid mb-2">
+            <h6 class="text-dark">No categories found</h6>
         </div>
-        @empty
-        <div class="col-md-12 text-center">
-            <img src="{{ asset('no-product-found..png') }}" alt="No Product Found" class="img-fluid mb-2">
-            <h6 class="text-dark">No Product Found</h6>
-        </div>
-        @endforelse
-    </div>
+    @endforelse
 </div>
-@forelse ($products as $product)
+
+</div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -154,26 +163,9 @@
             });
         });
 
-            $(document).on('click', '.category-filter', function(e) {
-                e.preventDefault();
-                var categoryId = $(this).data('id');
 
-                $('.category-filter').removeClass('nav-active text-white').addClass('text-dark');
-                $(this).addClass('nav-active text-white');
-
-                $.ajax({
-                    url: "{{ route('restaurant.filter.products') }}",
-                    type: "GET",
-                    data: { category_id: categoryId },
-                    success: function(response) {
-                        $('#product-list').html(response);
-                    }
-                });
-            });
     });
 
 </script>
-@empty
-@endforelse
 @endsection
 

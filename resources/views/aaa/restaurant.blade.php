@@ -404,7 +404,7 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="mb-0">Shop by Category</h4>
-        <a href="#" class="btn btn-sm btn-success">All</a>
+        <a href="{{ route('restaurant.categories') }}" class="text-dark">All</a>
     </div>
     <div class="ecom-carousel ecom-category-carousel" tabindex="0">
         <button class="ecom-nav-btn ecom-prev ecom-category-prev" aria-label="Previous Category"><i class="bi bi-arrow-left-short "></i> </button>
@@ -431,7 +431,13 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="mb-0">Featured Products</h4>
-        <a href="#" class="btn btn-sm btn-success">All</a>
+         <form action="{{ route('all-restaurant-products') }}" method="GET">
+                @csrf
+                <input type="hidden" name="type" value="most_popular">
+                <button type="submit" class="text-dark border-0 bg-white">
+                    All
+                </button>
+            </form>
     </div>
     <div class="ecom-carousel ecom-featured-products" tabindex="0">
         <button class="ecom-nav-btn ecom-prev ecom-featured-prev" aria-label="Previous Product"><i class="bi bi-arrow-left-short "></i></button>
@@ -447,7 +453,14 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="mb-0">Latest Products</h4>
-        <a href="#" class="btn btn-sm btn-success">All</a>
+        <form action="{{ route('all-restaurant-products') }}" method="GET">
+                @csrf
+                <input type="hidden" name="type" value="latest">
+                <button type="submit" class="text-dark border-0 bg-white">
+                    All
+                </button>
+            </form>
+
     </div>
     <div class="ecom-carousel ecom-latest-products" tabindex="0">
         <button class="ecom-nav-btn ecom-prev ecom-latest-prev" aria-label="Previous Product"><i class="bi bi-arrow-left-short "></i></button>
@@ -492,7 +505,13 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="mb-0">All Products</h4>
-        <a href="#" class="btn btn-sm btn-success">All</a>
+       <form action="{{ url('restaurant/all-products') }}" method="GET">
+                    @csrf
+                    <input type="hidden" name="type" value="best_seller">
+                    <button type="submit" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-funnel"></i> Filter Products
+                    </button>
+                </form>
     </div>
     <div id="product-list" class="row ">
         @include('aaa.partials.product-cards', ['auto_scroll_products' => $auto_scroll_products])

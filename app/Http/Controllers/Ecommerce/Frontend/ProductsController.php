@@ -79,6 +79,7 @@ class ProductsController extends Controller
 
     $recentlyViewedProducts = Product::with('brand', 'attributes', 'ratings')
         ->whereIn('id', $recentProductIds)
+        ->take(6)
         ->get();
 
     // Group products by color

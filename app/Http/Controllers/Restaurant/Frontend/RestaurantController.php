@@ -43,11 +43,21 @@ class RestaurantController extends Controller
     }
     public function filterProducts(Request $request)
     {
-        $categoryId = $request->category_id;
+        $request->validate([
+            'restaurant_id' => 'required|exists:restaurants,id',
+            'category_id' => 'nullable|exists:categories,id'
+        ]);
 
-        $products = $categoryId
-            ? Product::where('category_id', $categoryId)->get()
-            : Product::all();
+        $categoryId = $request->category_id;
+        $restaurantId = $request->restaurant_id;
+
+        $products = Product::query()
+            ->where('restaurant_id', $restaurantId)
+            ->when($categoryId, function ($query) use ($categoryId) {
+                $query->where('category_id', $categoryId);
+            })
+            ->select('id', 'name', 'price', 'description', 'category_id', 'restaurant_id')
+            ->get();
 
         return view('components.restaurant.filtered-products', compact('products'))->render();
     }
@@ -94,33 +104,22 @@ class RestaurantController extends Controller
     return view('aaa.restaurant', compact('auto_restaurants'));
 }
 
-    public function detail($id)
+     public function detail($id)
     {
-        $cacheTime = now()->addMinutes(60); // cache for 10 minutes
+       $restaurant = Restaurant::with(['admin', 'images', 'ratings'])
+        ->findOrFail($id);
 
-        // Cache restaurant details
-        $restaurant = Cache::remember("restaurant_detail_{$id}", $cacheTime, function () use ($id) {
-            return Restaurant::with(['admin', 'images', 'ratings'])->findOrFail($id);
-        });
+    // Fetch categories with products for this restaurant
+    $categories = Category::whereHas('products', function ($query) use ($id) {
+            $query->where('restaurant_id', $id);
+        })
+        ->with(['products' => function ($query) use ($id) {
+            $query->where('restaurant_id', $id)
+                  ->select('id', 'name', 'price', 'image','description', 'category_id', 'restaurant_id');
+        }])
+        ->get();
 
-        // Cache categories that have products for this restaurant
-        $categories = Cache::remember("restaurant_categories_{$id}", $cacheTime, function () use ($id) {
-            return Category::whereHas('products', function ($query) use ($id) {
-                $query->where('restaurant_id', $id);
-            })->get();
-        });
-
-        // Cache products for this restaurant, optionally filtered by category
-        $categoryId = request('category_id');
-        $products = Cache::remember("restaurant_products_{$id}_category_{$categoryId}", $cacheTime, function () use ($id, $categoryId) {
-            return Product::where('restaurant_id', $id)
-                ->when($categoryId, function ($query) use ($categoryId) {
-                    $query->where('category_id', $categoryId);
-                })
-                ->get();
-        });
-
-        return view('Restaurant.frontend.pages.restaurants.detail', compact('restaurant', 'categories', 'products'));
+    return view('Restaurant.frontend.pages.restaurants.detail', compact('restaurant', 'categories'));
     }
 
     public function getNearbyRestaurants(Request $request, LocationService $locationService)
