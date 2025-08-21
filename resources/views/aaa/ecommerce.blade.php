@@ -416,7 +416,7 @@
 <body>
     {{-- Banner Slider --}}
     <div class="container-fluid">
-            <div class="row d-flex justify-content-center align-items-center pt-3">
+        <div class="row d-flex justify-content-center align-items-center pt-3">
                 <div class="custom-nav-container">
                     <nav class="nav justify-content-between custom-nav p-2">
                         <a href="{{ url('/') }}"
@@ -431,7 +431,7 @@
                     </nav>
                 </div>
         </div>
-        .<div class="container-fluid">
+        <div class="container-fluid">
             <div class="row">
             <div class="col-lg-3 mb-2">
                 <div class="card border border-1 shadow-sm">
@@ -509,8 +509,92 @@
                 </div>
             </div>
         </div>
+
+
+@if ($featured_flash_deal && $flash_deal_products->count())
+<div class="container-fluid pb-2">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+        <h3 class="fw-bold mb-0">
+            <i class="bi bi-fire text-danger me-2"></i> Flash Sales
+        </h3>
+
+        <!-- This wrapper keeps countdown + button in one row -->
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+
+            <!-- All Button -->
+            <a href="{{ route('ecommerce.products.flash.sales') }}" class="btn btn-outline-primary order-2 order-md-1 fw-semibold">
+                View All
+            </a>
+            <!-- Countdown Box -->
+            <div class="d-flex gap-3 text-center bg-primary px-3 py-2 rounded-2 order-1 order-md-2 shadow-sm">
+                <div>
+                    <strong id="days" class="text-white fs-5">03</strong>
+                    <div class="small text-white">Days</div>
+                </div>
+                <div>
+                    <strong id="hours" class="text-white fs-5">23</strong>
+                    <div class="small text-white">Hours</div>
+                </div>
+                <div>
+                    <strong id="minutes" class="text-white fs-5">19</strong>
+                    <div class="small text-white">Minutes</div>
+                </div>
+                <div>
+                    <strong id="seconds" class="text-white fs-5">56</strong>
+                    <div class="small text-white">Seconds</div>
+                </div>
+            </div>
+
         </div>
-        <div class="d-flex justify-content-between align-items-center mb-3">
+    </div>
+
+    <div class="ecom-carousel ecom-flashdeal-products" tabindex="0">
+            <button class="ecom-nav-btn ecom-prev ecom-flashdeal-prev" aria-label="Previous Product"><i
+                    class="bi bi-arrow-left-short "></i></button>
+            <div class="ecom-custom-products">
+                @foreach ($flash_deal_products as $item)
+                @php $product = $item->product; @endphp
+                    <div class="ecom-product">
+                        @include('components.sample.ecommerce.product-card', ['product' => $product])
+                    </div>
+                @endforeach
+            </div>
+            <button class="ecom-nav-btn ecom-next ecom-flashdeal-next" aria-label="Next Product"><i
+                    class="bi bi-arrow-right-short "></i>
+            </button>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const endTime = new Date("{{ \Carbon\Carbon::parse($featured_flash_deal->end_date)->format('Y-m-d H:i:s') }}").getTime();
+            function updateCountdown() {
+                const now = new Date().getTime();
+                const distance = endTime - now;
+
+                if (distance < 0) {
+                    document.getElementById("countdown").innerHTML = "⏰ Deal ended";
+                    return;
+                }
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById("days").textContent = String(days).padStart(2, '0');
+                document.getElementById("hours").textContent = String(hours).padStart(2, '0');
+                document.getElementById("minutes").textContent = String(minutes).padStart(2, '0');
+                document.getElementById("seconds").textContent = String(seconds).padStart(2, '0');
+
+            }
+
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        });
+
+    </script>
+</div>
+    @endif
+        <div class="d-flex justify-content-between align-items-center my-3">
             <h4 class="mb-0">Categories</h4>
             <a href="#" class="btn btn-sm btn-success">All</a>
         </div>
@@ -715,7 +799,36 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script>
+        function initializeFlashCountdowns() {
+        const countdowns = document.querySelectorAll('.flash-countdown');
+
+        countdowns.forEach(el => {
+            const endTime = parseInt(el.dataset.end) * 1000; // milliseconds
+            const countdownText = el.querySelector('.countdown-text');
+
+            const interval = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = endTime - now;
+
+                if (distance <= 0) {
+                    countdownText.innerText = 'Deal Ended';
+                    clearInterval(interval);
+                    return;
+                }
+
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                countdownText.innerText = `${hours}h ${minutes}m ${seconds}s`;
+            }, 1000);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', initializeFlashCountdowns);
+
         let page = 1;
     let loading = false;
 
@@ -836,6 +949,7 @@
             setupCarousel('.ecom-category-carousel', '.ecom-category-prev', '.ecom-category-next', '.ecom-category-carousel .ecom-custom-categories', 9, 2);
             setupCarousel('.ecom-brand-carousel', '.ecom-brand-prev', '.ecom-brand-next', '.ecom-brand-carousel .ecom-custom-categories', 9, 2);
             setupCarousel('.ecom-featured-products', '.ecom-featured-prev', '.ecom-featured-next', '.ecom-featured-products .ecom-custom-products', 8, 2);
+            setupCarousel('.ecom-flashdeal-products', '.ecom-flashdeal-prev', '.ecom-flashdeal-next', '.ecom-flashdeal-products .ecom-custom-products', 8, 2);
             setupCarousel('.ecom-vendor-products', '.ecom-vendor-prev', '.ecom-vendor-next', '.ecom-vendor-products .ecom-custom-products', 4, 2);
             setupCarousel('.ecom-latest-products', '.ecom-latest-prev', '.ecom-latest-next', '.ecom-latest-products .ecom-custom-products', 8, 2);
             setupCarousel('.ecom-discounted-products', '.ecom-discounted-prev', '.ecom-discounted-next', '.ecom-discounted-products .ecom-custom-products', 8, 2);
