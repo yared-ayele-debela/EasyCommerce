@@ -600,7 +600,6 @@
             </div>
         </div>
     @endif
-
 </div>
 
 <div class="container-fluid pb-4">

@@ -1,6 +1,6 @@
 @props(['vendor', 'reviewCount' => 0])
 
-<div class="item mb-2 h-100">
+<div class="m-2">
     <div class="offer-card h-100 rounded-2">
         <div class="shop-banner-container position-relative">
             <img src="{{ !empty($vendor->vendorbusinessdetails['shop_image']) ? asset('storage/' .$vendor->vendorbusinessdetails['shop_image']) : asset('banner.png') }}" class="w-100" style="height: 150px; min-width: 300px !important; object-fit: cover;" alt="Shop Banner" loading="lazy">

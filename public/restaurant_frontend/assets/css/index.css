@@ -1225,3 +1225,152 @@ input[type="number"] {
 
 
 
+
+
+
+
+  /* for ecommerce slider and category display */
+  .btn-custom-banner {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        border: 2px solid #ffffff !important;
+        border-radius: 4px;
+        align-items: center !important;
+    }
+
+    .scrollable-list {
+        max-height: 450px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        /* For Firefox */
+        scrollbar-color: #e1e6e1 #f1f1f1;
+        /* Scrollbar color */
+    }
+
+    .scrollable-list::-webkit-scrollbar {
+        width: 4px !important;
+        /* Scrollbar width */
+    }
+
+    .scrollable-list::-webkit-scrollbar-thumb {
+        background: #055935;
+        /* Scroll thumb (handle) color */
+        border-radius: 10px;
+        /* Rounded edges */
+    }
+
+    .scrollable-list::-webkit-scrollbar-thumb:hover {
+        background: #055935;
+        /* Darker shade on hover */
+    }
+
+    .scrollable-list::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        /* Background track color */
+        border-radius: 10px;
+    }
+
+    /* .hero {
+        background: url('assets/img/banner2.png') no-repeat center center;
+        background-size: cover;
+        color: white;
+        padding: 50px;
+        text-align: left;
+    } */
+
+    .category-box {
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .category-box.active,
+    .category-box:hover {
+        background: #055935;
+        color: white;
+    }
+
+    .category-list {
+        position: relative;
+    }
+
+    .category-list li {
+        cursor: pointer;
+        position: relative;
+    }
+
+    .subcategory-dropdown {
+        background: #ffffff;
+        border: 1px solid #dee2e6;
+        padding: 10px;
+        display: none;
+        z-index: 1100 !important;
+        border-radius: 0.5rem;
+        margin-top: 10px;
+    }
+
+
+    .subcategory-dropdown li {
+        list-style: none;
+        padding: 5px 10px;
+    }
+
+    .subcategory-dropdown li a {
+        text-decoration: none;
+        color: #333;
+        display: block;
+    }
+
+    .subcategory-dropdown li a:hover {
+        color: #055935;
+        font-weight: 500;
+    }
+
+    .list-group-item.active {
+        z-index: 2;
+        color: rgb(63, 62, 62);
+        background-color: #F0F5FA !important;
+        border-color: var(--bs-list-group-active-border-color);
+    }
+
+    /* Hover for desktop */
+    @media (min-width: 992px) {
+        .subcategory-dropdown {
+            position: absolute;
+            top: 0;
+            left: 100%;
+            min-width: 800px;
+            margin-top: 0;
+            z-index: 1100 !important;
+
+            border-left: none;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .category-list li:hover .subcategory-dropdown {
+            display: block;
+            z-index: 1100 !important;
+        }
+    }
+
+    /* Click-to-toggle on mobile */
+    @media (max-width: 991.98px) {
+        .category-list li {
+            padding-bottom: 0.5rem;
+        }
+
+        .category-list li.active .subcategory-dropdown {
+            display: block;
+        }
+
+        .category-list li .toggle-icon {
+            float: right;
+            font-size: 1.1rem;
+            color: #666;
+            cursor: pointer;
+        }
+    }
